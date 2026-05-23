@@ -1,0 +1,30 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2605.14542v1/fig-001.webp",
+      "caption": "Figure 1. VerbalValue architecture. The dual-channel dialogue service dispatches scripted narration and interactive responses under shared audio resource arbitration. The media service handles TTS synthesis and asset serving. The browser frontend coordinates playback, subtitles, product display, and lip animation.",
+      "page": 3,
+      "index": 1,
+      "width": 766,
+      "height": 560
+    },
+    {
+      "url": "assets/figures/arxiv/2605.14542v1/fig-002.webp",
+      "caption": "Figure 2. Deployed VerbalValue interface in Chinese beauty live-commerce. VerbalValue responds with a catalogue-grounded reply citing barrier ingredients and a first-person experiential hook.",
+      "page": 4,
+      "index": 2,
+      "width": 572,
+      "height": 635
+    },
+    {
+      "url": "assets/figures/arxiv/2605.14542v1/fig-003.webp",
+      "caption": "Table 1. Comparison on the beauty live-commerce evaluation set. Correctness reports the proportion of responses with no out-of-catalogue factual claims; its ∆(%) is computed relative to the strongest baseline. ∆ rows show improvement of VerbalValue over the best-performing baseline per column.",
+      "page": 4,
+      "index": 3,
+      "width": 640,
+      "height": 221
+    }
+  ]
+}

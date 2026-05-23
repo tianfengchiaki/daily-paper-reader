@@ -1,0 +1,70 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2605.16474v1/fig-001.webp",
+      "caption": "Table 3: Summary of implementation settings.",
+      "page": 15,
+      "index": 1,
+      "width": 790,
+      "height": 337
+    },
+    {
+      "url": "assets/figures/arxiv/2605.16474v1/fig-002.webp",
+      "caption": "Table 6: Predictions for Case A.",
+      "page": 21,
+      "index": 2,
+      "width": 790,
+      "height": 275
+    },
+    {
+      "url": "assets/figures/arxiv/2605.16474v1/fig-003.webp",
+      "caption": "Table 1: Accuracy of single-ad insertion across varying strategies and model scales. We evaluate the selection accuracy of Embed Models and Gen Models on three distinct simulated scenarios: Complex Intent Analysis, Natural Intent Shift, and Negative Product Refinement. LERA consistently outperforms the embedding-only baseline.",
+      "page": 7,
+      "index": 3,
+      "width": 772,
+      "height": 250
+    },
+    {
+      "url": "assets/figures/arxiv/2605.16474v1/fig-004.webp",
+      "caption": "Table 8: Predictions for Case C.",
+      "page": 22,
+      "index": 4,
+      "width": 790,
+      "height": 212
+    },
+    {
+      "url": "assets/figures/arxiv/2605.16474v1/fig-005.webp",
+      "caption": "Figure 1: Comparison of ad selection strategies for LLM-based chatbots. Each panel shows a different approach: Embedding-only uses only embedding similarity weighted by bids; LLM-Only scores all advertisers using LLM logits combined with bids; LERA first filters candidates with embedding similarity and then applies LLM-logit scoring on the top-K set. Payment annotations indicate the auction mechanism used in each method, and the bars illustrate relative selection accuracy and system throughput.",
+      "page": 3,
+      "index": 5,
+      "width": 783,
+      "height": 408
+    },
+    {
+      "url": "assets/figures/arxiv/2605.16474v1/fig-006.webp",
+      "caption": "Table 10: Category coverage for Case E.",
+      "page": 23,
+      "index": 6,
+      "width": 790,
+      "height": 275
+    },
+    {
+      "url": "assets/figures/arxiv/2605.16474v1/fig-007.webp",
+      "caption": "Table 5: Advertiser categories and representative advertiser descriptions.",
+      "page": 17,
+      "index": 7,
+      "width": 790,
+      "height": 462
+    },
+    {
+      "url": "assets/figures/arxiv/2605.16474v1/fig-008.webp",
+      "caption": "Table 4: Detailed inference hyperparameters.",
+      "page": 16,
+      "index": 8,
+      "width": 790,
+      "height": 735
+    }
+  ]
+}

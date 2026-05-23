@@ -1,0 +1,118 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2605.18653v1/fig-001.webp",
+      "caption": "Figure 4: Overview of SHORTS-CAST Step 1, open-web grounded training.",
+      "page": 6,
+      "index": 1,
+      "width": 810,
+      "height": 216
+    },
+    {
+      "url": "assets/figures/arxiv/2605.18653v1/fig-002.webp",
+      "caption": "Figure 1: Conventional scenario (Left) retrieves similar videos from a static in-platform corpus, missing the external trends behind virality. In contrast, the open-web grounded scenario (Right) captures real-time web signals, closely anticipating the viral outcome.",
+      "page": 2,
+      "index": 2,
+      "width": 808,
+      "height": 389
+    },
+    {
+      "url": "assets/figures/arxiv/2605.18653v1/fig-003.webp",
+      "caption": "Figure 5: Overview of SHORTS-CAST Step 2, online trend adaptation.",
+      "page": 7,
+      "index": 3,
+      "width": 812,
+      "height": 247
+    },
+    {
+      "url": "assets/figures/arxiv/2605.18653v1/fig-004.webp",
+      "caption": "Figure 11: Case study of SHORTS-CAST on a Large-tier video (a) and a Micro-tier video (b), pairing the input evidence-card (left) with the generated rationale and per-dimension saliency (right).",
+      "page": 22,
+      "index": 4,
+      "width": 804,
+      "height": 387
+    },
+    {
+      "url": "assets/figures/arxiv/2605.18653v1/fig-005.webp",
+      "caption": "Figure 8: Distribution of cited-source publication dates relative to (Left) the snapshot observation time and (Right) the LLM’s web-search call time, stacked across observation days t ∈ {0, 1, 2}. The red region marks dates after the reference time; in the right panel only 0.03% of sources fall there.",
+      "page": 18,
+      "index": 5,
+      "width": 822,
+      "height": 288
+    },
+    {
+      "url": "assets/figures/arxiv/2605.18653v1/fig-006.webp",
+      "caption": "Figure 9: Search freshness across observation snapshots. Left: per-video URL-set Jaccard similarity (mean Jaccard heatmap across snapshot pairs and per-video Jaccard(t=0, t=2) distribution). Right: average share of new (unseen at any earlier snapshot) versus carryover URLs at each observation day.",
+      "page": 18,
+      "index": 6,
+      "width": 822,
+      "height": 239
+    },
+    {
+      "url": "assets/figures/arxiv/2605.18653v1/fig-007.webp",
+      "caption": "Table 3: Online evaluation on WEBSHORTS. Prequential scores each video before adaptation; Test evaluates the final model after the stream.",
+      "page": 8,
+      "index": 7,
+      "width": 819,
+      "height": 282
+    },
+    {
+      "url": "assets/figures/arxiv/2605.18653v1/fig-008.webp",
+      "caption": "Figure 2: The overview of our WEBSHORTS construction pipeline.",
+      "page": 4,
+      "index": 8,
+      "width": 772,
+      "height": 346
+    },
+    {
+      "url": "assets/figures/arxiv/2605.18653v1/fig-009.webp",
+      "caption": "Table 8: Prompt for generating dimension-wise rationales with saliency scores.",
+      "page": 19,
+      "index": 9,
+      "width": 846,
+      "height": 712
+    },
+    {
+      "url": "assets/figures/arxiv/2605.18653v1/fig-010.webp",
+      "caption": "Figure 10: Subscriber-count distribution of the source channels in WEBSHORTS. Left: histogram of subscriber counts on a log scale. Right: per-tier video count and dataset share (%).",
+      "page": 19,
+      "index": 10,
+      "width": 822,
+      "height": 212
+    },
+    {
+      "url": "assets/figures/arxiv/2605.18653v1/fig-011.webp",
+      "caption": "Table 6: Prompt for evidence-card generation.",
+      "page": 17,
+      "index": 11,
+      "width": 845,
+      "height": 569
+    },
+    {
+      "url": "assets/figures/arxiv/2605.18653v1/fig-012.webp",
+      "caption": "Figure 6: Case study of SHORTS-CAST on initial viral (Left) and delayed viral (Right) videos, showing predicted view counts against the ground truth across online baselines.",
+      "page": 9,
+      "index": 12,
+      "width": 822,
+      "height": 207
+    },
+    {
+      "url": "assets/figures/arxiv/2605.18653v1/fig-013.webp",
+      "caption": "Figure 3: WEBSHORTS statistics: (a) day-7 view count distribution by popularity tier, (b) per-tier view growth curves, and (c) web source distribution across evidence-card dimensions.",
+      "page": 5,
+      "index": 13,
+      "width": 822,
+      "height": 315
+    },
+    {
+      "url": "assets/figures/arxiv/2605.18653v1/fig-014.webp",
+      "caption": "Table 5: Seed query construction: 10 trend features × 17 topics × 10 sub-topics, yielding 1,700 templates of the form “{Trend Feature} {Topic} {Sub-Topic} #shorts”.",
+      "page": 16,
+      "index": 14,
+      "width": 799,
+      "height": 788
+    }
+  ]
+}

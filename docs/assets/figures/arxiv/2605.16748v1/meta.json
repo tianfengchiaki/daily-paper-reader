@@ -1,0 +1,14 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2605.16748v1/fig-001.webp",
+      "caption": "Figure 1: The Genflow Ad Studio Directed Acyclic Graph (DAG)",
+      "page": 3,
+      "index": 1,
+      "width": 1056,
+      "height": 461
+    }
+  ]
+}

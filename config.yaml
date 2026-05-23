@@ -25,3 +25,50 @@ subscriptions:
     stage: A
     diff_threshold_pct: 15
   keyword_recall_mode: or
+  intent_profiles:
+    - tag: 广告
+      description: 请帮我检索有关推荐、搜索、广告、大模型、用户增长、uplift、多模态，优先聚焦于广告场景的应用，并且会议和期刊需要是顶级，机构需要是大厂或者顶级学校
+      enabled: true
+      paper_sources:
+        - arxiv
+      keywords:
+        - keyword: recommendation
+          keyword_cn: 推荐
+          query: recommendation system for advertising
+        - keyword: advertising
+          keyword_cn: 广告
+          query: advertising technology
+        - keyword: large language model
+          keyword_cn: 大模型
+          query: large language model for advertising
+        - keyword: user growth
+          keyword_cn: 用户增长
+          query: user growth in advertising platforms
+        - keyword: uplift modeling
+          keyword_cn: uplift建模
+          query: uplift modeling for advertising campaigns
+        - keyword: multimodal
+          keyword_cn: 多模态
+          query: multimodal learning for advertising
+      intent_queries:
+        - query: Practical implementation of advertising in real life scenarios‌
+          query_cn: 广告实际场景落地应用
+          enabled: true
+          source: generated
+          note: ''
+      updated_at: '2026-05-23T09:08:58.601Z'
+source_backends:
+  arxiv:
+    papers_table: arxiv_papers
+    use_vector_rpc: true
+    vector_rpc: match_arxiv_papers
+    vector_rpc_exact: match_arxiv_papers_exact
+    use_bm25_rpc: true
+    bm25_rpc: match_arxiv_papers_bm25
+    sync_table: arxiv_sync_status
+    sync_success_value: success
+    schema: public
+    kind: supabase
+    enabled: true
+    url: https://lyucdwgefyfbmaiopjbk.supabase.co
+    anon_key: sb_publishable_lX-oi64Uxyd7SIVv3_w2Uw_MTOojeKq

@@ -1,0 +1,774 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-05-23T20:04:25.136739+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 11,
+    "deep_cap": 6,
+    "deep_selected": 7,
+    "quick_candidates": 11,
+    "quick_skim_target": 11,
+    "quick_selected": 11
+  },
+  "deep_dive": [
+    {
+      "id": "2605.16474v1",
+      "source": "arxiv",
+      "title": "LERA: LLM-Enhanced RAG for Ad Auction in Generative Chatbots",
+      "abstract": "The integration of advertising auction mechanisms into large language model (LLM)-based chatbots presents a significant opportunity for commercialization, yet poses unique challenges in balancing relevance, efficiency, and user experience. Recently, Feizi et al.~\\citep{feizi2023online} and Hajiaghayi et al.~\\citep{hajiaghayi2024ad} outlined a retrieve-then-generate paradigm that decouples retrieval and generation, offering lightweight ad insertion and payment determination. However, current retrieval relies solely on text embedding similarity, which may lead to commercial misinterpretation and issues such as repetitive insertions. In this paper, we propose LERA, a two-stage retrieve-then-generate auction framework tailored for LLM chatbots. In the first stage, embedding-based coarse filtering pre-selects a small set of candidate advertisers. In the second stage, the LLM itself is queried with a carefully designed prompt to produce logits over candidates, which serve as refined organic relevance scores. These scores are combined with bids, and a critical-value payment rule accounts for both the coarse-filtering and fine-ranking thresholds, ensuring truthfulness for utility-maximizing advertisers. The framework naturally extends to multiple ad insertions within dynamic dialogue flows and long responses. Experiments on a synthetic advertiser-query benchmark show that LERA substantially improves ad selection accuracy and insertion diversity while incurring only controllable latency overhead.",
+      "authors": [
+        "Haoran Sun",
+        "Xinrui Song",
+        "Xinyu Zhang",
+        "Zhaohua Chen",
+        "Xu Chu",
+        "Zhilin Zhang",
+        "Chuan Yu",
+        "Jian Xu",
+        "Bo Zheng",
+        "Xiaotie Deng"
+      ],
+      "primary_category": "cs.IR",
+      "categories": [
+        "cs.IR",
+        "cs.AI"
+      ],
+      "published": "2026-05-15T15:39:30+00:00",
+      "link": "https://arxiv.org/pdf/2605.16474v1",
+      "tags": [
+        "keyword:广告",
+        "query:广告"
+      ],
+      "llm_score": 10.0,
+      "llm_evidence_en": "LLM-enhanced RAG for ad auction in chatbots",
+      "llm_evidence_cn": "聊天机器人中基于LLM增强RAG的广告拍卖",
+      "llm_evidence": "聊天机器人中基于LLM增强RAG的广告拍卖",
+      "canonical_evidence": "聊天机器人中基于LLM增强RAG的广告拍卖",
+      "llm_tldr_en": "Proposes LERA framework that uses LLM and RAG to improve ad auction in generative chatbots.",
+      "llm_tldr_cn": "提出LERA框架，利用LLM和RAG改进生成式聊天机器人的广告拍卖。",
+      "llm_tldr": "提出LERA框架，利用LLM和RAG改进生成式聊天机器人的广告拍卖。",
+      "llm_tags": [
+        "query:q3"
+      ],
+      "matched_query_tag": "query:q3",
+      "matched_query_text": "large language model for advertising",
+      "matched_requirement_id": "req-3",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2605.15905v1",
+      "source": "arxiv",
+      "title": "Generative Long-term User Interest Modeling for Click-Through Rate Prediction",
+      "abstract": "Modeling long-term user interests with massive historical user behaviors enhances click-through rate (CTR) prediction performance in advertising and recommendation systems. Typically, a two-stage framework is widely adopted, where a general search unit (GSU) first retrieves top-$k$ relevant behaviors towards the target item, and an exact search unit (ESU) generates interest features via tailored attention. However, current target-centered GSU would ignore other latent user interests, leading to incomplete and biased interest features. Additionally, the matching-based retrieval process in GSUs depends on the pairwise similarity score between target item and each historical behavior, which not only becomes time-consuming for online services as user behaviors continue to grow, but also overlooks the interaction information among user behaviors. To combat these problems, we propose a \\textbf{Gen}erative \\textbf{L}ong-term user \\textbf{I}nterest model named GenLI for CTR prediction. GenLI consists of an interest generation module (IGM), a behavior retrieval module (BRM), and an interest fusion module (IFM). The IGM generates multiple interest distributions to indicate different aspects of real-time user interests, which is target-independent and incorporates interaction information among behaviors, ensuring complete and diverse interest features. The BRM selects related behaviors via a simple lookup operation, reducing the time complexity for weighting each behavior to $O(1)$. Finally, the IFM uses delicate gating mechanisms to generate interest features. Based on the generation process, GenLI improves the diversity of user interests and avoids complex matching-based behavioral retrieval, achieving a better balance between accuracy and efficiency for CTR prediction.",
+      "authors": [
+        "Jiangli Shao",
+        "Kaifu Zheng",
+        "Hao Fang",
+        "Huimu Ye",
+        "Zhiwei Liu",
+        "Bo Zhang",
+        "Shu Han",
+        "Xingxing Wang"
+      ],
+      "primary_category": "cs.IR",
+      "categories": [
+        "cs.IR",
+        "cs.AI"
+      ],
+      "published": "2026-05-15T12:42:54+00:00",
+      "link": "https://arxiv.org/pdf/2605.15905v1",
+      "tags": [
+        "keyword:广告",
+        "query:广告"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "Generative long-term user interest modeling for CTR prediction in advertising",
+      "llm_evidence_cn": "针对广告点击率预测的生成式长期用户兴趣建模",
+      "llm_evidence": "针对广告点击率预测的生成式长期用户兴趣建模",
+      "canonical_evidence": "针对广告点击率预测的生成式长期用户兴趣建模",
+      "llm_tldr_en": "Generative model for long-term user interests to enhance CTR prediction in ads.",
+      "llm_tldr_cn": "生成式长期用户兴趣模型提升广告点击率预测。",
+      "llm_tldr": "生成式长期用户兴趣模型提升广告点击率预测。",
+      "llm_tags": [
+        "query:q1"
+      ],
+      "matched_query_tag": "query:q1",
+      "matched_query_text": "recommendation system for advertising",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2605.18673v1",
+      "source": "arxiv",
+      "title": "Generative AI Advertising as a Problem of Trustworthy Commercial Intervention",
+      "abstract": "Major deployed generative AI advertising systems preserve a visible boundary between commercial content and AI-generated responses. Yet empirical research shows that ads woven directly into large language model (LLM) outputs often go undetected by users. We argue that generative AI fundamentally changes advertising: rather than placing products into discrete slots, it enables interventions on the generative process itself, which induce commercial influence through less observable channels. This reframes generative AI advertising as a problem of trustworthy intervention rather than content placement. We introduce a taxonomy organized by influence tier, corresponding to interventions on progressively more latent variables: product mentions, information framing, behavioral redirection, and long-term preference shaping; and show how these tiers instantiate across modalities and system architectures, including retrieval-augmented generation and agentic pipelines where upstream decisions can sharply constrain downstream outcomes. Both major deployed systems and designed mechanisms concentrate on the most observable and easiest-to-govern tier, while the forms of commercial influence most consequential for user autonomy remain poorly understood and lack frameworks for detection, measurement, or disclosure. The central challenge is whether commercial influence in generative systems can be made trustworthy, i.e., attributable, measurable, contestable, and aligned with user welfare.",
+      "authors": [
+        "Jingyi Qiu",
+        "Qiaozhu Mei"
+      ],
+      "primary_category": "cs.CY",
+      "categories": [
+        "cs.CY",
+        "cs.CL"
+      ],
+      "published": "2026-05-18T17:15:06+00:00",
+      "link": "https://arxiv.org/pdf/2605.18673v1",
+      "tags": [
+        "keyword:广告",
+        "query:广告"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "generative AI advertising and LLM integration",
+      "llm_evidence_cn": "生成式AI广告与大语言模型整合",
+      "llm_evidence": "生成式AI广告与大语言模型整合",
+      "canonical_evidence": "生成式AI广告与大语言模型整合",
+      "llm_tldr_en": "Reframes generative AI advertising as trustworthy intervention with taxonomy of influence tiers.",
+      "llm_tldr_cn": "将生成式AI广告重新定义为可信干预，并提出影响层级分类。",
+      "llm_tldr": "将生成式AI广告重新定义为可信干预，并提出影响层级分类。",
+      "llm_tags": [
+        "query:q3"
+      ],
+      "matched_query_tag": "query:q3",
+      "matched_query_text": "large language model for advertising",
+      "matched_requirement_id": "req-3",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2605.19457v1",
+      "source": "arxiv",
+      "title": "Generative Auto-Bidding with Unified Modeling and Exploration",
+      "abstract": "Automated bidding is central to modern digital advertising. Early rule-based methods lacked adaptability, while subsequent Reinforcement Learning approaches modeled bidding as a Markov Decision Process but struggled with long-term dependencies. Recent generative models show promise, yet they lack explicit mechanisms to balance exploration and safety, relying solely on action perturbations or trajectory guidance without a safety fallback. This results in inefficient exploration and elevated financial risk for advertising platforms.   To address this gap, we propose GUIDE (Generative Auto-Bidding with Unified Modeling and Exploration), a framework that synergistically integrates directed exploration with a safe fallback mechanism. GUIDE employs a Decision Transformer (DT) to jointly model historical bidding actions and environmental state transitions. A Q-value module guides the DT's exploration via regularization constraints, while an Inverse Dynamics Module (IDM) leverages DT-predicted future states to infer robust, behaviorally consistent actions as a safe policy fallback. The Q-value module then adaptively selects the final action between these two options, balancing exploration and safety. Together, these components form an integrated \"explore-safeguard-select\" pipeline that unifies efficiency and safety.   We conduct extensive experiments on public datasets, in simulated auction environments, and through large-scale online deployment on Taobao, a leading Chinese advertising platform. Results show GUIDE consistently outperforms state-of-the-art baselines across all scenarios. In real-world deployment, GUIDE achieves notable gains: +4.10% ad GMV, +1.40% ad clicks, +1.66% ad cost, and +3.52% ad ROI, demonstrating its effectiveness and strong industrial applicability.",
+      "authors": [
+        "Mingming Zhang",
+        "Feiqing Zhuang",
+        "Na Li",
+        "Shengjie Sun",
+        "Xiaowei Chen",
+        "Junxiong Zhu",
+        "Fei Xiao",
+        "Keping Yang",
+        "Lixin Zou",
+        "Chenliang Li"
+      ],
+      "primary_category": "cs.AI",
+      "categories": [
+        "cs.AI"
+      ],
+      "published": "2026-05-19T07:09:32+00:00",
+      "link": "https://arxiv.org/pdf/2605.19457v1",
+      "tags": [
+        "keyword:广告",
+        "query:广告"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "Generative auto-bidding framework for digital advertising",
+      "llm_evidence_cn": "数字广告的生成式自动竞价框架",
+      "llm_evidence": "数字广告的生成式自动竞价框架",
+      "canonical_evidence": "数字广告的生成式自动竞价框架",
+      "llm_tldr_en": "Generative auto-bidding framework for digital advertising.",
+      "llm_tldr_cn": "数字广告的生成式自动竞价框架。",
+      "llm_tldr": "数字广告的生成式自动竞价框架。",
+      "llm_tags": [
+        "query:q2"
+      ],
+      "matched_query_tag": "query:q2",
+      "matched_query_text": "advertising technology",
+      "matched_requirement_id": "req-2",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2605.21556v1",
+      "source": "arxiv",
+      "title": "Beyond Single Slot: Joint Optimization for Multi-Slot Guaranteed Display Advertising",
+      "abstract": "Guaranteed display advertising is crucial for platform monetization, yet existing methods often operate under a single-slot assumption, limiting their ability to optimize allocation across multi-slot page views. In this paper, we propose a novel joint optimization framework for multi-slot GD allocation, addressing key challenges such as slot-level redundancy, contract imbalance, and exposure concentration. Our approach formulates the allocation as an offline bipartite matching problem with a contract roulette mechanism for slot exclusivity and Page View constraints for impression control, and incorporates a scalable allocation optimization algorithm for efficient large-scale deployment. Extensive online tests on the Meituan advertising platform demonstrate that our method significantly improves merchant ROI, platform revenue efficiency, and contract fulfillment robustness. Specifically, online A/B tests show a 28.99% increase in Average Revenue Per User under 70% traffic, and DID analysis further indicates improved contract stability, demonstrating the strong applicability and effectiveness of our framework in real-world advertising deployments.",
+      "authors": [
+        "Zhaoqi Zhang",
+        "Jiaming Deng",
+        "Miao Xie",
+        "Linyou Cai",
+        "Qianlong Xie",
+        "Xingxing Wang",
+        "Siqiang Luo",
+        "Gao Cong"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG"
+      ],
+      "published": "2026-05-20T13:32:47+00:00",
+      "link": "https://arxiv.org/pdf/2605.21556v1",
+      "tags": [
+        "keyword:广告",
+        "query:广告"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "joint optimization for multi-slot guaranteed display advertising",
+      "llm_evidence_cn": "多槽位保量展示广告的联合优化",
+      "llm_evidence": "多槽位保量展示广告的联合优化",
+      "canonical_evidence": "多槽位保量展示广告的联合优化",
+      "llm_tldr_en": "Proposes joint optimization framework for multi-slot GD allocation with online tests.",
+      "llm_tldr_cn": "提出多槽位保量广告分配的联合优化框架，并通过在线测试验证。",
+      "llm_tldr": "提出多槽位保量广告分配的联合优化框架，并通过在线测试验证。",
+      "llm_tags": [
+        "query:q2"
+      ],
+      "matched_query_tag": "query:q2",
+      "matched_query_text": "advertising technology",
+      "matched_requirement_id": "req-2",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2605.21736v1",
+      "source": "arxiv",
+      "title": "Support-aware offline policy selection for advertising marketplaces",
+      "abstract": "Logged advertising auctions make offline reserve-price evaluation attractive but risky. Replay tables can identify policies with large apparent yield gains, yet they can also hide weak threshold support, multiple-comparison effects, subgroup harm, and bidder-response uncertainty. Existing replay and off-policy evaluation methods estimate or rank policy values, but they do not directly answer the operational question of whether the available evidence is strong enough to justify validation. This paper develops a support-aware offline decision framework for reserve-policy selection. Rather than outputting a single point-estimate winner, the framework converts logged evidence into a conservative decision object consisting of certified policies, statistically dominated alternatives, and unresolved candidates requiring further validation. The main theoretical result gives a unified finite-catalog guarantee showing that, under simultaneous uncertainty control and conservative support gates, the framework preserves the best gate-passing policy while eliminating only policies with certified regret. Supporting results characterize support-localized replay generalization, establish information-theoretic threshold-resolution limits, and quantify when heterogeneous bidder response can overturn localized replay rankings. Experiments on iPinYou real-time-bidding logs show that the leading reserve rule achieves a 47.66% replay lift in season two, a 40.71% simultaneous lower-bound lift, and a 43.87% frozen out-of-time replay lift in season three. The framework reduces a 19-policy catalog to a two-policy validation shortlist while certifying non-harm across 44 advertiser, exchange, and region segments. The results support the central claim that offline reserve-policy evaluation should produce certified validation decisions rather than point-estimate rankings alone.",
+      "authors": [
+        "Prashant Shekhar",
+        "Caroline Howard"
+      ],
+      "primary_category": "stat.ML",
+      "categories": [
+        "stat.ML",
+        "cs.AI",
+        "cs.LG"
+      ],
+      "published": "2026-05-20T20:57:18+00:00",
+      "link": "https://arxiv.org/pdf/2605.21736v1",
+      "tags": [
+        "keyword:广告",
+        "query:广告"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "Support-aware offline policy selection for advertising marketplaces",
+      "llm_evidence_cn": "广告市场中的支持感知离线策略选择",
+      "llm_evidence": "广告市场中的支持感知离线策略选择",
+      "canonical_evidence": "广告市场中的支持感知离线策略选择",
+      "llm_tldr_en": "Framework for certified reserve-policy selection using logged auction data.",
+      "llm_tldr_cn": "利用日志拍卖数据认证保留价策略选择的框架。",
+      "llm_tldr": "利用日志拍卖数据认证保留价策略选择的框架。",
+      "llm_tags": [
+        "query:q2"
+      ],
+      "matched_query_tag": "query:q2",
+      "matched_query_text": "advertising technology",
+      "matched_requirement_id": "req-2",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2605.21969v1",
+      "source": "arxiv",
+      "title": "LLM Retrieval for Stable and Predictable Ad Recommendations",
+      "abstract": "Traditional ads recommendation systems have primarily focused on optimizing for prediction accuracy of click or conversion events using canonical metrics such as recall or normalized discounted cumulative gain (NDCG). With the hyper-growth of ads inventory and liquidity with generative AI technologies, the prediction stability and predictability is becoming increasingly critical. Intuitively, prediction stability and predictability can be defined to quantify system robustness with respect to minor/noisy input (ads, creatives) perturbations, the lack of which could lead to advertiser perceivable problems such as repeatability, cold start and under-exploration. In this paper, we introduce a new evaluation framework for quantifying stability and predictability of an ads recommender system, and present an online validated semantic candidate generation framework powered by fine-tuned Large Language Models (LLMs) that showed significant improvement along these metrics by fundamentally improving the semantic-awareness of the system. The approach extracts hierarchical semantic attributes from ad creatives to obtain LLM representations, which serve as the foundation for graph-based expansion, ensuring the retrieved candidates encapsulate semantic variants of an ad, guaranteeing that small creative variants from the advertiser yield consistent and explainable delivery results to the user. We tested this LLM ads retrieval framework in a large-scale industrial ads recommendation system, demonstrating significant improvements across offline and online A/B experiments, showcasing gains in both predictability and traditional performance metrics. Although evaluated in the ads stack, this is a general framework that can be applied broadly to any large-scale recommendation and retrieval systems facing similar scaling and predictability challenges.",
+      "authors": [
+        "Vinodh Kumar Sunkara",
+        "Satheeshkumar Karuppusamy",
+        "Hangjun Xu",
+        "Sai Deepika Regani",
+        "Kshitij Gupta",
+        "Gaby Nahum",
+        "Sneha Iyer",
+        "Jean-Baptiste Fiot",
+        "Yinglong Guo",
+        "Xiaowen Guo",
+        "Atul Jangra",
+        "Yucheng Liu",
+        "Jinghao Yan",
+        "Vijay Pappu",
+        "Benjamin Schulte",
+        "Deepak Chandra"
+      ],
+      "primary_category": "cs.IR",
+      "categories": [
+        "cs.IR",
+        "cs.AI"
+      ],
+      "published": "2026-05-21T03:58:37+00:00",
+      "link": "https://arxiv.org/pdf/2605.21969v1",
+      "tags": [
+        "keyword:广告",
+        "query:广告"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "directly addresses ad recommendation stability and predictability",
+      "llm_evidence_cn": "直接针对广告推荐的稳定性和可预测性",
+      "llm_evidence": "直接针对广告推荐的稳定性和可预测性",
+      "canonical_evidence": "直接针对广告推荐的稳定性和可预测性",
+      "llm_tldr_en": "Introduces evaluation framework for stability and predictability in LLM-based ad recommendation systems.",
+      "llm_tldr_cn": "提出基于LLM的广告推荐系统稳定性和可预测性评估框架。",
+      "llm_tldr": "提出基于LLM的广告推荐系统稳定性和可预测性评估框架。",
+      "llm_tags": [
+        "query:q1"
+      ],
+      "matched_query_tag": "query:q1",
+      "matched_query_text": "recommendation system for advertising",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "quick_skim": [
+    {
+      "id": "2605.17366v1",
+      "source": "arxiv",
+      "title": "Text-Guided Visual Representation Learning for Robust Multimodal E-Commerce Recommendation",
+      "abstract": "Multimodal item embeddings are crucial for e-commerce item-to-item (I2I) retrieval, yet real-world product images often contain promotional overlays and background clutter that inject spurious visual cues and degrade retrieval robustness. This issue is particularly pronounced in MLRM-style pipelines, where a frozen vision encoder is connected to an LLM through a lightweight connector that must selectively aggregate visual tokens. We propose Text-Guided Q-Former (TGQ-Former), a text-guided visual representation learning framework that leverages structured metadata as semantic guidance for visual token extraction while preserving complementary visual evidence. Concretely, TGQ-Former employs a hybrid-query connector to disentangle metadata-anchored and exploratory visual streams, and introduces a lightweight reliability-aware dual-gated vector modulation module to adaptively calibrate their contributions under noisy inputs. Experiments on large-scale, real-world e-commerce datasets with full-pool retrieval show that TGQ-Former consistently outperforms strong connector baselines and end-to-end MLLMs. On average, it improves Hit Rate@100 (H@100) by 6.04%, demonstrating the effectiveness of text-guided visual encoding for robust multimodal retrieval.",
+      "authors": [
+        "Yufei Guo",
+        "Jing Ma",
+        "Tianlu Zhang",
+        "Shijie Yang",
+        "Yanlong Zang",
+        "Weijie Ding",
+        "Pinghua Gong",
+        "Jungong Han"
+      ],
+      "primary_category": "cs.IR",
+      "categories": [
+        "cs.IR"
+      ],
+      "published": "2026-05-17T10:20:23+00:00",
+      "link": "https://arxiv.org/pdf/2605.17366v1",
+      "tags": [
+        "keyword:广告",
+        "query:广告"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "multimodal representation learning for e-commerce recommendation",
+      "llm_evidence_cn": "用于电商推荐的多模态表示学习",
+      "llm_evidence": "用于电商推荐的多模态表示学习",
+      "canonical_evidence": "用于电商推荐的多模态表示学习",
+      "llm_tldr_en": "Proposes TGQ-Former for robust multimodal item retrieval using text-guided visual tokens.",
+      "llm_tldr_cn": "提出TGQ-Former，通过文本引导视觉令牌实现鲁棒多模态物品检索。",
+      "llm_tldr": "提出TGQ-Former，通过文本引导视觉令牌实现鲁棒多模态物品检索。",
+      "llm_tags": [
+        "query:q6"
+      ],
+      "matched_query_tag": "query:q6",
+      "matched_query_text": "multimodal learning for advertising",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "8plus"
+    },
+    {
+      "id": "2605.16748v1",
+      "source": "arxiv",
+      "title": "Genflow Ad Studio: A Compound AI Architecture for Brand-Aligned, Self-Correcting Video Generation",
+      "abstract": "Recent advancements in generative video models demonstrate high visual fidelity, yet their integration into enterprise environments is restricted by temporal inconsistencies and severe brand misalignment. Current monolithic architectures struggle to enforce rigid brand constraints, frequently hallucinating unapproved visual assets. We introduce Genflow, a Compound AI System designed to enforce brand consistency in generative media production. Our architecture integrates a retrieval-based 'Brand DNA' extraction module to parameterize generation according to established corporate identity guidelines. Furthermore, we implement an Adversarial Multi-Agent Quality Control (QC) loop. Instead of a single-pass generation, this pipeline employs evaluator agents to iteratively critique generated frames against the extracted parameters, prompting generator models to refine outputs until a deterministic consensus is reached. By transitioning to a multi-stage, self-correcting pipeline, Genflow improved the yield of brand-compliant video generations from 42% to 89%, establishing a robust framework for scalable, enterprise-grade generative systems.",
+      "authors": [
+        "Debanshu Das",
+        "Lavi Nigam",
+        "Sunil Kumar Jang Bahadur",
+        "Gopala Dhar"
+      ],
+      "primary_category": "cs.GR",
+      "categories": [
+        "cs.GR",
+        "cs.AI",
+        "cs.CV",
+        "cs.LG",
+        "cs.MA",
+        "cs.MM"
+      ],
+      "published": "2026-05-16T02:03:53+00:00",
+      "link": "https://arxiv.org/pdf/2605.16748v1",
+      "tags": [
+        "keyword:广告",
+        "query:广告"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "Compound AI system for brand-aligned ad video generation",
+      "llm_evidence_cn": "用于品牌对齐广告视频生成的复合AI系统",
+      "llm_evidence": "用于品牌对齐广告视频生成的复合AI系统",
+      "canonical_evidence": "用于品牌对齐广告视频生成的复合AI系统",
+      "llm_tldr_en": "Introduces Genflow for brand-consistent generative media production with self-correction.",
+      "llm_tldr_cn": "提出Genflow用于品牌一致的生成式媒体制作，具备自我纠正能力。",
+      "llm_tldr": "提出Genflow用于品牌一致的生成式媒体制作，具备自我纠正能力。",
+      "llm_tags": [
+        "query:q2"
+      ],
+      "matched_query_tag": "query:q2",
+      "matched_query_text": "advertising technology",
+      "matched_requirement_id": "req-2",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2605.22240v1",
+      "source": "arxiv",
+      "title": "Unlocking Proactivity in Task-Oriented Dialogue",
+      "abstract": "Proactive task-oriented dialogue (TOD), such as outbound sales, demands a persuasive agent that actively probes the user's concerns and steers the conversation toward acceptance within a bounded number of turns. Yet post-trained LLMs are inherently conservative, and reward-shaping RL (e.g., GRPO) struggles since it only re-weights what an already passive policy samples. We show that conditioning on the user's latent concerns unlocks proactive capability that no amount of sampling can undermine, establishing these concerns as a pivotal training-time signal. To operationalize this finding, we build the \\textbf{Cognitive User Simulator}, which models each user as a stratified persona comprising observable external traits and hidden internal concerns. The simulator produces faithful and diverse interactions, while emitting per-turn state dynamics that track persuasion progress. We then introduce \\textbf{Simulator-Induced Asymmetric-View Policy Optimization}, which converts the modeled concerns and the simulation state transition into complementary training objectives: (1) \\emph{Asymmetric On-Policy Self-Distillation} that transfers concern-aware behavior from a privileged view of the same policy into its deployable, conversation-only view; and (2) \\emph{State-Transition Policy Refinement} ...",
+      "authors": [
+        "Hongbin Zhang",
+        "Ning Gao",
+        "Yuqin Dai",
+        "Ruiyuan Wu",
+        "Jinpeng Wang",
+        "Rena Wei Gao",
+        "Bingdong Tan",
+        "Shuzheng Gao",
+        "Zongjie Li",
+        "Chaozheng Wang"
+      ],
+      "primary_category": "cs.AI",
+      "categories": [
+        "cs.AI"
+      ],
+      "published": "2026-05-21T09:46:25+00:00",
+      "link": "https://arxiv.org/pdf/2605.22240v1",
+      "tags": [
+        "keyword:广告",
+        "query:广告"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "proactive dialogue agent for outbound sales, real-world ad scenario",
+      "llm_evidence_cn": "面向外呼销售的主动对话代理，真实广告场景",
+      "llm_evidence": "面向外呼销售的主动对话代理，真实广告场景",
+      "canonical_evidence": "面向外呼销售的主动对话代理，真实广告场景",
+      "llm_tldr_en": "Unlocks proactivity in task-oriented dialogue for persuasive outbound sales using cognitive user simulator.",
+      "llm_tldr_cn": "通过认知用户模拟器，在任务导向对话中实现外呼销售的主动性。",
+      "llm_tldr": "通过认知用户模拟器，在任务导向对话中实现外呼销售的主动性。",
+      "llm_tags": [
+        "query:q7"
+      ],
+      "matched_query_tag": "query:q7",
+      "matched_query_text": "Practical implementation of advertising in real life scenarios‌",
+      "matched_requirement_id": "req-7",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2605.17994v1",
+      "source": "arxiv",
+      "title": "Towards Sustainable Growth: A Multi-Value-Aware Retrieval Framework for E-Commerce Search",
+      "abstract": "New item growth is critical for maintaining a healthy ecosystem in large-scale e-commerce platforms. However, existing systems tend to prioritize presenting users with already popular items, a phenomenon often referred to as the \"Matthew effect\". In the context of search retrieval, current cold-start models suffer from the misalignment between training objectives and online business metrics, and they lack effective mechanisms to measure an item's growth potential. In this paper, we propose a Multi-Value-Aware retrieval framework tailored for e-commerce search, designed to better align with the cascaded online values across different stages of the search system while balancing immediate conversion and long-term item growth. Our framework GrowthGR consists of two key components: an Item Long-term Transaction Value Prediction (ItemLTV) module and a Multi-Value-Aware Generative Retrieval (MultiGR) module. First, in the ItemLTV module, we employ counterfactual inference to quantify the long-term value increment attributable to a single user interaction. Second, in the MultiGR module, building upon a semantic-ID-based generative retrieval architecture, we leverage structured samples with the search cascade signals and adopt a Multi-Value-Aware Policy Optimization (MoPO) training paradigm to align with multi-stage online values, while explicitly balancing short-term transactional value and long-term growth potential estimated by ItemLTV. We successfully deployed GrowthGR on Taobao's production platform, achieving a substantial 5.3% lift in new item GMV while delivering a non-trivial 0.3% gain in overall search GMV. Extensive online analysis and A/B testing demonstrate its positive impact on the overall ecosystem value.",
+      "authors": [
+        "Yifan Wang",
+        "Yixuan Wang",
+        "YiDan Liang",
+        "Qiang Liu",
+        "Fei Xiao"
+      ],
+      "primary_category": "cs.IR",
+      "categories": [
+        "cs.IR",
+        "cs.AI"
+      ],
+      "published": "2026-05-18T07:50:15+00:00",
+      "link": "https://arxiv.org/pdf/2605.17994v1",
+      "tags": [
+        "keyword:广告",
+        "query:广告"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "focus on new item growth and long-term value in e-commerce search",
+      "llm_evidence_cn": "关注电商搜索中的新品成长和长期价值",
+      "llm_evidence": "关注电商搜索中的新品成长和长期价值",
+      "canonical_evidence": "关注电商搜索中的新品成长和长期价值",
+      "llm_tldr_en": "Proposes a multi-value-aware retrieval framework balancing immediate conversion and long-term item growth.",
+      "llm_tldr_cn": "提出多价值感知检索框架，平衡即时转化和长期商品成长。",
+      "llm_tldr": "提出多价值感知检索框架，平衡即时转化和长期商品成长。",
+      "llm_tags": [
+        "query:q4"
+      ],
+      "matched_query_tag": "query:q4",
+      "matched_query_text": "user growth in advertising platforms",
+      "matched_requirement_id": "req-4",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "8plus"
+    },
+    {
+      "id": "2605.17079v1",
+      "source": "arxiv",
+      "title": "Can LLMs Think Like Consumers? Benchmarking Crowd-Level Reaction Reconstruction with ConsumerSimBench",
+      "abstract": "LLMs are increasingly used as ``digital consumers'' to simulate public opinion, pre-test marketing decisions, and anticipate audience response. However, existing evaluations rarely ask whether a model can reconstruct the concrete reaction patterns that real consumers surface in public discourse. We introduce ConsumerSimBench, a benchmark built from 1,553 real Chinese social-media topics and 23,122 atomic, rule-audited criteria spanning four reaction families. Rather than scoring open-ended generations with a holistic preference judge, ConsumerSimBench decomposes each task into auditable yes-no decisions over concrete reaction points, raising three-judge agreement from 65.8% to 92.1% with 98.4% agreement between pointwise judge decisions and human-majority labels. Across 13 frontier generators, the strongest model, Gemini-3.1-Pro, covers only 47.8% of real reaction criteria, while GPT-5.2 and Claude-4.6 trail far behind despite their strength on technical benchmarks. The failures reveal a sharp gap between technical-benchmark performance and socially grounded consumer intuition. A direct structured reasoning prompt decreases coverage, while a generate--reflect multi-agent pipeline improves MiMo-V2.5-Pro from 32.9% to 37.6% on a subset. ConsumerSimBench reframes consumer simulation as a forecasting problem over real public-discourse reactions, showing that frontier LLMs remain far from reliably predicting what consumers will actually care about in high-context Chinese consumer discourse.",
+      "authors": [
+        "Tianyu Wang",
+        "Jiajun Li",
+        "Jianghao Lin"
+      ],
+      "primary_category": "cs.CL",
+      "categories": [
+        "cs.CL",
+        "cs.AI",
+        "cs.CY"
+      ],
+      "published": "2026-05-16T16:55:31+00:00",
+      "link": "https://arxiv.org/pdf/2605.17079v1",
+      "tags": [
+        "keyword:广告",
+        "query:广告"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "LLM benchmark for simulating consumer reactions, applicable to ad testing",
+      "llm_evidence_cn": "用于模拟消费者反应的LLM基准，可应用于广告测试",
+      "llm_evidence": "用于模拟消费者反应的LLM基准，可应用于广告测试",
+      "canonical_evidence": "用于模拟消费者反应的LLM基准，可应用于广告测试",
+      "llm_tldr_en": "Introduces ConsumerSimBench to evaluate LLM ability to reconstruct crowd-level consumer reactions.",
+      "llm_tldr_cn": "引入ConsumerSimBench评估LLM重构群体消费者反应的能力。",
+      "llm_tldr": "引入ConsumerSimBench评估LLM重构群体消费者反应的能力。",
+      "llm_tags": [
+        "query:q3"
+      ],
+      "matched_query_tag": "query:q3",
+      "matched_query_text": "large language model for advertising",
+      "matched_requirement_id": "req-3",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2605.18509v1",
+      "source": "arxiv",
+      "title": "Offline Contextual Bandits in the Presence of New Actions",
+      "abstract": "Automated decision-making algorithms drive applications such as recommendation systems and search engines. These algorithms often rely on off-policy contextual bandits or off-policy learning (OPL). Conventionally, OPL selects actions that maximize the expected reward from an existing action set. However, in many real-world scenarios, actions, such as news articles or video content, change continuously, and the action space evolves over time after data collection. We define actions introduced after deploying the logging policy as new actions and focus on OPL with new actions. Existing OPL methods identify optimal actions from the existing set effectively but cannot learn and select new actions because no relevant data are logged. To address this limitation, we propose a new OPL method that leverages action features. We first introduce the Local Combination PseudoInverse (LCPI) estimator for the policy gradient, generalizing the PseudoInverse estimator initially proposed for off-policy evaluation of slate bandits. LCPI controls the trade-off between reward-modeling condition and the condition for data collection regarding the action features, capturing the interaction effects among different dimensions of action features. Furthermore, we propose a generalized algorithm called Policy Optimization for Effective New Actions (PONA), which integrates LCPI, a component specialized for new action selection, with Doubly Robust (DR), which excels at learning within existing actions. We define PONA as a weighted sum of the LCPI and DR estimators, optimizing both the selection of existing and new actions, and allowing the proportion of new action selections to be adjusted by the weight parameter. Through extensive experiments, we demonstrate that PONA efficiently selects new actions while maintaining the overall policy performance as opposed to most existing methods that cannot select new actions.",
+      "authors": [
+        "Ren Kishimoto",
+        "Tatsuhiro Shimizu",
+        "Kazuki Kawamura",
+        "Takanori Muroi",
+        "Yusuke Narita",
+        "Yuki Sasamoto",
+        "Kei Tateno",
+        "Takuma Udagawa",
+        "Yuta Saito"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG"
+      ],
+      "published": "2026-05-18T15:01:30+00:00",
+      "link": "https://arxiv.org/pdf/2605.18509v1",
+      "tags": [
+        "keyword:广告",
+        "query:广告"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "off-policy learning for recommendation with new actions",
+      "llm_evidence_cn": "面向推荐系统的离线策略学习，处理新动作",
+      "llm_evidence": "面向推荐系统的离线策略学习，处理新动作",
+      "canonical_evidence": "面向推荐系统的离线策略学习，处理新动作",
+      "llm_tldr_en": "Proposes off-policy contextual bandits method to handle new actions not in logged data.",
+      "llm_tldr_cn": "提出离线上下文强盗方法，处理日志数据中未出现的新动作。",
+      "llm_tldr": "提出离线上下文强盗方法，处理日志数据中未出现的新动作。",
+      "llm_tags": [
+        "query:q1"
+      ],
+      "matched_query_tag": "query:q1",
+      "matched_query_text": "recommendation system for advertising",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "8plus"
+    },
+    {
+      "id": "2605.18653v1",
+      "source": "arxiv",
+      "title": "Will It Go Viral? Grounding Micro-Video Popularity Prediction on the Open Web",
+      "abstract": "Micro-video popularity prediction (MVPP) forecasts the popularity a newly uploaded short-form video will attract within a fixed number of days after upload. This task supports downstream applications in recommendation, advertising, and creator analytics, yet the problem is hard since virality depends on external trends rather than video content alone. Prior MVPP methods incorporate context by retrieving similar videos from platform-internal corpora, however historical neighbors cannot reveal whether a topic is currently trending, controversial, or already saturated across the open web. To this end, we reformulate MVPP as open-web grounded prediction and introduce WEBSHORTS, the first micro-video dataset that couples 14K videos with real-time open-web context collected at upload time, alongside daily view counts tracked over 7 days. The context for each video is organized as a structured evidence-card that captures the external attention landscape along three complementary web-context dimensions. We further propose SHORTS-CAST, a framework that generates dimension-wise rationales from the evidence-card to guide popularity regression, then adapts at deployment by selectively updating the context-to-popularity mapping when delayed labels reveal genuine trend shifts. In our experiments, SHORTS-CAST consistently outperforms content-only, video corpus retrieval-augmented, and online adaptation baselines under both offline and delayed-label online protocols, confirming that structured web context and trend-aware adaptation are jointly necessary for popularity forecasting under realistic deployment constraints in fast-evolving short-form video ecosystems.",
+      "authors": [
+        "Ryang Heo",
+        "Dongha Lee"
+      ],
+      "primary_category": "cs.MM",
+      "categories": [
+        "cs.MM"
+      ],
+      "published": "2026-05-18T17:00:15+00:00",
+      "link": "https://arxiv.org/pdf/2605.18653v1",
+      "tags": [
+        "keyword:广告",
+        "query:广告"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "Micro-video popularity prediction supports recommendation and advertising",
+      "llm_evidence_cn": "微视频流行度预测支持推荐与广告",
+      "llm_evidence": "微视频流行度预测支持推荐与广告",
+      "canonical_evidence": "微视频流行度预测支持推荐与广告",
+      "llm_tldr_en": "Predicts micro-video popularity for recommendation and advertising.",
+      "llm_tldr_cn": "预测微视频流行度，支持推荐与广告。",
+      "llm_tldr": "预测微视频流行度，支持推荐与广告。",
+      "llm_tags": [
+        "query:q1"
+      ],
+      "matched_query_tag": "query:q1",
+      "matched_query_text": "recommendation system for advertising",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2605.21967v1",
+      "source": "arxiv",
+      "title": "Reinforced Preference Optimization for Reasoning-Augmented Recommendations",
+      "abstract": "Recommender systems are critical for delivering personalized content across digital platforms, and recent advances in Large Language Models (LLMs) offer new opportunities to enhance them with richer world knowledge and explicit reasoning capabilities. With the help of reasoning knowledge, recommendations can better infer users' underlying intents, adapt to evolving preferences, and leverage semantic relationships for improved accuracy and interpretability. However, existing reasoning-based recommendation methods often fail to fully align the LLM's reasoning process with recommendation-specific objectives due to structural disruption during integration and difficulties in translating free-form generation into accurate item predictions. In this paper, we introduce RPORec, a reinforced preference optimization framework that unifies an LLM backbone's reasoning ability with a dedicated recommendation head (Rechead) for precise item retrieval. RPORec comprises two stages: (1) Reasoning-Augmented Recommendation Modeling, where high-quality Chain-of-Thought (CoT) reasoning is generated and used as auxiliary knowledge to guide the Rechead in learning recommendation-specific representations; and (2) Advanced Reasoning Refinement and Alignment, in which the trained Rechead produces verifiable rewards to fine-tune the LLM backbone via reinforcement learning, enhancing reasoning quality, structural consistency, and task relevance. Extensive experiments on public benchmarks and large-scale online deployments show that RPORec consistently outperforms state-of-the-art LLM-based recommendation methods, demonstrating the effectiveness of reasoning-augmented recommendation modeling in real-world systems.",
+      "authors": [
+        "Jingtong Gao",
+        "Zeyu Song",
+        "Chi Lu",
+        "Xiaopeng Li",
+        "Derong Xu",
+        "Maolin Wang",
+        "Peng Jiang",
+        "Kun Gai",
+        "Qingpeng Cai",
+        "Xiangyu Zhao"
+      ],
+      "primary_category": "cs.IR",
+      "categories": [
+        "cs.IR"
+      ],
+      "published": "2026-05-21T03:56:42+00:00",
+      "link": "https://arxiv.org/pdf/2605.21967v1",
+      "tags": [
+        "keyword:广告",
+        "query:广告"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "Reinforced preference optimization for reasoning-augmented recommendations",
+      "llm_evidence_cn": "强化偏好优化增强推理能力的推荐系统",
+      "llm_evidence": "强化偏好优化增强推理能力的推荐系统",
+      "canonical_evidence": "强化偏好优化增强推理能力的推荐系统",
+      "llm_tldr_en": "Aligns LLM reasoning with recommendation objectives via reinforcement learning.",
+      "llm_tldr_cn": "通过强化学习对齐LLM推理与推荐目标。",
+      "llm_tldr": "通过强化学习对齐LLM推理与推荐目标。",
+      "llm_tags": [
+        "query:q1"
+      ],
+      "matched_query_tag": "query:q1",
+      "matched_query_text": "recommendation system for advertising",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "8plus"
+    },
+    {
+      "id": "2605.19219v1",
+      "source": "arxiv",
+      "title": "SimGym: A Framework for A/B Test Simulation in E-Commerce with Traffic-Grounded VLM Agents",
+      "abstract": "A/B testing remains the gold standard for evaluating modifications to e-commerce storefronts, yet it diverts traffic, requires weeks to reach statistical significance, and risks degrading user experience. We present SimGym, a framework for simulating A/B tests on e-commerce storefronts using vision-language model (VLM) agents operating in a live browser. The framework comprises three key components: (a) a traffic-grounded persona generation pipeline that derives per-shop buyer archetypes and intents from production clickstream data; (b) a live-browser agent architecture that combines multimodal perception over visual and browser-structured observations with episodic memory and guardrails to conduct coherent shopping sessions across control and treatment storefronts; and (c) an evaluation protocol that compares simulated outcome shifts with observed shifts in real buyer behavior. We validate SimGym on A/B tests of visually driven UI theme changes from a major e-commerce platform across diverse storefronts and product categories. Empirical results show that SimGym agents achieve strong agreement with observed outcome shifts, attaining 77% directional alignment with add-to-cart shifts observed across interface variants in real-buyer traffic. It reduces experimental cycles from weeks to under an hour, enabling rapid experimentation without exposing real buyers to candidate variants.",
+      "authors": [
+        "Han Li",
+        "Vibhor Malik",
+        "Zahra Zanjani Foumani",
+        "Alberto Castelo",
+        "Shuang Xie",
+        "Ailin Fan",
+        "Keat Yang Koay",
+        "Yuanzheng Zhu",
+        "Meysam Feghhi",
+        "Ronie Uliana",
+        "Zhaoyu Zhang",
+        "Angelo Ocana Martins",
+        "Mingyu Zhao",
+        "Francis Pelland",
+        "Jonathan Faerman",
+        "Nikolas LeBlanc",
+        "Aaron Glazer",
+        "Andrew McNamara",
+        "Zhong Wu",
+        "Lingyun Wang"
+      ],
+      "primary_category": "cs.AI",
+      "categories": [
+        "cs.AI"
+      ],
+      "published": "2026-05-19T00:46:41+00:00",
+      "link": "https://arxiv.org/pdf/2605.19219v1",
+      "tags": [
+        "keyword:广告",
+        "query:广告"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "A/B test simulation for e-commerce using VLM agents, practical ad testing",
+      "llm_evidence_cn": "使用VLM代理的电商A/B测试模拟，实际广告测试",
+      "llm_evidence": "使用VLM代理的电商A/B测试模拟，实际广告测试",
+      "canonical_evidence": "使用VLM代理的电商A/B测试模拟，实际广告测试",
+      "llm_tldr_en": "Presents SimGym framework for simulating A/B tests with traffic-grounded VLM agents in e-commerce.",
+      "llm_tldr_cn": "提出SimGym框架，使用流量驱动的VLM代理模拟电商A/B测试。",
+      "llm_tldr": "提出SimGym框架，使用流量驱动的VLM代理模拟电商A/B测试。",
+      "llm_tags": [
+        "query:q7"
+      ],
+      "matched_query_tag": "query:q7",
+      "matched_query_text": "Practical implementation of advertising in real life scenarios‌",
+      "matched_requirement_id": "req-7",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2605.19568v1",
+      "source": "arxiv",
+      "title": "m3BERT: A Modern, Multi-lingual, Matryoshka Bidirectional Encoder",
+      "abstract": "Embedding models are pivotal in industrial information retrieval systems like search and advertising. However, existing pretrained models often exhibit fixed architectures and embedding dimensionalities, posing significant challenges when adapting them to diverse deployment scenarios with varying business-driven constraints. A common practice involves fine-tuning with partial parameter initialization from larger pretrained models for resource-constrained tasks. This method is often suboptimal as the misalignment between pretraining and downstream usage prevents full realization of pretraining benefits. To address this limitation, we introduce m3BERT: a Modern, Multi-lingual, Matryoshka Bidirectional Encoder, which features a novel pretraining strategy that jointly optimizes representations across both transformer layers and multiple embedding dimensions. This enables a single model to be tailored to varied resource and accuracy targets while maintaining consistency with pretraining. Incorporating recent architectural improvements, m3BERT uses a three-stage pretraining: monolingual pretraining, multilingual adaptation to serve diverse user bases, and crucial continual pretraining on a massive web domain corpus to enhance utility in commercial retrieval. m3BERT significantly outperforms state-of-the-art embedding models in Bing-Click, a large-scale industrial retrieval dataset, showcasing its practical versatility as an efficient foundation for resource-aware industrial retrieval systems. Further experiments on public datasets also confirm the general effectiveness of our multigranular Matryoshka pretraining strategy.",
+      "authors": [
+        "Yaoxiang Wang",
+        "Simiao Zuo",
+        "Qingguo Hu",
+        "Yucheng Ding",
+        "Yeyun Gong",
+        "Jian Jiao",
+        "Jinsong Su"
+      ],
+      "primary_category": "cs.CL",
+      "categories": [
+        "cs.CL"
+      ],
+      "published": "2026-05-19T09:13:49+00:00",
+      "link": "https://arxiv.org/pdf/2605.19568v1",
+      "tags": [
+        "keyword:广告",
+        "query:广告"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "Embedding model for search and advertising systems",
+      "llm_evidence_cn": "用于搜索和广告系统的嵌入模型",
+      "llm_evidence": "用于搜索和广告系统的嵌入模型",
+      "canonical_evidence": "用于搜索和广告系统的嵌入模型",
+      "llm_tldr_en": "Multi-lingual embedding model for search and advertising.",
+      "llm_tldr_cn": "用于搜索和广告的多语言嵌入模型。",
+      "llm_tldr": "用于搜索和广告的多语言嵌入模型。",
+      "llm_tags": [
+        "query:q2"
+      ],
+      "matched_query_tag": "query:q2",
+      "matched_query_text": "advertising technology",
+      "matched_requirement_id": "req-2",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2605.21987v1",
+      "source": "arxiv",
+      "title": "Generative Conversational Recommender System",
+      "abstract": "Conversational recommender systems aim to provide personalized recommendations via natural language interactions. However, existing approaches either decouple recommendation from dialog generation or rely on retrieval-based pipelines, limiting the integration between recommendation and response generation and leading to suboptimal modeling of user intent. In this paper, we propose a fully generative conversational recommender system that unifies recommendation and dialog generation within a single autoregressive framework. Our approach represents items as discrete semantic IDs and integrates them directly into the generation process, enabling joint prediction of items and responses via next-token modeling. We further introduce a structured generation paradigm that factorizes conversational recommendation into a sequence of interdependent decisions, where the model first predicts the response intent and the recommendation target, and then generates the response conditioned on them. This design enables end-to-end optimization, enforces a more coherent dependency structure, and supports faithful item generation via constrained decoding. Extensive experiments demonstrate that our method consistently improves recommendation performance, achieving gains of up to 29% on Recall@1 over strong baselines, while maintaining competitive dialog quality.",
+      "authors": [
+        "Sixiao Zhang",
+        "Mingrui Liu",
+        "Cheng Long"
+      ],
+      "primary_category": "cs.IR",
+      "categories": [
+        "cs.IR"
+      ],
+      "published": "2026-05-21T04:36:37+00:00",
+      "link": "https://arxiv.org/pdf/2605.21987v1",
+      "tags": [
+        "keyword:广告",
+        "query:广告"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "Generative conversational recommender system for unified recommendation and dialog",
+      "llm_evidence_cn": "生成式对话推荐系统，统一推荐与对话生成",
+      "llm_evidence": "生成式对话推荐系统，统一推荐与对话生成",
+      "canonical_evidence": "生成式对话推荐系统，统一推荐与对话生成",
+      "llm_tldr_en": "Proposes a fully generative conversational recommender that jointly predicts items and responses.",
+      "llm_tldr_cn": "提出完全生成式对话推荐系统，联合预测物品和回复。",
+      "llm_tldr": "提出完全生成式对话推荐系统，联合预测物品和回复。",
+      "llm_tags": [
+        "query:q1"
+      ],
+      "matched_query_tag": "query:q1",
+      "matched_query_text": "recommendation system for advertising",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    }
+  ]
+}

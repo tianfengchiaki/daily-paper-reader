@@ -1,0 +1,46 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2605.19568v1/fig-001.webp",
+      "caption": "Table 2: Recall@100 comparison of Matryoshka vs. Standard pretraining across datasets and embedding dimensions.",
+      "page": 6,
+      "index": 1,
+      "width": 494,
+      "height": 260
+    },
+    {
+      "url": "assets/figures/arxiv/2605.19568v1/fig-002.webp",
+      "caption": "Figure 1: Illustrative curves showing the diminishing returns of retrieval performance (Recall@100) with increasing (a) embedding dimension and (b) number of transformer layers for an mBERT model on Bing-Click. While performance generally improves, the gains diminish significantly at higher dimensions/depths, whereas computational costs (e.g., forward latency, embedding memory) often scale linearly.",
+      "page": 2,
+      "index": 2,
+      "width": 1042,
+      "height": 359
+    },
+    {
+      "url": "assets/figures/arxiv/2605.19568v1/fig-003.webp",
+      "caption": "Table 6: Smoothed sampling probabilities for the top 20 languages (Stage 2 multilingual Wikipedia corpus).",
+      "page": 13,
+      "index": 3,
+      "width": 577,
+      "height": 275
+    },
+    {
+      "url": "assets/figures/arxiv/2605.19568v1/fig-004.webp",
+      "caption": "Table 3: Matryoshka Supervised Finetuning (MRL SFT) performance on Bing-Click (Lite models). Parenthesized values denote the performance drop (Δ) compared to standard single-dimension finetuning. Bold indicates the smallest performance drop in each column.",
+      "page": 8,
+      "index": 4,
+      "width": 1050,
+      "height": 196
+    },
+    {
+      "url": "assets/figures/arxiv/2605.19568v1/fig-005.webp",
+      "caption": "Figure 2: Overview of the matryoshka model structure using masked language modeling (MLM) as the training objective. The model simultaneously optimizes embeddings across multiple transformer layers and multiple sub-dimensions.",
+      "page": 4,
+      "index": 5,
+      "width": 1049,
+      "height": 562
+    }
+  ]
+}

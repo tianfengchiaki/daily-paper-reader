@@ -6,73 +6,76 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-05-14 ~ 2026-05-23
-- 运行时间：2026-05-23 09:39:00 UTC
+- 最新运行日期：2026-05-23
+- 运行时间：2026-05-23 20:06:37 UTC
 - 运行状态：成功
-- 本次总论文数：17
-- 精读区：6
+- 本次总论文数：18
+- 精读区：7
 - 速读区：11
 
 ### 今日简报（AI）
-今日推荐系统与广告拍卖领域共17篇论文，精读聚焦长期用户兴趣建模与LLM增强的生成式聊天广告拍卖。  
-最值得关注的方向是生成式长期用户兴趣建模（CTR预估）和LLM+RAG在广告拍卖中的应用。  
-建议优先阅读两篇9.0分精读论文，并速读Agentic推荐系统等高分工作以拓展思路。
-- 详情：[/20260514-20260523/README](/20260514-20260523/README)
+今日精选18篇推荐系统论文，高分精读《LERA: LLM-Enhanced RAG for Ad Auction》与《Generative Long-term User Interest Modeling》领衔。
+最值得关注方向：LLM+检索增强生成在广告竞价中的创新应用，以及生成式长期兴趣建模对CTR预测的突破。
+建议优先精读这两篇高分论文，掌握大模型与推荐系统深度融合的实战思路。
+- 详情：[/202605/23/README](/202605/23/README)
 
 ### 精读区论文标签
-1. [Generative Long-term User Interest Modeling for Click-Through Rate Prediction](/20260514-20260523/2605.15905v1-generative-long-term-user-interest-modeling-for-click-through-rate-prediction)  
+1. [LERA: LLM-Enhanced RAG for Ad Auction in Generative Chatbots](/202605/23/2605.16474v1-lera-llm-enhanced-rag-for-ad-auction-in-generative-chatbots)  
+   标签：评分：10.0/10、query:q3
+   evidence：聊天机器人中基于LLM增强RAG的广告拍卖
+2. [Generative Long-term User Interest Modeling for Click-Through Rate Prediction](/202605/23/2605.15905v1-generative-long-term-user-interest-modeling-for-click-through-rate-prediction)  
    标签：评分：9.0/10、query:q1
-   evidence：生成式用户长期兴趣建模用于广告点击率预测
-2. [LERA: LLM-Enhanced RAG for Ad Auction in Generative Chatbots](/20260514-20260523/2605.16474v1-lera-llm-enhanced-rag-for-ad-auction-in-generative-chatbots)  
+   evidence：针对广告点击率预测的生成式长期用户兴趣建模
+3. [Generative AI Advertising as a Problem of Trustworthy Commercial Intervention](/202605/23/2605.18673v1-generative-ai-advertising-as-a-problem-of-trustworthy-commercial-intervention)  
    标签：评分：9.0/10、query:q3
-   evidence：大语言模型增强检索生成用于生成式聊天机器人广告拍卖
-3. [Generative AI Advertising as a Problem of Trustworthy Commercial Intervention](/20260514-20260523/2605.18673v1-generative-ai-advertising-as-a-problem-of-trustworthy-commercial-intervention)  
-   标签：评分：9.0/10、query:q3
-   evidence：生成式AI在LLM输出中的广告
-4. [Generative Auto-Bidding with Unified Modeling and Exploration](/20260514-20260523/2605.19457v1-generative-auto-bidding-with-unified-modeling-and-exploration)  
+   evidence：生成式AI广告与大语言模型整合
+4. [Generative Auto-Bidding with Unified Modeling and Exploration](/202605/23/2605.19457v1-generative-auto-bidding-with-unified-modeling-and-exploration)  
    标签：评分：9.0/10、query:q2
-   evidence：生成式自动竞价用于数字广告
-5. [Support-aware offline policy selection for advertising marketplaces](/20260514-20260523/2605.21736v1-support-aware-offline-policy-selection-for-advertising-marketplaces)  
+   evidence：数字广告的生成式自动竞价框架
+5. [Beyond Single Slot: Joint Optimization for Multi-Slot Guaranteed Display Advertising](/202605/23/2605.21556v1-beyond-single-slot-joint-optimization-for-multi-slot-guaranteed-display-advertising)  
    标签：评分：9.0/10、query:q2
-   evidence：广告拍卖保留价的离线策略选择
-6. [LLM Retrieval for Stable and Predictable Ad Recommendations](/20260514-20260523/2605.21969v1-llm-retrieval-for-stable-and-predictable-ad-recommendations)  
+   evidence：多槽位保量展示广告的联合优化
+6. [Support-aware offline policy selection for advertising marketplaces](/202605/23/2605.21736v1-support-aware-offline-policy-selection-for-advertising-marketplaces)  
+   标签：评分：9.0/10、query:q2
+   evidence：广告市场中的支持感知离线策略选择
+7. [LLM Retrieval for Stable and Predictable Ad Recommendations](/202605/23/2605.21969v1-llm-retrieval-for-stable-and-predictable-ad-recommendations)  
    标签：评分：9.0/10、query:q1
-   evidence：LLM检索用于广告推荐
+   evidence：直接针对广告推荐的稳定性和可预测性
 
 ### 速读区论文标签
-1. [Agentic Recommender System with Hierarchical Belief-State Memory](/20260514-20260523/2605.14401v2-agentic-recommender-system-with-hierarchical-belief-state-memory)  
+1. [Text-Guided Visual Representation Learning for Robust Multimodal E-Commerce Recommendation](/202605/23/2605.17366v1-text-guided-visual-representation-learning-for-robust-multimodal-e-commerce-recommendation)  
+   标签：评分：8.0/10、query:q6
+   evidence：用于电商推荐的多模态表示学习
+2. [Towards Sustainable Growth: A Multi-Value-Aware Retrieval Framework for E-Commerce Search](/202605/23/2605.17994v1-towards-sustainable-growth-a-multi-value-aware-retrieval-framework-for-e-commerce-search)  
+   标签：评分：8.0/10、query:q4
+   evidence：关注电商搜索中的新品成长和长期价值
+3. [Offline Contextual Bandits in the Presence of New Actions](/202605/23/2605.18509v1-offline-contextual-bandits-in-the-presence-of-new-actions)  
    标签：评分：8.0/10、query:q1
-   evidence：具有分层信念状态记忆的代理推荐系统
-2. [VerbalValue: A Socially Intelligent Virtual Host for Sales-Driven Live Commerce](/20260514-20260523/2605.14542v1-verbalvalue-a-socially-intelligent-virtual-host-for-sales-driven-live-commerce)  
+   evidence：面向推荐系统的离线策略学习，处理新动作
+4. [Reinforced Preference Optimization for Reasoning-Augmented Recommendations](/202605/23/2605.21967v1-reinforced-preference-optimization-for-reasoning-augmented-recommendations)  
    标签：评分：8.0/10、query:q1
-   evidence：面向直播带货广告的销售转化虚拟主播
-3. [Genflow Ad Studio: A Compound AI Architecture for Brand-Aligned, Self-Correcting Video Generation](/20260514-20260523/2605.16748v1-genflow-ad-studio-a-compound-ai-architecture-for-brand-aligned-self-correcting-video-generation)  
-   标签：评分：8.0/10、query:q3
-   evidence：广告中品牌一致视频生成的复合AI架构
-4. [Offline Contextual Bandits in the Presence of New Actions](/20260514-20260523/2605.18509v1-offline-contextual-bandits-in-the-presence-of-new-actions)  
-   标签：评分：8.0/10、query:q1
-   evidence：推荐系统在线广告中的离线上下文赌博机方法
-5. [Will It Go Viral? Grounding Micro-Video Popularity Prediction on the Open Web](/20260514-20260523/2605.18653v1-will-it-go-viral-grounding-micro-video-popularity-prediction-on-the-open-web)  
-   标签：评分：8.0/10、query:q2
-   evidence：流行度预测支持广告应用
-6. [SimPersona: Learning Discrete Buyer Personas from Raw Clickstreams for Grounded E-Commerce Agents](/20260514-20260523/2605.14205v1-simpersona-learning-discrete-buyer-personas-from-raw-clickstreams-for-grounded-e-commerce-agents)  
-   标签：评分：7.0/10、query:q7
-   evidence：从点击流学习买家画像用于电商代理
-7. [SimPersona: Learning Discrete Buyer Personas from Raw Clickstreams for Grounded E-Commerce Agents](/20260514-20260523/2605.14205v2-simpersona-learning-discrete-buyer-personas-from-raw-clickstreams-for-grounded-e-commerce-agents)  
-   标签：评分：7.0/10、query:q1
-   evidence：从原始点击流学习离散买家画像用于电商代理
-8. [From Plans to Pixels: Learning to Plan and Orchestrate for Open-Ended Image Editing](/20260514-20260523/2605.15181v1-from-plans-to-pixels-learning-to-plan-and-orchestrate-for-open-ended-image-editing)  
-   标签：评分：7.0/10、query:q6
-   evidence：图像编辑涉及广告示例；多模态视觉语言评判
-9. [Can LLMs Think Like Consumers? Benchmarking Crowd-Level Reaction Reconstruction with ConsumerSimBench](/20260514-20260523/2605.17079v1-can-llms-think-like-consumers-benchmarking-crowd-level-reaction-reconstruction-with-consumersimbench)  
+   evidence：强化偏好优化增强推理能力的推荐系统
+5. [Genflow Ad Studio: A Compound AI Architecture for Brand-Aligned, Self-Correcting Video Generation](/202605/23/2605.16748v1-genflow-ad-studio-a-compound-ai-architecture-for-brand-aligned-self-correcting-video-generation)  
+   标签：评分：7.0/10、query:q2
+   evidence：用于品牌对齐广告视频生成的复合AI系统
+6. [Can LLMs Think Like Consumers? Benchmarking Crowd-Level Reaction Reconstruction with ConsumerSimBench](/202605/23/2605.17079v1-can-llms-think-like-consumers-benchmarking-crowd-level-reaction-reconstruction-with-consumersimbench)  
    标签：评分：7.0/10、query:q3
-   evidence：LLM模拟消费者反应的基准测试用于营销
-10. [Towards Sustainable Growth: A Multi-Value-Aware Retrieval Framework for E-Commerce Search](/20260514-20260523/2605.17994v1-towards-sustainable-growth-a-multi-value-aware-retrieval-framework-for-e-commerce-search)  
-   标签：评分：6.0/10、query:q4
-   evidence：电子商务搜索中的用户增长
-11. [Bridging the Cold-Start Gap: LLM-Powered Synthetic Data Generation for Natural Language Search at Airbnb](/20260514-20260523/2605.21812v1-bridging-the-cold-start-gap-llm-powered-synthetic-data-generation-for-natural-language-search-at-airbnb)  
-   标签：评分：6.0/10、query:profile-1
-   evidence：Airbnb搜索中LLM驱动的合成数据生成，实际部署
+   evidence：用于模拟消费者反应的LLM基准，可应用于广告测试
+7. [Will It Go Viral? Grounding Micro-Video Popularity Prediction on the Open Web](/202605/23/2605.18653v1-will-it-go-viral-grounding-micro-video-popularity-prediction-on-the-open-web)  
+   标签：评分：7.0/10、query:q1
+   evidence：微视频流行度预测支持推荐与广告
+8. [SimGym: A Framework for A/B Test Simulation in E-Commerce with Traffic-Grounded VLM Agents](/202605/23/2605.19219v1-simgym-a-framework-for-ab-test-simulation-in-e-commerce-with-traffic-grounded-vlm-agents)  
+   标签：评分：7.0/10、query:q7
+   evidence：使用VLM代理的电商A/B测试模拟，实际广告测试
+9. [m3BERT: A Modern, Multi-lingual, Matryoshka Bidirectional Encoder](/202605/23/2605.19568v1-m3bert-a-modern-multi-lingual-matryoshka-bidirectional-encoder)  
+   标签：评分：7.0/10、query:q2
+   evidence：用于搜索和广告系统的嵌入模型
+10. [Generative Conversational Recommender System](/202605/23/2605.21987v1-generative-conversational-recommender-system)  
+   标签：评分：7.0/10、query:q1
+   evidence：生成式对话推荐系统，统一推荐与对话生成
+11. [Unlocking Proactivity in Task-Oriented Dialogue](/202605/23/2605.22240v1-unlocking-proactivity-in-task-oriented-dialogue)  
+   标签：评分：6.0/10、query:q7
+   evidence：面向外呼销售的主动对话代理，真实广告场景
 
 
 <div class="dpr-home-promo-card">

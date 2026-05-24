@@ -1,0 +1,30 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2605.07129v1/fig-001.webp",
+      "caption": "Table 1: Performance comparison of RRCM (green) against prior SFT-based (yellow), DPO-based (gray), reasoning-based (brown) methods, and approaches incorporating metadata or collaborative signal retrieval (blue). The best and second-best results are highlighted in bold and underlined, respectively. HR@N and NG@N denote Hit Ratio@N and NDCG@N.",
+      "page": 7,
+      "index": 1,
+      "width": 825,
+      "height": 316
+    },
+    {
+      "url": "assets/figures/arxiv/2605.07129v1/fig-002.webp",
+      "caption": "Figure 3: Computation cost and performance comparison.",
+      "page": 14,
+      "index": 2,
+      "width": 602,
+      "height": 302
+    },
+    {
+      "url": "assets/figures/arxiv/2605.07129v1/fig-003.webp",
+      "caption": "Figure 1: Workflow of RRCM for ranking-driven retrieval over collaborative and meta memories.",
+      "page": 4,
+      "index": 3,
+      "width": 636,
+      "height": 379
+    }
+  ]
+}

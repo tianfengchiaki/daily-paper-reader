@@ -1,0 +1,187 @@
+Title: A General Framework for Multimodal LLM-Based Multimedia Understanding in Large-Scale Recommendation Systems
+
+URL Source: https://arxiv.org/pdf/2605.09338v1
+
+Published Time: Tue, 12 May 2026 01:44:51 GMT
+
+Number of Pages: 5
+
+Markdown Content:
+# A General Framework for Multimodal LLM-Based Multimedia Understanding in Large-Scale Recommendation Systems 
+
+## Yiming Zhu ∗† 
+
+Meta Platforms Menlo Park, USA 
+
+## Xu Liu ∗
+
+Meta Platforms Menlo Park, USA 
+
+## Ziyun Xu ∗
+
+Meta Platforms Menlo Park, USA 
+
+## Zheng Wu 
+
+Meta Platforms Menlo Park, USA 
+
+## Joena Zhang 
+
+Meta Platforms Menlo Park, USA 
+
+## Sirius Chen 
+
+Meta Platforms Menlo Park, USA 
+
+## Chenheli Hua 
+
+Meta Platforms Menlo Park, USA 
+
+## Silvester Yao 
+
+Meta Platforms Menlo Park, USA 
+
+## Qichao Que 
+
+Meta Platforms Menlo Park, USA 
+
+## Wentao Shi †
+
+Meta Platforms Menlo Park, USA 
+
+## Junfeng Pan 
+
+Meta Platforms Menlo Park, USA 
+
+## Linhong Zhu 
+
+Meta Platforms Menlo Park, USA 
+
+Abstract 
+
+Conventional recommendation systems frequently fail to fully ex-ploit the high-dimensional semantic signals inherent in multimedia content, thereby limiting the fidelity of user preference model-ing. While Multimodal Large Language Models (MM-LLMs) offer robust mechanisms for interpreting such complex data, their in-tegration into latency-constrained, industrial-scale architectures remains a significant challenge. To address this, we propose a gener-alized framework for MM-LLM-driven multimedia understanding. Our methodology employs a tripartite architecture encompassing content interpretation, representation extraction, and systematic pipeline integration, instantiated via a LLaMA2-based model that generates descriptive captions subsequently ingested as tokenized categorical features. Empirical evaluation demonstrates the efficacy of this approach, yielding a 0.35% increase in offline AUC and a 
+
+0.02% improvement in online metrics at scale, substantiating the practical viability of leveraging MM-LLMs to enhance large-scale recommendation performance. 
+
+CCS Concepts 
+
+• Information systems → Recommender systems ; • Comput-ing methodologies → Natural language processing .
+
+Keywords 
+
+Recommendation, Multimodal large language models, Multimedia understanding 
+
+ACM Reference Format: 
+
+Yiming Zhu, Xu Liu, Ziyun Xu, Zheng Wu, Joena Zhang, Sirius Chen, Chen-heli Hua, Silvester Yao, Qichao Que, Wentao Shi, Junfeng Pan, and Linhong Zhu. 2026. A General Framework for Multimodal LLM-Based Multimedia Understanding in Large-Scale Recommendation Systems. In Proceedings of  
+
+> ∗Equal contribution.
+> †Corresponding author
+> This work is licensed under a Creative Commons Attribution 4.0 International License.
+> SIGIR ’26, Melbourne, VIC, Australia
+> ©2026 Copyright held by the owner/author(s). ACM ISBN 979-8-4007-2599-9/2026/07 https://doi.org/10.1145/3805712.3808431
+
+the 49th International ACM SIGIR Conference on Research and Development in Information Retrieval (SIGIR ’26), July 20–24, 2026, Melbourne, VIC, Australia. 
+
+ACM, New York, NY, USA, 5 pages. https://doi.org/10.1145/3805712.3808431 
+
+1 Introduction 
+
+Modern Recommender Systems (RS) operate within increasingly heterogeneous multimedia ecosystems, where user engagement is driven by a complex co-evolution of image, video, and textual content. While traditional architectures effectively leverage struc-tured engagement signals and explicit metadata, they often fail to encapsulate the fine-grained semantics and latent contexts inherent in raw multimedia streams. For instance, in domains such as fash-ion retrieval, visual nuances convey stylistic preferences that static textual descriptions cannot fully resolve. Conventional pipelines typically relegate these signals to auxiliary metadata [ 4], thereby bypassing critical opportunities to align recommendations with high-fidelity user intent. Multimodal Large Language Models (MM-LLMs) represent a transformative paradigm for addressing this semantic gap. By syn-thesizing semantically dense natural language descriptions from multimodal inputs, architectures such as GPT-4V bridge the di-vide between raw content and high-dimensional semantic space. These models can extract granular attributes from unstructured media—transforming, for example, a user-uploaded image into a structured descriptor like “a minimalist living room with a beige sectional sofa and mid-century wooden accents” —capturing subtle latent features that elude traditional engineering approaches. However, the integration of MM-LLMs into production-grade RS environments presents non-trivial challenges. Established ar-chitectures, such as the Deep Learning Recommendation Model (DLRM) [ 12 ], are optimized for processing dense and sparse features under strict latency constraints. Mapping the generative, unstruc-tured output of MM-LLMs into representations compatible with these high-throughput systems creates a impedance mismatch. To address this, we propose a systematic framework to opera-tionalize MM-LLMs within the industrial recommendation stack. Our approach is structured as a three-stage pipeline: (1) Semantic Translation: We leverage MM-LLMs to distill visual, textual, and acoustic signals into enriched natural language descriptors.  
+
+> arXiv:2605.09338v1 [cs.IR] 10 May 2026 SIGIR ’26, July 20–24, 2026, Melbourne, VIC, Australia Yiming Zhu et al.
+
+(2) Representation Mapping: We employ diverse representation learning techniques to tokenize or embed these descriptors into feature vectors compatible with downstream ranking models. (3) Feature Injection: We systematically integrate these trans-formed representations into existing RS architectures to en-hance user-item relevance modeling. We validate this framework by developing a LLaMA2-based MM-LLM [ 5 ] to generate real-time captions for user-generated content, which are subsequently ingested as features into a DLRM-based stack. Our contributions are three folds: 
+
+• A Systematic Integration Framework: We introduce a gener-alized, production-ready framework that bridges the gap between the generative capabilities of MM-LLMs and the structural con-straints of large-scale recommendation architectures. 
+
+• Multimodal Semantic Transformation: We develop a robust pipeline for translating raw, unstructured multimedia signals into high-fidelity semantic descriptors, enabling the capture of fine-grained user intent often lost in traditional metadata. 
+
+• Large-Scale Operationalization and Validation: We demon-strate the efficacy of our approach through a LLaMA2-based MM-LLM within a DLRM-style stack. Our empirical results confirm significant performance gains across both offline benchmarks and live online metrics. 
+
+2 Related Work 
+
+This section provides a systematic review of the evolution from tra-ditional multimodal feature fusion to the integration of large-scale multimodal models and LLM-driven recommendation paradigms. 
+
+• Multimodal RS. With the proliferation of social networks and mobile internet, recommendation content increasingly spans mul-tiple modalities, necessitating robust Multimodal Recommender Systems (MRS). The fundamental challenge lies in extracting het-erogeneous features and fusing these signals to augment traditional ID-based representations. Conventional methodologies predomi-nantly utilize Convolutional Neural Networks (CNNs) for visual encoding [ 7 ] and BERT-based transformers for textual representa-tions [ 19 ]. To integrate these signals, cross-attention mechanisms are widely adopted to capture inter-modal dependencies [ 6 ]. Fur-thermore, comprehensive frameworks such as MMRec [ 21 ] have been developed to unify signal extraction, fusion, and co-training into standardized pipelines. 
+
+• MM-LLM. Recent breakthroughs in Large Language Models (LLMs) have catalyzed advancements in multimodal learning, en-abling models to align representations across text, images, video, and audio. Foundational models like CLIP [ 13 ] and ALIGN [ 9]demonstrated the efficacy of large-scale contrastive learning for vision-language alignment. Subsequent architectures, including Flamingo [ 2 ] and BLIP-2 [ 10 ], introduced efficient modules to in-terface visual encoders with frozen LLM backbones. The latest generation of MM-LLMs, such as GPT-4V [ 1] and Gemini [ 18 ], further underscores the potential of instruction-tuned models for sophisticated open-ended reasoning and cross-modal generation. 
+
+• LLM4Rec. The emerging field of LLM4Rec [ 15 ] explores the integration of LLMs into recommendation pipelines. A primary re-search direction leverages LLMs as pre-trained encoders to enhance content-based representation learning. For example, RLMRec [ 14 ]
+
+Figure 1: Overview of the Framework for MM-LLM-Based Multimedia Understanding in Recommendation. 
+
+utilizes LLM reasoning to generate descriptive user and item pro-files, while AlphaRec [ 16 ] projects textual metadata representations into collaborative filtering frameworks. Parallelly, another line of research reformulates recommendation as a generative task. In-structRec [ 20 ] treats recommendation as an instruction-following problem, employing instruction-based fine-tuning for end-to-end systems. Similarly, BIGRec [ 3 ] proposes a two-step paradigm that fine-tunes LLMs to generate semantic item tokens which are subse-quently mapped to the actual item space. 
+
+3 Methodology 
+
+In this section, we introduce our framework by converting images into caption-based semantic features via an MM-LLM, then tokeniz-ing and integrating them with standard ID embeddings to enrich ranking signals under industrial latency constraints. 
+
+3.1 MM-LLM-Based Multimedia Understanding 
+
+We propose a unified framework for integrating Multimodal Large Language Models (MM-LLMs) into recommender systems to en-hance the semantic understanding of multimedia items. As illus-trated in Figure 1, our architecture is predicated on three integral components, designed to bridge the gap between high-dimensional multimedia data and structured recommendation signals. 
+
+Multimedia Content Understanding. This module utilizes an MM-LLM to extract high-fidelity semantic descriptions from raw multi-media inputs, such as imagery. Leveraging architectures capable of vision-language alignment (e.g., BLIP-style models), the system translates visual signals into natural language descriptions through strategic prompt engineering. The objective is to capture the la-tent semantics of the content that traditional collaborative filtering methods often fail to encode. 
+
+Data Representation and Alignment. To render the MM-LLM outputs compatible with downstream recommendation algorithms, the generated natural language descriptions are projected into a formal feature space. This transformation encompasses processes such as tokenization [ 11 ] and dense embedding generation [ 17 ]. The primary goal is to maintain semantic fidelity while mapping the unstructured text into a structured or sparse vector space suitable for ingestion by the recommendation engine. A General Framework for Multimodal LLM-Based Multimedia Understanding in Large-Scale Recommendation Systems SIGIR ’26, July 20–24, 2026, Melbourne, VIC, Australia 
+
+Figure 2: The structure of our approach is organized into distinct stages. The first two stages, Multimedia Content Un-derstanding and Data Representation, are represented by the Model Encoder. In the final stage, we integrate the generated IDs into our recommendation models. 
+
+Integration with Recommender Systems. The final phase involves the fusion of these semantic embeddings with the recommender system’s existing architecture. We achieve this by concatenating the derived MM-LLM features with traditional ID-based user and item representations. Consequently, the recommendation model is trained to optimize prediction accuracy by simultaneously leverag-ing collaborative signals and the enriched semantic features pro-vided by the MM-LLM. 
+
+3.2 Approach 
+
+This section details the instantiation of our framework to capture ad-vanced visual semantics (architecture depicted in Figure 2). Current industrial recommendation models predominantly rely on static visual concepts and pre-computed embeddings. While sufficient for identifying discrete entities (e.g., ‘dog’ ), these methods fail to encode high-order contextual dependencies (e.g., ‘A man playing with his dog.’ ). To bridge this semantic gap in a large-scale setting, we implement our approach as follows: 
+
+Multimedia Content Understanding. The cornerstone of our frame-work is a Multimodal Large Language Model (MM-LLM) designed to extract dense semantic signals. Prioritizing robustness and effi-ciency, we adopt a two-stage architecture illustrated in Figure 3. First, an image encoder processes raw visual inputs to gener-ate robust visual embeddings. This encoder, pre-trained on mas-sive image-text pairs, is optimized to generalize across diverse scales and resolutions. Second, we employ a generative text de-coder—specifically LLaMA2 [ 5]—to synthesize detailed captions conditioned on these visual embeddings. To bridge the modality gap, we utilize the BLIP-2 [ 10 ] paradigm, employing a lightweight Querying Transformer (Q-Former) to align visual features with the language model’s embedding space via specific prompts. 
+
+Figure 3: Overview of BLIP-2’s framework. 
+
+To satisfy the stringent latency constraints of industrial-scale recommendation, we deploy a compact 1.5B-parameter variant of LLaMA2 [ 5]. This configuration ensures high Query Per Sec-ond (QPS) throughput while maintaining inference latency within strict serving budgets. Furthermore, the MM-LLM is invoked con-ditionally, triggering only when multimedia comprehension yields maximal marginal gain. Empirically, this design incurs negligible latency relative to the overall recommendation pipeline. By decou-pled inference from the core ranking path, we ensure that system overhead and training complexity remain neutral, while signifi-cantly enhancing the semantic density of the input features. 
+
+Data Representation. To facilitate downstream learning, the raw captions undergo a normalization process to remove redundancy and ensure format uniformity. We employ a specialized tokenizer to map the generated natural language descriptions into discrete token ID sequences. Critically, these sequences are utilized not only to represent item content but also to construct user interest pro-files, enabling the model to track user affinity for specific semantic concepts over time. 
+
+Integration into Recommender Systems. Finally, we integrate the MM-LLM-derived features into the recommendation architecture by concatenating tokenized content features and user interest profiles with traditional sparse ID embeddings. Feeding these enriched representations into task-specific modules enables the model to capture fine-grained interactions between visual semantics and user preferences, effectively aligning content understanding with behavioral signals. 
+
+4 Empirical Evaluations 4.1 Datasets 
+
+Our evaluations are conducted on a large-scale internal dataset. The dataset consists of tens of billions of interaction examples, partitioned into training and evaluation sets at a 7:1 ratio. This setting closely mirrors the conditions faced by large-scale deployed systems. 
+
+4.2 Results 
+
+To assess the effectiveness of MM-LLM generated features, we evaluate their incremental value—across various tokenizers—when SIGIR ’26, July 20–24, 2026, Melbourne, VIC, Australia Yiming Zhu et al. 
+
+Table 1: Experiment results of incorporating MM-LLM features compared to the recommendation production model using visual features. Note that +0.1% is considered significant due to the model complexity. 
+
+Model Feature Name Feature Description Tokenizer Type AUC Gains 1 NE Gains Multi-task Model MM-LLM Features Token id lists transformed from Tokenizer A 0.16% 0.07% generated image caption Multi-task Model MM-LLM Features Token id lists transformed from Tokenizer B 0.07% 0.03% generated image caption Multi-task Model MM-LLM Aggregated token id lists Tokenizer A 0.12% 0.05% User Interest based on different Profile Features user engagement events 
+
+Table 2: Task-level offline deep dive compared to the baseline model. Values report relative percentage reductions in NE (lower is better). 0.1% considered significant. Representative Task ΔNE ( ↓, %) 
+
+Comment Related -0.11 Like Related -0.14 Share Related -0.07 Time spent Related -0.04 Consumption Related -0.14 integrated into a baseline recommendation model already equipped with visual features. Table 1 presents the offline performance on an industry-scale production model. Given the multi-task nature of the system, we report average gains in Normalized Entropy (NE) [8 ] and AUC (measured as the percentage change of 1-AUC) across multiple tasks. To thoroughly contextualize these improvements, Table 2 provides a detailed breakdown of representative tasks. To strengthen the reliability of these findings, we additionally conduct paired t-tests across multiple non-overlapping, indepen-dently sampled evaluation subsets of the dataset, confirming that the reported improvements are statistically significant ( 𝑝 < 0.01 ). We also include a comparative baseline: a recommendation pro-duction model using concatenation of visual-encoder based embed-dings. As shown in Table 1, our MM-LLM features consistently out-perform the baseline, indicating that the multimedia understanding capability of the MM-LLM provides unique complementary infor-mation beyond purely visual features. Furthermore, we perform an ablation study by removing the MM-LLM features from the repre-sentation. The resulting performance drop demonstrates that the observed gains are indeed attributable to the MM-LLM features. As shown in Table 1, MM-LLM features primarily drive model performance improvements. In addition, the MM-LLM user interest profile features can help the model better match user preferences and item content, thereby further improving model performance. In the stage of data representation, using different tokenizers also shows different performance. The appropriate tokenizer brings more significant improvements, which highlights the importance of tokenizers. In addition, we conducted a shuffle-all-based feature importance analysis, which showed that these MM-LLM features rank among the top 1% of all production features. We also evaluate the effect on model training and serving effi-ciency. Empirically, the model training QPS and the online inference cost remain neutral relative to the baseline model, demonstrating that our framework delivers accuracy gains without incurring extra latency or computational overhead. 
+
+4.3 Online A/B Testing 
+
+In addition to offline evaluation, we deploy the proposed features in an online experiment. The deployment yields a statistically sig-nificant +0.02% improvement in user engagement related metrics. It further validates the industrial applicability of the proposed frame-work and demonstrates their effectiveness in recommendation ap-plications. 
+
+5 Conclusion 
+
+We present a general framework for MM-LLM-based multimedia understanding in recommendation, which abstracts the process into three core components: multimedia content understanding, data representation, and integration into RS. Our experiments demon-strate that even a preliminary instantiation of this framework can yield significant performance improvements in the large-scale rec-ommendation application. By providing a flexible and scalable ap-proach, this work enables the incorporation of multimedia seman-tics into recommendation architectures through multimodal large language model intelligence, potentially accelerating advancements in GenAI and RS. 
+
+6 Main Presenter Bio 
+
+Yiming Zhu is a senior machine learning engineer at Meta, working on generative AI and recommendation. Yiming is actively working on Large Language Models and their applications. Yiming has exten-sive experience working on improving large-scale recommendation systems in many different stages, including end-to-end recommen-dation infra, model architecture, and feature engineering. 
+
+References          
+
+> [1] Josh Achiam, Steven Adler, Sandhini Agarwal, Lama Ahmad, Ilge Akkaya, Floren-cia Leoni Aleman, Diogo Almeida, Janko Altenschmidt, Sam Altman, Shyamal Anadkat, et al .2023. Gpt-4 technical report. arXiv preprint arXiv:2303.08774
+> (2023). [2] Jean-Baptiste Alayrac, Jeff Donahue, Pauline Luc, Antoine Miech, Iain Barr, Yana Hasson, Karel Lenc, Arthur Mensch, Katherine Millican, Malcolm Reynolds, et al .2022. Flamingo: a visual language model for few-shot learning. NeurIPS 35 (2022), 23716–23736. [3] Keqin Bao, Jizhi Zhang, Wenjie Wang, Yang Zhang, Zhengyi Yang, Yanchen Luo, Chong Chen, Fuli Feng, and Qi Tian. 2025. A bi-step grounding paradigm for large language models in recommendation systems. ACM Transactions on Recommender Systems 3, 4 (2025), 1–27.
+
+A General Framework for Multimodal LLM-Based Multimedia Understanding in Large-Scale Recommendation Systems SIGIR ’26, July 20–24, 2026, Melbourne, VIC, Australia 
+
+[4] Fuhu Deng, Panlong Ren, Zhen Qin, Gu Huang, and Zhiguang Qin. 2018. Lever-aging Image Visual Features in Content-Based Recommender System. Scientific Programming 2018, 1 (2018), 5497070. doi:10.1155/2018/5497070 [5] Meta GenAI. 2023. Llama 2: Open Foundation and Fine-Tuned Chat Models. 
+
+arXiv preprint arXiv:2307.09288 (2023). [6] Tengyue Han, Pengfei Wang, Shaozhang Niu, and Chenliang Li. 2022. Modality matches modality: Pretraining modality-disentangled item representations for recommendation. In Proceedings of the ACM web conference 2022 . 2058–2066. [7] Ruining He and Julian McAuley. 2016. VBPR: visual bayesian personalized ranking from implicit feedback. In Proceedings of the AAAI conference on artificial intelligence , Vol. 30. [8] Xinran He, Junfeng Pan, Ou Jin, Tianbing Xu, Bo Liu, Tao Xu, Yanxin Shi, Antoine Atallah, Ralf Herbrich, Stuart Bowers, and Joaquin Quiñonero Candela. 2014. Practical Lessons from Predicting Clicks on Ads at Facebook. In Proceedings of the Eighth International Workshop on Data Mining for Online Advertising (New York, NY, USA) (ADKDD’14) . Association for Computing Machinery, New York, NY, USA, 1–9. doi:10.1145/2648584.2648589 [9] Chao Jia, Yinfei Yang, Ye Xia, Yi-Ting Chen, Zarana Parekh, Hieu Pham, Quoc Le, Yun-Hsuan Sung, Zhen Li, and Tom Duerig. 2021. Scaling up visual and vision-language representation learning with noisy text supervision. In International conference on machine learning . PMLR, 4904–4916. [10] Junnan Li, Dongxu Li, Silvio Savarese, and Steven Hoi. 2023. Blip-2: Bootstrapping language-image pre-training with frozen image encoders and large language models. In International conference on machine learning . PMLR, 19730–19742. [11] Tomas Mikolov, Kai Chen, Greg Corrado, and Jeffrey Dean. 2013. Efficient Estimation of Word Representations in Vector Space. arXiv:1301.3781 [cs.CL] https://arxiv.org/abs/1301.3781 [12] Maxim Naumov, Dheevatsa Mudigere, Hao-Jun Michael Shi, Jianyu Huang, Narayanan Sundaraman, Jongsoo Park, Xiaodong Wang, Udit Gupta, Carole-Jean Wu, Alisson G. Azzolini, Dmytro Dzhulgakov, Andrey Mallevich, Ilia Cherni-avskii, Yinghai Lu, Raghuraman Krishnamoorthi, Ansha Yu, Volodymyr Kon-dratenko, Stephanie Pereira, Xianjie Chen, Wenlin Chen, Vijay Rao, Bill Jia, Liang Xiong, and Misha Smelyanskiy. 2019. Deep Learning Recommendation Model for Personalization and Recommendation Systems. arXiv:1906.00091 [cs.IR] https://arxiv.org/abs/1906.00091 [13] Alec Radford, Jong Wook Kim, Chris Hallacy, Aditya Ramesh, Gabriel Goh, Sandhini Agarwal, Girish Sastry, Amanda Askell, Pamela Mishkin, Jack Clark, et al . 2021. Learning transferable visual models from natural language supervision. In International conference on machine learning . PmLR, 8748–8763. [14] Xubin Ren, Wei Wei, Lianghao Xia, Lixin Su, Suqi Cheng, Junfeng Wang, Dawei Yin, and Chao Huang. 2024. Representation learning with large language models for recommendation. In Proceedings of the ACM web conference 2024 . 3464–3475. [15] Sarama Shehmir and Rasha Kashef. 2025. LLM4Rec: A Comprehensive Sur-vey on the Integration of Large Language Models in Recommender Systems— Approaches, Applications and Challenges. Future Internet 17, 6 (2025), 252. [16] Leheng Sheng, An Zhang, Yi Zhang, Yuxin Chen, Xiang Wang, and Tat-Seng Chua. 2024. Language Models Encode Collaborative Signals in Recommendation. 
+
+CoRR (2024). [17] Dan Svenstrup, Jonas Meinertz Hansen, and Ole Winther. 2017. Hash Embeddings for Efficient Word Representations. arXiv:1709.03933 [cs.CL] https://arxiv.org/ abs/1709.03933 [18] Gemini Team, Rohan Anil, Sebastian Borgeaud, Jean-Baptiste Alayrac, Jiahui Yu, Radu Soricut, Johan Schalkwyk, Andrew M Dai, Anja Hauth, Katie Millican, et al . 2023. Gemini: a family of highly capable multimodal models. arXiv preprint arXiv:2312.11805 (2023). [19] Wei Wei, Chao Huang, Lianghao Xia, and Chuxu Zhang. 2023. Multi-modal self-supervised learning for recommendation. In Proceedings of the ACM web conference 2023 . 790–800. [20] Junjie Zhang, Ruobing Xie, Yupeng Hou, Xin Zhao, Leyu Lin, and Ji-Rong Wen. 2025. Recommendation as instruction following: A large language model em-powered recommendation approach. ACM Transactions on Information Systems 
+
+43, 5 (2025), 1–37. [21] Xin Zhou. 2023. Mmrec: Simplifying multimodal recommendation. In Proceedings of the 5th ACM International Conference on Multimedia in Asia Workshops . 1–2.

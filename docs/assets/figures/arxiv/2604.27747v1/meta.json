@@ -1,0 +1,62 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2604.27747v1/fig-001.webp",
+      "caption": "TABLE II PERFORMANCE COMPARISON BETWEEN PAD-REC AND BASELINES ON FOUR DATASETS.",
+      "page": 7,
+      "index": 1,
+      "width": 1076,
+      "height": 721
+    },
+    {
+      "url": "assets/figures/arxiv/2604.27747v1/fig-002.webp",
+      "caption": "Fig. 7. Scaling analysis on speedup and accepted length τ at temp=0 and 0.5 on Beauty and Instruments.",
+      "page": 10,
+      "index": 2,
+      "width": 516,
+      "height": 321
+    },
+    {
+      "url": "assets/figures/arxiv/2604.27747v1/fig-003.webp",
+      "caption": "Fig. 4. Embedding ablation on speedup and accepted length τ on Beauty and Instruments. In each subplot, temp=0 is read from the left y-axis, while temp=0.5 is read from the right y-axis.",
+      "page": 8,
+      "index": 3,
+      "width": 516,
+      "height": 352
+    },
+    {
+      "url": "assets/figures/arxiv/2604.27747v1/fig-004.webp",
+      "caption": "Fig. 2. Training framework of PAD-Rec. Blue blocks denote token embeddings, and orange blocks denote intermediate features. Tokens already verified by the target LLM are outlined in black, while draft predictions are outlined in red. The draft input is augmented by adding IPE vt, concatenating features, and adding SPE sj before the auto-regressive draft layer. Different IPE colors indicate different within-item positions, while darker SPE colors indicate larger draft-step indices j.",
+      "page": 4,
+      "index": 4,
+      "width": 484,
+      "height": 521
+    },
+    {
+      "url": "assets/figures/arxiv/2604.27747v1/fig-005.webp",
+      "caption": "Fig. 5. Gate ablation on speedup and accepted length τ on Beauty and Instruments. In each subplot, temp= 0 is read from the left y-axis, while temp=0.5 is read from the right y-axis.",
+      "page": 9,
+      "index": 5,
+      "width": 510,
+      "height": 348
+    },
+    {
+      "url": "assets/figures/arxiv/2604.27747v1/fig-006.webp",
+      "caption": "Fig. 6. Effect of speculation depth Btest (with Btrain=12) on speedup and accepted length τ at temp=0 and 0.5 on Beauty and Instruments.",
+      "page": 9,
+      "index": 6,
+      "width": 516,
+      "height": 374
+    },
+    {
+      "url": "assets/figures/arxiv/2604.27747v1/fig-007.webp",
+      "caption": "Fig. 3. Position-aware unrolled training with IPE and SPE. (a) Each block combines the base feature with an IPE marker for the within-item slot and an SPE marker for the draft step. (b) During unrolled training, target features are progressively replaced by draft features from earlier depths under a causal mask, while red dashed boxes group tokens belonging to the same item.",
+      "page": 5,
+      "index": 7,
+      "width": 1015,
+      "height": 269
+    }
+  ]
+}

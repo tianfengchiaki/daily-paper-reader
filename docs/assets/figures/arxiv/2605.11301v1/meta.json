@@ -1,0 +1,46 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2605.11301v1/fig-001.webp",
+      "caption": "Table 1: Main routing performance on MMR-Bench and VL-RouterBench. MMR-Bench reports nAUC (↑), and VL-RouterBench reports Rank Score (↑). Best non-oracle results are in bold; secondbest non-oracle results are underlined.",
+      "page": 7,
+      "index": 1,
+      "width": 826,
+      "height": 381
+    },
+    {
+      "url": "assets/figures/arxiv/2605.11301v1/fig-002.webp",
+      "caption": "Figure 2: Cost-quality and task-level analysis. Panels (a)–(b) show cost-quality frontiers under different cost budgets; LATENTROUTER improves the frontier on both benchmarks. Panel (c) groups datasets from both benchmarks by task type; gains are largest on tasks where model choice depends strongly on visual, layout-sensitive, or reasoning-oriented query requirements.",
+      "page": 7,
+      "index": 2,
+      "width": 822,
+      "height": 253
+    },
+    {
+      "url": "assets/figures/arxiv/2605.11301v1/fig-003.webp",
+      "caption": "Figure 1: Training workflow of LATENTROUTER. Given an image-question query and modelpool outcome traces, the router constructs multimodal routing capsules and model capability tokens, performs latent communication, predicts per-model counterfactual outcomes, applies bounded capsule correction, and optimizes the composite training objective.",
+      "page": 3,
+      "index": 3,
+      "width": 826,
+      "height": 339
+    },
+    {
+      "url": "assets/figures/arxiv/2605.11301v1/fig-004.webp",
+      "caption": "Figure 3: Mechanism analysis. (a) Performance improves quickly and saturates after H = 2, supporting a shallow latent communication design. (b) Ablations show latent communication is the key component, with other modules providing complementary gains.",
+      "page": 8,
+      "index": 4,
+      "width": 821,
+      "height": 262
+    },
+    {
+      "url": "assets/figures/arxiv/2605.11301v1/fig-005.webp",
+      "caption": "Table 7: Router-side efficiency. Avg. Primary is averaged over the four main benchmark settings in Table 1.",
+      "page": 17,
+      "index": 5,
+      "width": 640,
+      "height": 194
+    }
+  ]
+}

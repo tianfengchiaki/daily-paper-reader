@@ -1,0 +1,175 @@
+Title: Efficient LLM-based Advertising via Model Compression and Parallel Verification
+
+URL Source: https://arxiv.org/pdf/2605.11582v1
+
+Published Time: Wed, 13 May 2026 00:43:05 GMT
+
+Number of Pages: 5
+
+Markdown Content:
+# Efficient LLM-based Advertising via Model Compression and Parallel Verification 
+
+# Wenxin Dong, Chang Gao, Guanghui Yu, Xuewu Jiao †, Mingqing Hu, Qiang Fu, Peng Xu, Penghui Wei, Hui Xu, Yue Xing, Shuanglong Li, Lin Liu 
+
+Baidu Inc. Beijing, China 
+
+## Abstract 
+
+Recent advances in large language models (LLMs) have shown significant impact in various domains such as online advertising. However, traditional methods often struggle with inefficiencies in inference latency and high computational costs. To solve these prob-lems, we propose an innovative model compression framework that integrates layer-adaptive group-wise quantization and layer-wise semi-structured sparsity optimized for GEMV workloads. We also introduce a novel prefix tree-based parallel verification 
+
+strategy to further enhance efficiency. Extensive experiments in two scenarios—ad creative generation and targeted advertising— validate the effectiveness of our approach. The implementation of our framework in a leading advertising platform has been deployed in production, achieving a speedup of over 1.8 × in real-world ex-periments while maintaining competitive precision. 
+
+## 1 Introduction 
+
+Recently, the advent of LLMs has introduced a paradigm shift in recommendation systems, enabling the transition from traditional discriminative-based architectures to generative-based approaches[ 22 ,27 ]. These models leverage the world knowledge and reasoning abilities embedded in LLMs, offering superior generalization capa-bilities and robustness. Generative targeting refers to the end-to-end, real-time process of seamlessly integrating generative LLMs with online advertising scenarios, directly generating relevant ads based on user queries. By embedding ad indices within the model, this new technological paradigm imposes higher demands on the regular updates of the model. However, as model parameters expand and real-time demands es-calate, the complexity of inference in LLM-enhanced recommenda-tion systems has risen, resulting in a scalability-efficiency dilemma. This conflict positions latency-sensitive scenarios ( e.g. , advertising) as the critical performance bottleneck, necessitating solutions that effectively optimize the inference without compromising recom-mendation quality. 
+
+Motivation and Challenge . Existing research has primarily fo-cused on simply applying LLMs to recommendation systems (RS), with an emphasis on precision-side optimizations such as training strategy upgrade [ 1, 23 , 24 , 26 ] and prompting innovation [ 13 , 30 ]. These approaches have demonstrated exceptional accuracy, sig-nificantly improving the predictive performance of recommenda-tion systems. However, these studies often overlook efficiency-side optimizations, which is particularly detrimental in time-sensitive scenarios like online real-time inference for commercial ad delivery. 
+
+> 0†Corresponding author.
+> 0This work was conducted in 2024 and the system has been deployed in Baidu’s advertising platform since then.
+
+Our Main Idea . To tackle these technical challenges, we are mo-tivated to propose a pioneering and effective solution to the Gen-erative targeting problem. Specifically, we innovatively designed an index-compressed data structure to support semi-structured layer-wise FP16 mixed sparsification and used adaptive group-wise quantization techniques to achieve model compression from FP16 to INT4. Additionally, we developed a custom kernel that supports mixed-precision computation with INT4 weight-only GEMV and mixed sparsity to enhance matrix acceleration efficiency. Moreover, in business, we employed a hierarchical clustering algorithm[ 21 ] to construct plaintext data into a semantically structured prefix tree. By dynamically evaluating the time difference between generating and verifying remaining tokens, we identify the optimal point for launching prefix tree-based parallel verification. This approach en-ables decoding the entire remaining sequence length in a single step, which can reduce decoding step and accelerate model inference. 
+
+Contribution . The main contributions of our paper are summa-rized as follows: 
+
+• We optimized Compressed Sparse Row (CSR) by proposing an index-compressed 2bit-CSR which is used for mixed sparsity, reducing the size of the index and weights to 30% of the original CSR size before optimization. 
+
+• We independently developed a custom SparseGemv accelera-tion kernel supporting INT4 with sparse matrix multiplication, filling the gap left by NVIDIA’s sparse acceleration libraries (cuS-parse/cuSparseLT) for efficient GEMV operations. 
+
+• We innovatively proposed adaptive grouping quantization, en-hancing the flexibility and precision of the quantization process. 
+
+• We are, to our knowledge, the first to propose a complete work-flow combining prefix tree-constrained decoding with beam search[ 25 ], applying it to the generative task in advertising tar-geting scenarios. 
+
+• Extensive experimental data demonstrates that our optimiza-tion achieved an improvement of over 78% in inference speed. The proposed system has been deployed in Baidu’s advertising platform, serving real-time traffic at scale. 
+
+## 2 Related Work 2.1 LLM in Recommendation System 
+
+The integration of Large Language Models (LLMs) into recom-mendation systems has emerged as a promising research direc-tion. Current research primarily encompasses several key areas: (1) feature engineering and representation learning, where LLMs are leveraged to generate rich semantic embeddings [ 7, 29 ]; (2) rank-ing optimization, where LLMs improve result ordering accuracy [ 13 , 14 , 16 , 30 ]; and (3) user interaction enhancement, focusing on natural language interfaces and dialogue-based recommendations 
+
+> arXiv:2605.11582v1 [cs.CL] 12 May 2026 Dong et al.
+
+[1 , 8]. A parallel advancement involves the adoption of generative recommendation[ 9, 18 ], particularly the self-attention mechanisms. Notable work by [ 27 ] demonstrates that unified generative rec-ommendation models have achieved breakthrough performance, surpassing traditional hierarchical deep recommendation systems. Furthermore, recent research has proposed efficient scaling so-lutions [ 28 ] for traditional search and recommendation models. However, despite these advances, current approaches struggle with high computational costs and latency, making them impractical for online inference scenarios with strict response time require-ments. This necessitates new methods that balance performance and efficiency. 
+
+## 2.2 LLM Inference Acceleration 
+
+Recent advances in LLM inference acceleration have primarily fo-cused on two orthogonal complementary approaches: model com-pression techniques and decoding optimization strategies. 
+
+Model Compression. Quantization and sparsity have emerged as a fundamental methodology for reducing model size. Seminal works including [ 6, 15 ], and their derivatives [ 10 , 19 ] have established robust 4-bit quantization baselines. Nevertheless, these methods predominantly employ pre-determined grouping strategies, which easily overlook the intrinsic heterogeneity in weight sensitivity distributions. In parallel, sparsity research has evolved from un-structured pruning to hardware-aware semi-structured paradigms. SparseGPT[ 5] and Wanda[ 20 ] achieve sparse pruning, also show promise in reducing parameters while maintaining model quality. However, SparseGPT[ 5] is limited by its layer-wise loss optimiza-tion and reliance on second-order derivatives, which constrain parameter adjustments. Retraining-based methods offer a broader optimization space, enabling better global performance. 
+
+Speculative Decoding. Speculative decoding accelerates autore-gressive decoding by enabling parallel verification of candidate tokens, as proposed by [ 3 , 11 ]. Innovations like Medusa[ 2] and SpecInfer[ 17 ] utilize tree-structured attention for parallel predic-tion. However, existing methods apply parallel decoding uniformly, which can be inefficient. We introduce dynamic parallelism initia-tion, transitioning strategically from sequential to parallel decoding based on confidence and computational cost, optimizing both re-sponse time and accuracy for industrial recommendation systems. 
+
+## 3 Solution 3.1 Overview 
+
+The system consists of two primary components: Model Compres-sion and Prefix Tree Parallel Verification , designed to optimize effi-ciency and accuracy in generative targeting tasks. 
+
+Model Compression. It focuses on reducing model size and com-putational overhead without sacrificing precision. It includes Group-wise Adaptive Quantization, which, based on parameter sensitiv-ity, groups the layers of the model into sensitive layers and non-sensitive layers, with fine-grained (more groups) quantization for sensitive groups and coarse-grained (fewer groups) quantization for non-sensitive groups. The Layer Adaptive Sparsification com-ponent prunes redundant parameters across different layers based on their relative importance, applying varying ratios to ensure that critical layers retain more information while less significant layers are pruned more aggressively. These compression techniques are seamlessly integrated with the kernel for optimized execution. 
+
+Prefix Tree Parallel Verification. is responsible for efficient and accurate token prediction. The process begins with Prefix Tree Con-struction, where hierarchical clustering[ 21 ] transforms plain text into a structured prefix tree (trie), the trie structure is wide at the top and narrow at the bottom, with fewer candidate results as one goes deeper. The Parallel Verification Trigger dynamically evalu-ates and identifies optimal trigger points for verification, ensuring a balance between processing speed and accuracy. Finally, Tree-Based Parallel Verification reconstructs the prefix tree for sequence generation, utilizing parallel decoding to accelerate results while preserving precision. 
+
+## 3.2 Model Compression 
+
+Adaptive Group-Wise Quantization. To enhance the flexibility and precision of the quantization process, we propose an adap-tive group-wise method that tailors the quantization strategy to the sensitivity of individual linear layers. Drawing inspiration from the weight sensitivity analytical solution of the near-lossless methods[ 4], we further integrated its measurement strategy into our approach as analytical standard. Therefore, channels in the layer which identified as sensitive are allocated more groups to achieve finer quantization granularity, minimizing quantization errors. Conversely, non-sensitive channels, which exhibit robust-ness to quantization-induced changes, are assigned fewer groups, reducing computational overhead without sacrificing accuracy. 
+
+Sparsification. To further improve the inference efficiency while not compromising the precision, we propose a layer-wise adaptive 
+
+𝑁 : 𝑀 pruning strategy. Based on semi-structured sparsity[ 5], we incorporate the importance-based weight selection. In essence, this approach enables layers to be pruned at varying degrees of sparsity, with more critical layers retaining a higher density (2:4) and less critical layers exhibiting greater sparsity (1:4), as shown in Fig. 1. 
+
+Figure 1: Transformer Layer Importance 
+
+Building upon the pruning criterion established in WandA[ 20 ], we propose a refined methodology to quantify the importance of individual elements in the weight matrix. Let w0 ∈ R𝑑 denote the dense weight vector prior to sparsification, and w = w0 + 𝛿 w
+
+represent its perturbed counterpart after pruning. The approxima-tion error induced by the sparsification operation can be derived through a second-order Taylor expansion: 
+
+𝛿𝐸 = 𝐸 (w) − 𝐸 (w0) =
+
+ 𝜕𝐸 𝜕 w
+
+⊤
+
+𝛿 w + 12𝛿 w⊤H𝛿 w + 𝑂 (∥ 𝛿 w∥3) (1) Efficient LLM-based Advertising via Model Compression and Parallel Verification 
+
+where H = 𝜕 2𝐸 𝜕 w2 is the Hessian matrix. The primal optimization objective is to find a set of weight elements to minimize the in-duced approximation error. Under the assumption of element-wise independence and ignoring higher-order terms, we formulate the Lagrangian constrained optimization problem: For an individual weight element 𝑤 𝑞 (satisfying 𝑤 𝑞 + 𝛿𝑤 𝑞 = 0), the error term will be: 
+
+ 𝑤 𝑞 · ∥ x𝑞 ∥2
+
+2 + 𝑤 𝑞 · 𝜕𝐸 𝜕𝑤 𝑞 
+
+(2) where x𝑞 represents the part of the input activation that will operate with 𝑤 𝑞 and 𝐸 denotes the loss function. Thus, the criterion for any element W𝑖 𝑗 in the given weight matrix W becomes: 
+
+|W𝑖 𝑗 | · ∥ X𝑗 ∥2 + | W𝑖 𝑗 | · 𝜕𝐸 𝜕 W𝑖 𝑗 
+
+(3) 
+
+## 3.3 Revised Kernel 
+
+Semi-structured sparse matrices necessitate supplementary index data, which inherently lead to extra bandwidth consumption and computational burden. Thus, we have mainly focused on tackling these pivotal challenges, accommodating the real-world scenar-ios. Based on our previous generation of Gemv (General Matrix-Vector Multiply) technology, we have systematically refined the technology, culminating in the development of a more efficient variant—SparseGemv. 
+
+Sparse Index Structure. Drawing inspiration from the traditional matrix compression method, CSR, we devised an advanced data structure to further condense index information, minimizing the additional overhead of the memory bandwidth. Given a weight matrix, we extract its non-zero elements and record their column positions in a compact index format. Then we reordered the indices and converted them into binary representations sequentially. Fi-nally, the binary indices are grouped and encoded into a compact format, such as hexadecimal, to significantly compress parameters and accelerate copying. 
+
+Computational Acceleration. Based on the aforementioned index storage structure, we implemented a sparse matrix multiplication kernel (SparseGemv) to accelerate computations involving sparse matrices. The objectives are two folds: 
+
+• Accelerate Memory Access : First, Shared Memory (SharedMem) was employed to tackle performance degradation caused by dy-namic access. Activations, originally stored in Local Memory due to runtime-determined indices, were moved to Shared Memory to improve performance. However, direct loading of activations caused bank conflicts. To resolve this, a shuffle-based data layout was implemented, which reassigned threads to non-conflicting memory banks by staggering intervals, eliminating conflicts and enabling efficient memory operations. Additionally, block-level data sharing was introduced to enhance parallelism. Multiple warps collaboratively loaded activations from High-Bandwidth Memory (HBM) into Shared Memory, improving data transfer efficiency. 
+
+• Reduce Computational Burden : For computation optimization, we proposed two methodologies: assembly instruction selection and index utilization. By utilizing the 𝑙𝑜𝑝 3.𝑏 32 assembly instruction for INT4-to-FP16 weight dequantization, the required instruc-tions were reduced significantly, improving efficiency. Mean-while, the Compressed Sparse Row (CSR) indexing method was optimized to reduce storage overhead while maintaining retrieval efficiency. Sparse indices were packed into 𝑢𝑖𝑛𝑡 16 𝑡 variables, and reverse-order storage with bit operation accelerates index calcu-lation, ensuring compactness and fast access. 
+
+## 3.4 Tree-based Parallel Verification 
+
+In business scenarios, we explored unique data pattern in generative targeting, devising efficient organization strategies to accelerate inference for specific business needs. To achieve this, we have built three core components within our workflow: Prefix Tree Construc-tion , Parallel Verification Trigger , Tree-Based Verification .
+
+Hierarchical Clustering for Prefix Tree Construction. This module aims to transform plain text into structured IDs and sub-sequently used to build a prefix tree that is structurally designed to be broad at the top and narrow at the bottom, which can cater to facilitating efficient decoding and verification. To achieve this objective, we initially collect all the advertiser-specific plaintext identifiers ( e.g. , commercial entities like "Taobao" or "Baidu") as transformation inputs. Subsequently, we adapt the Differentiable Search Index(DSI) algorithm[ 21 ]. Originally, the semantically struc-tured identifiers are resolved by making the target corpus into 𝑘 
+
+clusters recursively, aligning with the intention to capture more information and effectively reduce search space after each decoding step. Similarly, we implemented this hierarchical clustering process during the trie construction. We treat the plain-text as corpus in the DSI model, with hyper parameters denoting the clusters cate-gory number and recursive demarcation, we can then ensure the precondition of validation is met. 
+
+Parallel Verification Trigger. During the process, it is vital for us to decide when to trigger the parallel verification. Intuitively, the switch starts when the predicted benefit is maximized. Exhaustive experimental results reveal the overhead of prefix tree parallel verification scales linearly with the length of candidate results, while the time required for a single autoregressive step remains approximately constant on the same hardware and model. This leads to our proposed solution: the trigger moment is dynamically determined based on the time difference between generating the remaining tokens and verifying them. It demonstrates that the system calculates the trade-off between the overhead and benefit of parallel verification in real-time during the inference process. Parallel prefix tree verification is triggered when the predicted benefit is maximized, ensuring efficient utilization of computational resources while maintaining accuracy. 
+
+Tree-Based Parallel Verification. The tree-based parallel verifi-cation process was inspired by the speculative decoding ideas[ 17 ]. This method is a three-stage workflow involving restructuring the tree to construct input sequences, decoding them with tree-based constraints, and performing beam search to select optimal sequences The decoding process leverages a trie and begins with a depth-first search (DFS) to construct input sequences and a tree mask[ 2], ensuring only valid paths are considered. Padding handles varying sequence lengths due to beam search. These sequences are processed in parallel by the decoder, which outputs a probability Dong et al. 
+
+distribution 𝑇 𝑠𝑐𝑜𝑟𝑒 for each position. Using the trie, 𝑇 𝑠𝑐𝑜𝑟𝑒 is filtered to retain valid token scores, which are combined with parent node scores via logarithmic summation to compute node scores 𝐵 𝑠𝑐𝑜𝑟𝑒 .Beam search[ 25 ] selects the top sequences based on 𝐵 𝑠𝑐𝑜𝑟𝑒 . At the final position, the highest-scoring nodes (up to 𝑏𝑒𝑎𝑚 𝑠𝑖𝑧𝑒 ) are traced back to reconstruct valid sequences. This approach ensures efficient and accurate decoding by applying structural constraints from the prefix tree while accelerating the process. 
+
+## 4 Experiments 
+
+In this section, we select ERNIE 1.5B as our backbone model to eval-uate our framework on two real-world scenarios: ad creative gen-eration and targeted advertising. All experiments are implemented using PaddlePaddle. For ad creative generation, experiments are conducted on an NVIDIA A10 GPU with a beam size of 1, while targeted advertising utilizes an NVIDIA A30 GPU with a beam size of 20, because more advertising candidates need to be selected. 
+
+## 4.1 Results of Targeted Advertising 
+
+To evaluate the efficiency of our optimization techniques, we con-ducted a series of experiments comparing different configurations of our framework. For datasets, we utilized a proprietary dataset consisting of internal commercial traffic data collected by our com-pany. Due to its sensitive nature, the dataset is not publicly available. For advertising evaluation metrics, we use latency and recall to assess the trade-off between inference acceleration and precision sacrifice. As shown in Fig. 2, our individual techniques demonstrate notable improvements in performance, their combination ensures both significant speedup and acceptable recall levels, making the complete framework well-suited for practical online deployment.           
+
+> Technique AVG Len. RECALL Baseline (FP16) 60.084 Quantization 60.083 Sparse + Quant 60.083 Sparse + Quant + PTPV 60.081
+
+Figure 2: Comparison on Targeted Advertising Scenario. 
+
+## 4.2 Results of Ads Creative Generation 
+
+The assessment of the ad creative generation focus primarily on per-formance with creative rewriting and keyword summarization. We use CSL [12] as the dataset, which contains metadata from 396,209 core Chinese academic journal articles published between 2010 and 2020. As demonstrated in Fig. 3, the baseline established the quality upper bound, while sparsification and quantization induce marginal decreases in accuracy yet yield significant efficiency gains. Notably, the hybrid approach achieves the best trade-off between efficiency and quality, making it operationally viable for practical deployments in real-world applications. 
+
+## 4.3 Ablation Studies 
+
+To evaluate the effectiveness of the optimization techniques in ernie 1.5B, we conduct an ablation study by progressively integrating different components. INT4 adaptive group quantization and layer-adaptive hierarchical sparsification are analyzed in terms of per-token latency with BLEU and Meteor scores. As shown in Table 1,             
+
+> Technique AVG Len. Meteor BLEU Baseline (FP16) 17.5 0.6345 0.4247 Quantization 17.6 0.6283 0.4178 Sparse + Quant 17.5 0.6127 0.4038
+
+Figure 3: Comparison on Ads Creative Generation Scenario 
+
+quantization significantly reduces latency while maintaining high BLEU and Meteor scores, demonstrating its effectiveness in preserv-ing generation quality. In contrast, sparsification yielded only mod-erate efficiency gains. Conservative sparsification approaches( 2 : 4 )show limited efficiency improvements, while aggressive sparsifi-cation ( 1 : 4 ) delivers dramatic speedups at the cost of noticeable quality degradation. This suggests that a trade-off exists between the degree of sparsification and output quality, with an optimal balance likely achieved through a compromise between 2:4 and 1:4 configurations. The findings are particularly relevant for production environments. Our data-driven sparsification strategy is specifically engineered for commercial models’ parameter distributions, with targeted optimization for high-frequency, business-critical features as elaborated in Sec. 3. While generalized applications warrant fur-ther investigation, this tailored methodology demonstrates superior performance in industrial deployments where practical constraints are paramount. 
+
+Table 1: Ablation studies of quantization and sparsification 
+
+Technique Latency Meteor BLEU Speedup Baseline (FP16) 6.6 0.6345 0.4247 ×1.00 Quantization 4.8 0.6283 0.4178 ×1.37 Sparsification(2:4) 5.3 0.6260 0.4161 ×1.25 Sparsification(1:4) 4.6 0.5549 0.3476 ×1.43 Sparse(2:4) + Quant 4.0 0.6195 0.4103 ×1.65 Sparse(1:4) + Quant 3.5 0.5446 0.3369 ×1.89 Sparse(Mix) + Quant 3.7 0.6127 0.4038 ×1.78 
+
+## 5 Conclusion 
+
+This study presents the Efficient Generative Targeting framework, an innovative solution to the generative targeting problem in search advertising, optimizing inference efficiency without sacrificing pre-cision. We address this challenge with two key strategies: model compression and prefix tree parallel verification. Our extensive experiments show that Efficient Generative Targeting outperforms previous LLM-based advertising systems in real-time delivery set-tings, demonstrating its effectiveness and potential for practical deployment in dynamic advertising environments. However, the framework’s current design is primarily suited for commercial advertising targeting scenarios, as its optimization strategies (quan-tization, sparsification, and business-oriented improvements) are tailored to the unique requirements of this domain. Applications in other contexts may require further adaptation to address differ-ences in data patterns, objectives, and constraints. Future research will focus on integrating adaptive algorithms and reinforcement Efficient LLM-based Advertising via Model Compression and Parallel Verification 
+
+learning to further enhance efficiency, scalability, and adaptabil-ity, aiming to refine the balance between optimization and user experience in modern advertising. 
+
+## References 
+
+[1] Keqin Bao, Jizhi Zhang, Yang Zhang, Wenjie Wang, Fuli Feng, and Xiangnan He. 2023. TALLRec: An Effective and Efficient Tuning Framework to Align Large Language Model with Recommendation. In RecSys . ACM, 1007–1014. [2] Tianle Cai, Yuhong Li, Zhengyang Geng, Hongwu Peng, Jason D. Lee, Deming Chen, and Tri Dao. 2024. Medusa: Simple LLM Inference Acceleration Framework with Multiple Decoding Heads. In ICML .[3] Charlie Chen, Sebastian Borgeaud, Geoffrey Irving, Jean-Baptiste Lespiau, Lau-rent Sifre, and John Jumper. 2023. Accelerating Large Language Model Decoding with Speculative Sampling. CoRR abs/2302.01318 (2023). [4] Tim Dettmers, Ruslan Svirschevski, Vage Egiazarian, Denis Kuznedelev, Elias Frantar, Saleh Ashkboos, Alexander Borzunov, Torsten Hoefler, and Dan Alistarh. 2024. SpQR: A Sparse-Quantized Representation for Near-Lossless LLM Weight Compression. In ICLR .[5] Elias Frantar and Dan Alistarh. 2023. SparseGPT: Massive Language Models Can be Accurately Pruned in One-Shot. In ICML , Vol. 202. PMLR, 10323–10337. [6] Elias Frantar, Saleh Ashkboos, Torsten Hoefler, and Dan Alistarh. 2023. GPTQ: Accurate Post-Training Quantization for Generative Pre-trained Transformers. In ICLR .[7] Shijie Geng, Shuchang Liu, Zuohui Fu, Yingqiang Ge, and Yongfeng Zhang. 2022. Recommendation as Language Processing (RLP): A Unified Pretrain, Personalized Prompt & Predict Paradigm (P5). In RecSys . ACM, 299–315. [8] Yeongseo Jung, Eunseo Jung, and Lei Chen. 2023. Towards a Unified Con-versational Recommendation System: Multi-task Learning via Contextualized Knowledge Distillation. In EMNLP . 13625–13637. [9] Wang-Cheng Kang and Julian J. McAuley. 2018. Self-Attentive Sequential Rec-ommendation. In ICDM . IEEE, 197–206. [10] Changhun Lee, Jungyu Jin, Taesu Kim, Hyungjun Kim, and Eunhyeok Park. 2024. OWQ: Outlier-Aware Weight Quantization for Efficient Fine-Tuning and Inference of Large Language Models. In AAAI . 13355–13364. [11] Yaniv Leviathan, Matan Kalman, and Yossi Matias. 2023. Fast Inference from Transformers via Speculative Decoding. In ICML , Vol. 202. PMLR, 19274–19286. [12] Yudong Li, Yuqing Zhang, Zhe Zhao, Linlin Shen, Weijie Liu, Weiquan Mao, and Hui Zhang. 2022. CSL: A Large-scale Chinese Scientific Literature Dataset. In 
+
+ICCL . 3917–3923. [13] Jiayi Liao, Sihang Li, Zhengyi Yang, Jiancan Wu, Yancheng Yuan, Xiang Wang, and Xiangnan He. 2024. LLaRA: Large Language-Recommendation Assistant. In 
+
+SIGIR . ACM, 1785–1795. [14] Jianghao Lin, Rong Shan, Chenxu Zhu, Kounianhua Du, Bo Chen, Shigang Quan, Ruiming Tang, Yong Yu, and Weinan Zhang. 2024. ReLLa: Retrieval-enhanced Large Language Models for Lifelong Sequential Behavior Comprehension in Recommendation. In WWW . ACM, 3497–3508. [15] Ji Lin, Jiaming Tang, Haotian Tang, Shang Yang, Wei-Ming Chen, Wei-Chen Wang, Guangxuan Xiao, Xingyu Dang, Chuang Gan, and Song Han. 2024. AWQ: Activation-aware Weight Quantization for On-Device LLM Compression and Acceleration. In MLSys .[16] Sichun Luo, Bowei He, Haohan Zhao, Yinya Huang, Aojun Zhou, Zongpeng Li, Yuanzhang Xiao, Mingjie Zhan, and Linqi Song. 2023. RecRanker: Instruction Tuning Large Language Model as Ranker for Top-k Recommendation. CoRR 
+
+abs/2312.16018 (2023). [17] Xupeng Miao, Gabriele Oliaro, Zhihao Zhang, Xinhao Cheng, Zeyu Wang, Zhengxin Zhang, Rae Ying Yee Wong, Alan Zhu, Lijie Yang, Xiaoxiang Shi, Chunan Shi, Zhuoming Chen, Daiyaan Arfeen, Reyna Abhyankar, and Zhihao Jia. 2024. SpecInfer: Accelerating Large Language Model Serving with Tree-based Speculative Inference and Verification. In Proceedings of the 29th ASPLOS .932–949. [18] Aleksandr V. Petrov and Craig Macdonald. 2023. Generative Sequential Recom-mendation with GPTRec. CoRR abs/2306.11114 (2023). [19] Wenqi Shao, Mengzhao Chen, Zhaoyang Zhang, Peng Xu, Lirui Zhao, Zhiqian Li, Kaipeng Zhang, Peng Gao, Yu Qiao, and Ping Luo. 2024. OmniQuant: Omni-directionally Calibrated Quantization for Large Language Models. In ICLR .[20] Mingjie Sun, Zhuang Liu, Anna Bair, and J. Zico Kolter. 2024. A Simple and Effective Pruning Approach for Large Language Models. In ICLR .[21] Yi Tay, Vinh Tran, Mostafa Dehghani, Jianmo Ni, Dara Bahri, Harsh Mehta, Zhen Qin, Kai Hui, Zhe Zhao, Jai Prakash Gupta, Tal Schuster, William W. Cohen, and Donald Metzler. 2022. Transformer Memory as a Differentiable Search Index. In 
+
+Neural Information Processing Systems .[22] Lei Wang and Ee-Peng Lim. 2023. Zero-Shot Next-Item Recommenda-tion using Large Pretrained Language Models. CoRR abs/2304.03153 (2023). arXiv:2304.03153 [23] Xinyuan Wang, Liang Wu, Liangjie Hong, Hao Liu, and Yanjie Fu. 2024. LLM-Enhanced User-Item Interactions: Leveraging Edge Information for Optimized Recommendations. CoRR abs/2402.09617 (2024). [24] Wei Wei, Xubin Ren, Jiabin Tang, Qinyong Wang, Lixin Su, Suqi Cheng, Junfeng Wang, Dawei Yin, and Chao Huang. 2024. LLMRec: Large Language Models with Graph Augmentation for Recommendation. In WSDM . ACM, 806–815. [25] Sam Wiseman and Alexander M. Rush. 2016. Sequence-to-Sequence Learning as Beam-Search Optimization. In EMNLP . 1296–1306. [26] Zhengyi Yang, Jiancan Wu, Yanchen Luo, Jizhi Zhang, Yancheng Yuan, An Zhang, Xiang Wang, and Xiangnan He. 2023. Large Language Model Can Interpret Latent Space of Sequential Recommender. CoRR abs/2310.20487 (2023). [27] Jiaqi Zhai, Lucy Liao, Xing Liu, Yueming Wang, Rui Li, Xuan Cao, Leon Gao, Zhaojie Gong, Fangda Gu, Jiayuan He, Yinghai Lu, and Yu Shi. 2024. Actions Speak Louder than Words: Trillion-Parameter Sequential Transducers for Gener-ative Recommendations. In ICML .[28] Buyun Zhang, Liang Luo, Yuxin Chen, Jade Nie, Xi Liu, Shen Li, Yanli Zhao, Yuchen Hao, Yantao Yao, Ellie Dingqiao Wen, Jongsoo Park, Maxim Naumov, and Wenlin Chen. 2024. Wukong: Towards a Scaling Law for Large-Scale Rec-ommendation. In ICML .[29] Chao Zhang, Shiwei Wu, Haoxin Zhang, Tong Xu, Yan Gao, Yao Hu, and En-hong Chen. 2024. NoteLLM: A Retrievable Large Language Model for Note Recommendation. In WWW . ACM, 170–179. [30] Zizhuo Zhang and Bang Wang. 2023. Prompt Learning for News Recommenda-tion. In SIGIR . ACM, 227–237.

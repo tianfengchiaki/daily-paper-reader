@@ -1,0 +1,78 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2605.10964v1/fig-001.webp",
+      "caption": "Figure 1: Output quality measured by semantic similarity to the no-ad response, averaged over 100 trials; error bars show ± SE. Left: per-segment similarity across the three generation rounds. Right: cumulative similarity over the first k sentences.",
+      "page": 11,
+      "index": 1,
+      "width": 904,
+      "height": 285
+    },
+    {
+      "url": "assets/figures/arxiv/2605.10964v1/fig-002.webp",
+      "caption": "Figure 2: Sample outputs of different mechanisms. Teal: useful answer information. Blue: ads link. Red: incoherent or forced ad insertion.",
+      "page": 11,
+      "index": 2,
+      "width": 904,
+      "height": 577
+    },
+    {
+      "url": "assets/figures/arxiv/2605.10964v1/fig-003.webp",
+      "caption": "Figure 7: Output quality measured by semantic similarity to the no-ad response for Scenario 4. Left: per-segment similarity across the three generation rounds. Right: cumulative",
+      "page": 38,
+      "index": 3,
+      "width": 904,
+      "height": 283
+    },
+    {
+      "url": "assets/figures/arxiv/2605.10964v1/fig-004.webp",
+      "caption": "Figure 4: Sample outputs of different mechanisms for Scenario 2. Teal: useful answer information. Blue: ads link. Red: incoherent or forced ad insertion.",
+      "page": 34,
+      "index": 4,
+      "width": 904,
+      "height": 687
+    },
+    {
+      "url": "assets/figures/arxiv/2605.10964v1/fig-005.webp",
+      "caption": "Figure 3: Output quality measured by semantic similarity to the no-ad response for Scenario 2. Left: per-segment similarity across the three generation rounds. Right: cumulative",
+      "page": 33,
+      "index": 5,
+      "width": 904,
+      "height": 285
+    },
+    {
+      "url": "assets/figures/arxiv/2605.10964v1/fig-006.webp",
+      "caption": "Figure 5: Output quality measured by semantic similarity to the no-ad response for Scenario 3. Left: per-segment similarity across the three generation rounds. Right: cumulative",
+      "page": 35,
+      "index": 6,
+      "width": 904,
+      "height": 283
+    },
+    {
+      "url": "assets/figures/arxiv/2605.10964v1/fig-007.webp",
+      "caption": "Figure 6: Sample outputs of different mechanisms for Scenario 3. Teal: useful answer information. Blue: ads link. Red: incoherent or forced ad insertion.",
+      "page": 36,
+      "index": 7,
+      "width": 904,
+      "height": 720
+    },
+    {
+      "url": "assets/figures/arxiv/2605.10964v1/fig-008.webp",
+      "caption": "Table 4: Advertiser bids and initial relevance scores q(1)i for Scenario 4. Organic q(1)0 reported as mean ± SE over 100 trials.",
+      "page": 37,
+      "index": 8,
+      "width": 814,
+      "height": 215
+    },
+    {
+      "url": "assets/figures/arxiv/2605.10964v1/fig-009.webp",
+      "caption": "Table 5: Auction outcomes for Scenario 4 over 100 trials (reported as mean ± SE). The best performance in each metric is highlighted in bold.",
+      "page": 37,
+      "index": 9,
+      "width": 904,
+      "height": 196
+    }
+  ]
+}

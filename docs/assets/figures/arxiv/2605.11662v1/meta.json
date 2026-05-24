@@ -1,0 +1,54 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2605.11662v1/fig-001.webp",
+      "caption": "Table 2: Overall performance of HSUGA vs. baselines. Best results in bold; *: significant vs. best baseline (p < 0.05, paired t-test).",
+      "page": 6,
+      "index": 1,
+      "width": 950,
+      "height": 919
+    },
+    {
+      "url": "assets/figures/arxiv/2605.11662v1/fig-002.webp",
+      "caption": "Table 10: Overall performance of HSUGA vs. baselines. Best results in bold; *: significant vs. best baseline (p < 0.05, paired t-test).",
+      "page": 14,
+      "index": 2,
+      "width": 950,
+      "height": 594
+    },
+    {
+      "url": "assets/figures/arxiv/2605.11662v1/fig-003.webp",
+      "caption": "Figure 2: The overview of the proposed HSUGA framework",
+      "page": 3,
+      "index": 3,
+      "width": 912,
+      "height": 369
+    },
+    {
+      "url": "assets/figures/arxiv/2605.11662v1/fig-004.webp",
+      "caption": "Table 9: Case study of interest evolution across four consecutive stages on the Steam dataset. Each image visualizes a user interaction item at a given stage. Interests are shown in red, and LLM Explanation provides the rationale for edit operations.",
+      "page": 13,
+      "index": 4,
+      "width": 950,
+      "height": 693
+    },
+    {
+      "url": "assets/figures/arxiv/2605.11662v1/fig-005.webp",
+      "caption": "Table 3: Ablation study on the Fashion dataset with different backbone models.",
+      "page": 8,
+      "index": 5,
+      "width": 854,
+      "height": 590
+    },
+    {
+      "url": "assets/figures/arxiv/2605.11662v1/fig-006.webp",
+      "caption": "Table 1: HR@10 and NDCG@10 (higher is better) on three datasets with three backbones. Panel A adds GAA as a usage plug-in to baselines that focus on improving semantic representation extraction (LLMEmb/LLM2Rec/LLMESR); Panel B adds HSU as a representation plug-in to baselines that focus on improving the utilization of semantic embedding (ICSRec/RCL/LLMESR). ∗: significant over Base (paired t-test, p<0.05); bold: better of Base/+ pair.",
+      "page": 5,
+      "index": 6,
+      "width": 842,
+      "height": 754
+    }
+  ]
+}

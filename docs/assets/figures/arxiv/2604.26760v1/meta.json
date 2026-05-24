@@ -1,0 +1,70 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2604.26760v1/fig-001.webp",
+      "caption": "Figure 1: Schematic comparison of three reasoning paradigms: (a) Explicit CoT Reasoning, (b) Latent Reasoning, and (c) our Factorized Latent Reasoning (FLR).",
+      "page": 2,
+      "index": 1,
+      "width": 1056,
+      "height": 238
+    },
+    {
+      "url": "assets/figures/arxiv/2604.26760v1/fig-002.webp",
+      "caption": "Figure 4: Visualization of factor disentanglement on Toys and Games datasets. (a, c) Unconstrained Setting: Latent factors exhibit high redundancy (Avg |Corr| ≈ 0.44), indicating mode collapse. (b, d) With FLR Constraints: Factors become highly orthogonal and independent (Avg |Corr| ≈ 0.03), validating the efficacy of the proposed regularization.",
+      "page": 7,
+      "index": 2,
+      "width": 468,
+      "height": 427
+    },
+    {
+      "url": "assets/figures/arxiv/2604.26760v1/fig-003.webp",
+      "caption": "Figure 5: Relative performance improvement of LR-GRPO and FLR-GRPO over the FLR baseline. The comparison is conducted across four datasets (Toys, CDs, Games, Instruments) in terms of HR@K and NDCG@K. The baseline (0%) represents the performance of the FLR model.",
+      "page": 8,
+      "index": 3,
+      "width": 470,
+      "height": 302
+    },
+    {
+      "url": "assets/figures/arxiv/2604.26760v1/fig-004.webp",
+      "caption": "Figure 2: Illustration of the FLR architecture and its Two-Stage training paradigm.",
+      "page": 4,
+      "index": 4,
+      "width": 1052,
+      "height": 470
+    },
+    {
+      "url": "assets/figures/arxiv/2604.26760v1/fig-005.webp",
+      "caption": "Figure 3: Illustration of the Factorized Latent Reasoning (FLR) module.",
+      "page": 4,
+      "index": 5,
+      "width": 502,
+      "height": 264
+    },
+    {
+      "url": "assets/figures/arxiv/2604.26760v1/fig-006.webp",
+      "caption": "Table 4: Impact of our GRPO Strategies. Specifically, LRGRPO is the improvedGRPOmethod fromLatentR3, whereas FLR-GRPO is our proposed RL approach.",
+      "page": 9,
+      "index": 6,
+      "width": 510,
+      "height": 404
+    },
+    {
+      "url": "assets/figures/arxiv/2604.26760v1/fig-007.webp",
+      "caption": "Table 3: Ablation study results on Games and Toys datasets. \"None\" represents the FLR model without any regularization constraints (L𝑜𝑟𝑡ℎ,L𝑑𝑖𝑣,L𝑠𝑝𝑎𝑟𝑠𝑒 ). Bold values denote the best results.",
+      "page": 9,
+      "index": 7,
+      "width": 864,
+      "height": 250
+    },
+    {
+      "url": "assets/figures/arxiv/2604.26760v1/fig-008.webp",
+      "caption": "Figure 6: Visualization of attention patterns on Amazon Video Games. The x-axis shows recommended items, and the y-axis shows latent attention heads. (a) The pre-trained baseline exhibits redundant attention. (b) FLR-GRPO demonstrates categoryaware specialization.",
+      "page": 9,
+      "index": 8,
+      "width": 979,
+      "height": 306
+    }
+  ]
+}

@@ -1,0 +1,1071 @@
+Title: Prompt-Unknown Promotion Attacks against LLM-based Sequential Recommender Systems
+
+URL Source: https://arxiv.org/pdf/2604.23640v1
+
+Published Time: Tue, 28 Apr 2026 00:59:26 GMT
+
+Number of Pages: 11
+
+Markdown Content:
+# Prompt-Unknown Promotion Attacks against LLM-based Sequential Recommender Systems 
+
+## Yuchuan Zhao 
+
+The University of Queensland Brisbane, Australia y.c.zhao@uq.edu.au 
+
+## Tong Chen 
+
+The University of Queensland Brisbane, Australia tong.chen@uq.edu.au 
+
+## Junliang Yu 
+
+Griffith University Brisbane, Australia junliang.yu@griffith.edu.au 
+
+## Zongwei Wang 
+
+Chongqing University Chongqing, China zongwei@cqu.edu.cn 
+
+## Lizhen Cui 
+
+Shandong University Jinan, China clz@sdu.edu.cn 
+
+## Hongzhi Yin ∗
+
+The University of Queensland Brisbane, Australia h.yin1@uq.edu.au 
+
+## Abstract 
+
+Large language model-powered sequential recommender systems (LLM-SRSs) have recently demonstrated remarkable performance, enabling recommendations through prompt-driven inference over user interaction sequences. However, this paradigm also introduces new security vulnerabilities, particularly text-level manipulations, rendering them appealing targets for promotion attacks that pur-posely boost the ranking of specific target items. Although such security risks have been receiving increasing attention, existing studies typically rely on an unrealistic assumption of access to ei-ther the victim model or prompt to unveil attack mechanisms. In this work, we investigate the item promotion attack in LLM-SRSs under a more realistic setting where both the system prompt and victim model are unknown to the attacker, and propose a Prompt-
+
+Unknown Dual-poisoning Attack (PUDA) framework. To simulate attacks under this full black-box setting, we introduce an LLM-based evolutionary refinement strategy that infers discrete system prompts, enabling the training of an effective surrogate model that mimics the behaviors of the victim model. Leveraging the distilled prompt and surrogate model, we devise a promotion attack that adversarially revises target item texts under semantic constraints, which is further complemented by the highly plausible, surrogate-generated poisoning sequences to enable cost-effective target item promotion. Extensive experiments on real-world datasets demon-strate that PUDA consistently outperforms state-of-the-art com-petitors in boosting the exposure of unpopular target items. Our findings reveal critical security risks in modern LLM-SRSs even when both prompts and models are protected, and highlight the need for more robust defensive means. 
+
+## CCS Concepts 
+
+• Information systems → Recommender systems . 
+
+> ∗Corresponding author
+> This work is licensed under a Creative Commons Attribution 4.0 International License.
+> SIGIR ’26, Melbourne, VIC, Australia
+> ©2026 Copyright held by the owner/author(s). ACM ISBN 979-8-4007-2599-9/2026/07 https://doi.org/10.1145/3805712.3809691
+
+## Keywords 
+
+Sequential Recommendation, Large Language Model, Prompt Dis-tillation, Poisoning Attack 
+
+ACM Reference Format: 
+
+Yuchuan Zhao, Tong Chen, Junliang Yu, Zongwei Wang, Lizhen Cui, and Hongzhi Yin. 2026. Prompt-Unknown Promotion Attacks against LLM-based Sequen-tial Recommender Systems. In Proceedings of the 49th International ACM SIGIR Conference on Research and Development in Information Retrieval (SI-GIR ’26), July 20–24, 2026, Melbourne, VIC, Australia. ACM, New York, NY, USA, 11 pages. https://doi.org/10.1145/3805712.3809691 
+
+## 1 Introduction 
+
+Sequential recommender systems (SRSs) underpin modern digital platforms by modeling users’ evolving interests and item transition dynamics, enabling accurate next-item prediction and personalized recommendation at scale [ 20 , 38 , 40 ]. Recently, the emergence of large language models (LLMs) has opened new opportunities for advancing SRSs by enabling richer semantic modeling and more ex-pressive representations of user behavior and item content [ 17 , 52 ]. Leveraging their strong language understanding and in-context learning capabilities [ 4, 37 ], LLMs give rise to a novel recommen-dation paradigm that verbalizes user–item interactions as natu-ral language prompts. Representative approaches, such as P5 [15], TALLRec [ 1 ], and SPRec [ 13 ], demonstrate that LLMs can effectively interpret these prompts to capture complex interaction patterns, leading to improved recommendation performance. Due to their central role in industrial applications, SRSs have increasingly become prominent targets for malicious attacks [ 25 ]. To unveil the security loopholes of SRSs, prior studies have ex-plored a wide range of adversarial strategies against traditional SRSs, including poisoning attacks [ 33 , 51 ], model extraction attacks [ 34 , 43 ], and membership inference attacks [ 18 , 47 , 54 ]. Among these threats, promotion attacks [ 6, 41 , 48 ] which aim at artificially increasing the visibility of specific target items by injecting manip-ulated interactions or crafting adversarial content, have emerged as the most prominent and widely studied attack type in SRSs. With the recent adoption of LLMs, a natural question arises as to whether LLM-powered SRSs (LLM-SRSs) inherit similar vulnerabil-ities to promotion attacks [ 46 ]. Intuitively, given LLM-SRSs’ strong reliance on their textual inputs, i.e., prompt instructions and item contexts, adversaries can attempt to manipulate recommendation results via semantic perturbations. Several recent studies support  
+
+> arXiv:2604.23640v1 [cs.IR] 26 Apr 2026 SIGIR ’26, July 20–24, 2026, Melbourne, VIC, Australia Yuchuan Zhao et al.
+
+this intuition: CheatAgent [ 26 ] adversarially modifies the origi-nal prompt to degrade system performance. Meanwhile, TextSimu [ 35 ] and Zhang et al. [ 45 ] focus on item-side textual manipula-tions, rewriting target item descriptions to mimic popular items and thereby increase their visibility. However, these methods are built upon unrealistic assumptions that are unlikely to hold in real-world deployments. In practice, both the LLM-SRS backbone and the system prompt are strictly propri-etary and inaccessible to attackers. As a result, prior studies [ 18 , 26 ]that rely on direct access to the system prompt are fundamentally ill-posed. Under prompt-unknown constraint, a natural strategy is to distill the discrete system prompt to approximate the original one. Nevertheless, this direction remains largely underexplored in LLM-SRSs, leaving a critical gap in understanding how attacks can be conducted under practical black-box constraints. Moreover, existing methods [ 35 , 45 ] predominantly rely on modifying item-side textual attributes (e.g., titles or descriptions) to promote target items, typically by imitating the textual characteristics of high-popularity items. Such text-centric heuristics often distort original item semantics or even introduce misleading descriptions, making the manipulated items easily detectable by users or platform mod-eration mechanisms in real-world deployments. More importantly, such attacks mainly focus on text-level manipulation and overlook the sequential dependencies and item co-occurrence patterns inher-ent in user interaction sequences, thus failing to generate realistic and effective poisoning signals at the interaction level. To investigate the security risks of LLM-SRSs under a more re-alistic setting, we propose a Prompt-Unknown Dual-poisoning 
+
+Attack framework ( PUDA ) against LLM-SRSs. PUDA framework operates under black-box assumptions and integrates two tightly coupled components. Firstly, we introduce an LLM-driven evolu-tionary prompt distillation strategy that employs crossover and mutation [ 9, 11 ] to infer high-fidelity discrete prompts without ac-cessing proprietary instructions, while simultaneously generating plausible interaction histories to train a surrogate recommender that mimics the victim black-box model. Secondly, building upon the distilled prompt and the surrogate model, we design a dual-poisoning item promotion attack strategy that jointly refines target item’s textual descriptions and injects behavior-preserving ma-licious user sequences, thereby amplifying item exposure while maintaining consistency with real user behavior. The design of PUDA indicates that LLM-SRSs, despite operating in inaccessible black-box settings, remain amenable to prompt distillation and thus constitute vulnerable targets for stealthy item-promotion attacks. The main contributions of this paper are summarized as follows: 
+
+• We propose a Prompt-Unknown Dual-Poisoning Attack frame-work for LLM-SRSs under a realistic setting where model inter-nals and prompts are entirely inaccessible. 
+
+• We design an LLM-driven evolutionary prompt distillation strat-egy that efficiently infers high-fidelity discrete prompts for SRS tasks, enabling accurate surrogate model construction without access to proprietary system instructions. 
+
+• We develop a dual-poisoning attack strategy that jointly performs controlled semantic refinement of target item texts and behavior-preserving poisoning sequence injection. This coordinated design enables effective long-tail item promotion in black-box LLM-SRSs under limited attacker budgets. 
+
+• Extensive experiments demonstrate that our method substan-tially improves target item exposure in black-box settings, reveal-ing significant security vulnerabilities in modern LLM-SRSs. 
+
+## 2 Related Work 2.1 Promotion Attacks against SRSs 
+
+Most existing promotion attacks against traditional SRSs aim to manipulate recommendation outcomes by injecting fake user in-teractions or fabricated user profiles. LOKI [ 44 ] constructs a local simulator to imitate the target model and employs reinforcement learning (RL) to train the attack agent that generates adversarial sequences. Wang et al. [ 33 ] leverage generative adversarial net-works (GANs) to synthesize fake sequences without requiring API access or prior knowledge of the target model. DDSP [ 51 ] develops a diversity-aware poisoning sequence generator with a revamped attack objective to promote target items more effectively. With the emergence of LLMs, new perspectives have been in-troduced for designing promotion attack strategies. TextSimu [ 35 ]employs LLMs to rewrite target items’ descriptions to mimic popu-lar items, while Agent4SR [ 16 ] injects fake user profiles generated by LLM-based agents to manipulate recommendation behaviors. More recently, the security of LLM-SRSs under adversarial settings has begun to attract increasing attention. Zhang et al. [ 45 ] propose a testing-phase promotion attack that leverages LLMs to rewrite the textual description of the target item, revealing the vulnerability of LLM-SRSs to semantic manipulation. CheatAgent [ 26 ] introduces LLM agents to generate adversarial perturbations injected into the system prompt, aiming to disrupt the decision-making process of SRSs. To the best of our knowledge, no prior work has investi-gated promotion attacks under a black-box setting where both the LLM-SRS and its underlying prompt are unknown. 
+
+## 2.2 Prompt Distillation on LLM-SRSs 
+
+In LLM-based recommendation, prompts critically influence recom-mendation quality but are typically private and inaccessible. Prompt distillation is therefore essential for approximating black-box rec-ommenders. POD [ 24 ] distills discrete prompts into continuous soft prompt vectors to bridge item IDs and textual semantics, thus reduc-ing inference cost. RLPrompt [ 10 ] formulates discrete prompt search as a reinforcement learning problem by maximizing downstream task performance. CoPrompt [ 7] further proposes a left-to-right discrete prompt optimization at the cost of high computational overhead due to the large search space. Given the strong reasoning ability of LLMs, several studies have explored using LLMs to distill and optimize prompts. APE [ 53 ]leverages LLMs to automatically generate and select instruction candidates based on input-output demonstrations. PromptBreeder [11 ] introduces a self-referential evolutionary framework that itera-tively adapts prompts for specific domains, while SEE [ 8] proposes a cohesive in-context prompt optimization method that jointly re-fines instructions and examples via metaheuristic search. Despite these advances, discrete prompt distillation for recommendation tasks remains under-explored. Prompt-Unknown Promotion Attacks against LLM-based Sequential Recommender Systems SIGIR ’26, July 20–24, 2026, Melbourne, VIC, Australia 
+
+## 3 Preliminaries 3.1 LLM-based Sequential Recommendation 
+
+A sequential recommender system (SRS) contains a user set U and an item set I. Each user 𝑢 ∈ U is associated with a chronological interaction sequence 𝑠 𝑢 = {𝑖 (𝑢 ) 
+
+> 1
+
+, 𝑖 (𝑢 ) 
+
+> 2
+
+, ..., 𝑖 (𝑢 ) 
+
+> 𝑀
+
+}, where 𝑀 denotes the maximum sequence length and |U| = 𝑁 is the number of users. The goal of sequential recommendation [ 20 ] is to predict the next item that a user 𝑢 is most likely to interact with: 𝑖 ∗ 
+
+> 𝑢
+
+=
+
+arg max 𝑖 ∈ I 𝑝 
+
+
+
+𝑖 (𝑢 ) 
+
+> 𝑀 +1
+
+= 𝑖 | 𝑠 𝑢 
+
+
+
+. In LLM-SRSs, this prediction task is reformulated as a language modeling problem [ 2] by converting user interaction histories into natural language prompts. Without loss of generality, we define a sequential recommendation prompt 
+
+P as the complete textual input to the LLM, typically consisting of: 
+
+• Instruction 𝐼 : A natural-language description specifying the next-item prediction task based on a given input sequence. 
+
+• Demonstrations (Demos) X: Example input-output pairs illus-trating how the model should map an interaction sequence to its next-item label. Each demo includes (i) a historical sequence 𝑠 𝑢 ,and (ii) its ground-truth next item 𝑦 𝑢 .Formally, a prompt is defined as: 𝑃 = [𝐼, X𝑢 ], where 𝐼 denotes the natural language instruction and X𝑢 = (𝑠 𝑢 , 𝑦 𝑢 ) is a demonstration pair consisting of a user’s historical interaction sequence 𝑠 𝑢 and the corresponding next-item label 𝑦 𝑢 . In the following, we use 
+
+𝑃 to denote an individual prompt and P to represent a prompt set. LLM-SRSs infer user preferences by jointly interpreting the semantics of the instruction and the interaction context. Unless otherwise specified, we use the term prompt 𝑃 interchangeably with instruction 𝐼 , and retain the term prompt distillation to remain consistent with prior work [10]. 
+
+## 3.2 Attacker Brief 
+
+Building on the LLM-SRSs framework described above, we charac-terize the adversary from three perspectives. 
+
+Attacker’s Goal. Poisoning attacks in recommender systems can be broadly categorized into two types: (i) non-targeted attacks, which aim to degrade overall performance [ 26 , 39 ], and (ii) targeted attacks, which seek to promote or demote specific items [ 25 , 42 ]. In this work, we focus on targeted promotion attacks [ 35 , 36 ], where the adversary attempts to increase the exposure of target items across users’ recommendation list in an LLM-SRS. 
+
+Attacker’s Knowledge. We consider a realistic black-box setting [5 , 32 ] for attacking LLM-SRSs. The attacker has no access to the victim model’s architecture or parameters. Furthermore, the system prompt which is proprietary to the platform, cannot be accessed or edited. While the victim model is trained on all interactions D, the attacker can only observe partial interaction data denoted by D′ ⊆D. This setting replicates the practical e-commerce environment where only a fraction of the interactions are made public, e.g., not all Amazon users publish a product review after the purchase. 
+
+Attacker’s Capability. The attacker is able to create a small num-ber of fake accounts U𝐹 , and inject forged interactions into the platform. In addition, attackers are allowed to issue a limited num-ber of queries to the black-box victim model to obtain corresponding recommendation results, but cannot access internal information such as token probabilities, model parameters, or gradients. 
+
+## 4 Methodology 4.1 Overview of the framework 
+
+Our framework, termed Prompt-Unknown Dual-poisoning pro-motion Attack ( PUDA ) framework for LLM-SRSs, is illustrated in Fig. 1. PUDA comprises two key components: (1) joint prompt and surrogate distillation , which infers the latent instructions followed by the victim model and constructs a surrogate recommender that faithfully approximates its behavior; and (2) dual-poisoning item promotion , which simultaneously manipulates the target items’ fea-tures and generates forged user–item interactions to effectively promote the target item under black-box constraints. 
+
+## 4.2 Joint Prompt and Surrogate Distillation 
+
+To facilitate black-box promotion attacks, distilling a surrogate model as a replica of the victim model is an indispensable step, which provides a controllable and query-unbounded environment for subsequent poisoning data generation. However, in LLM-SRSs, since the internal prompt of the victim model is inaccessible, our first objective is to obtain a high-fidelity approximation of its un-derlying prompt. This distilled prompt, when used for training the surrogate model, can precisely mimic the behaviors of the victim model. In what follows, we propose an LLM-driven, evolutionary prompt distillation mechanism that systematically explores and re-fines candidate prompts, ultimately yielding a distilled instruction that exhibits maximal agreement with the victim model. 
+
+4.2.1 Initial Population. In practical scenarios, an attacker can observe partial user–item interactions on the platform (e.g., likes, reviews, or ratings). Formally, X𝑢 = {( 𝑠 𝑢 , 𝑦 𝑢 )} 𝑢 ∈ U obs , where Uobs ⊆U and |U obs | = 𝑁 obs ≪ 𝑁 . Given a collection of observed demon-stration pairs X = {(X 𝑢 }𝑁 obs  
+
+> 𝑢 =1
+
+, we introduce the Lamarckian operator 
+
+OL [ 9] to construct the initial prompt population P (0) . The operator 
+
+OL serves as a reverse-engineering module that receives demonstra-tion pairs and attempts to infer candidate task instructions capable of reproducing the observed outputs from the corresponding inputs. The resulting initial population is defined as: 
+
+P (0) = OL (X) = {𝑃 (0) 
+
+> 1
+
+, . . . , 𝑃 (0) 
+
+> 𝑘
+
+, . . . , 𝑃 (0) 
+
+> 𝐾
+
+}, (1) where 𝐾 denotes the population size. Each prompt 𝑃 (0) 
+
+> 𝑘
+
+∈ P (0)
+
+is evaluated by the surrogate model S using a recommendation evaluation metric 𝑓 (e.g., Hit Ratio [20]): 
+
+score (𝑃 (0) 
+
+> 𝑘
+
+) = E(𝑠,𝑦 )∼X 
+
+h
+
+𝑓  S( 𝑃 (0) 
+
+> 𝑘
+
+, 𝑠 ), 𝑦 i
+
+, 𝑘 = 1, . . . , 𝐾 . (2) The training procedure of S is detailed in Section 4.2.3. Prompts in 
+
+P (0) are then ranked according to their scores. We define P (0) 
+
+> top
+
+as the subset of top-performing prompts at the initial generation. The prompt with the highest score is designated as the elite, denoted by 
+
+𝑃 elite , which is preserved in the subsequent refinement iteration. 
+
+4.2.2 Evolutionary Refinement . To progressively improve the prompt population across generations, we introduce two stochastic evolution operators [ 9, 11 ]: a crossover operator OC and a mutation operator OM . At iteration 𝑡 , the crossover operator O𝐶 selects the two highest-scoring prompts {𝑃 (𝑡 ) 
+
+> 𝑎
+
+, 𝑃 (𝑡 ) 
+
+> 𝑏
+
+} ⊆ P (𝑡 ) 
+
+> top
+
+as parents and produces two new candidates, denoted as P (𝑡 )
+
+> cross
+
+, by recombining SIGIR ’26, July 20–24, 2026, Melbourne, VIC, Australia Yuchuan Zhao et al. Surrogate 
+
+model   
+
+> Demos Initial population
+
+1. Joint Prompt and Surrogate Dis tillation 
+
+If d ecrease     
+
+> Input: interaction list
+> Output: new item
+> Instruction 1: Given user’s
+> interaction list …. please
+> recommend the next item .
+> Lamarckian
+> operator
+
+Best 
+
+instruction     
+
+> Instruction: Given user’s interaction …
+> recommend anew item the user might …
+
+Instruction 
+
+ranking list Crossover                     
+
+> Crossover prompt
+> Merge the strengths of two top -
+> performing instructions to produce
+> two improved, concise instructions .
+> Mutation prompt
+> Slightly refine the top -ranked
+> instructions to generate two new
+> variants .
+
+Crossover 
+
+instructions 
+
+Mutation 
+
+instructions 
+
+New population Instruction 1: Predict the next item the 
+
+> user is likely to enjoy, prioritizing
+> sequel continuity and recent…
+
+Refined target 
+
+items 
+
+Evaluation & Refinement 
+
+Targeted Refinement 
+
+Anchor -Pattern Extraction 
+
+Popular items 
+
+Easy items 
+
+Target items 
+
+Surrogate 
+
+model 
+
+Victim 
+
+model 
+
+Poisoning 
+
+Sequences 
+
+Sequence generation 
+
+…
+
+Query 
+
+Well -
+
+trained 
+
+Candidates 
+
+Attack 
+
+Input 
+
+2.1. LLM -Guided Iterative Refinement 
+
+Popular items 
+
+Best 
+
+item   
+
+> Real sequences Synthetic sequences
+
+Adjust 
+
+> New
+> label s
+
+Query Output Victim 
+
+model 
+
+> New sequences
+
+🏅 Score of elite If 
+
+in crease 
+
+Similarity 
+
+evaluation 
+
+Reach 
+
+length 
+
+> frequency
+
+Open platform 
+
+Query 
+
+> Mutation
+
+Recommendation 
+
+list 
+
+> After attack
+> Before attack
+
+…
+
+# …
+
+> Surrogate Training Corpus Generation
+
+2.2. Surrogate -Guided Poisoning 
+
+Real sequences 
+
+Figure 1: Framework of the proposed PUDA. The top panel (Part 1) presents the joint prompt and surrogate distillation stage. The bottom-left block (Part 2.1) illustrates the LLM-guided textual refinement module based on anchor-pattern imitation, while the bottom-right block (Part 2.2) depicts the surrogate-guided poisoning sequence generation process for effective item promotion under black-box LLM-SRS settings. 
+
+their lexical and semantic traits: 
+
+P (𝑡 ) 
+
+> cross
+
+= OC (𝑃 (𝑡 ) 
+
+> 𝑎
+
+, 𝑃 (𝑡 ) 
+
+> 𝑏
+
+; 𝜉 ), (3) where 𝜉 is a random seed capturing lexical or semantic mixing. In contrast, the mutation operator OM perturbs prompts selected from subset P (𝑡 ) 
+
+> top
+
+to explore new regions of the search space : 
+
+P (𝑡 ) 
+
+> mut
+
+=
+
+n
+
+OM (𝑃 ; 𝜁 ) 𝑃 ∈ P (𝑡 ) 
+
+> 𝜅
+
+, P (𝑡 ) 
+
+> 𝜅
+
+⊆ P (𝑡 )
+
+> top
+
+o
+
+, (4) where P (𝑡 ) 
+
+> 𝜅
+
+denotes the selected top-𝜅 prompts from P (𝑡 ) 
+
+> top
+
+, and 𝜁 
+
+represents stochastic perturbations such as lexical substitutions or structural rewrites. The next–generation population is assembled via an elitism strategy: 
+
+P (𝑡 +1) = {𝑃 (𝑡 ) 
+
+> elite
+
+} ∪ P (𝑡 ) 
+
+> cross
+
+∪ P (𝑡 )
+
+> mut
+
+, (5) which guarantees that the best-performing prompt from iteration 
+
+𝑡 is always preserved. All candidates in P (𝑡 +1) are subsequently re-evaluated using the surrogate model S, and the highest-scoring prompt is selected as the new elite 𝑃 (𝑡 +1) 
+
+> elite
+
+. The evolutionary process iterates until convergence, defined as the case where the elite score no longer improves between successive iterations: 
+
+score (𝑃 (𝑡 +1) 
+
+> elite
+
+) ≤ score (𝑃 (𝑡 )
+
+> elite
+
+). (6) The final distilled prompt is obtained as 𝑃 ∗ = 𝑃 (𝑡 )
+
+> elite
+
+. For clarity, we summarize the overall procedure in Algorithm 1 ( Stage 1 ). 
+
+4.2.3 Surrogate Training. Under the black-box setting, the vic-tim model V’s parameters, internal system prompt, and full train-ing data are inaccessible, while extensive querying is infeasible. To enable effective attack generation and evaluation, we construct a surrogate model S to approximates the behavior of the victim model V using a limited set of observable interactions augmented with additional synthetic supervision [49]. As described in Section 3.2, V is trained on the complete in-teraction dataset D. For convenience, we denote the fully trained victim recommender as V∗, which can be queried by the attacker under a restricted budget. In practice, the attacker has access only to a limited subset of interactions D′ ⊆ D , which is insufficient to accurately reconstruct or approximate the behavior of V∗.To mitigate limited data visibility, we augment the observed interactions by generating synthetic sequences that preserve the structural characteristics of real user behaviors. Specifically, we define a set of stochastic perturbation operators: T = {𝜏 𝑜 }𝑂 𝑜 =1,where 𝑂 denotes the number of operators. Each operator 𝜏 𝑜 applies a lightweight transformation to an observed sequence, such as item swapping , deletion , or subsequence sampling . For each observed pair 
+
+(𝑠, 𝑦 ) ∈ D ′, we generate additional training instances as: 
+
+˜𝑠 = 𝜏 𝑜 (𝑠 ), ˜𝑦 = V∗ ( ˜𝑠 ), (7) where ˜𝑦 denotes a soft supervision signal obtained by querying the victim model V∗ once on the perturbed sequence. The resulting synthetic dataset is defined as: Dsyn = ( ˜𝑠, ˜𝑦 (𝑠, 𝑦 ) ∈ D ′, ˜𝑠 =
+
+𝜏 𝑜 (𝑠 ), ˜𝑦 = V∗ ( ˜𝑠 ) , and the full surrogate training corpus is con-structed as: Dst = D′ ∪ D syn . Based on Dst , the surrogate model 
+
+S is trained using the standard autoregressive language modeling objective for supervised fine-tuning of LLMs [27, 29]: 
+
+𝜃 ∗ = arg min  
+
+> 𝜃
+
+E(𝑠,𝑦 ) ∈ D st 
+
+"
+
+− 1
+
+|𝑦 | 
+
+> |𝑦 |
+
+∑︁ 
+
+> 𝑡 =1
+
+log S𝜃 (𝑦 𝑡 | 𝑃 ∗, 𝑠, 𝑦 <𝑡 )
+
+#
+
+, (8) Prompt-Unknown Promotion Attacks against LLM-based Sequential Recommender Systems SIGIR ’26, July 20–24, 2026, Melbourne, VIC, Australia Step 1:  Anchor -Pattern Extraction                                                                                
+
+> Step 2 :Targeted Modification
+> Step 3: Similarity -Gated Evaluation and Iterative Refinement
+> Analyze the ⟨anchor titles ⟩and summarize their dominant characteristics, including :
+> 1.Genre cues :frequent keywords (e .g.,chronicles, diary, secrets, love) ;
+> 2.Surface patterns :common structural templates (e .g.,“The Xof Y” …);
+> 3.Tone signals :stylistic tendencies (e .g.,thriller/romance/fantasy/nonfiction) .
+> Return an ⟨anchor -pattern summary ⟩.
+> Evaluate the current refined title in ⟨candidates ⟩using both ⟨semantic similarity ⟩
+> and ⟨lexical similarity ⟩.If both scores meet the dataset -specific ⟨threshold ⟩,output
+> the refined title ;otherwise, return to Step 2.If the maximum number of iteration is
+> reached, output the best refined title obtained .
+
+You will act as an assistant to refine the ⟨target title ⟩. Given several 
+
+⟨anchor titles ⟩, follow the steps below sequentially and output the 
+
+refined result.                                                     
+
+> Based on the ⟨anchor -pattern summary ⟩,generate ⟨candidates ⟩refinements of the
+> ⟨target title ⟩under the following constraints :
+> 1.Identity preserved :Keep the core named entity of the ⟨target title ⟩unchanged ;
+> 2.Pattern -level rewrite :Reframe the title using prevalent structural templates and
+> attractive lexical styles from ⟨anchor -pattern ⟩;
+> 3.Attribute rewrite :Rewrite auxiliary attributes using more attractive, anchor -
+> aligned expressions from ⟨anchor -pattern ⟩.
+
+Figure 2: Target title refinement process based on three-step reasoning (due to the space limitation, only key prompt words are shown in the figure). 
+
+where 𝑦 = (𝑦 1, . . . , 𝑦 |𝑦 | ) denotes the token sequence of the target output (i.e., the textualized next-item label), and 𝜃 represents the parameters of the surrogate model S. The surrogate is trained conditioned on the distilled instruction 𝑃 ∗, enabling it to emulate the recommendation behavior induced by the hidden system prompt. The well-trained surrogate, denoted as S∗ = S𝜃 ∗ , provides a query-efficient approximation of the victim recommender, facilitating scalable attack optimization and controlled experimental evaluation without repeated access to the black-box system. 
+
+## 4.3 Dual-Poisoning Item Promotion 
+
+With the distilled prompt 𝑃 ∗ and an aligned surrogate model S∗ in place, we develop an effective poisoning strategy under the assump-tion of unrestricted local query access to the surrogate. Specifically, We propose a dual-poisoning attack strategy that integrates two complementary components: (1) LLM-guided iterative refinement ,which modifies the target item’s title to better align with language-centric recommendation preferences; and (2) surrogate-guided poi-soning sequence generation , which constructs behaviorally plausible interaction sequences to reinforce co-occurrence patterns favorable to the target item. These two components respectively manipulate the target item’s textual semantics and behavioral context, jointly increasing its exposure probability in sequential recommendation. 
+
+4.3.1 LLM-Guided Iterative Refinement. Target items typi-cally reside in the long-tail region of the catalog and therefore receive limited exposure due to low inherent attractiveness and sparse interaction histories. To enhance their visibility, we propose an LLM-guided refinement framework that rewrites target item titles by imitating the linguistic and semantic patterns exhibited by items that are more likely to be recommended. The goal is to shift a target item’s textual representation toward semantic regions fa-vored by the recommender, while ensuring the refined title remains coherent, natural, and semantically faithful. To guide the refinement process, we construct two anchor sets that provide positive semantic cues: (1) a popular item set Ipop , and (2) an easy-to-recommend item set Ieasy . Items in both sets act as semantic “attractors” for the recommender and are later reused as candidate filler items during poisoning sequence generation. Specif-ically, Ipop is obtained from publicly observable platform statistics. Prior studies have shown that increasing the co-occurrence be-tween the target item and popular items can substantially improve its exposure rate [ 3]. In addition, our experimental findings reveal that SRSs also exhibit preferences towards certain long-tail items that are frequently recommended despite limited interactions. Such items are not globally popular, yet align well with the system’s inductive biases. To identify these items, we query the distilled surrogate model 
+
+S∗. Items that appear frequently in its recommendation results are included in Ieasy :
+
+Ieasy = {𝑖 | Freq S∗ (𝑖 ) ≥ 𝛾 }, (9) where Freq S∗ (𝑖 ) denotes the recommendation frequency of item 𝑖 
+
+produced by S∗, and 𝛾 is a predefined threshold. The rationale for using S∗ is that it is explicitly trained to approximate the victim model’s behavior. Consequently, items that are highly ranked by 
+
+S∗ are likely to be favored by the victim model as well. These items therefore serve as surrogate-aligned semantic anchors, providing guidance for the refinement process toward outputs that are more compatible with the target item. Given a target item 𝑖 𝑡 with original title T𝑖 𝑡 , we design a three-stage reasoning-based refinement procedure to generate an anchor-guided improved title, as illustrated in Fig. 2. In the first stage, an LLM is employed to analyze the anchor sets {I pop , Ieasy } and extract shared linguistic patterns, including dominant genre cues, common structural templates, and stylistic signals. These extracted patterns characterize title formulations that are frequently associated with highly exposed items. Conditioned on the extracted anchor patterns, the LLM generates refined variants of the target title by restructuring it using dominant templates and stylistic cues from the anchor patterns. This process repackages the title into a more attractive format while preserving the core product identity of T𝑖 𝑡 . To regulate the refinement intensity and prevent excessive semantic drift, we introduce a similarity-gated evaluation mechanism based on two complementary metrics. The semantic similarity between the original title T𝑖 𝑡 and the refined title ˜T𝑖 𝑡 is computed as the cosine similarity between their sentence-level embeddings: 
+
+Sim sem 
+
+
+
+T𝑖 𝑡 , ˜T𝑖 𝑡 
+
+
+
+= cos 
+
+
+
+e(T𝑖 𝑡 ), e( ˜T𝑖 𝑡 )
+
+
+
+, (10) where e(·) denotes a sentence embedding function (e.g., a pretrained sentence transformer). In addition, we define a lexical similarity to measure surface-level textual overlap: 
+
+Sim lex 
+
+
+
+T𝑖 𝑡 , ˜T𝑖 𝑡 
+
+
+
+=
+
+W ( T𝑖 𝑡 ) ∩ W ( ˜T𝑖 𝑡 )
+
+W ( T𝑖 𝑡 ) ∪ W ( ˜T𝑖 𝑡 )
+
+, (11) where W (·) denotes the set of tokens obtained from a title (e.g., via lowercasing and simple tokenization). We adopt dataset-specific, adaptive thresholds for both metrics to account for domain variabil-ity. A refined title ˜T𝑖 𝑡 is accepted if both similarity scores exceed SIGIR ’26, July 20–24, 2026, Melbourne, VIC, Australia Yuchuan Zhao et al. 
+
+Algorithm 1 PUDA  
+
+> 1:
+
+Input: Observable interactions D′, black-box victim model 
+
+V, target item set I𝑡𝑎𝑟 , anchor item set { I𝑝𝑜𝑝 , I𝑒𝑎𝑠𝑦 }, poisoning sequence length 𝐿 . 
+
+> 2:
+
+Output: Distilled prompt 𝑃 ∗, refined target title ˜T𝑖 𝑡 , poisoning dataset D𝑝 . 
+
+> 3:
+
+# Stage 1: Joint prompt and surrogate distillation  
+
+> 4:
+
+Initialize prompt population P (0) according to Eq. (1);  
+
+> 5:
+
+for each step 𝑡 = 1 to 𝑇 do  
+
+> 6:
+
+for each 𝑃 ∈ P (𝑡 ) do  
+
+> 7:
+
+Compute score (𝑃 ) according to Eq. (2);  
+
+> 8:
+
+if score (𝑃 ) > score (𝑃 (𝑡 −1) 
+
+> elite
+
+) then  
+
+> 9:
+
+𝑃 (𝑡 ) 
+
+> elite
+
+← 𝑃 ; 
+
+> 10:
+
+end if  
+
+> 11:
+
+end for  
+
+> 12:
+
+Generate offspring P (𝑡 )
+
+> cross
+
+, P (𝑡 ) 
+
+> mut
+
+according to Eq. (3) and (4);  
+
+> 13:
+
+Construct new population P (𝑡 +1) according to Eq. (5);  
+
+> 14:
+
+end for  
+
+> 15:
+
+Distilled prompt 𝑃 ∗ ← 𝑃 (𝑇 )
+
+> elite
+
+; 
+
+> 16:
+
+return 𝑃 ∗; 
+
+> 17:
+
+# Stage 2: Dual-poisoning attack  
+
+> 18:
+
+Construct anchor item sets I𝑝𝑜𝑝 and I𝑒𝑎𝑠𝑦 ; 
+
+> 19:
+
+Generate refined title ˜T𝑖 𝑡 via LLM-guided refinement (Fig. 2);  
+
+> 20:
+
+for each malicious user ˜𝑢 ∈ U 𝐹 do  
+
+> 21:
+
+Initialize prefix with a seed item 𝑠 ˜𝑢 ← { 𝑖 0 }, 𝑡 ← | 𝑠 ˜𝑢 |; 
+
+> 22:
+
+while |𝑠 ˜𝑢 | < 𝐿 do  
+
+> 23:
+
+Obtain surrogate predictions R (𝑡 ) 
+
+> 𝐽
+
+← S ∗ 
+
+> 𝐽
+
+(𝑠 ˜𝑢 [0 : 𝑡 − 1]) ; 
+
+> 24:
+
+Construct candidate pool according to Eq. (12);  
+
+> 25:
+
+for each candidate 𝑐 ∈ C do  
+
+> 26:
+
+Form tentative prefix 𝑠 ′ ← [ 𝑠 ˜𝑢 [0 : 𝑡 − 1]; 𝑐 ]; 
+
+> 27:
+
+Compute behavioral score according to Eq. (13);  
+
+> 28:
+
+end for  
+
+> 29:
+
+Select next item ˆ𝑐 𝑡 according to Eq. (14);  
+
+> 30:
+
+Append ˆ𝑐 𝑡 to 𝑠 ˜𝑢 , 𝑡 ← | 𝑠 ˜𝑢 |; 
+
+> 31:
+
+end while  
+
+> 32:
+
+D𝑝 ← D 𝑝 ∪ { 𝑠 ˜𝑢 }; 
+
+> 33:
+
+end for  
+
+> 34:
+
+return Refined title ˜T𝑖 𝑡 , poisoning dataset D𝑝 ;predefined thresholds. Otherwise, the model iteratively refines the title until the criteria are satisfied or a predefined maximum number of iterations is reached, in which case the best candidate obtained so far is selected. 
+
+4.3.2 Surrogate-Guided Poisoning Attack. While LLM-guided title refinement enhances the semantic attractiveness of the target item, textual modification alone is often insufficient for long-tail items, whose sparse interaction histories limit their likelihood of be-ing recommended [ 3 ]. To further strengthen the attack, we generate and inject a set of malicious user interaction sequences that explic-itly encode strong preferences for the target item while remaining behaviorally plausible. Building upon the optimal surrogate recommender S∗ obtained in Section 4.2.3, which serves as a behavioral proxy for the black-box victim model V, we generate poisoning sequences that remain realistic while encoding a strong preference toward the target item. To increase the likelihood that the target item co-occurs with highly exposed items, we initialize the poisoning sequence of each ma-licious user ˜𝑢 ∈ U 𝐹 with a popular seed item 𝑖 0 ∈ I pop , yielding the initial prefix 𝑠 ˜𝑢 = {𝑖 0 }. The remaining items are generated in an auto-regressive manner guided by S∗. At each step 𝑡 , given the prefix 𝑠 ˜𝑢 [0 : 𝑡 − 1], the surrogate produces a recommendation list 
+
+R (𝑡 ) 
+
+> 𝐽
+
+= Top 𝐽 (S ∗ (𝑃 ∗, 𝑠 ˜𝑢 [0 : 𝑡 − 1])) , which contains the 𝐽 highest-ranked candidate items. Since S∗ may not naturally rank the target item highly, we enlarge the candidate space to explicitly promote co-occurrence between the target and anchor items. Specifically, we construct a candidate pool: 
+
+C = R (𝑡 ) 
+
+> 𝐽
+
+∪ I 𝑡𝑎𝑟 ∪ I 𝑝𝑜𝑝 10% , (12) where I𝑡𝑎𝑟 denotes the target item set, and I𝑝𝑜𝑝 10% ⊆ I 𝑝𝑜𝑝 is the top 10% most popular items used to strengthen co-occurrence between the target and highly exposed items. To ensure that the generated sequences remain behaviorally plausible, we select the next item by matching the evolving prefix against real interaction patterns. For each candidate 𝑐 ∈ C , we construct a tentative prefix 𝑠 ′ = [𝑠 ˜𝑢 [0 : 𝑡 − 1]; 𝑐 ] and evaluate its similarity to real user behavior: 
+
+BehSim (𝑐 | 𝑠 ˜𝑢 [0 : 𝑡 − 1]) = Sim  e𝑠 ′ , eavg 
+
+ ,𝑠 ′ = [𝑠 ˜𝑢 [0 : 𝑡 − 1]; 𝑐 ] , 𝑐 ∈ C , (13) where e𝑠 ′ and e𝑎𝑣𝑔 denote the text embedding of the tentative prefix and the average embedding of real interaction sequences [ 22 ]. The text embeddings are obtained by encoding them using a pretrained SentenceTransformer model [ 31 ]. Sim (· , ·) measures sequence-level coherence (e.g., cosine similarity). The candidate with the highest score is selected as the next item in the poisoning sequence, which can be formulated as: 
+
+ˆ𝑐 𝑡 = arg max   
+
+> 𝑐 ∈ C
+
+BehSim (𝑐 | 𝑠 ˜𝑢 [0 : 𝑡 − 1]) . (14) This process is repeated until a predefined sequence length 𝐿 is reached, yielding a complete poisoning sequence 𝑠 ˜𝑢 [0 : 𝐿 ]. Aggre-gating all generated sequences across malicious users forms the poisoning dataset D𝑝 . The overall procedure is summarized in Algorithm 1 ( Stage 2 ). Finally, we combine the poisoning dataset D𝑝 with the observed interactions D′ to retrain the surrogate model S and assess the effectiveness of attack. Once the poisoning strategy proves consis-tent gains on the surrogate model, we transfer the same poisoning dataset D𝑝 to the victim recommender V, which is trained on the complete real interaction D, to evaluate the attack impact under the black-box setting. 
+
+## 5 Experiments 
+
+In this section, we conduct extensive experiments on three datasets to validate the effectiveness of our model. Prompt-Unknown Promotion Attacks against LLM-based Sequential Recommender Systems SIGIR ’26, July 20–24, 2026, Melbourne, VIC, Australia 
+
+## 5.1 Setup 
+
+5.1.1 Datasets . We evaluate our PUDA on three real-world datasets: 
+
+Amazon-Beauty 1, GoodReads 2, and Steam 3, which contain public customer interactions. Following the preprocessing steps [ 33 ], we remove users and items with fewer than five interactions each. The key statistics of the processed datasets are summarized in Table 1. Consistent with standard practice in sequential recommendation [ 13 ], each user sequence is split by reserving the last two interac-tions for validation and testing, respectively, while the remaining prefix is used for training. 
+
+Table 1: Dataset statistics Datasets #Users #Items #Interacts Density 
+
+GoodReads 6,031 4,058 160,398 0.655% 
+
+Steam 29,876 32,094 178,961 0.019% 
+
+Beauty 40,226 54,542 353,989 0.016% 
+
+5.1.2 Base Recommender and Baselines . We adopt SPRec [ 13 ]as the backbone recommender. For efficiency, we train the model us-ing the supervised fine-tuning (SFT) stage. The proposed method is compared with three categories of baseline approaches: (1) Textual Poisoning Baselines. To evaluate the effectiveness of our attack, we adopt several widely used textual adversarial attack methods. 
+
+TextFooler [19 ] identifies influential tokens and replaces them with semantically similar synonyms. BertAttack [23 ] performs context-aware word substitutions based on masked language model-ing. In contrast, DeepWordBug [14 ] and PuncAttack [12 ] operate at the character-level by introducing typos or inserting punctuation to corrupt the text. (2) Data Poisoning Baselines. To assess the effectiveness of our data poisoning strategy, we include two rep-resentative heuristic baselines. Random Attack [21 ] selects filler items randomly. Bandwagon Attack [3 ] promotes target items by co-occurring them with popular items. (3) Prompt Optimization Baselines. To examine the impact of our prompt distillation strat-egy, we compare against two representative prompt optimization approaches. RLPrompt [10 ] formulates discrete prompt optimiza-tion as a reinforcement learning task and iteratively refines prompts based on task-specific rewards. APE (Automatic Prompt Engineer) [ 53 ] leverages large language models to automatically generate, evaluate, and select effective instructions for the target task. 
+
+5.1.3 Implementation Details. We implement all models using PyTorch 4 and HuggingFace Transformers 5. SPRec is built upon its public implementation and fine-tuned via supervised learning using LoRA-based parameter-efficient fine-tuning (PEFT) with AdamW (learning rate 1 × 10 −4, batch size 8, gradient accumulation 4) for two epochs. The maximum sequence length is set to 512. For at-tack baselines, we follow the public implementation in [ 45 ]. We employ GPT-4o 6 as the LLM for both prompt distillation and title refinement. For the LLM-guided iterative refinement module, we 
+
+> 1https://nijianmo.github.io/amazon/index.html
+> 2https://cseweb.ucsd.edu/~jmcauley/datasets/goodreads.html
+> 3https://cseweb.ucsd.edu/~jmcauley/datasets.html#amazon_reviews
+> 4https://pytorch.org
+> 5https://huggingface.co/transformers
+> 6https://openai.com/index/gpt-4o-and-more-tools-to-chatgpt-free/
+
+adopt dataset-specific similarity constraints to balance semantic fidelity and structural flexibility across domains. In Amazon-Beauty, where item titles are relatively longer and descriptive, we enforce stricter constraints with semantic similarity ≥ 0.9 and lexical simi-larity ≥ 0.7. For Goodreads and Steam, which contain shorter titles, we relax the lexical constraint to 0.3 while keeping the semantic threshold at 0.9. Following the common setup [ 33 ], the malicious users budget is set to 2% of the total user (i.e., | U 𝐹 || U | = 2% ), with each malicious user assigned the same average number of interactions as normal users. We select five of the most unpopular items in the item set as target items. To build a lightweight surrogate model, we instantiate it using a compact instruction-tuned language model, LLaMA-1B-Instruct 7. In contrast, the victim recommender is implemented with a larger LLaMA-3B-Instruct 8 model. The surrogate is pre-trained on only 20% of the real interaction data, reflecting the limited information that an attacker can realistically access in practice. We evaluate the recommendation performance using Hit Ratio (HR) and NDCG [ 28 , 50 ], where target items are treated as the only relevant items and higher values indicate stronger promotion effect. In addition, Agreement [ 43 ] is adopted to measure surrogate–victim similarity by computing the overlap between the recommendation lists produced by the two models. All experimental results are averaged over three independent runs. 
+
+## 5.2 Overall Performance 
+
+We compare attack performance of PUDA against four textual at-tack baselines on three real-world datasets, as shown in Table 2. The “ Clean ” setting corresponds to the victim model trained on an entirely unmodified dataset, i.e., without any textual modification or poisoning. It serves as a reference for assessing the inherent rec-ommendation difficulty of the selected target items. Despite being among the most unpopular items in each dataset, the target items still appear in user’s recommendation lists under the clean model. This observation highlights a characteristic of LLM-SRSs: their ranking behavior is influenced not only by interaction frequencies but also by the semantic content encoded in item descriptions. As a result, even unpopular items may receive occasional exposure if their textual features align with user’s inferred preferences. For each baseline method, the first line reports the attack per-formance when the victim model is trained solely on textually modified item titles. From the results, we observe that the textual modification alone can induce small but non-negligible changes in recommendation outcomes. For instance, on the dataset Goodreads, TextFooler increases the HR@50 (%) from 0 to 0.0587. Similar phe-nomenon appears on other baselines. This change indicates that perturbing the item title can occasionally influence the ranking behavior. The effect arises because LLM-based recommenders in-corporate semantic signals from item descriptions. Even minor modification, such as adding more generic or mainstream attributes through adversarial re-writing, may cause the altered title to appear more similar to common patterns seen in the dataset. To ensure a fairer comparison, we combine each textual attack baseline with random poisoning and evaluate the effectiveness of  
+
+> 7https://huggingface.co/meta-llama/Llama-3.2-1B-Instruct
+> 8https://https://huggingface.co/meta-llama/Llama-3.2-3B-Instruct SIGIR ’26, July 20–24, 2026, Melbourne, VIC, Australia Yuchuan Zhao et al.
+
+Table 2: Overall attack performance on Beauty, Goodreads, and Steam datasets. Results are reported in terms of Hit Ratio (HR) (%) and NDCG (N) (%) at different cutoffs. Clean denotes the victim model trained without any attack (i.e., no textual modification or poisoning). Textual attack baselines are evaluated both without and with poisoning (reported as “ w/ poisoning ”). Beauty Goodreads Steam HR@10 N@10 HR@50 N@50 HR@10 N@10 HR@50 N@50 HR@10 N@10 HR@50 N@50 Clean 0.0105 0.0024 0.0317 0.0135 0.0000 0.0000 0.0000 0.0000 0.0000 0.0000 0.0843 0.0174 
+
+TextFooler 0.0079 0.0079 0.0159 0.0097 0.0000 0.0000 0.0587 0.0114 0.0000 0.0000 0.1055 0.0224 
+
+w/ poisoning 0.0080 0.0080 0.0238 0.0123 0.0000 0.0000 0.0563 0.0110 0.0000 0.0000 0.1160 0.0243 
+
+DeepWordbug 0.0199 0.0179 0.0318 0.0209 0.0000 0.0000 0.0187 0.0034 0.0000 0.0000 0.1266 0.0258 
+
+w/ poisoning 0.0318 0.0291 0.0450 0.0329 0.0000 0.0000 0.0375 0.0069 0.0000 0.0000 0.1300 0.0267 
+
+PuncAttack 0.0159 0.0119 0.0238 0.0177 0.0000 0.0000 0.0657 0.0128 0.0000 0.0000 0.1265 0.0255 
+
+w/ poisoning 0.0159 0.0159 0.0318 0.0203 0.0000 0.0000 0.0552 0.0104 0.0000 0.0000 0.1470 0.0300 
+
+BertAttack 0.0119 0.0099 0.0199 0.0119 0.0000 0.0000 0.0375 0.0069 0.0000 0.0000 0.0949 0.0199 
+
+w/ poisoning 0.0079 0.0079 0.0238 0.0123 0.0000 0.0000 0.0469 0.0087 0.0103 0.0018 0.1213 0.0249 
+
+PUDA (Ours) 0.0405 0.0408 0.0927 0.0522 0.0000 0.0000 0.0657 0.0126 0.0105 0.0035 0.1635 0.0348 
+
+this dual-poisoning strategy. After fine-tuning the victim model, we observe that the attack performance of most baselines increases, in-dicating that data poisoning can amplify the influence of textual per-turbations. However, PUDA consistently achieves the strongest at-tack effectiveness across all datasets. For example, on Beauty, PUDA boost HR@10 (%) from 0.0105 (Clean) to 0.0405 and NDCG@50 (%) from 0.0135 to 0.0522, representing an approximately 3.9 times im-provement in target-item exposure. Similar improvements appear on Goodreads (e.g., HR@50 increases from 0 to 0.0657) and Steam (HR@50 rises from 0.0843 to 0.1635), demonstrating that PUDA generalizes effectively across domains and remains substantially more potent than all baseline methods. 
+
+## 5.3 Impact of Data Poisoning on Textual Attacks 
+
+To assess the impact of different data-poisoning strategies on textual attack methods, we select two representative baselines: TextFooler [19 ], a word-level perturbation method, and DeepWordBug [ 14 ], a character-level attack. We evaluate their performance under three poisoning strategies: Random Attack [ 21 ], Bandwagon Attack [ 3], and our surrogate-guided poisoning. The corresponding results are illustrated in Fig. 3. The lightest bars in Fig. 3 correspond to TextFooler and Deep-WordBug applied without any poisoning. These variants yield the lowest attack performance across all datasets, indicating that sim-ple textual perturbations alone are insufficient to meaningfully promote target items in LLM-SRSs. When textual attacks are aug-mented with naive heuristic data-poisoning strategies (Random or Bandwagon), the attack effectiveness increases. This suggests that injecting poisoning interaction histories can amplify the im-pact of textual modifications. However, the improvements remain modest and inconsistent across datasets, implying that generic poi-soning signals do not provide the precise guidance needed for a reliable attack. In contrast, integrating each textual attack with our surrogate-guided poisoning yields the highest performance on all three datasets. This consistent advantage demonstrates that our poisoning data generation strategy is substantially more effective Hit@50 NDCG@50      
+
+> 0.00
+> 0.02
+> 0.04
+> Amazon-Beauty
+> Hit@50 NDCG@50
+> 0.00
+> 0.05
+> 0.10
+> 0.15
+> Goodreads
+> Hit@50 NDCG@50
+> 0.0
+> 0.1
+> 0.2
+> Steam
+> TextFooler TF w/ Random TF w/ Bandwagon TF w/ Ours
+
+(a) TextFooler Hit@50 NDCG@50      
+
+> 0.00
+> 0.02
+> 0.04
+> Amazon-Beauty
+> Hit@50 NDCG@50
+> 0.00
+> 0.05
+> 0.10
+> 0.15
+> Goodreads
+> Hit@50 NDCG@50
+> 0.00
+> 0.05
+> 0.10
+> 0.15
+> 0.20
+> Steam
+> Deepwordbug DWB w/ Random DWB w/ Bandwagon DWB w/ Ours
+
+(b) DeepWordBug 
+
+Figure 3: Attack performance (%) of two representative tex-tual attack methods: TextFooler (TF for short) and DeepWord-Bug (DWB for short), under different poisoning strategies across three datasets. 
+
+at manipulating LLM-based recommenders than either random or bandwagon-based poisoning. 
+
+## 5.4 Effectiveness of Prompt Distillation 
+
+To evaluate the effectiveness of our prompt distillation strategy, we compare our method with two representative discrete prompt optimization baselines, RLPrompt [ 10 ] and APE [ 53 ]. We adopt two evaluation metrics: surrogate–victim agreement (AGR@10/50) and Hit Ratio (HR@10/50) of target items. First, we evaluate the behavioral similarity between the surrogate recommender trained under distilled prompts obtained by different methods and the victim black-box model. We adopt agreement (AGR@10/50) as the evaluation metric. A higher agreement score indicates that the surrogate more faithfully approximates the victim Prompt-Unknown Promotion Attacks against LLM-based Sequential Recommender Systems SIGIR ’26, July 20–24, 2026, Melbourne, VIC, Australia HR@50     
+
+> AGR@10
+> AGR@50
+> HR@50
+> HR@10
+> AGR@10
+> AGR@50
+> HR@10
+> HR@50
+> HR@10
+> AGR@10
+> AGR@50
+> RLPrompt APE PUDA (Ours)
+> Amazon-Bea uty Goodreads Steam
+
+Figure 4: Comparison of attack effectiveness (HR@10/50 (%)) and surrogate–victim agreement (AGR@10/50 (%)) on two prompt distillation baselines and our method across Amazon-Beauty, Goodreads, and Steam datasets. 
+
+model’s recommendation behavior. As shown in Fig. 4, our method consistently achieves the highest agreement scores across all three datasets. It demonstrates that our evolutionary prompt distillation strategy is more effective at recovering the implicit decision logic of the black-box recommender. In contrast, RLPrompt often produces semantically incoherent prompts, while APE lacks effective prompt optimization mechanism tailored to recommendation tasks. We additionally evaluate the attack effectiveness after train-ing the victim model with surrogate-guided poisoning data, mea-sured by Hit Ratio (HR@10/50). The results show that poisoning sequences generated using the surrogate model trained with our distilled prompt lead to substantially higher hit ratios compared with baseline methods. This demonstrates that a well-aligned sur-rogate model provides more reliable guidance during poisoning sequence generation, allowing the attack to construct interaction patterns that are more consistent with the victim model’s learned preferences. 
+
+## 5.5 Comparison of Attack Performance and Textual Similarity 
+
+To evaluate both the attack effectiveness and the degree of textual modification introduced by different methods, we conduct a com-parative analysis using a bubble chart, as shown in Fig. 5. We add a poisoning component to each method to achieve a fair comparison. The attack effectiveness is evaluated by HR@50, and the degree of textual modification is calculated by title-level similarity between the original and modified item titles using the string matching ratio [30 ]. The x-axis denotes semantic similarity, while the y-axis repre-sents attack performance. From the results, we observe that PUDA consistently achieves the strongest attack performance across all datasets, while baselines often preserve high lexical similarity but yield limited or unstable promotion effects. This indicates that mi-nor modification is insufficient for influencing LLM-SRSs, which rely on deeper semantic cues and structured item representations. To further illustrate the modification behavior of different meth-ods, we present a qualitative example in Table 3 using a target item from the Amazon-Beauty dataset. The results show that baseline methods mainly introduce minor or noisy changes, such as syn-onym replacement, typographical errors, or punctuation injection, which only weakly affect the recommendation outcome. In con-trast, PUDA generates a more coherent and informative title rewrite, 0.80 0.85 0.90 0.95 1.00 
+
+> Similarity
+> 0.02
+> 0.03
+> 0.04
+> 0.05
+> 0.06
+> 0.07
+> 0.08
+> Attack Performance w.r.t. HR@50 (%)
+> DeepWordBug
+> PuncAttack
+> TextFooler
+> BertAttack
+> PUDA
+> Amazon-Beauty
+
+(a) Amazon-Beauty 0.4 0.6 0.8 1.0  
+
+> Similarity
+> 0.02
+> 0.04
+> 0.06
+> 0.08
+> 0.10
+> 0.12
+> 0.14
+> 0.16
+> Attack Performance w.r.t. HR@50 (%)
+> DeepWordBug
+> PuncAttack
+> TextFooler
+> BertAttack
+> PUDA
+> Goodreads
+
+(b) Goodreads 0.4 0.6 0.8 1.0  
+
+> Similarity
+> 0.10
+> 0.12
+> 0.14
+> 0.16
+> 0.18
+> 0.20
+> Attack Performance w.r.t. HR@50 (%)
+> DeepWordBug
+> PuncAttack
+> TextFooler
+> BertAttack
+> PUDA
+> Steam
+
+(c) Steam 
+
+Figure 5: Comparison of attack performance (HR@50 (%)) and title-level similarity across Amazon-Beauty, Goodreads, and Steam. Table 3: Examples of target item title modifications and cor-responding promotion performance (NDCG@10 on Beauty). Results are scaled by a factor of 100. 
+
+Method Modified Item Title NDCG@10 (%) 
+
+Original Sorme Water Proof Eyebrow Pencil Soft Gray 0.0024 TextFooler color Water Proof Eyebrow Pencil Soft Gray 0.0080 DeepWordBug Sorme Water Proof Eyebrowh Pencil Soft Gray 0.0291 PuncAttack Sorme Water Proof Eyebrow?? Pencil Soft Gray 0.0159 BertAttack Sorme Water Proof color Pencil Soft Gray 0.0079 
+
+PUDA (ours) Sorme Eyebrow Pencil – Waterproof, Long-Wearing Soft Gray, 0.04 oz 0.0408 0 0.5% 1% 1.5% 2.0%           
+
+> Attack Budget
+> 0.00
+> 0.02
+> 0.04
+> 0.06
+> 0.08
+> 0.10
+> Attack Performance (%)  Amazon-Beauty
+> 00.5% 1% 1.5% 2.0%
+> Attack Budget
+> 0.00
+> 0.03
+> 0.06
+> 0.09
+> 0.12
+> 0.15 Goodreads
+> 00.5% 1% 1.5% 2.0%
+> Attack Budget
+> 0.00
+> 0.05
+> 0.10
+> 0.15
+> 0.20
+> Steam
+> HR@50 NDCG@50
+
+Figure 6: Attack performance w.r.t. HR@50 (%) and NDCG@50 (%) across three datasets under various attack sizes. 
+
+incorporating meaningful product attributes (e.g., waterproof, long-wearing, size specification) that better reflect the characteristics favored by the recommender model. As a result, PUDA achieves a substantially higher NDCG@10 score compared with all baselines. 
+
+## 5.6 Hyperparameter Analysis 
+
+5.6.1 Impact of Attack Budget . We investigate the impact of different fake-user budgets on attack effectiveness by varying the proportion of injecting users from 0.5% - 2.0%, and report HR@50 and NDCG@50 results on three datasets in Fig. 6. As shown in the figure, both metrics consistently improve as the fake-user budget increases across all datasets. This indicates that larger poisoning budgets enable the attacker to introduce stronger and more coherent behavioral signals, which can be more effec-tively captured by the LLM-SRS during training. Notably, even without injecting fake users (i.e., when the budget is 0), the target item still achieves non-zero HR@50 and NDCG@50. This observa-tion suggests that the recommendation behavior of LLM-SRSs is not solely determined by historical interactions; instead, semantic SIGIR ’26, July 20–24, 2026, Melbourne, VIC, Australia Yuchuan Zhao et al. 10% 20% 30%                                               
+
+> Training Data
+> 100
+> 50
+> 40
+> 30
+> 20
+> 10
+> 5
+> Recommended List Length  0.225 0.350 0.370
+> 0.210 0.333 0.356
+> 0.206 0.330 0.350
+> 0.199 0.321 0.347
+> 0.192 0.309 0.338
+> 0.156 0.273 0.318
+> 0.139 0.249 0.305
+> Amazon-Beauty
+> 10% 20% 30%
+> Training Data
+> 0.102 0.212 0.232
+> 0.061 0.203 0.221
+> 0.050 0.198 0.218
+> 0.049 0.195 0.216
+> 0.044 0.193 0.214
+> 0.039 0.146 0.161
+> 0.031 0.114 0.118
+> Goodreads
+> 10% 20% 30%
+> Training Data
+> 0.313 0.388 0.395
+> 0.300 0.382 0.385
+> 0.299 0.381 0.384
+> 0.297 0.380 0.383
+> 0.291 0.357 0.360
+> 0.286 0.354 0.356
+> 0.276 0.342 0.346
+> Steam
+> 0.00
+> 0.05
+> 0.10
+> 0.15
+> 0.20
+> 0.25
+> 0.30
+> 0.35
+> 0.40
+> Agreement
+
+Figure 7: Agreement analysis between surrogate and vic-tim model w.r.t. different recommendation list length across three datasets under different ratio of training data. 
+
+correlations derived from textual item representations and prompt reasoning also play an important role in shaping recommendation outcomes. 
+
+5.6.2 Impact of the Proportion of Training Data . To evaluate the effect of training data availability on surrogate model training, we measure the agreement between the surrogate and victim models under varying training ratios (10%, 20%, and 30%). The results are reported across recommendation list lengths ranging from Top-5 to Top-100 on three datasets, as shown in Fig. 7. As observed, increasing the training ratio from 10% to 30% con-sistently improves agreement across all datasets, indicating that additional observed interactions help the surrogate better approxi-mate the victim model’s recommendation behavior. Furthermore, agreement increases as the recommendation list length increases. Compared with Top-5, substantially higher values are achieved at Top-50 and Top-100. This suggests that although accurately recovering top-ranked items remains challenging under limited supervision, the surrogate can more reliably capture the victim model’s coarse-grained ranking preferences. 
+
+## 6 Conclusion 
+
+In this paper, we investigate security vulnerabilities of large lan-guage model–powered sequential recommender systems (LLM-SRSs) under realistic black-box settings and propose PUDA, a Prompt-Unknown Dual-Poisoning attack framework that combines evo-lutionary prompt distillation with coordinated textual and behav-ioral poisoning. By recovering high-fidelity system instructions and constructing a behavior-aligned surrogate model, PUDA enables effective item promotion without access to proprietary prompts or model internals. Extensive experiments across three real-world datasets show that our method consistently boosts target-item ex-posure, even under limited attacker budgets. These findings reveal that LLM-SRSs remain highly vulnerable to carefully design attacks. 
+
+## Acknowledgments 
+
+The Australian Research Council partially supports this work un-der the streams of Future Fellowship (Grant No. FT210100624), the Discovery Project (Grant No. DP240101108, DP260100326 and DP240101814), Discovery Early Career Researcher Award (Grant No. DE230101033 and DE250100613), the Linkage Project (Grant No. LP230200892 and LP240200546), and the Queensland-Bavaria Collaborative Research Program (Grant No. QLDBAVSEED25036). 
+
+## References 
+
+[1] Keqin Bao, Jizhi Zhang, Yang Zhang, Wenjie Wang, Fuli Feng, and Xiangnan He. 2023. Tallrec: An effective and efficient tuning framework to align large language model with recommendation. In Proceedings of the 17th ACM conference on recommender systems . 1007–1014. [2] Keqin Bao, Jizhi Zhang, Yang Zhang, Wang Wenjie, Fuli Feng, and Xiangnan He. 2023. Large language models for recommendation: Progresses and future directions. In Proceedings of the Annual International ACM SIGIR Conference on Research and Development in Information Retrieval in the Asia Pacific Region .306–309. [3] Robin Burke, Bamshad Mobasher, Runa Bhaumik, and Chad Williams. 2005. Segment-based injection attacks against collaborative filtering recommender systems. In Fifth IEEE International Conference on Data Mining (ICDM’05) . IEEE, 4–pp. [4] Yuwei Cao, Nikhil Mehta, Xinyang Yi, Raghunandan Hulikal Keshavan, Lukasz Heldt, Lichan Hong, Ed Chi, and Maheswaran Sathiamoorthy. 2024. Aligning large language models with recommendation knowledge. In Findings of the Association for Computational Linguistics: NAACL 2024 . 1051–1066. [5] Jingfan Chen, Wenqi Fan, Guanghui Zhu, Xiangyu Zhao, Chunfeng Yuan, Qing Li, and Yihua Huang. 2022. Knowledge-enhanced black-box attacks for recom-mendations. In Proceedings of the 28th ACM SIGKDD Conference on Knowledge Discovery and Data Mining . 108–117. [6] Lijian Chen, Wei Yuan, Tong Chen, Guanhua Ye, Nguyen Quoc Viet Hung, and Hongzhi Yin. 2024. Adversarial item promotion on visually-aware recommender systems by guided diffusion. ACM Transactions on Information Systems 42, 6 (2024), 1–26. [7] Sukmin Cho, Soyeong Jeong, Jeong yeon Seo, and Jong C Park. 2023. Discrete prompt optimization via constrained generation for zero-shot re-ranker. In Find-ings of the Association for Computational Linguistics: ACL 2023 . 960–971. [8] Wendi Cui, Zhuohang Li, Hao Sun, Damien Lopez, Kamalika Das, Bradley Ma-lin, Sricharan Kumar, and Jiaxin Zhang. 2024. SEE: Strategic Exploration and Exploitation for Cohesive In-Context Prompt Optimization. arXiv preprint arXiv:2402.11347 (2024). [9] Wendi Cui, Jiaxin Zhang, Zhuohang Li, Hao Sun, Damien Lopez, Kamalika Das, Bradley A Malin, and Sricharan Kumar. 2025. See: Strategic exploration and exploitation for cohesive in-context prompt optimization. In Proceedings of the 63rd Annual Meeting of the Association for Computational Linguistics (Volume 1: Long Papers) . 29575–29627. [10] Mingkai Deng, Jianyu Wang, Cheng-Ping Hsieh, Yihan Wang, Han Guo, Tianmin Shu, Meng Song, Eric Xing, and Zhiting Hu. 2022. Rlprompt: Optimizing discrete text prompts with reinforcement learning. In Proceedings of the 2022 conference on empirical methods in natural language processing . 3369–3391. [11] Chrisantha Fernando, Dylan Banarse, Henryk Michalewski, Simon Osindero, and Tim Rocktäschel. 2023. Promptbreeder: Self-referential self-improvement via prompt evolution. arXiv preprint arXiv:2309.16797 (2023). [12] Brian Formento, Chuan-Sheng Foo, Luu Anh Tuan, and See Kiong Ng. 2023. Using punctuation as an adversarial attack on deep learning-based NLP systems: An empirical study. In Findings of the association for computational linguistics: EACL 2023 . 1–34. [13] Chongming Gao, Ruijun Chen, Shuai Yuan, Kexin Huang, Yuanqing Yu, and Xiangnan He. 2025. Sprec: Self-play to debias llm-based recommendation. In 
+
+Proceedings of the ACM on Web Conference 2025 . 5075–5084. [14] Ji Gao, Jack Lanchantin, Mary Lou Soffa, and Yanjun Qi. 2018. Black-box genera-tion of adversarial text sequences to evade deep learning classifiers. In 2018 IEEE Security and Privacy Workshops (SPW) . IEEE, 50–56. [15] Shijie Geng, Shuchang Liu, Zuohui Fu, Yingqiang Ge, and Yongfeng Zhang. 2022. Recommendation as language processing (rlp): A unified pretrain, personalized prompt & predict paradigm (p5). In Proceedings of the 16th ACM conference on recommender systems . 299–315. [16] Shengkang Gu, Jiahao Liu, Dongsheng Li, Guangping Zhang, Mingzhe Han, Hansu Gu, Peng Zhang, Ning Gu, Li Shang, and Tun Lu. 2025. LLM-Based User Simulation for Low-Knowledge Shilling Attacks on Recommender Systems. arXiv preprint arXiv:2505.13528 (2025). [17] Jesse Harte, Wouter Zorgdrager, Panos Louridas, Asterios Katsifodimos, Diet-mar Jannach, and Marios Fragkoulis. 2023. Leveraging large language models for sequential recommendation. In Proceedings of the 17th ACM Conference on Recommender Systems . 1096–1102. [18] Jiajie He, Xintong Chen, Xinyang Fang, Min-Chun Chen, Yuechun Gu, and Keke Chen. 2025. Membership Inference Attacks on Recommender System: A Survey. 
+
+arXiv preprint arXiv:2509.11080 (2025). [19] Di Jin, Zhijing Jin, Joey Tianyi Zhou, and Peter Szolovits. 2020. Is bert really robust? a strong baseline for natural language attack on text classification and entailment. In Proceedings of the AAAI conference on artificial intelligence , Vol. 34. 8018–8025. [20] Wang-Cheng Kang and Julian McAuley. 2018. Self-attentive sequential recom-mendation. In 2018 IEEE international conference on data mining (ICDM) . IEEE, 197–206. Prompt-Unknown Promotion Attacks against LLM-based Sequential Recommender Systems SIGIR ’26, July 20–24, 2026, Melbourne, VIC, Australia 
+
+[21] Parneet Kaur and Shivani Goel. 2016. Shilling attack models in recommender system. In 2016 International conference on inventive computation technologies (ICICT) , Vol. 2. IEEE, 1–5. [22] Jiayun Li, Wen Hua, Fengmei Jin, and Xue Li. 2025. HTEA: Heterogeneity-aware Embedding Learning for Temporal Entity Alignment. In Proceedings of the Eighteenth ACM International Conference on Web Search and Data Mining .982–990. [23] Linyang Li, Ruotian Ma, Qipeng Guo, Xiangyang Xue, and Xipeng Qiu. 2020. BERT-ATTACK: Adversarial Attack Against BERT Using BERT. In Proceedings of the 2020 Conference on Empirical Methods in Natural Language Processing (EMNLP) .6193–6202. [24] Lei Li, Yongfeng Zhang, and Li Chen. 2023. Prompt distillation for efficient llm-based recommendation. In Proceedings of the 32nd ACM international conference on information and knowledge management . 1348–1357. [25] Thanh Toan Nguyen, Nguyen Quoc Viet Hung, Thanh Tam Nguyen, Thanh Trung Huynh, Thanh Thi Nguyen, Matthias Weidlich, and Hongzhi Yin. 2024. Manipu-lating recommender systems: A survey of poisoning attacks and countermeasures. 
+
+Comput. Surveys 57, 1 (2024), 1–39. [26] Liang-bo Ning, Shijie Wang, Wenqi Fan, Qing Li, Xin Xu, Hao Chen, and Feiran Huang. 2024. Cheatagent: Attacking llm-empowered recommender systems via llm agent. In Proceedings of the 30th ACM SIGKDD Conference on Knowledge Discovery and Data Mining . 2284–2295. [27] Long Ouyang, Jeffrey Wu, Xu Jiang, Diogo Almeida, Carroll Wainwright, Pamela Mishkin, Chong Zhang, Sandhini Agarwal, Katarina Slama, Alex Ray, et al . 2022. Training language models to follow instructions with human feedback. Advances in neural information processing systems 35 (2022), 27730–27744. [28] Yunke Qu, Tong Chen, Xiangyu Zhao, Lizhen Cui, Kai Zheng, and Hongzhi Yin. 2023. Continuous input embedding size search for recommender systems. In Proceedings of the 46th International ACM SIGIR Conference on Research and Development in Information Retrieval . 708–717. [29] Alec Radford, Jeffrey Wu, Rewon Child, David Luan, Dario Amodei, Ilya Sutskever, et al . 2019. Language models are unsupervised multitask learners. OpenAI blog 
+
+1, 8 (2019), 9. [30] JW Ratcliff and DE Metzener. [n. d.]. Pattern matching: the gestalt approach, July 1988. URL: https://web. archive. org/web/20200209031652/https://www. drdobbs. com/database/pattern-matching-the-gestalt-approach/184407970 ([n. d.]). [31] Nils Reimers and Iryna Gurevych. 2019. Sentence-bert: Sentence embeddings using siamese bert-networks. arXiv preprint arXiv:1908.10084 (2019). [32] Junshuai Song, Zhao Li, Zehong Hu, Yucheng Wu, Zhenpeng Li, Jian Li, and Jun Gao. 2020. Poisonrec: an adaptive data poisoning framework for attacking black-box recommender systems. In 2020 IEEE 36th international conference on data engineering (ICDE) . IEEE, 157–168. [33] Yanling Wang, Yuchen Liu, Qian Wang, Cong Wang, and Chenliang Li. 2023. Poisoning self-supervised learning based sequential recommendations. In Proceed-ings of the 46th international ACM SIGIR conference on research and development in information retrieval . 300–310. [34] Yihao Wang, Jiajie Su, Chaochao Chen, Meng Han, Chi Zhang, and Jun Wang. 2025. Sim4Rec: Data-Free Model Extraction Attack on Sequential Recommen-dation. In Proceedings of the AAAI Conference on Artificial Intelligence , Vol. 39. 12766–12774. [35] Zongwei Wang, Min Gao, Junliang Yu, Xinyi Gao, Quoc Viet Hung Nguyen, Shazia Sadiq, and Hongzhi Yin. 2025. Id-free not risk-free: Llm-powered agents unveil risks in id-free recommender systems. In Proceedings of the 48th International ACM SIGIR Conference on Research and Development in Information Retrieval .1902–1911. [36] Zongwei Wang, Junliang Yu, Min Gao, Hongzhi Yin, Bin Cui, and Shazia Sadiq. 2024. Unveiling vulnerabilities of contrastive recommender systems to poisoning attacks. In Proceedings of the 30th ACM SIGKDD conference on knowledge discovery and data mining . 3311–3322. [37] Likang Wu, Zhi Zheng, Zhaopeng Qiu, Hao Wang, Hongchao Gu, Tingjia Shen, Chuan Qin, Chen Zhu, Hengshu Zhu, Qi Liu, et al . 2024. A survey on large language models for recommendation. World Wide Web 27, 5 (2024), 60. [38] Xu Xie, Fei Sun, Zhaoyang Liu, Shiwen Wu, Jinyang Gao, Jiandong Zhang, Bolin Ding, and Bin Cui. 2022. Contrastive learning for sequential recommendation. In 
+
+2022 IEEE 38th international conference on data engineering (ICDE) . IEEE, 1259– 1273. [39] Jingwei Yi, Fangzhao Wu, Bin Zhu, Jing Yao, Zhulin Tao, Guangzhong Sun, and Xing Xie. 2023. UA-FedRec: untargeted attack on federated news recommendation. In Proceedings of the 29th ACM SIGKDD Conference on Knowledge Discovery and Data Mining . 5428–5438. [40] Hongzhi Yin, Liang Qu, Tong Chen, Wei Yuan, Ruiqi Zheng, Jing Long, Xin Xia, Yuhui Shi, and Chengqi Zhang. 2025. On-device recommender systems: A comprehensive survey. Data Science and Engineering (2025), 1–30. [41] Wei Yuan, Quoc Viet Hung Nguyen, Tieke He, Liang Chen, and Hongzhi Yin. 2023. Manipulating federated recommender systems: Poisoning with synthetic users and its countermeasures. In Proceedings of the 46th International ACM SIGIR Conference on Research and Development in Information Retrieval . 1690–1699. [42] Wei Yuan, Chaoqun Yang, Liang Qu, Guanhua Ye, Quoc Viet Hung Nguyen, and Hongzhi Yin. 2025. Robust federated contrastive recommender system against targeted model poisoning attack. Science China Information Sciences 68, 4 (2025), 140103. [43] Zhenrui Yue, Zhankui He, Huimin Zeng, and Julian McAuley. 2021. Black-box attacks on sequential recommenders via data-free model extraction. In Proceedings of the 15th ACM conference on recommender systems . 44–54. [44] Hengtong Zhang, Yaliang Li, Bolin Ding, and Jing Gao. 2020. Practical data poisoning attack against next-item recommendation. In Proceedings of the web conference 2020 . 2458–2464. [45] Jinghao Zhang, Yuting Liu, Qiang Liu, Shu Wu, Guibing Guo, and Liang Wang. 2024. Stealthy attack on large language model based recommendation. arXiv preprint arXiv:2402.14836 (2024). [46] Kaike Zhang, Qi Cao, Yunfan Wu, Fei Sun, Huawei Shen, and Xueqi Cheng. 2024. Lorec: Large language model for robust sequential recommendation against poisoning attacks. arXiv preprint arXiv:2401.17723 (2024). [47] Minxing Zhang, Zhaochun Ren, Zihan Wang, Pengjie Ren, Zhunmin Chen, Pengfei Hu, and Yang Zhang. 2021. Membership inference attacks against recom-mender systems. In Proceedings of the 2021 ACM SIGSAC Conference on Computer and Communications Security . 864–879. [48] Shijie Zhang, Hongzhi Yin, Tong Chen, Zi Huang, Quoc Viet Hung Nguyen, and Lizhen Cui. 2022. Pipattack: Poisoning federated recommender systems for manipulating item promotion. In Proceedings of the Fifteenth ACM International Conference on Web Search and Data Mining . 1415–1423. [49] Yi Zhang and Yiwen Zhang. 2025. MixRec: Individual and Collective Mixing Empowers Data Augmentation for Recommender Systems. In Proceedings of the ACM on Web Conference 2025 . 2198–2208. [50] Yi Zhang, Yiwen Zhang, Dengcheng Yan, Shuiguang Deng, and Yun Yang. 2023. Revisiting graph-based recommender systems from the perspective of variational auto-encoder. ACM Transactions on Information Systems 41, 3 (2023), 1–28. [51] Yuchuan Zhao, Tong Chen, Junliang Yu, Kai Zheng, Lizhen Cui, and Hongzhi Yin. 2025. Diversity-aware Dual-promotion Poisoning Attack on Sequential Recommendation. In Proceedings of the 48th International ACM SIGIR Conference on Research and Development in Information Retrieval . 1634–1644. [52] Zhi Zheng, Wenshuo Chao, Zhaopeng Qiu, Hengshu Zhu, and Hui Xiong. 2024. Harnessing large language models for text-rich sequential recommendation. In 
+
+Proceedings of the ACM Web Conference 2024 . 3207–3216. [53] Yongchao Zhou, Andrei Ioan Muresanu, Ziwen Han, Keiran Paster, Silviu Pitis, Harris Chan, and Jimmy Ba. 2022. Large language models are human-level prompt engineers. In The eleventh international conference on learning representations .[54] Zhihao Zhu, Chenwang Wu, Rui Fan, Defu Lian, and Enhong Chen. 2023. Mem-bership inference attacks against sequential recommender systems. In Proceedings of the ACM web conference 2023 . 1208–1219.

@@ -1,0 +1,30 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2604.26231v1/fig-001.webp",
+      "caption": "Table 1: Statistics of the datasets.",
+      "page": 6,
+      "index": 1,
+      "width": 522,
+      "height": 687
+    },
+    {
+      "url": "assets/figures/arxiv/2604.26231v1/fig-002.webp",
+      "caption": "Table 2: Overall performance comparisons on Amazon-Book, Yelp, and Steam datasets w.r.t. Recall@N (abbreviated as R@N) and NDCG@N (abbreviated as N@N), where N ∈ [10, 20]. The best-performing model on each dataset and metric is highlighted in bolded ‘Improv.%’ indicates the relative improvement of ProMax over the best baseline based on a two-tailed paired t-test.",
+      "page": 7,
+      "index": 2,
+      "width": 1032,
+      "height": 406
+    },
+    {
+      "url": "assets/figures/arxiv/2604.26231v1/fig-003.webp",
+      "caption": "Figure 1: The information flow of the proposed ProMax.",
+      "page": 3,
+      "index": 3,
+      "width": 1048,
+      "height": 313
+    }
+  ]
+}

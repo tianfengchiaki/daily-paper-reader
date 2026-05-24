@@ -1,0 +1,38 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2605.10323v1/fig-001.webp",
+      "caption": "Figure 2: Overview of Ordinal Semantic Anchoring (OSA).",
+      "page": 2,
+      "index": 1,
+      "width": 400,
+      "height": 441
+    },
+    {
+      "url": "assets/figures/arxiv/2605.10323v1/fig-002.webp",
+      "caption": "Figure 5: Visualization of interaction representations before and after applying ordinal semantic anchoring (ML-1M).",
+      "page": 4,
+      "index": 2,
+      "width": 484,
+      "height": 328
+    },
+    {
+      "url": "assets/figures/arxiv/2605.10323v1/fig-003.webp",
+      "caption": "Figure 4: Pairwise preference accuracy (Strong and Subtle), with relative gains (+%) over the best baseline.",
+      "page": 4,
+      "index": 3,
+      "width": 458,
+      "height": 309
+    },
+    {
+      "url": "assets/figures/arxiv/2605.10323v1/fig-004.webp",
+      "caption": "Figure 1: Comparison between existing CF–LLM recommenders and the proposed OSA framework.",
+      "page": 1,
+      "index": 4,
+      "width": 504,
+      "height": 340
+    }
+  ]
+}

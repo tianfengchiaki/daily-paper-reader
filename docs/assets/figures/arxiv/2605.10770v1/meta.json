@@ -1,0 +1,134 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2605.10770v1/fig-001.webp",
+      "caption": "Figure 7 Feasibility rate vs. compute cost across 50 scenarios. A run is counted as feasible only if a checkpoint after step 0 satisfies all constraints while improving target perplexity (the base model checkpoint is excluded, so feasibility requires that fine-tuning actually learned something.) Top: Model comparison at LoRA rank 32 (Qwen2.53B, Qwen3-8B, Gemma3-12B). Bottom: LoRA rank comparison on Qwen2.5-3B (ranks 8, 32, 64). Baseline stars show the “feasible@k” rate: the probability that at least one of k independent fixed-weight runs is feasible, averaged across scenarios. Colored circles show the feasibility of a single DynaMiCS run at its schedule-dependent cost. Mean ± std over three seeds. Higher values are better.",
+      "page": 25,
+      "index": 1,
+      "width": 971,
+      "height": 495
+    },
+    {
+      "url": "assets/figures/arxiv/2605.10770v1/fig-002.webp",
+      "caption": "Figure 8 Fixed-interval update frequency sweep: model comparison at LoRA rank 32. Boxplots show per-scenario PPL reduction (one dot per scenario); for baselines, we report the oracle best across all fixed-weight configurations per scenario. Scatter plots show median PPL reduction vs. total compute cost: baseline stars indicate the best@k perplexity reduction, i.e., the best result among k fixed-weight configurations, at the corresponding budget level, while DynaMiCS diamonds show the reduction of a single adaptive run at each update interval’s cost. Each DynaMiCS configuration uses a constant reweight interval H throughout training.",
+      "page": 26,
+      "index": 2,
+      "width": 971,
+      "height": 473
+    },
+    {
+      "url": "assets/figures/arxiv/2605.10770v1/fig-003.webp",
+      "caption": "Figure 6 Learning rate ablation. Validation loss on Wikipedia across learning rates in Qwen2.5-3B at LoRA r∈{8, 32, 64} (top) and Qwen3-8B and Gemma-3-12B at r=32 (bottom). Diverged runs are dashed and allowed to leave the cropped y-axis; insets zoom on the tail.",
+      "page": 21,
+      "index": 3,
+      "width": 772,
+      "height": 507
+    },
+    {
+      "url": "assets/figures/arxiv/2605.10770v1/fig-004.webp",
+      "caption": "Figure 13 breaks down the test perplexity reduction by the number of constraints in each scenario, using the dense warmup schedule. DynaMiCS maintains a stable advantage over baselines from 3 to 7 constraints, while baselines degrade steadily and collapse to near-zero median reduction by 7 constraints. Only at 10 constraints, the most extreme tier where the model must simultaneously preserve performance on 10 heldout domains, DynaMiCS struggles as well, consistent with the inherent difficulty of satisfying that many preservation requirements at once (note, however, that solutions are still found for Qwen3-8B and Gemma312B).",
+      "page": 30,
+      "index": 4,
+      "width": 971,
+      "height": 474
+    },
+    {
+      "url": "assets/figures/arxiv/2605.10770v1/fig-005.webp",
+      "caption": "Figure 1 DynaMiCS overview. Problem setup. Fine-tuning datasets D provide the data available for mixture selection, including target datasets and optional auxiliary datasets for transfer or regularization. Evaluation domains E are partitioned into target domains, whose losses are minimized, and constrained domains, whose losses must remain below reference values. DynaMiCS optimization. At each update, DynaMiCS estimates a slope matrix S(t) (1), where Sij(t) measures the local effect of training on dataset Dj on evaluation loss Li. Green/red entries denote loss decreases/increases. Given S(t), DynaMiCS solves a constrained optimization problem to obtain weights w∗ (2), trains with them for Ht steps (3), and then repeats the procedure. The simplex illustrates the proxy objective landscape, with white lines marking constraint boundaries; values are illustrative.",
+      "page": 2,
+      "index": 5,
+      "width": 984,
+      "height": 346
+    },
+    {
+      "url": "assets/figures/arxiv/2605.10770v1/fig-006.webp",
+      "caption": "Figure 12 Feasibility rate across LoRA ranks (dense warmup). A run is counted as feasible only if a checkpoint after step 0 satisfies all constraints while improving target perplexity (the base model checkpoint is excluded, so feasibility requires that fine-tuning actually learned something). Each pair compares the fixed-weight baseline with the dense warmup schedule at a given rank. Compared to baselines, DynaMiCS improves feasibility at every rank; performance plateaus at rank 32. Higher is better.",
+      "page": 29,
+      "index": 6,
+      "width": 818,
+      "height": 266
+    },
+    {
+      "url": "assets/figures/arxiv/2605.10770v1/fig-007.webp",
+      "caption": "Figure 16 Curve-fitting predictor: LoRA rank comparison on Qwen2.5-3B (ranks 8, 32, 64). Same layout as Figure 8.",
+      "page": 33,
+      "index": 7,
+      "width": 971,
+      "height": 473
+    },
+    {
+      "url": "assets/figures/arxiv/2605.10770v1/fig-008.webp",
+      "caption": "Figure 11 LoRA rank comparison on Qwen2.5-3B. Left (Boxplots): Per-scenario PPL reduction for ranks 8, 32, and 64. For baselines, we report the oracle best across all fixed-weight configurations per scenario. Right (Scatter plots): Median PPL reduction vs. total compute Baseline stars indicate the best@k perplexity reduction, i.e., the best result among k fixed-weight configurations, at the corresponding budget level, while DynaMiCS colored circles show the reduction of a single adaptive run at its schedule-dependent cost.",
+      "page": 28,
+      "index": 8,
+      "width": 968,
+      "height": 223
+    },
+    {
+      "url": "assets/figures/arxiv/2605.10770v1/fig-009.webp",
+      "caption": "Figure 10 LoRA rank comparison on Qwen2.5-3B. Left (Boxplots): Per-scenario PPL reduction for ranks 8, 32, and 64. For baselines, we report the oracle best across all fixed-weight configurations per scenario. Right (Scatter plots): Median PPL reduction vs. total compute cost. Baseline stars indicate the best@k perplexity reduction, i.e., the best result among k fixed-weight configurations, at the corresponding budget level, while DynaMiCS colored circles show the reduction of a single adaptive run at its schedule-dependent cost. Mean ± std over three seeds.",
+      "page": 28,
+      "index": 9,
+      "width": 965,
+      "height": 472
+    },
+    {
+      "url": "assets/figures/arxiv/2605.10770v1/fig-010.webp",
+      "caption": "Figure 15 Curve-fitting predictor: model comparison at LoRA rank 32. Same layout as Figure 8. Each DynaMiCS configuration uses a constant reweight interval H with probing budget c = H and a non-linear predictor (fitted on five intermediate evaluations steps).",
+      "page": 32,
+      "index": 10,
+      "width": 971,
+      "height": 475
+    },
+    {
+      "url": "assets/figures/arxiv/2605.10770v1/fig-011.webp",
+      "caption": "Figure 9 Fixed-interval update frequency sweep: LoRA rank comparison on Qwen2.5-3B (ranks 8, 32, 64). Same layout as Figure 8.",
+      "page": 27,
+      "index": 11,
+      "width": 971,
+      "height": 473
+    },
+    {
+      "url": "assets/figures/arxiv/2605.10770v1/fig-012.webp",
+      "caption": "Figure 4 Weight allocation dynamics for scenario 28 under the dense warmup schedule of updates. All three models achieve feasibility following patterns that show common features but remain distinct. Early in training, each model explores the target domains directly (Glaive dominates steps 2–16), generally shifting towards FineWeb (non-target dataset acting as regularizer in a later phase).",
+      "page": 9,
+      "index": 12,
+      "width": 963,
+      "height": 255
+    },
+    {
+      "url": "assets/figures/arxiv/2605.10770v1/fig-013.webp",
+      "caption": "Figure 5 Target loss improvement vs. constraint violation for Gemma 12B (LoRA-32) on three scenarios where baselines largely fail. Filled markers denote feasible runs (best-objective checkpoint); hollow markers denote infeasible runs (least-violating checkpoint). Diamonds are fixed-weight baselines (gray = uniform, blue = proportional); circles are DynaMiCS schedules.",
+      "page": 9,
+      "index": 13,
+      "width": 967,
+      "height": 195
+    },
+    {
+      "url": "assets/figures/arxiv/2605.10770v1/fig-014.webp",
+      "caption": "Figure 18 Evolution of dataset weights during training under a schedule of updates with dense warmup, for Qwen 3B, Qwen 8B, and Gemma 12B at LoRA rank 32. Weights are piecewise constant between controller recomputation steps.",
+      "page": 37,
+      "index": 14,
+      "width": 963,
+      "height": 1084
+    },
+    {
+      "url": "assets/figures/arxiv/2605.10770v1/fig-015.webp",
+      "caption": "Figure 14 shows the results. Across all model configurations, DynaMiCS consistently achieves lower violation than the best baseline, with a more concentrated distribution closer to zero. This indicates that the optimizer’s constraint-aware weight selection reduces forgetting even in scenarios where full constraint satisfaction is unattainable, a property that baselines, which have no mechanism to respond to constraint violations, cannot match.",
+      "page": 31,
+      "index": 15,
+      "width": 971,
+      "height": 467
+    },
+    {
+      "url": "assets/figures/arxiv/2605.10770v1/fig-016.webp",
+      "caption": "Table 3 Our 50 evaluation scenarios. Sample budgets in parentheses. “4×tiny” = tM, tT, tH, tA. WP and FW are regularizers with unlimited samples.",
+      "page": 20,
+      "index": 16,
+      "width": 802,
+      "height": 1217
+    }
+  ]
+}

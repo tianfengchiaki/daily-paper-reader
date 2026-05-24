@@ -1,0 +1,22 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2604.23640v1/fig-001.webp",
+      "caption": "Figure 1: Framework of the proposed PUDA. The top panel (Part 1) presents the joint prompt and surrogate distillation stage. The bottom-left block (Part 2.1) illustrates the LLM-guided textual refinement module based on anchor-pattern imitation, while the bottom-right block (Part 2.2) depicts the surrogate-guided poisoning sequence generation process for effective item promotion under black-box LLM-SRS settings.",
+      "page": 4,
+      "index": 1,
+      "width": 1052,
+      "height": 493
+    },
+    {
+      "url": "assets/figures/arxiv/2604.23640v1/fig-002.webp",
+      "caption": "Figure 2: Target title refinement process based on three-step reasoning (due to the space limitation, only key prompt words are shown in the figure).",
+      "page": 5,
+      "index": 2,
+      "width": 498,
+      "height": 418
+    }
+  ]
+}

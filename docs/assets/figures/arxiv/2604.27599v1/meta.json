@@ -1,0 +1,22 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2604.27599v1/fig-001.webp",
+      "caption": "Figure 1: Overview of InvariRank. Structured attention blocks crosscandidate interactions, and shared positional framing aligns positional offsets across candidates.",
+      "page": 2,
+      "index": 1,
+      "width": 498,
+      "height": 359
+    },
+    {
+      "url": "assets/figures/arxiv/2604.27599v1/fig-002.webp",
+      "caption": "Table 1: Reranking results on MovieLens-32M & Amazon Books with list length 𝐾 = 25. HR@k and nDCG@k denote Hit Rate and nDCG at 𝑘 ∈ {5, 10}, and Kendall’s 𝜏 , Spearman’s 𝜌 , and top-𝑘 agreement (T@5) measure permutation robustness. Higher is better for all metrics.",
+      "page": 4,
+      "index": 2,
+      "width": 1056,
+      "height": 293
+    }
+  ]
+}

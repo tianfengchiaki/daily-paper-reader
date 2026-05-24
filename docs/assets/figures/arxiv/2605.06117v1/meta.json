@@ -1,0 +1,62 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2605.06117v1/fig-001.webp",
+      "caption": "Table 9: Test accuracy comparison with off-the-shelf LLM-based few-shot tabular methods. All baseline numbers are from DeLTa [50]. GTL, LIFT-ICL, and P2T are omitted from 256-shot as these results are not reported in the corresponding papers. Bold: best; underline: second best.",
+      "page": 15,
+      "index": 1,
+      "width": 660,
+      "height": 446
+    },
+    {
+      "url": "assets/figures/arxiv/2605.06117v1/fig-002.webp",
+      "caption": "Table 8: XGBoost hyperparameter space",
+      "page": 14,
+      "index": 2,
+      "width": 440,
+      "height": 281
+    },
+    {
+      "url": "assets/figures/arxiv/2605.06117v1/fig-003.webp",
+      "caption": "Figure 1: Overview of BoostLLM. (a) Tabular features xi are serialized into a natural language template. An XGBoost model’s M decision paths are condensed into R round-specific descriptions via constraint intersection (Equation (4)). (b) Each sample is presented as a feature-only and a pathinformed prompt (Equations (2) and (5)). (c) R LLM weak learners with round-specific parameters θr are trained sequentially. Both views are forwarded through backbone ϕθr and their hidden states are averaged to produce per-round logit fr (Equations (6) and (7)); each learner corrects the residual of the preceding accumulated logit Fr−1, which accumulates stagewise into Fr (Equation (8)).",
+      "page": 3,
+      "index": 3,
+      "width": 824,
+      "height": 383
+    },
+    {
+      "url": "assets/figures/arxiv/2605.06117v1/fig-004.webp",
+      "caption": "Figure 3: Performance during boosting for each dataset.",
+      "page": 18,
+      "index": 4,
+      "width": 816,
+      "height": 522
+    },
+    {
+      "url": "assets/figures/arxiv/2605.06117v1/fig-005.webp",
+      "caption": "Table 6: Summary statistics of the ten tabular classification benchmarks. “Num.” and “Cat.” denote the number of numerical and categorical features, respectively. “Majority %” is the percentage of the most frequent class.",
+      "page": 13,
+      "index": 5,
+      "width": 686,
+      "height": 277
+    },
+    {
+      "url": "assets/figures/arxiv/2605.06117v1/fig-006.webp",
+      "caption": "Figure 2: Behavioral analysis of BoostLLM. (a) Left: Per-round AP during boosting; dot/dashed lines denotes different views, while solid line denotes the fusion of both views. (b) Right: Per-round view contribution ratio ρr over training steps, averaged over nine datasets; Smaller ρr indicates stronger path-view influence, while larger ρr indicates stronger feature-view influence.",
+      "page": 8,
+      "index": 6,
+      "width": 726,
+      "height": 225
+    },
+    {
+      "url": "assets/figures/arxiv/2605.06117v1/fig-007.webp",
+      "caption": "Figure 4: Per-dataset view contribution ratio ρ over training steps (128-shot, Qwen3-4B, 5 rounds). Each subplot shows one dataset; Smaller ρ indicates stronger path-view influence, while larger ρ indicates stronger feature-view influence.",
+      "page": 19,
+      "index": 7,
+      "width": 818,
+      "height": 554
+    }
+  ]
+}

@@ -1,0 +1,943 @@
+Title: ProMax: Exploring the Potential of LLM-derived Profiles with Distribution Shaping for Recommender Systems
+
+URL Source: https://arxiv.org/pdf/2604.26231v1
+
+Published Time: Thu, 30 Apr 2026 00:20:44 GMT
+
+Number of Pages: 11
+
+Markdown Content:
+# ProMax: Exploring the Potential of LLM-derived Profiles with Distribution Shaping for Recommender Systems 
+
+## Yi Zhang ∗
+
+Anhui University Hefei, China zhangyi.ahu@gmail.com 
+
+## Yiwen Zhang †
+
+Anhui University Hefei, China zhangyiwen@ahu.edu.cn 
+
+## Kai Zheng 
+
+University of Electronic Science and Technology of China Chengdu, China zhengkai@uestc.edu.cn 
+
+## Tong Chen 
+
+The University of Queensland Brisbane, Australia tong.chen@uq.edu.au 
+
+## Hongzhi Yin †
+
+The University of Queensland Brisbane, Australia h.yin1@uq.edu.au 
+
+Abstract 
+
+The remarkable text understanding and generation capabilities of large language models (LLMs) have revitalized the field of general recommendation based on implicit user feedback. Rather than de-ploying LLMs directly as recommendation models, a more flexible paradigm leverages their ability to interpret users’ historical inter-actions and semantic contexts to extract structured profiles that characterize user preferences. These profiles can be further trans-formed into actionable high-dimensional representations, serving as powerful signals to augment and strengthen recommendation models. However, the mechanism by which such profiles enhance recommendation performance within the feature space remains in-sufficiently understood. Moreover, existing studies predominantly rely on nonlinear alignment and fusion strategies to incorporate these profiles, which often lead to semantic loss and fail to fully exploit their potential. To address these limitations, we revisit pro-files from a retrieval perspective and propose a simple yet effec-tive recommendation framework built upon distribution shaping (ProMax ) in this paper. We begin by employing dense retrieval to uncover the collaborative relationships between user and item profiles within the feature space. Based on this insight, we intro-duce a dual distribution-reshaping process, in which the profile distribution acts as a guiding signal to steer the recommendation model toward learning user preferences for unseen items beyond the scope of observed interactions. We apply ProMax to four classic recommendation methods on three public datasets. The results in-dicate that ProMax substantially improves base model performance and outperforms existing LLM-based recommendation approaches. 
+
+CCS Concepts 
+
+• Information systems → Recommender systems . 
+
+> ∗The work was done while the author was visiting the University of Queensland.
+> †Yiwen Zhang and Hongzhi Yin are co-corresponding authors.
+> This work is licensed under a Creative Commons Attribution 4.0 International License.
+> SIGIR ’26, Melbourne, VIC, Australia
+> ©2026 Copyright held by the owner/author(s). ACM ISBN 979-8-4007-2599-9/2026/07 https://doi.org/10.1145/3805712.3809600
+
+Keywords 
+
+Recommender System, Large Language Model, User Profiling 
+
+ACM Reference Format: 
+
+Yi Zhang, Yiwen Zhang, Kai Zheng, Tong Chen, and Hongzhi Yin. 2026. ProMax: Exploring the Potential of LLM-derived Profiles with Distribution Shaping for Recommender Systems. In Proceedings of the 49th International ACM SIGIR Conference on Research and Development in Information Retrieval (SIGIR ’26), July 20–24, 2026, Melbourne, VIC, Australia. ACM, New York, NY, USA, 11 pages. https://doi.org/10.1145/3805712.3809600 
+
+1 Introduction 
+
+General recommender systems [ 24 ], widely applied in domains such as web search and E-commerce, typically rely on collaborative filtering (CF) techniques [ 11 ] that exploit ID-level co-occurrence signals derived from historical interactions [ 44 ]. The prevailing paradigm in this line of research is to learn expressive user and item embedding representations within a unified latent space, thereby providing direct guidance for optimal user–item matching [ 40 ]. Inference under this paradigm is highly efficient, often requiring only a single forward computation, such as an inner product or a shallow non-linear projection [ 23 ]. Nevertheless, realizing this objective is far from trivial, particularly in scenarios where the available observations are insufficient to support estimation [42]. Pre-trained large language models (LLMs) [ 2, 54 ], empowered by vast textual corpora and strong generative abilities, have recently gained traction in recommender systems as a prospective solution to the sparsity issue [ 33 , 36 ]. One research line treats LLMs as deep rec-ommenders by embedding historical interactions into prompts for iterative fine-tuning [ 7, 18 ], yet such approach often amplifies the trade-off between timeliness and training complexity. Alternatively, LLMs act as semantic enhancers [ 35 , 37 ], distilling user profiles into vectorized representations [ 29 ] that are seamlessly integrated into recommendation models. Representative work such as RLM-Rec [ 21 ] builds user profiles from item descriptions and sampled user reviews, where the resulting high-dimensional embeddings are used to enhance model consistency. Subsequent studies extend this paradigm with richer profile structures [ 32 ], denoising [ 30 ], and techniques such as embedding whitening [ 49 ] and compres-sion [ 13 ]. Some recent efforts move further by replacing randomly initialized ID embeddings with semantic representations [26].  
+
+> arXiv:2604.26231v1 [cs.IR] 29 Apr 2026 SIGIR ’26, July 20–24, 2026, Melbourne, VIC, Australia Yi Zhang, Yiwen Zhang, Kai Zheng, Tong Chen, & Hongzhi Yin
+
+These emerging studies collectively highlight the effectiveness of LLM-derived profiles in recommender systems. However, their underlying role remains largely unexplored, leaving open the ques-tion of how such opaque profiles truly enhance recommendation models. In general, ID embeddings in recommender models are derived from modeling users’ historical interactions, where the recommendation objective enforces the target user to be close to positive samples [ 22 ] ( i.e. , items the user has interacted with) in the feature space [ 42 ]. In contrast, LLM-derived profiles are grounded in textual information, capturing user preferences in a more ab-stract and generalized manner rather than pointing to any specific item [ 21 , 38 ]. More importantly, they originate from a pre-trained linguistic space [ 48 ] rather than the semantic space shaped within recommendation scenarios. Therefore, the link between ID embed-dings and profile representations is intuitively weak, motivating many studies to resort to non-linear networks for alignment [ 21 , 32 ], or even directly replace ID embeddings with item’s titles or profiles [26 ]. Such additional designs incur extra human effort and training overhead, while inevitably introducing semantic inconsistency and loss for downstream recommendation tasks [13, 27]. On the other hand, employing profiles merely as auxiliary fea-ture augmentations within recommendation models may fail to fully exploit their potential. Concretely, the practice of using pro-files only as auxiliary features reduces high-dimensional semantics to peripheral signals ( e.g. , forcing dimensional alignment between profile and ID embeddings via MLPs [ 21 ]), thereby undermining the rich expressiveness of user and item profiles, particularly their cross-item generality and abstraction. Consequently, the recommen-dation model remains largely bound to sparse interaction patterns. Furthermore, user profiles are inherently high-dimensional and abstract [ 21 ] ( e.g. , reflecting a preference for science fiction movies), but often lack the granularity required to differentiate among spe-cific items ( e.g. , which specific science fiction movie). As a result, directly replacing ID embeddings with profile representations risks producing recommendations that are generic rather than precise. More critically, redundancy and noise in profile information may contaminate training, depriving the recommender model of the opportunity to capture clean interaction-driven signals. Therefore, we take a different perspective, seeking to answer two central questions: how can we interpret the beneficial impact of profiles on recommendation, and how can their potential be fully exploited? To address these two questions, we propose ProMax , a framework built upon LLM-driven user and item profiles that can be seamlessly integrated into mainstream recommendation models. It requires only two additional training objectives while leaving the original model architecture intact. Specifically, we first revisit these LLM-generated profiles from a retrieval perspective to demonstrate that they embed remarkable collaborative signals [ 31 ], which fun-damentally explain their ability to enhance base recommendation models. Therefore, LLM-driven profiles are qualified to serve as guidance for optimizing recommendation models, without the need to be re-integrated into the models for secondary training. To maximize the potential of these user and item profiles, we apply them to both supervised distribution reshaping and self-supervised distribution reshaping processes. The former treats the distribution of profile representations as an indicator, employing uncertainty-based weighting to encourage the recommendation model to move beyond the observed items, thereby providing more possibilities for potential unobserved items. In contrast, the latter addresses the risk of the former’s over-dependence on original profiles by reinvigorating users’ historical interactions through profile-based retrieval and LLM-enhanced re-ranking. It further strengthens the expressive capacity of the recommendation model by enforcing bidirectional consistency maximization. The major contributions of this paper are summarized as follows: 
+
+• We revisit LLM-driven profiles from the perspective of retrieval and propose ProMax , a simple yet effective model-agnostic frame-work that exploits profile-guided retrieval to fully uncover users’ latent preferences for unobserved items. 
+
+• We propose both supervised distribution reshaping and self-supervised distribution reshaping paradigms to comprehensively exploit the potential of LLM-driven profiles in recommendation. 
+
+• We apply ProMax to four classic recommendation methods on three public datasets. The results indicate that ProMax substan-tially improves base model performance and outperforms existing LLM-based recommendation approaches. 
+
+2 Methodology 2.1 Problem Formulation 
+
+Within the general ID-based recommendation, we model the system as comprising 𝑀 users ( U = {𝑢 1, 𝑢 2, ..., 𝑢 𝑀 }) and 𝑁 items ( I =
+
+{𝑖 1, 𝑖 2, ..., 𝑖 𝑁 }), along with the interactions that capture how users engage with items [ 10 , 11 ]. For each user 𝑢 ∈ U , the historical interactions are represented by an interaction vector x𝑢 ∈ R1×𝑁 . If user 𝑢 has interacted with item 𝑖 , the corresponding value in the vector 𝑥 𝑢𝑖 is set to 1.0. The objective of the recommender system is to learn a prediction model 𝑓 Θ that estimates the preference score 𝑝 Θ ( 𝑗 |𝑢 ) for each unobserved item 𝑗 ∈ I \ { 𝑖 } based on user and item embeddings z𝑢 ∈ R1×𝑑 and z𝑗 ∈ R1×𝑑 , where 𝑑 is the embedding size [ 22 ]. Based on this, we propose the model-agnostic recommendation framework ProMax , as illustrated in Fig. 1. 
+
+2.2 Profiling with LLM 
+
+The strength of large language models in analyzing and generating text has been broadly recognized, a property that proves equally valuable in recommendation tasks [ 36 ]. As mentioned above, one particularly versatile method involves modeling users and items through fine-grained descriptions of their attributes, behavioral patterns, and contextual information, thereby explicitly represent-ing true user preferences [ 37 ]. Without loss of generality, let 𝑓 LLM 
+
+denote an LLM. By providing item attributes such as titles, descrip-tions, and sampled user reviews as input, it is possible to derive an item-side profile P𝑖 that captures the types of users likely to be interested in item 𝑖 . Building on this, a user-side profile P𝑢 can be constructed by aggregating item-to-user relationships, thereby characterizing the types of items that user 𝑢 tends to prefer [21]. An important observation is that, although text-based profiles provide an explicit reflection of user preferences, they cannot be seamlessly utilized within recommendation model 𝑓 Θ, thereby ne-cessitating further transformation into structured representations. Therefore, a text embedding model 𝑓 text is employed to transform ProMax: Exploring the Potential of LLM-derived Profiles with Distribution Shaping for Recommender Systems SIGIR ’26, July 20–24, 2026, Melbourne, VIC, Australia Retrieval with Item Profile(s)       
+
+> d0100100
+
+Historical Interactions                                         
+
+> Item Information
+> User Reviews
+> user/item ID
+> embedding(s)
+> i1i2i3i4i5…iNItem ID
+> i1i2i3i4i5…iN
+> Base
+> Recommender
+> User Profile(s)
+> This user enjoys reading romance
+> novels with awide variety of sub -
+> genres, including …
+> Item Profile(s)
+> Readers who appreciate characters
+> with depth and afull range of villains
+> would also enjoy this book …
+
+input encode           
+
+> Title: Until There Was You
+> Description: A funny, poignant
+> romance....Readers will ...
+> I enjoyed this book very much. It was
+> fast moving and kept my interest … ds
+> item profile embedding(s)
+> k
+> user profile embedding(s)
+> Dimensionality Reduction
+> Item ID i1i2i3i4i5…iN
+> low entropy
+> original new
+> profile
+> Interaction Distribution
+
+input 
+
+input 
+
+estimate 
+
+estimate 
+
+> generate
+> Retrieval with User Profile(s)
+
+input         
+
+> user uuser v
+> s(u, v )similar users
+> i2
+> i5
+> s(u, j )
+> user uitem jcandidate items
+
+generate 
+
+generate             
+
+> 1101100
+> i1i2i3i4i5…iN
+
+Retrieved Interactions 
+
+input 
+
+input 
+
+input 
+
+user u Distribution Shaping      
+
+> retrieve
+> Recommendation
+> Recommendation Task
+> sparsity
+> level
+> Sparsity
+> Level Shift
+> nu
+> U1U2U3U4
+> Large
+> Language Model
+
+input 
+
+Ku 
+
+> Distribution Shaping
+
+input 
+
+fuse 
+
+Figure 1: The information flow of the proposed ProMax .
+
+all users’ profiles into fixed-dimensional semantic representations: 
+
+CU = {c1, c2, ..., c𝑀 }, where c𝑢 = 𝑓 text (P 𝑢 ) ∈ R1×𝑑 𝑠 . (1) Here, 𝑑 𝑠 denotes the dimensionality of the semantic representations obtained from the profiles. An analogous formulation can be estab-lished for the item side CI . Typically, semantic representations c𝑢 
+
+and c𝑖 possess an intrinsic high-dimensional nature ( i.e. , 𝑑 𝑠 ≫ 𝑑 ). As numerous studies have shown that high-dimensional semantic representations often include redundant dimensions with weak semantic relevance [ 13 ], we aim to enhance downstream recom-mendation performance through direct dimensionality reduction: 
+
+𝝁 = 1
+
+𝑀 ∑︁ 𝑢 ∈ U 
+
+c𝑢 = 1
+
+𝑀 ∑︁ 𝑢 ∈ U 
+
+𝑐 𝑢, 1, ..., 1
+
+𝑀 ∑︁ 𝑢 ∈ U 
+
+𝑐 𝑢,𝑑 𝑠 
+
+!
+
+, (2) 
+
+𝚺 = 1
+
+𝑀 − 1∑︁ 𝑢 ∈ U 
+
+(c𝑢 − 𝝁 )( c𝑢 − 𝝁 )⊤ = Vdiag (Λ)V⊤, (3) where V = {𝑣 1, 𝑣 2, ..., 𝑣 𝑑 𝑠 } denotes the matrix of eigenvectors corre-sponding to the principal component directions, and Λ = {𝜆 1, 𝜆 2, ..., 𝜆 𝑑 𝑠 }
+
+represents the eigenvalues. Subsequently, we select the top 𝜅 eigen-vectors {𝑣 1, 𝑣 2, ..., 𝑣 𝜅 } (𝜅 ≪ 𝑑 𝑠 ) to balance semantic preservation with dimensionality reduction. Each user vector is first mean-centered and then projected onto these eigenvectors via inner products, yield-ing the transformed representation ˜c𝑢 [13]: 
+
+˜c𝑢 = (𝑣 ⊤
+
+1 (c𝑢 − 𝝁 ), 𝑣 ⊤
+
+𝜅 (c𝑢 − 𝝁 ), ..., 𝑣 ⊤
+
+𝜅 (c𝑢 − 𝝁 )) ∈ R1×𝜅 . (4) At this stage, each semantic representation c𝑢 is reduced to a low-dimensional form ˜c𝑢 , which facilitates efficient processing of down-stream tasks and focuses on semantically informative dimensions. A consistent definition is applied to the item side ˜c𝑖 as well. 
+
+2.3 Profile-Guided Candidate Retrieval 
+
+We now have access to user and item profiles enriched with rich semantic information. Therefore, before directly leveraging these valuable additional resources to enhance recommendation, our primary objective is to examine whether these profiles are beneficial for the recommendation task, and in what ways they are beneficial. target user u
+
+> similar users of target user
+> other users
+> observed items of target user
+> observed items of similar users
+
+(a) Profile Distribution most sparse  
+
+> (U1)
+> sparse
+> (U2)
+> regular
+> (U3)
+> active
+> (U4)
+
+(b) Sparsity Level Shift 
+
+Figure 2: (a) Distribution of profile representations for a sam-pled target user, along with their similar users and interacted items; (b) Comparison of quantile distributions before and after applying sparsity level shift on Amazon-Book dataset. 
+
+2.3.1 Retrieval with User Profile(s) . The core principle of CF is the assumption that users with similar behavioral patterns are likely to share consistent item preferences [ 11 , 21 ]. As an illustration, if two users engage with several overlapping items, they can be treated as similar, and their interaction records can be shared to support more accurate recommendations [ 31 ]. Drawing inspiration from dense retrieval [ 6], we can directly search for the set of the K1 most similar users given a target user 𝑢 :
+
+Ruser 
+
+𝑢 = TopK ({ 𝑠 ( ˜c𝑢 , ˜c𝑣 )| 𝑣 ∈ U \ { 𝑢 }}) , (5) where 𝑠 (· , ·) denotes the cosine similarity function, c𝑢 and c𝑣 de-note the profile representations corresponding to users 𝑢 and 𝑣 ,respectively. As shown in Fig. 2(a), we visualize on Amazon-Book dataset [ 21 ] a randomly chosen user 𝑢 (orange dot), along with their similar users (green dots) and interacted items. The K most similar users are those located closest to user 𝑢 , and their observed distribution aligns well with common expectations. 
+
+2.3.2 Retrieval with Item Profile(s) . We then turn our focus to examining the distribution of items that these users have interacted with. Let M𝑢 denote the set of items interacted with by user 𝑢 .Beyond this, we count the observed items M𝑣 for each user 𝑣 in the similar user set Ruser 
+
+𝑢 , along with the corresponding number of SIGIR ’26, July 20–24, 2026, Melbourne, VIC, Australia Yi Zhang, Yiwen Zhang, Kai Zheng, Tong Chen, & Hongzhi Yin 
+
+interactions: 
+
+C𝑢 = {( 𝑖, count Ruser  
+
+> 𝑢
+
+(𝑖 )| 𝑖 ∈ M 𝑣 , 𝑖 ∉ M𝑢 , 𝑣 ∈ R user  
+
+> 𝑢
+
+)} , (6) where M𝑢 is the interacted item set of user 𝑢 , and count Ruser  
+
+> 𝑢
+
+(𝑖 ) =
+
+Í𝑣 ∈ R user  
+
+> 𝑢
+
+I(𝑖 ∈ M 𝑣 ∧ 𝑖 ∉ M𝑢 ). It is worth noting that the statistics are restricted to the similar user set Ruser  
+
+> 𝑢
+
+of user 𝑢 , thereby avoiding global bias [ 3]. Revisiting Fig. 2(a), interacted item set M𝑢 and set 
+
+C𝑢 are represented by yellow and purple dots, respectively, from which we derive the following observations: 
+
+• The LLM-derived profile representations demonstrate favorable collaborative connectivity, as the items interacted with by user 𝑢 
+
+and their similar users show high similarity in the feature space. 
+
+• As shown by the red dashed line in Fig. 2(a), user and item profile representations are clearly separated in the feature space. Such separation is expected, given that their profiles are generated through different pipelines and carry different semantic signals. The above observations indicate that the core advantage of pro-files in enhancing recommendation stems from the inherent col-laborative signals [ 31 ] they contain, which motivates the design of mechanisms to effectively connect user and item pipelines. Con-sidering that the core of recommendation lies in suggesting unob-served items for the target user 𝑢 [ 11 , 22 ], and that user and item profile semantics are separated in the feature space, we focus on per-forming dense retrieval over item-side profiles to explicitly capture the potential interactions of user 𝑢 , following a design philosophy analogous to item-based CF models [15, 52]: 
+
+Ritem  
+
+> 𝑢
+
+= Rank 
+
+(
+
+1√︁ 
+
+count Ruser  
+
+> 𝑢
+
+(𝑖 ) 𝑠 ( ˜c∗
+
+> 𝑢
+
+, ˜c𝑖 ) 𝑖 ∈ C 𝑢 
+
+)! 
+
+, (7) where Rank (·) sorts items in descending order. And we adopt mean pooling ˜c∗ 
+
+> 𝑢
+
+= Í𝑗 ∈ M 𝑢 ˜c𝑗 /|M 𝑢 | over the set of interacted items M𝑢 
+
+to represent user 𝑢 , enabling a finer-grained matching with the most similar items in C𝑢 while mitigating the adverse effects of popularity bias from count Ruser  
+
+> 𝑢
+
+.
+
+2.3.3 Sparsity Level Shift . The current challenge lies in deter-mining how to appropriately control the number of items retrieved from the candidate set C𝑢 . If all retrieved items from Ritem  
+
+> 𝑢
+
+are appended to user 𝑢 ’s interactions, the original distribution may be severely distorted and excessive noise introduced. Conversely, when an equal number of new items is added across all users, the fixed quantity may disproportionately dominate the profiles of long-tail users, distorting their representations, while exerting only marginal influence on head users. Based on this, we propose spar-sity level shift , which constrains the number of retrieved items K𝑢 
+
+through a per-user allocation budget controlled by sparsity level: K𝑢 = max (0,𝑇 (|M 𝑢 |) − |M 𝑢 | + 1). (8) The above definition specifies the number of additional interactions K𝑢 required for user 𝑢 . Accordingly, we define Q𝛼 denotes the 𝛼 -quantile of the interaction distribution across all users, i.e. , Q𝛼 =
+
+Quantile 𝛼 {|M 𝑢 | : 𝑢 ∈ U} . For each user 𝑢 , we identify the smallest quantile Q𝛼 that is larger than the current interaction count |M 𝑢 |,denoted as 𝑇 (|M 𝑢 |) :
+
+𝑇 (|M 𝑢 |) = min {Q ∈ {Q 0.25 , Q0.5, Q0.75 } : |M 𝑢 | < Q} , (9) Instruction :                                                                                                                                              
+
+> You are a collaborative filtering -based recommender system to help me determine which books a specific
+> user might choose. I will provide you with:
+> -profile :asingle sentence describing the user’s book preferences (no more than 200 words );
+> -candidate set :alist of books in the format [ID] book title, [ID] book title ,...
+> Based on this information, please recommend <count> new books for the user from the candidate set .
+> -Your final answer must be alist of book IDs, for example :[1,2,3,…,<count> ].
+> -Please do not output intermediate content or other irrelevant information .
+> Input :
+> profile :This user enjoys reading heart -warming romance novels with relatable characters, sweet
+> storylines, and family dynamics .They seem to like stories about second -chances, rebuilding trust, and …
+> candidate set :[5943 ]Coming Home :The Treading Water Series, Book 4,[7703 ]Divorced, Desperate
+> and Delicious, [4400 ]Being Julia (A Forever Novella), [253 ]Torn :The Connections Series, [548 ]Ruining
+> You, [474 ]My Unexpected Forever (The Beaumont Series) (Volume 2), …
+> Output :
+> [5943 ,474 ,4504 ]
+
+Figure 3: Detailed instruction for LLM-based re-ranking pro-cess, along with input and output examples. 
+
+where {Q 0.25 , Q0.5, Q0.75 } represents the first, the median, and the third quartile, thereby partitioning the entire population into four groups: most sparse ( 𝑈 1), sparse ( 𝑈 2), regular ( 𝑈 3), and active ( 𝑈 4). At this point, we turn back to Eq. 8. The adjustment K𝑢 is then computed to ensure that the user 𝑢 ’s interaction number reaches at least the next sparsity level. As shown in Fig. 2(b), with sparsity level shift, the interaction counts of all user groups are elevated to the next tier. The effect is especially notable for mid-range users (𝑈 2 and 𝑈 3), whereas active users ( 𝑈 4) are scarcely affected, given their already abundant interaction histories. After obtaining a per-user allocation budge K𝑢 , we can directly apply it to 𝐶 𝑢 and rewrite Eq. 7. Considering the coarse-grained nature of dense retrieval, we further employ the LLM 𝑓 LLM to re-rank all candidate item from Ritem  
+
+> 𝑢
+
+so as to better capture nuanced semantics and align more precisely with the user profile P𝑢 :
+
+RLLM  
+
+> 𝑢
+
+= 𝑓 LLM (𝜋, P𝑢 , 𝑅 item  
+
+> 𝑢
+
+, K𝑢 ), (10) where 𝜋 denotes the instruction component of the LLM prompt, and the detailed pipeline is shown in Fig. 3. Compared with directly selecting the top- K𝑢 highest-scoring items from the item set Ritem  
+
+> 𝑢
+
+,LLM-based re-ranking is not only more flexible but also enables finer-grained filtering of candidate items, thereby mitigating expo-sure bias. On the other hand, using item set Ritem  
+
+> 𝑢
+
+as the candidate pool effectively prevents recommending non-existent items due to hallucination issue [ 14 ]. In the final step, we fuse the original interactions M𝑢 with the retrieved interactions RLLM  
+
+> 𝑢
+
+to obtain an updated interaction set for user 𝑢 : M′ 
+
+> 𝑢
+
+= {𝑖 |𝑖 ∈ M 𝑢 or 𝑖 ∈ R LLM  
+
+> 𝑢
+
+}.
+
+2.4 Distribution Shaping 
+
+Enhancing recommendation with semantic representations has been widely studied, including approaches that introduce adapters for dimensional alignment [ 13 , 21 ] or directly replace (or augment) ID embeddings in recommendation model 𝑓 Θ with semantic repre-sentations [ 26 ]. Nevertheless, these pointwise semantic alignment or enhancement processes not only increases complexity ( e.g. , by requiring additional MLP layers), but also fails to fully exploit the semantic information embedded in the profiles. Recalling the strong collaborative connectivity illustrated in Fig. 2(a), the strong collab-orative connectivity can be viewed as a recommendation indicator informed by semantic priors. This indicator uncovers latent relation-ships between user and item profiles while simultaneously offering an auxiliary supervisory signal to base recommendation model 𝑓 Θ.ProMax: Exploring the Potential of LLM-derived Profiles with Distribution Shaping for Recommender Systems SIGIR ’26, July 20–24, 2026, Melbourne, VIC, Australia 
+
+To provide direct guidance for recommendation while avoiding extra processes, we start by defining the user 𝑢 ’s distribution over the entire item set: 
+
+𝑝 ∗ (𝑖 |𝑢 ) = Softmax 𝑖 ∈ I (𝑠 (e𝑢 , e𝑖 )/ 𝜏 ), ∀𝑖 ∈ I , (11) where notation “ ∗” is used to indicate the source of the user and item representations, e𝑢 and e𝑖 (for 𝑓 Θ, we have e = z, whereas for 𝑓 LLM we have e = ˜c). The temperature coefficient 𝜏 controls the sharpness of the probability distribution [ 4]. Based on this, our ultimate objective is to shape the conditional distribution 𝑝 Θ (𝑖 |𝑢 )
+
+produced by the recommendation model 𝑓 Θ such that it more accu-rately reflects the intrinsic preferences of user 𝑢 .
+
+2.4.1 Supervised Distribution Reshaping . As previously noted, the LLM-driven profiles act as recommendation indicators, and the corresponding user–item distributions 𝑝 LLM (𝑖 |𝑢 ) are employed to guide the model 𝑓 Θ to transcend simple memorization of observed interactions M𝑢 and instead produce preference distributions over unobserved items: 
+
+LSDR = − 1
+
+|U B |∑︁ 𝑢 ∈ U B
+
+𝑤 (𝑢 ) · ∑︁  
+
+> 𝑖 ∈ I
+
+sg [𝑝 LLM (𝑖 |𝑢 )] · log 𝑝 Θ (𝑖 |𝑢 ), (12) where sg [·] represents the stop-gradient operator, UB denotes the set of users contained in a mini-batch B, and 𝑤 (𝑢 ) is the uncertainty-based weight of user 𝑢 . In this process, the LLM-derived profile representations {˜c𝑢 , ˜c𝑖 } are not directly injected into the training of the recommendation model 𝑓 Θ. This design obviates the need for additional dimensional or semantic alignment modules, and instead provides a principled yet lightweight way of guiding the recommendation model 𝑓 Θ through the interaction distribution 
+
+𝑝 LLM (𝑖 |𝑢 ). Since these representations {˜c𝑢 , ˜c𝑖 } are not actually in-volved in training, and are reduced in dimensionality following the approach introduced in Section 2.2, the distribution 𝑝 LLM (𝑖 |𝑢 ) can be pre-computed offline or computed on the fly within each batch 
+
+B, while introducing negligible additional time complexity. Given the prevalence of long-tail items, it becomes crucial to investigate whether the profile distribution 𝑝 LLM (𝑖 |𝑢 ) demonstrates dispersion in its probabilities, as such dispersion reflects the LLM’s uncertainty regarding the extent to which a user may favor these items. To this end, we introduce an uncertainty weighting 𝑤 (𝑢 )
+
+in Eq. 12 to quantify the confidence of the profile distribution for each user 𝑢 . More specifically, we introduce the entropy of the interaction distribution as induced by the user/item profiles [25]: 
+
+𝐻 (𝑢 ) = −∑︁  
+
+> 𝑖 ∈ I
+
+𝑝 LLM (𝑖 |𝑢 ) · log 𝑝 LLM (𝑖 |𝑢 ). (13) Here, 𝐻 (𝑝 LLM (𝑖 |𝑢 )) measures the uncertainty embedded in the dis-tribution 𝑝 LLM (𝑖 |𝑢 ) by aggregating over all items 𝑖 ∈ I . A larger entropy value suggests that the LLM distributes probabilities more diffusely over items, signaling greater uncertainty regarding user 
+
+𝑢 ’s preferences, while a smaller entropy corresponds to more con-fident and concentrated predictions. Since the maximum entropy depends on the size of the item set |I| , we constrain the uncertainty within [0,1] to obtain a unified measure: ˆ𝐻 (𝑢 ) = 𝐻 (𝑢 )/ log |I| . Fi-nally, we assign greater weight to the supervisory signal of the recommendation model 𝑓 Θ when the profile distribution 𝑝 LLM (𝑖 |𝑢 )
+
+is more reliable ( i.e. , exhibits lower entropy ˆ𝐻 (𝑢 )), formulated as 
+
+𝑤 (𝑢 ) = 1 − ˆ𝐻 (𝑢 ).
+
+2.4.2 Self-Supervised Distribution Reshaping . While the adap-tive weight 𝑤 (𝑢 ) is employed to calibrate the supervisory signal derived from the profile distribution 𝐻 (𝑝 LLM (𝑖 |𝑢 )) , a critical con-cern arises from the inherent instability, noise, and hallucination problems in 𝑓 LLM [ 14 ]. If the profile distribution is of poor quality from the outset, its capacity to provide effective guidance for the recommendation model 𝑓 Θ may be limited [27]. Referring back to Section 2.3, we leverage these profiles to iden-tify additional items RLLM  
+
+> 𝑢
+
+of potential interest to user 𝑢 , thereby constructing an augmented set M′ 
+
+> 𝑢
+
+on top of the original interac-tions M𝑢 . For the same user 𝑢 , different interaction sets M𝑢 and 
+
+M′ 
+
+> 𝑢
+
+could yield semantically distinct representations. Therefore, we enforce bidirectional consistency maximization for user 𝑢 be-tween the two different interaction sets, thereby encouraging the recommendation model 𝑓 Θ to further exploit more collaborative signals from both perspectives: 
+
+LS2DR = − 12|B| ∑︁ <𝑢,𝑖 >∈ B ∑︁ 𝑜 ∈ { M 𝑢 ,M′ 
+
+> 𝑢 }
+
+[log 𝑝 Θ (𝑖 ¯𝑜 |𝑢 𝑜 )] , (14) where 𝑢 𝑜 and 𝑖 𝑜 denote the user and item semantic sources obtained by feeding the interaction set 𝑜 ∈ {M 𝑢 , M′ 
+
+> 𝑢
+
+} into the recommenda-tion model 𝑓 Θ, while ¯𝑜 represents the opposite view of interaction set 𝑜 . In conclusion, we further leverage the semantic information embedded in LLM-driven profiles and introduce a self-supervised mechanism that encourages the recommendation model to examine discrepancies across perspectives [ 43 ], thereby mitigating bias from excessive reliance on the original profiles. Building on this, we also introduce contrastive alignment processes between homogeneous nodes (users or items) to further enhance the model’s expressive capabilities [53]. Finally, let Lrec denote the recommendation loss of the base recommender 𝑓 Θ (e.g. , pairwise ranking loss [ 22 ]). The complete training objective of ProMax is then defined as: 
+
+LProMax = Lrec + 𝜆 1 · L SDR + 𝜆 2 · L S2DR , (15) where 𝜆 1 and 𝜆 2 are adjustable weights introduced to ensure that the losses are on the same scale. In conclusion, ProMax is a plug-and-play recommendation framework where LLM-driven profiles are excluded from direct model training, and retrieval and distribution computations can be efficiently pre-processed. 
+
+2.5 Model Analysis 
+
+The complete training process of ProMax is presented in Algorithm 1. First, we construct profiles for all users and items and map them into 𝑘 -dimensional representations to better support downstream tasks (lines 2-4). To fully exploit the potential of these profiles, we perform dense retrieval processes on both the user and item sides to capture potential user-item interactions (line 5). Subsequently, to obtain finer-grained semantic information, we employ the 𝑓 LLM 
+
+again to re-filter the candidate item set Ritem  
+
+> 𝑢
+
+(line 6), and by con-trolling the sparsity shift, we select top-K𝑢 new items for user 𝑢 to update the interaction set M′ 
+
+> 𝑢
+
+(line 7). The profile representations and the updated interaction set are utilized for training the down-stream recommendation model 𝑓 Θ (lines 15-17). Two additional loss terms, LSDR and LS2DR (line 18), are computed on top of the original recommendation loss Lrec (line 19). SIGIR ’26, July 20–24, 2026, Melbourne, VIC, Australia Yi Zhang, Yiwen Zhang, Kai Zheng, Tong Chen, & Hongzhi Yin 
+
+Algorithm 1: The training process of ProMax 
+
+Input: user–item interaction X, large language model 𝑓 LLM , text embedding model 𝑓 text , and base recommendation model 𝑓 Θ; 
+
+> 1:
+
+// pre-processing stage via 𝑓 LLM  
+
+> 2:
+
+generate all item profile { P 𝑖 } by 𝑓 LLM and transform them into 
+
+𝜅 -dimensional representation by 𝑓 text (Eq. 4);  
+
+> 3:
+
+for 𝑢 ∈ U do  
+
+> 4:
+
+generate a user profile P𝑢 by 𝑓 LLM and transform it into 
+
+𝜅 -dimensional representation by 𝑓 text (Eq. 4);  
+
+> 5:
+
+retrieve a similar user set Ruser  
+
+> 𝑢
+
+and an item set Ritem  
+
+> 𝑢
+
+by Eqs. 5, 7;  
+
+> 6:
+
+retrieve a new item set RLLM  
+
+> 𝑢
+
+from Ritem  
+
+> 𝑢
+
+by 𝑓 LLM (Eq. 10);  
+
+> 7:
+
+update the interaction set M′ 
+
+> 𝑢
+
+= {𝑖 |𝑖 ∈ M 𝑢 or 𝑖 ∈ R LLM  
+
+> 𝑢
+
+} with K 𝑢 
+
+(Eq. 8);  
+
+> 8:
+
+end for  
+
+> 9: 10:
+
+// training stage for recommendation model 𝑓 Θ 
+
+> 11:
+
+initialize model parameters for 𝑓 Θ; 
+
+> 12:
+
+while ProMax has not converge do  
+
+> 13:
+
+sample a mini-batch of user-item pairs B from X; 
+
+> 14:
+
+for < 𝑢, 𝑖 >∈ B do  
+
+> 15:
+
+perform forward encoding 𝑓 Θ; 
+
+> 16:
+
+construct user distribution 𝑝 Θ (𝑖 |𝑢 ) and 𝑝 LLM (𝑖 |𝑢 ) by Eq. 11;  
+
+> 17:
+
+construct 𝑝 Θ (𝑖 M′ 
+
+> 𝑢
+
+|𝑢 M𝑢 ) and 𝑝 Θ (𝑖 M𝑢 |𝑢 M′ 
+
+> 𝑢
+
+) by Eq. 11;  
+
+> 18:
+
+calculate two distribution reshaping losses LSDR by Eq. 12 and 
+
+LS2DR by Eq. 14;  
+
+> 19:
+
+calculate the recommendation loss Lrec ; 
+
+> 20:
+
+calculate the total loss LProMax = Lrec + 𝜆 1 LSDR + 𝜆 2 LS2DR ; 
+
+> 21:
+
+end for  
+
+> 22:
+
+average gradients from mini-batch;  
+
+> 23:
+
+update model parameters by descending the gradients ∇Θ LProMax ; 
+
+> 24:
+
+end while  
+
+> 25:
+
+return model parameters Θ;
+
+Table 1: Statistics of the datasets. 
+
+Dataset #Users #Items #Interactions Sparsity Amazon-Book 11,000 9,332 200,860 99.80% 
+
+Yelp 11,091 11,010 277,535 99.77% 
+
+Steam 23,310 5,237 525,922 99.57% 
+
+Since the pre-processing stage is independent of the recommen-dation model training, it can be completed in advance without incur-ring additional training overhead. Moreover, since the dimension-ality of the profile representations has been significantly reduced (i.e., 𝜅 ≪ 𝑑 𝑠 ), , the time required for the dense retrieval processes is negligible in practice. During the training stage for recommenda-tion model 𝑓 Θ, ProMax serves as a plug-and-play framework that does not alter the training procedure of the base model 𝑓 Θ, and only computes two additional loss terms, LSDR and LS2DR . The time complexity of the former is 𝑂 (|B| 𝑁 max (𝑑, 𝜅 )) , while that of the latter is 𝑂 (|B| 2𝑑 ), where |B| is the batch size, 𝑁 is the number of items, 𝑑 is the embedding dimension, and 𝜅 is the dimension of the profile representation. The time complexities of these two losses are both lower than that of the base model 𝑓 Θ’s encoding, so they do not significantly increase the overall training time of the recommendation model 𝑓 Θ. Details can be found in Section 3.2.4. 
+
+3 Experiments 
+
+In this section, we present detailed experiments and analyses to demonstrate the effectiveness of ProMax .
+
+3.1 Experimental Settings 
+
+3.1.1 Datasets . We employ three extremely sparse datasets Amazon-Book, Yelp, and Steam [ 21 ] in our experiments, which are varied in scale, field, and sparsity. Following prior studies [ 10 ], we focus on implicit feedback [11] and discard interactions with ratings be-low 3.0 [ 21 ]. Items that a user has interacted with are considered positive samples, and other items apart from that are seen as neg-ative samples for that user. Each dataset is then partitioned into training, validation, and test sets using a 3:1:1 ratio. The statistical information of three datasets is shown in Table 1. 
+
+3.1.2 LLM-enhanced Baselines . To facilitate a comprehensive comparison, we adopt following LLM-enhanced user profiling meth-ods as baselines: 
+
+• KAR [37 ] constructs textual profiles for users and items, and integrates the LLM-enhanced representations with base recom-mender models through a hybrid-expert adaptor. 
+
+• LLMRec [ 35 ] improves data reliability by combining LLM–based graph augmentation with a denoising mechanism for robust recommendation modeling. 
+
+• CARec [ 28 ] fuses collaborative filtering signals with the semantic representations produced by large language models through a collaborative alignment mechanism. 
+
+• RLMRec [ 21 ] first constructs user and item profiles, followed by aligning user and item semantic representations across the LLM-enhanced and recommendation representations. 
+
+• AlphaRec [ 26 ] performs non-linear mapping and multi-layer graph convolution directly on LLM-enhanced item representa-tions for recommendation task. 
+
+• LLMESR [19 ] utilizes LLM-driven representations to enhance recommendation, and employs retrieval-augmented self-distillation to enhance user preference representations. 
+
+• AlphaFuse [ 13 ] distinguishes LLM-driven embeddings into a semantic-rich row space and a semantic-sparse null space, and integrates ID embeddings into the latter. 
+
+• IRLLRec [ 32 ] not only leverages LLMs to construct initial user and item profiles, but also exploits them to construct multimodal intents and enhance recommendation. 
+
+• ProEx [51 ] is a recently proposed LLM-enhanced method that leverages chain-of-thought reasoning to construct multiple pro-files for users and items and extract semantic invariances. For RLMRec [ 21 ], we denote the variants with generative and contrastive strategies as RLMRec-G and RLMRec-C , respectively. Regarding AlphaRec [ 26 ], which originally leverages only item-side semantic representations, we introduce a variant that additionally incorporates user-side representations, referred to as AlphaRec+ . It is worth noting that LLMESR [ 19 ] and AlphaFuse [ 13 ] are originally designed as sequential recommendation models ( e.g. , SASRec [ 16 ]). In this work, we adapt their official implementations to the general recommendation setting for a consistent comparison. ProMax: Exploring the Potential of LLM-derived Profiles with Distribution Shaping for Recommender Systems SIGIR ’26, July 20–24, 2026, Melbourne, VIC, Australia 
+
+Table 2: Overall performance comparisons on Amazon-Book, Yelp, and Steam datasets w.r.t. Recall@N (abbreviated as R@N) and NDCG@N (abbreviated as N@N), where N ∈ [ 10 , 20 ]. The best-performing model on each dataset and metric is highlighted in bolded ‘Improv.%’ indicates the relative improvement of ProMax over the best baseline based on a two-tailed paired t-test. Amazon-Book Yelp Steam 
+
+R@10 R@20 N@10 N@20 R@10 R@20 N@10 N@20 R@10 R@20 N@10 N@20 Base 0.0915 0.1411 0.0694 0.0856 0.0706 0.1157 0.0580 0.0733 0.0852 0.1348 0.0687 0.0855 KAR [37] 0.0934 0.1416 0.0705 0.0860 0.0740 0.1194 0.0602 0.0756 0.0854 0.1353 0.0690 0.0854 LLMRec [35] 0.0963 0.1469 0.0715 0.0855 0.0744 0.1203 0.0605 0.0751 0.0901 0.1431 0.0722 0.0901 CARec [28] 0.0931 0.1392 0.0702 0.0854 0.0700 0.1130 0.0568 0.0714 0.0900 0.1384 0.0713 0.0880 RLMRec-C [21] 0.0969 0.1483 0.0734 0.0903 0.0754 0.1230 0.0614 0.0776 0.0895 0.1421 0.0724 0.0902 RLMRec-G [21] 0.0948 0.1446 0.0724 0.0887 0.0734 0.1209 0.0600 0.0761 0.0907 0.1433 0.0729 0.0907 AlphaRec [26] 0.0941 0.1412 0.0721 0.0873 0.0726 0.1212 0.0586 0.0751 0.0897 0.1404 0.0718 0.0889 AlphaRec+ [26] 0.0945 0.1421 0.0710 0.0835 0.0732 0.1213 0.0590 0.0752 0.0900 0.1420 0.0719 0.0898 LLMESR [19] 0.0947 0.1435 0.0722 0.1255 0.0739 0.1207 0.0599 0.0758 0.0784 0.1281 0.0631 0.0798 AlphaFuse [13] 0.0952 0.1427 0.0716 0.0870 0.0720 0.1175 0.0584 0.0739 0.0895 0.1396 0.0733 0.0901 IRLLRec [32] 0.0996 0.1513 0.0759 0.0928 0.0776 0.1267 0.0632 0.0798 0.0918 0.1445 0.0737 0.0919 ProEx [51] 0.1008 0.1533 0.0770 0.0940 0.0800 0.1308 0.0653 0.0826 0.0937 0.1473 0.0756 0.0939 
+
+ProMax (Ours) 0.1079 0.1603 0.0835 0.1006 0.0826 0.1338 0.0684 0.0858 0.0965 0.1500 0.0781 0.0964 
+
+Improv.% 7.04% 4.57% 8.44% 7.02% 3.25% 2.29% 4.75% 3.87% 2.99% 1.83% 3.31% 2.66% 
+
+𝑝 -value 3.6e−7 2.2e−7 9.6e−9 8.0e−9 1.2e−5 9.3e−8 4.3e−8 5.9e−7 1.3e−7 3.3e−7 1.9e−8 2.1e−8MF GCCF LGCN SimGCL                        
+
+> 8
+> 10
+> 12
+> 14
+> 16
+> Recall@20 (%)
+> +6.97% +14.74% +13.61% +5.49%
+> Amazon-Book MF GCCF LGCN SimGCL
+> 5
+> 6
+> 7
+> 8
+> 9
+> 10
+> 11
+> NDCG@20 (%)
+> +7.88% +18.96% +17.52% +7.18%
+> Amazon-Book MF GCCF LGCN SimGCL
+> 6
+> 8
+> 10
+> 12
+> 14
+> Recall@20 (%)
+> +10.06% +13.47% +15.64% +5.26%
+> Yelp MF GCCF LGCN SimGCL
+> 4
+> 5
+> 6
+> 7
+> 8
+> 9
+> NDCG@20 (%)
+> +8.59% +13.53% +17.05% +4.24%
+> Yelp MF GCCF LGCN SimGCL
+> 6
+> 8
+> 10
+> 12
+> 14
+> 16
+> Recall@20 (%)  +7.00% +6.47% +11.28% +1.88%
+> Steam MF GCCF LGCN SimGCL
+> 5
+> 6
+> 7
+> 8
+> 9
+> 10
+> NDCG@20 (%)  +7.34% +7.23% +12.28% +2.73%
+> Steam
+> Base Model Metric@10 Base Model Metric@20 w/ ProMax Metric@10 w/ ProMax Metric@20
+
+Figure 4: Performance comparison between ProMax and base models MF [ 22 ], LR-GCCF (abbreviated as GCCF) [ 5 ], LightGCN (abbreviated as LGCN) [ 10 ], and SimGCL [ 42 ] on Amazon-Book, Yelp, and Steam datasets w.r.t. Recall@10/20 and NDCG@10/20. 
+
+We do not include fine-tuning-based methods ( e.g. , LLaRA [ 18 ]and SPRec [ 7]) in our comparison experiments, since their objec-tives are orthogonal to ours. These methods aim to fine-tune LLMs for sequential recommendation [ 26 ], whereas our study focuses on leveraging LLMs without fine-tuning in a general recommendation setting [10, 21]. 
+
+3.1.3 Implementation Details . We implement ProMax by Py-Torch 1. To ensure fairness in comparison, all models are initialized using Xavier initialization [ 9] and optimized with the Adam op-timizer [ 17 ]. LightGCN [ 10 ] is chosen as the base model for all LLM-enhanced methods because of its simplicity and generality, which is configured with three graph convolutional layers and an embedding size of 32 by default, without any additional dropout mechanism. The learning rate and batch size are set to 1.0e-3 and 4,096, respectively. To ensure a fair comparison, the user and item profiles are derived from [ 21 ]. Based on this, we use OpenAI’s GPT-4o-mini to perform the re-ranking process ( i.e., the process shown in Fig. 3). For ProMax , the original profile representations are compressed to match the embedding size ( i.e., 𝜅 = 𝑑 = 32 ), and temperature coefficient 𝜏 is set to 0.2 for Eq. 11 by default [ 42 ]. In the retrieval stage, we empirically set K = 100 for Eq. 5 to reduce 
+
+> 1
+
+https://github.com/BlueGhostYi/ProRec 
+
+computational cost. The hyperparameters 𝜆 1 and 𝜆 2 constrained within the ranges [0, 2] and [0, 0.2], respectively, to balance the magnitude of different loss terms. We evaluate recommendation performance using Recall@N and NDCG@N (N ∈ [ 10 , 20 ]) [ 11 ], and adopt a full-ranking evaluation strategy for each user [ 41 ]. Early stopping is applied if Recall@20 on the validation set fails to improve for 20 consecutive epochs. All experiments are run with 10 random seeds, and the average results are reported. 
+
+3.2 Performance Comparisons 
+
+3.2.1 Performance Comparison with LLM-enhanced Meth-ods . To verify the effectiveness of ProMax , we perform compar-ative experiments against other LLM-enhanced recommendation methods. Table 2 reports the recommendation performance of Pro-Max along with all LLM-enhanced methods on the LightGCN back-bone [10], leading to the following observations: Intuitively, ProMax consistently achieves the best recommenda-tion performance across all base models on three datasets. Quanti-tatively, integrating ProMax into LightGCN yields improvements of 8.44%, 4.75%, and 3.31% over the best baseline ( i.e. , ProEx [ 51 ]) 
+
+w.r.t. NDCG@10 on Amazon-Book, Yelp, and Steam datasets, respec-tively. The above results demonstrate the effectiveness of ProMax ,SIGIR ’26, July 20–24, 2026, Melbourne, VIC, Australia Yi Zhang, Yiwen Zhang, Kai Zheng, Tong Chen, & Hongzhi Yin 
+
+which we attribute to the proposed supervised and self-supervised distribution reshaping process. While prior work such as RLMRec [ 21 ] leverages user and item profiles to enhance recommendation, the profile information is not fully utilized. IRLLRec [ 32 ] extends this line of research by introduc-ing intent profiles, achieving further performance gains at the cost of more complex profile construction and training procedures. Al-phaRec [ 26 ] attempts to directly replace ID embeddings with textual representations for training, which may hinder the recommender model from capturing sufficient collaborative signals. Moreover, the limited number of parameters makes the model prone to overfitting and suboptimal performance. Although ProEx [ 51 ] achieves further improvements by multi-profiling, constructing additional profiles incurs extra costs, while the performance gains remain limited. In contrast, ProMax effectively unlocks the potential of a single profile, enabling better performance with substantially lower cost. Finally, the recent works LLMESR [ 19 ] and AlphaFuse [ 13 ], which attempt to fuse ID and semantic representations, also fail to deliver satisfactory performance. On the one hand, their original architectures were designed for interaction sequence modeling, making them less suitable for pure CF tasks. On the other hand, the lack of a necessary alignment between the interaction space and the language space leads to semantic loss and introduces unnecessary noise during forced fusion. 
+
+3.2.2 Model-agnostic Performance Comparison . To evalu-ate the generalization capability of ProMax , we integrate it with four classic discriminative methods, namely MF [ 22 ], LR-GCCF [5 ], LightGCN [ 10 ], and SimGCL [ 42 ]. The experimental results are reported in Fig. 4. It is evident that incorporating ProMax yields per-formance gains for all base models on every dataset. For example, when applied to LightGCN, ProMax improves Recall@20 by 13.3%, 15.64%, and 12.28% on Amazon-Book, Yelp, and Steam, respectively, highlighting its strong generalization and effectiveness. The second base model that benefits the most is GCCF. This is because the original model is constrained by redundant feature transformation, whereas the additional supervision introduced by ProMax enables it to overcome this limitation and rediscover its performance po-tential. On the other hand, the improvement brought by ProMax 
+
+to SimGCL is not particularly pronounced. A possible reason is that SimGCL already leverages self-supervised learning to provide abundant supervisory signals, so the integration of ProMax serves more as a complement rather than delivering a qualitative leap. 
+
+3.2.3 Performance Comparison w.r.t. Data Sparsity . Based on the direct performance comparison, we further investigate how 
+
+ProMax enhances these traditional recommendation models. Specif-ically, the left side of Fig. 5 presents the quantile statistics on the Amazon-Book and Yelp datasets before and after introducing sparsity-level shifts, while the right side reports the performance comparison between four base models and ProMax across the four sparsity groups. We observe that ProMax consistently outperforms all base models across all user groups, particularly among the less active groups. This indicates that the introduction of ProMax effec-tively alleviates the performance limitations caused by data sparsity. Notably, ProMax achieves the largest performance improvement in the regular user group (U3). We attribute this to the proposed sparsity-level shifting: as shown in the quantile statistics on the most sparse        
+
+> (U1)
+> sparse
+> (U2 )
+> regular
+> (U3 )
+> active
+> (U4 )
+> w/ ProMax w/ ProMax w/ ProMax w/ ProMax
+
+(a) Amazon-Book: (left) Quantile distribution; (right) Recommendation performance most sparse        
+
+> (U1)
+> sparse
+> (U2 )
+> regular
+> (U3 )
+> active
+> (U4 )
+> w/ ProMax w/ ProMax w/ ProMax w/ ProMax
+
+(b) Yelp: (left) Quantile distribution; (right) Recommendation performance 
+
+Figure 5: Performance of ProMax and four base models (MF, GCCF, LightGCN, and SimGCL) on (a) Amazon-Book and (b) Yelp datasets under different levels of interaction sparsity. Base RLMRecProEx ProMax 
+
+> 0.0
+> 0.5
+> 1.0
+> 1.5
+> 2.0
+> 2.5
+> training time (s) training time NDCG@10 (%)
+> 6.0 6.5 7.0 7.5 8.0 8.5 9.0
+> NDCG@10(%)
+
+(a) Amazon-Book Base RLMRecProEx ProMax  
+
+> 0.0
+> 0.5
+> 1.0
+> 1.5
+> 2.0
+> 2.5
+> 3.0
+> training time (s) training time NDCG@10 (%)
+> 5.0 5.5 6.0 6.5 7.0 7.5
+> NDCG@10(%)
+
+(b) Yelp Base RLMRec ProEx ProMax  
+
+> 0
+> 1
+> 2
+> 3
+> 4
+> 5
+> 6
+> training time (s) training time NDCG@10 (%)
+> 6.0 6.5 7.0 7.5 8.0 8.5 9.0
+> NDCG@10(%)
+
+(c) Steam 
+
+Figure 6: Comparison among ProMax and different methods 
+
+w.r.t. average runtime (left 𝑦 -axis, lower is better) and recom-mendation performance (right 𝑦 -axis, higher is better). 
+
+left side of Fig. 5, regular users gain the largest number of poten-tial interactions after the shift, which substantially enriches their candidate item set and thus leads to significant performance gains. 
+
+3.2.4 Performance Comparison w.r.t. Efficiency. Fig. 6 presents the comparison between computational efficiency and recommen-dation effectiveness across different methods on three datasets. As shown, the base model LightGCN consistently achieves the lowest runtime, but its recommendation performance is also the weak-est. RLMRec introduces moderate computational overhead while yielding noticeable performance improvements, indicating that lightweight refinement already benefits recommendation quality. Compared with RLMRec, ProEx further improves NDCG@10 on all datasets, at the cost of increased runtime due to its enhanced explo-ration and multi-profiling strategy. Notably, ProMax consistently achieves the best recommendation performance across Amazon-Book, Yelp, and Steam datasets, while incurring only a moderate additional runtime overhead compared with base model. These results demonstrate that although ProMax introduces extra com-putation, its runtime remains within a practical range, and the performance gains are substantial and consistent across datasets. ProMax: Exploring the Potential of LLM-derived Profiles with Distribution Shaping for Recommender Systems SIGIR ’26, July 20–24, 2026, Melbourne, VIC, Australia Base V1 V2 V3 ProMax 
+
+> 12
+> 13
+> 14
+> 15
+> 16
+> 17
+> Recall@20 (%) Recall@20 (%) NDCG@20 (%)
+> 78910 11 12 13
+> NDCG@20(%)
+
+(a) Amazon-Book Base V1 V2 V3 ProMax  
+
+> 9
+> 10
+> 11
+> 12
+> 13
+> 14
+> Recall@20 (%) Recall@20 (%) NDCG@20 (%)
+> 678910 11
+> NDCG@20(%)
+
+(b) Yelp Base V1 V2 V3 ProMax  
+
+> 10
+> 11
+> 12
+> 13
+> 14
+> 15
+> 16
+> Recall@20 (%) Recall@20 (%) NDCG@20 (%)
+> 78910 11 12
+> NDCG@20(%)
+
+(c) Steam 
+
+Figure 7: Ablation studies for ProMax on (a) Amazon-Book, (b) Yelp, and (c) Steam datasets w.r.t. Recall@20 (left 𝑦 -axis) and NDCG@20 (right 𝑦 -axis). 0 0.1 0.2 0.3 0.4 0.5 1.0 1.5 2.0    
+
+> coefficient of SDR term 1
+> 12.5
+> 13.0
+> 13.5
+> 14.0
+> 14.5
+> 15.0
+> 15.5
+> 16.0
+> Recall@20(%)
+> Amazon-Book Yelp Steam
+
+(a) 𝜆 10 0.01 0.05 0.1 0.2     
+
+> coefficient of S 2DR term 2
+> 10 11 12 13 14 15 16
+> Recall@20(%)
+> Amazon-Book Yelp Steam
+
+(b) 𝜆 2
+
+Figure 8: Impact of hyperparameters (a) 𝜆 1 and 𝜆 2 for ProMax 
+
+on Amazon-Book, Yelp, and Steam datasets w.r.t. Recall@20. 
+
+3.3 In-depth Analysis of ProMax 
+
+3.3.1 Ablation Studies . In this section, we develop multiple vari-ants to validate the contribution of several core design choices underlying ProMax :
+
+• V1 : remove the self-supervised distribution reshaping (Eq. 14); 
+
+• V2 : remove the supervised distribution reshaping (Eq. 12); 
+
+• V3 : Replace the re-ranking item set RLLM  
+
+> 𝑢
+
+with the original can-didate set Ritem  
+
+> 𝑢
+
+to obtain new interaction set M′ 
+
+> 𝑢
+
+.The experimental results for base model, all variants, and ProMax 
+
+are shown in Fig. 7. Firstly, all variants as well as ProMax achieve substantially higher performance than the base model, demon-strating the effectiveness of ProMax ’s core components. Secondly, compared with the ProMax , all variants exhibit varying degrees of performance degradation, indicating the necessity of each module. This observation is consistent with our analysis: V1 relies solely on the original profiles, while V2 lacks the direct guidance provided by LLM-driven profiles. Only when both distribution reshaping pro-cesses are employed together can the full potential of the profiles be fully exploited. Finally, to examine whether the LLM can contribute to improving the retrieval process, we feed the original candidate set Ritem  
+
+> 𝑢
+
+into ProMax . It should be noted that the sparsity-level shift strategy is likewise applied to Ritem  
+
+> 𝑢
+
+to ensure a fair compari-son. It can be observed that ProMax equipped with RLLM  
+
+> 𝑢
+
+achieves slightly better performance than the original candidate set Ritem  
+
+> 𝑢
+
+,which validates both the rationale and effectiveness of leveraging LLMs for fine-grained semantic matching. 
+
+3.3.2 Impact of Hyperparameters . Finally, we present the two new hyperparameters 𝜆 1 and 𝜆 2 introduced in the distribution re-shaping process, as shown in Fig. 8. We can observe that the optimal hyperparameters exhibit a similar trend across different datasets. Specifically, the optimal values of 𝜆 1 on Amazon-Book, Yelp, and Steam datasets are 1.5, 0.5, and 0.5, respectively, while those of 𝜆 2
+
+are 0.05, 0.1, and 0.1, respectively. Furthermore, the Amazon-Book dataset exhibits a trend distinct from the other two datasets, which can be primarily attributed to the intrinsic differences in their data distributions. Fortunately, ProMax demonstrates strong robustness with respect to the two hyperparameters 𝜆 1 and 𝜆 2, such that its performance remains stable even when the optimal combination is not precisely identified. Similar observations are also made for NDCG and top-10 results, and are therefore omitted here for brevity. 
+
+4 Related Work 
+
+The powerful text processing capabilities of large language models [39 , 54 ] have spurred their growing integration into recommender systems, which has in turn attracted substantial research interest [ 36 ]. Existing methods generally fall into two categories. The first line of research generally incorporates the recommendation ob-jective into the fine-tuning stage of large language models [ 1 , 34 ]. For example, P5 [ 8] reformulates user–item interaction data into textual prompts to fine-tune the model. Subsequent studies such as TallRec [ 1 ] and LLaRA [ 18 ] integrate adapter modules or adopt LoRA [ 12 ] to improve parameter efficiency during fine-tuning. More recent studies further incorporate direct preference optimization into the post-training stage [ 7]. Despite recent progress, the heavy computational requirements and extended training time of fine-tuning approaches [ 21 ] often restrict their applicability to specific deployment scenarios [ 18 , 26 ]. Specifically, while fine-tuning-based methods are mainly applied to sequential or session recommenda-tion tasks [ 55 ], they often fail to achieve competitive performance in general recommendation scenarios [ 8 ] requiring full ranking [ 10 , 42 ]. This limitation suggests that relying solely on LLMs for recommendation or re-ranking remains insufficient [21, 26]. The second line of research maintains the base recommendation model and integrates the LLM as an auxiliary module. For instance, multiple agents [ 46 ] can be designed by exploiting the reason-ing and memory capabilities of LLMs to support recommendation decision-making [ 47 ], whereas its text processing and generation abilities can be utilized to produce richer representations of users and items [ 21 ]. While the first category centers on formulating and evolving rules [ 45 ], the second prioritizes consistency within the feature space, focusing on transforming textual prompts into ac-tionable latent representations ( e.g , profiles) [ 29 , 37 ]. Recent works, including KAR [ 37 ], RLMRec [ 21 ], IRLLRec [ 32 ], and ProEx [ 51 ], emphasize the critical role of aligning the representation spaces of recommendation models with those of LLMs [ 20 , 50 ]. Furthermore, some works focus on refining semantic representations through techniques like whitening [ 49 ] and compression [ 13 ] to better align them with recommendation models. More recent approaches go a step further by directly substituting recommendation models’ ID embeddings with LLM-driven representations [ 26 ]. However, most existing studies have not thoroughly investigated the positive impact of semantic representations such as user or item profiles on recommendation. They merely treat such representations as auxil-iary components and fail to fully exploit the potential of profiles. SIGIR ’26, July 20–24, 2026, Melbourne, VIC, Australia Yi Zhang, Yiwen Zhang, Kai Zheng, Tong Chen, & Hongzhi Yin 
+
+5 Conclusion 
+
+In this paper, we revisited LLM-derived profiles for recommenda-tion and proposed a simple yet effective model-agnostic framework 
+
+ProMax . We first analyzed the collaborative signals revealed by profiles from a retrieval perspective. Subsequently, to maximize the potential of user and item profiles, they were used as indicators to guide the training of the recommendation model through a dual distribution reshaping process. In this process, the LLM-driven pro-files serve only as indicators and do not participate in the training. Experiments on three datasets show that ProMax consistently im-proves the performance of diverse base recommendation models and outperforms existing LLM-enhanced methods. 
+
+Acknowledgments 
+
+This work is supported by the National Natural Science Foundation of China (No. 62272001), the Australian Research Council under the streams of Future Fellowship (No. FT210100624), the Discovery Early Career Researcher Award (No. DE230101033), the Discovery Project (No. DP240101108, DP240101814, and DP260100326), and the Linkage Projects (No. LP230200892 and LP240200546). 
+
+References 
+
+[1] Keqin Bao, Jizhi Zhang, Yang Zhang, Wenjie Wang, Fuli Feng, and Xiangnan He. 2023. Tallrec: An effective and efficient tuning framework to align large language model with recommendation. In Proceedings of the 17th ACM Conference on Recommender Systems . 1007–1014. [2] Yupeng Chang, Xu Wang, Jindong Wang, Yuan Wu, Linyi Yang, Kaijie Zhu, Hao Chen, Xiaoyuan Yi, Cunxiang Wang, Yidong Wang, et al . 2024. A survey on evaluation of large language models. ACM Transactions on Intelligent Systems and Technology 15, 3 (2024), 1–45. [3] Jiawei Chen, Hande Dong, Xiang Wang, Fuli Feng, Meng Wang, and Xiangnan He. 2023. Bias and debias in recommender system: A survey and future directions. 
+
+ACM Transactions on Information Systems 41, 3 (2023), 1–39. [4] Jiawei Chen, Junkang Wu, Jiancan Wu, Xuezhi Cao, Sheng Zhou, and Xiangnan He. 2023. Adap-𝜏 : Adaptively modulating embedding magnitude for recommen-dation. In Proceedings of the ACM Web Conference 2023 . 1085–1096. [5] Lei Chen, Le Wu, Richang Hong, Kun Zhang, and Meng Wang. 2020. Revisiting graph based collaborative filtering: A linear residual graph convolutional network approach. In Proceedings of the AAAI Conference on Artificial Intelligence , Vol. 34. 27–34. [6] Yan Fang, Jingtao Zhan, Qingyao Ai, Jiaxin Mao, Weihang Su, Jia Chen, and Yiqun Liu. 2024. Scaling laws for dense retrieval. In Proceedings of the 47th International ACM SIGIR Conference on Research and Development in Information Retrieval .1339–1349. [7] Chongming Gao, Ruijun Chen, Shuai Yuan, Kexin Huang, Yuanqing Yu, and Xiangnan He. 2025. Sprec: Self-play to debias llm-based recommendation. In 
+
+Proceedings of the ACM on Web Conference 2025 . 5075–5084. [8] Shijie Geng, Shuchang Liu, Zuohui Fu, Yingqiang Ge, and Yongfeng Zhang. 2022. Recommendation as language processing (rlp): A unified pretrain, personalized prompt & predict paradigm (p5). In Proceedings of the 16th ACM Conference on Recommender Systems . 299–315. [9] Xavier Glorot and Yoshua Bengio. 2010. Understanding the Difficulty of Training Deep Feedforward Neural Networks. In Proceedings of the Thirteenth International Conference on Artificial Intelligence and Statistics (ICAIS) . 249–256. [10] Xiangnan He, Kuan Deng, Xiang Wang, Yan Li, Yongdong Zhang, and Meng Wang. 2020. Lightgcn: Simplifying and powering graph convolution network for recommendation. In Proceedings of the 43rd International ACM SIGIR Conference on Research and Development in Information Retrieval . 639–648. [11] Xiangnan He, Lizi Liao, Hanwang Zhang, Liqiang Nie, Xia Hu, and Tat-Seng Chua. 2017. Neural collaborative filtering. In Proceedings of the 26th International Conference on World Wide Web . 173–182. [12] Edward J Hu, Phillip Wallis, Zeyuan Allen-Zhu, Yuanzhi Li, Shean Wang, Lu Wang, Weizhu Chen, et al . 2022. LoRA: Low-Rank Adaptation of Large Language Models. In International Conference on Learning Representations .[13] Guoqing Hu, An Zhang, Shuo Liu, Zhibo Cai, Xun Yang, and Xiang Wang. 2025. Alphafuse: Learn id embeddings for sequential recommendation in null space of language embeddings. In Proceedings of the 48th International ACM SIGIR Conference on Research and Development in Information Retrieval . 1614–1623. [14] Ziwei Ji, Nayeon Lee, Rita Frieske, Tiezheng Yu, Dan Su, Yan Xu, Etsuko Ishii, Ye Jin Bang, Andrea Madotto, and Pascale Fung. 2023. Survey of hallucination in natural language generation. Comput. Surveys 55, 12 (2023), 1–38. [15] Santosh Kabbur, Xia Ning, and George Karypis. 2013. Fism: factored item simi-larity models for top-n recommender systems. In Proceedings of the 19th ACM SIGKDD international conference on Knowledge discovery and data mining . 659– 667. [16] Wang-Cheng Kang and Julian McAuley. 2018. Self-attentive sequential recom-mendation. In 2018 IEEE international conference on data mining (ICDM) . IEEE, 197–206. [17] Diederik P Kingma and Jimmy Ba. 2014. Adam: A Method for Stochastic Opti-mization. arXiv preprint arXiv:1412.6980 (2014). [18] Jiayi Liao, Sihang Li, Zhengyi Yang, Jiancan Wu, Yancheng Yuan, Xiang Wang, and Xiangnan He. 2024. Llara: Large language-recommendation assistant. In 
+
+Proceedings of the 47th International ACM SIGIR Conference on Research and Development in Information Retrieval . 1785–1795. [19] Qidong Liu, Xian Wu, Yejing Wang, Zijian Zhang, Feng Tian, Yefeng Zheng, and Xiangyu Zhao. 2024. Llm-esr: Large language models enhancement for long-tailed sequential recommendation. Advances in Neural Information Processing Systems 37 (2024), 26701–26727. [20] Alec Radford, Jong Wook Kim, Chris Hallacy, Aditya Ramesh, Gabriel Goh, Sandhini Agarwal, Girish Sastry, Amanda Askell, Pamela Mishkin, Jack Clark, et al . 2021. Learning transferable visual models from natural language supervision. In International Conference on Machine Learning . PMLR, 8748–8763. [21] Xubin Ren, Wei Wei, Lianghao Xia, Lixin Su, Suqi Cheng, Junfeng Wang, Dawei Yin, and Chao Huang. 2024. Representation learning with large language models for recommendation. In Proceedings of the ACM on Web Conference 2024 . 3464– 3475. [22] Steffen Rendle, Christoph Freudenthaler, Zeno Gantner, and Lars Schmidt-Thieme. 2009. BPR: Bayesian Personalized Ranking from Implicit Feedback. In Proceedings of the Twenty-Fifth Conference on Uncertainty in Artificial Intelligence (UAI) . 452– 461. [23] Steffen Rendle, Walid Krichene, Li Zhang, and John Anderson. 2020. Neural collaborative filtering vs. matrix factorization revisited. In Proceedings of the 14th ACM Conference on Recommender Systems . 240–248. [24] Francesco Ricci, Lior Rokach, and Bracha Shapira. 2011. Introduction to Rec-ommender Systems Handbook. In Recommender Systems Handbook . Springer, 1–35. [25] Claude E Shannon. 2001. A mathematical theory of communication. ACM SIGMOBILE mobile computing and communications review 5, 1 (2001), 3–55. [26] Leheng Sheng, An Zhang, Yi Zhang, Yuxin Chen, Xiang Wang, and Tat-Seng Chua. 2025. Language Representations Can be What Recommenders Need: Findings and Potentials. In The Thirteenth International Conference on Learning Representations .[27] Vlad Sobal, Mark Ibrahim, Randall Balestriero, Vivien Cabannes, Diane Boucha-court, Pietro Astolfi, Kyunghyun Cho, and Yann LeCun. 2024. X-Sample Con-trastive Loss: Improving Contrastive Learning with Sample Similarity Graphs. 
+
+arXiv preprint arXiv:2407.18134 (2024). [28] Chen Wang, Liangwei Yang, Zhiwei Liu, Xiaolong Liu, Mingdai Yang, Yueqing Liang, and Philip S Yu. 2024. Collaborative alignment for recommendation. In Proceedings of the 33rd ACM International Conference on Information and Knowledge Management . 2315–2325. [29] Lu Wang, Di Zhang, Fangkai Yang, Pu Zhao, Jianfeng Liu, Yuefeng Zhan, Hao Sun, Qingwei Lin, Weiwei Deng, Dongmei Zhang, et al . 2025. LettinGo: Explore User Profile Generation for Recommendation System. In Proceedings of the 31st ACM SIGKDD Conference on Knowledge Discovery and Data Mining V. 2 . 2985–2995. [30] Shuyao Wang, Zhi Zheng, Yongduo Sui, and Hui Xiong. 2025. Unleashing the Power of Large Language Model for Denoising Recommendation. In Proceedings of the ACM on Web Conference 2025 . 252–263. [31] Xiang Wang, Xiangnan He, Meng Wang, Fuli Feng, and Tat-Seng Chua. 2019. Neural graph collaborative filtering. In Proceedings of the 42nd international ACM SIGIR Conference on Research and development in Information Retrieval . 165–174. [32] Yu Wang, Lei Sang, Yi Zhang, and Yiwen Zhang. 2025. Intent representation learning with large language model for recommendation. In Proceedings of the 48th International ACM SIGIR Conference on Research and Development in Information Retrieval . 1870–1879. [33] Yu Wang, Yonghui Yang, Le Wu, Jiancan Wu, Hefei Xu, and Hui Lin. 2026. MLLMRec-R1: Incentivizing Reasoning Capability in Large Language Models for Multimodal Sequential Recommendation. arXiv preprint arXiv:2603.06243 (2026). [34] Yu Wang, Yonghui Yang, Le Wu, Yi Zhang, and Richang Hong. 2025. Multimodal Large Language Models with Adaptive Preference Optimization for Sequential Recommendation. arXiv preprint arXiv:2511.18740 (2025). [35] Wei Wei, Xubin Ren, Jiabin Tang, Qinyong Wang, Lixin Su, Suqi Cheng, Jun-feng Wang, Dawei Yin, and Chao Huang. 2024. Llmrec: Large language models with graph augmentation for recommendation. In Proceedings of the 17th ACM International Conference on Web Search and Data Mining . 806–815. [36] Likang Wu, Zhi Zheng, Zhaopeng Qiu, Hao Wang, Hongchao Gu, Tingjia Shen, Chuan Qin, Chen Zhu, Hengshu Zhu, Qi Liu, et al . 2024. A survey on large ProMax: Exploring the Potential of LLM-derived Profiles with Distribution Shaping for Recommender Systems SIGIR ’26, July 20–24, 2026, Melbourne, VIC, Australia 
+
+language models for recommendation. World Wide Web 27, 5 (2024), 60. [37] Yunjia Xi, Weiwen Liu, Jianghao Lin, Xiaoling Cai, Hong Zhu, Jieming Zhu, Bo Chen, Ruiming Tang, Weinan Zhang, and Yong Yu. 2024. Towards open-world recommendation with knowledge augmentation from large language models. In 
+
+Proceedings of the 18th ACM Conference on Recommender Systems . 12–22. [38] Hefei Xu, Le Wu, Chen Cheng, and Hao Liu. 2026. Multi-Value Alignment for LLMs via Value Decorrelation and Extrapolation. In Proceedings of the AAAI Conference on Artificial Intelligence , Vol. 40. 34133–34141. [39] Hefei Xu, Le Wu, Yu Wang, Min Hou, Han Wu, Zhen Zhang, and Meng Wang. 2026. VC-Soup: Value-Consistency Guided Multi-Value Alignment for Large Language Models. In Proceedings of the ACM Web Conference 2026 . 9699–9710. [40] Hongzhi Yin, Bin Cui, Zi Huang, Weiqing Wang, Xian Wu, and Xiaofang Zhou. 2015. Joint modeling of users’ interests and mobility patterns for point-of-interest recommendation. In Proceedings of the 23rd ACM international conference on Multimedia . 819–822. [41] Hongzhi Yin, Liang Qu, Tong Chen, Wei Yuan, Ruiqi Zheng, Jing Long, Xin Xia, Yuhui Shi, and Chengqi Zhang. 2025. On-device recommender systems: A comprehensive survey. Data Science and Engineering (2025), 1–30. [42] Junliang Yu, Hongzhi Yin, Xin Xia, Tong Chen, Lizhen Cui, and Quoc Viet Hung Nguyen. 2022. Are graph augmentations necessary? simple graph contrastive learning for recommendation. In Proceedings of the 45th International ACM SIGIR Conference on Research and Development in Information Retrieval . 1294–1303. [43] Junliang Yu, Hongzhi Yin, Xin Xia, Tong Chen, Jundong Li, and Zi Huang. 2023. Self-supervised learning for recommender systems: A survey. IEEE Transactions on Knowledge and Data Engineering 36, 1 (2023), 335–355. [44] Zheng Yuan, Fajie Yuan, Yu Song, Youhua Li, Junchen Fu, Fei Yang, Yunzhu Pan, and Yongxin Ni. 2023. Where to go next for recommender systems? id-vs. modality-based recommender models revisited. In Proceedings of the 46th International ACM SIGIR Conference on Research and Development in Information Retrieval . 2639–2649. [45] An Zhang, Yuxin Chen, Leheng Sheng, Xiang Wang, and Tat-Seng Chua. 2024. On generative agents in recommendation. In Proceedings of the 47th international ACM SIGIR conference on research and development in Information Retrieval . 1807– 1817. [46] Jiaqi Zhang, Chen Gao, Liyuan Zhang, Quoc Viet Hung Nguyen, and Hongzhi Yin. 2026. Smartagent: Chain-of-user-thought for embodied personalized agent in cyber world. In Proceedings of the AAAI Conference on Artificial Intelligence ,Vol. 40. 17993–18001. [47] Junjie Zhang, Yupeng Hou, Ruobing Xie, Wenqi Sun, Julian McAuley, Wayne Xin Zhao, Leyu Lin, and Ji-Rong Wen. 2024. Agentcf: Collaborative learning with autonomous language agents for recommender systems. In Proceedings of the ACM Web Conference 2024 . 3679–3689. [48] Lan Zhang, Wray Buntine, and Ehsan Shareghi. 2022. On the effect of isotropy on VAE representations of text. In Annual Meeting of the Association of Computational Linguistics 2022 . Association for Computational Linguistics (ACL), 694–701. [49] Lingzi Zhang, Xin Zhou, Zhiwei Zeng, and Zhiqi Shen. 2024. Are id embeddings necessary? whitening pre-trained text embeddings for effective sequential rec-ommendation. In 2024 IEEE 40th International Conference on Data Engineering (ICDE) . IEEE, 530–543. [50] Yi Zhang, Yiwen Zhang, Yu Wang, Tong Chen, and Hongzhi Yin. 2025. Towards distribution matching between collaborative and language spaces for generative recommendation. In Proceedings of the 48th International ACM SIGIR Conference on Research and Development in Information Retrieval . 2006–2016. [51] Yi Zhang, Yiwen Zhang, Yu Wang, Tong Chen, and Hongzhi Yin. 2026. ProEx: A Unified Framework Leveraging Large Language Model with Profile Extrapolation for Recommendation. In Proceedings of the 32nd ACM SIGKDD Conference on Knowledge Discovery and Data Mining V.1 .[52] Yi Zhang, Yiwen Zhang, Dengcheng Yan, Shuiguang Deng, and Yun Yang. 2023. Revisiting graph-based recommender systems from the perspective of variational auto-encoder. ACM Transactions on Information Systems 41, 3 (2023), 1–28. [53] Yu Zhang, Yiwen Zhang, Yi Zhang, Lei Sang, and Yun Yang. 2025. Unveiling Contrastive Learning‘ Capability of Neighborhood Aggregation for Collabora-tive Filtering. In Proceedings of the 48th International ACM SIGIR Conference on Research and Development in Information Retrieval . 1985–1994. [54] Wayne Xin Zhao, Kun Zhou, Junyi Li, Tianyi Tang, Xiaolei Wang, Yupeng Hou, Yingqian Min, Beichen Zhang, Junjie Zhang, Zican Dong, et al . 2023. A survey of large language models. arXiv preprint arXiv:2303.18223 (2023). [55] Yuchuan Zhao, Tong Chen, Junliang Yu, Kai Zheng, Lizhen Cui, and Hongzhi Yin. 2025. Diversity-aware Dual-promotion Poisoning Attack on Sequential Recommendation. In Proceedings of the 48th International ACM SIGIR Conference on Research and Development in Information Retrieval . 1634–1644.

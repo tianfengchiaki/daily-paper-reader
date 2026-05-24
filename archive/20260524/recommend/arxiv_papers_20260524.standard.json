@@ -1,0 +1,855 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-05-24T20:49:40.535633+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 2,
+    "deep_divecandidates": 19,
+    "deep_cap": 7,
+    "deep_selected": 8,
+    "quick_candidates": 39,
+    "quick_skim_target": 12,
+    "quick_selected": 12
+  },
+  "deep_dive": [
+    {
+      "id": "2605.19457v1",
+      "source": "arxiv",
+      "title": "Generative Auto-Bidding with Unified Modeling and Exploration",
+      "abstract": "Automated bidding is central to modern digital advertising. Early rule-based methods lacked adaptability, while subsequent Reinforcement Learning approaches modeled bidding as a Markov Decision Process but struggled with long-term dependencies. Recent generative models show promise, yet they lack explicit mechanisms to balance exploration and safety, relying solely on action perturbations or trajectory guidance without a safety fallback. This results in inefficient exploration and elevated financial risk for advertising platforms.   To address this gap, we propose GUIDE (Generative Auto-Bidding with Unified Modeling and Exploration), a framework that synergistically integrates directed exploration with a safe fallback mechanism. GUIDE employs a Decision Transformer (DT) to jointly model historical bidding actions and environmental state transitions. A Q-value module guides the DT's exploration via regularization constraints, while an Inverse Dynamics Module (IDM) leverages DT-predicted future states to infer robust, behaviorally consistent actions as a safe policy fallback. The Q-value module then adaptively selects the final action between these two options, balancing exploration and safety. Together, these components form an integrated \"explore-safeguard-select\" pipeline that unifies efficiency and safety.   We conduct extensive experiments on public datasets, in simulated auction environments, and through large-scale online deployment on Taobao, a leading Chinese advertising platform. Results show GUIDE consistently outperforms state-of-the-art baselines across all scenarios. In real-world deployment, GUIDE achieves notable gains: +4.10% ad GMV, +1.40% ad clicks, +1.66% ad cost, and +3.52% ad ROI, demonstrating its effectiveness and strong industrial applicability.",
+      "authors": [
+        "Mingming Zhang",
+        "Feiqing Zhuang",
+        "Na Li",
+        "Shengjie Sun",
+        "Xiaowei Chen",
+        "Junxiong Zhu",
+        "Fei Xiao",
+        "Keping Yang",
+        "Lixin Zou",
+        "Chenliang Li"
+      ],
+      "primary_category": "cs.AI",
+      "categories": [
+        "cs.AI"
+      ],
+      "published": "2026-05-19T07:09:32+00:00",
+      "link": "https://arxiv.org/pdf/2605.19457v1",
+      "tags": [
+        "keyword:LLMApp",
+        "keyword:广告",
+        "query:LLMApp",
+        "query:广告"
+      ],
+      "llm_score": 10.0,
+      "llm_evidence_en": "generative auto-bidding for digital advertising",
+      "llm_evidence_cn": "生成式自动出价用于数字广告",
+      "llm_evidence": "生成式自动出价用于数字广告",
+      "canonical_evidence": "生成式自动出价用于数字广告",
+      "llm_tldr_en": "GUIDE combines exploration and safety for generative auto-bidding.",
+      "llm_tldr_cn": "GUIDE结合探索与安全用于生成式自动出价。",
+      "llm_tldr": "GUIDE结合探索与安全用于生成式自动出价。",
+      "llm_tags": [
+        "query:q2"
+      ],
+      "matched_query_tag": "query:q2",
+      "matched_query_text": "advertising technology",
+      "matched_requirement_id": "req-2",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2605.16748v1",
+      "source": "arxiv",
+      "title": "Genflow Ad Studio: A Compound AI Architecture for Brand-Aligned, Self-Correcting Video Generation",
+      "abstract": "Recent advancements in generative video models demonstrate high visual fidelity, yet their integration into enterprise environments is restricted by temporal inconsistencies and severe brand misalignment. Current monolithic architectures struggle to enforce rigid brand constraints, frequently hallucinating unapproved visual assets. We introduce Genflow, a Compound AI System designed to enforce brand consistency in generative media production. Our architecture integrates a retrieval-based 'Brand DNA' extraction module to parameterize generation according to established corporate identity guidelines. Furthermore, we implement an Adversarial Multi-Agent Quality Control (QC) loop. Instead of a single-pass generation, this pipeline employs evaluator agents to iteratively critique generated frames against the extracted parameters, prompting generator models to refine outputs until a deterministic consensus is reached. By transitioning to a multi-stage, self-correcting pipeline, Genflow improved the yield of brand-compliant video generations from 42% to 89%, establishing a robust framework for scalable, enterprise-grade generative systems.",
+      "authors": [
+        "Debanshu Das",
+        "Lavi Nigam",
+        "Sunil Kumar Jang Bahadur",
+        "Gopala Dhar"
+      ],
+      "primary_category": "cs.GR",
+      "categories": [
+        "cs.GR",
+        "cs.AI",
+        "cs.CV",
+        "cs.LG",
+        "cs.MA",
+        "cs.MM"
+      ],
+      "published": "2026-05-16T02:03:53+00:00",
+      "link": "https://arxiv.org/pdf/2605.16748v1",
+      "tags": [
+        "keyword:广告",
+        "query:LLMApp",
+        "query:广告"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "Compound AI system for brand-aligned video ad generation",
+      "llm_evidence_cn": "用于品牌对齐视频广告生成的复合AI系统",
+      "llm_evidence": "用于品牌对齐视频广告生成的复合AI系统",
+      "canonical_evidence": "用于品牌对齐视频广告生成的复合AI系统",
+      "llm_tldr_en": "Genflow enforces brand consistency in generative video ad production with a compound AI architecture.",
+      "llm_tldr_cn": "Genflow通过复合AI架构在生成视频广告制作中强制执行品牌一致性。",
+      "llm_tldr": "Genflow通过复合AI架构在生成视频广告制作中强制执行品牌一致性。",
+      "llm_tags": [
+        "query:q2"
+      ],
+      "matched_query_tag": "query:q2",
+      "matched_query_text": "advertising technology",
+      "matched_requirement_id": "req-2",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2605.17366v1",
+      "source": "arxiv",
+      "title": "Text-Guided Visual Representation Learning for Robust Multimodal E-Commerce Recommendation",
+      "abstract": "Multimodal item embeddings are crucial for e-commerce item-to-item (I2I) retrieval, yet real-world product images often contain promotional overlays and background clutter that inject spurious visual cues and degrade retrieval robustness. This issue is particularly pronounced in MLRM-style pipelines, where a frozen vision encoder is connected to an LLM through a lightweight connector that must selectively aggregate visual tokens. We propose Text-Guided Q-Former (TGQ-Former), a text-guided visual representation learning framework that leverages structured metadata as semantic guidance for visual token extraction while preserving complementary visual evidence. Concretely, TGQ-Former employs a hybrid-query connector to disentangle metadata-anchored and exploratory visual streams, and introduces a lightweight reliability-aware dual-gated vector modulation module to adaptively calibrate their contributions under noisy inputs. Experiments on large-scale, real-world e-commerce datasets with full-pool retrieval show that TGQ-Former consistently outperforms strong connector baselines and end-to-end MLLMs. On average, it improves Hit Rate@100 (H@100) by 6.04%, demonstrating the effectiveness of text-guided visual encoding for robust multimodal retrieval.",
+      "authors": [
+        "Yufei Guo",
+        "Jing Ma",
+        "Tianlu Zhang",
+        "Shijie Yang",
+        "Yanlong Zang",
+        "Weijie Ding",
+        "Pinghua Gong",
+        "Jungong Han"
+      ],
+      "primary_category": "cs.IR",
+      "categories": [
+        "cs.IR"
+      ],
+      "published": "2026-05-17T10:20:23+00:00",
+      "link": "https://arxiv.org/pdf/2605.17366v1",
+      "tags": [
+        "keyword:LLMApp",
+        "keyword:广告",
+        "query:LLMApp",
+        "query:广告"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "multimodal recommendation for e-commerce ads",
+      "llm_evidence_cn": "多模态推荐用于电商广告",
+      "llm_evidence": "多模态推荐用于电商广告",
+      "canonical_evidence": "多模态推荐用于电商广告",
+      "llm_tldr_en": "TGQ-Former improves multimodal item retrieval by using text guidance to filter visual noise",
+      "llm_tldr_cn": "TGQ-Former利用文本指导过滤视觉噪声改进多模态商品检索",
+      "llm_tldr": "TGQ-Former利用文本指导过滤视觉噪声改进多模态商品检索",
+      "llm_tags": [
+        "query:q1"
+      ],
+      "matched_query_tag": "query:q1",
+      "matched_query_text": "recommendation system for advertising",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2605.18673v1",
+      "source": "arxiv",
+      "title": "Generative AI Advertising as a Problem of Trustworthy Commercial Intervention",
+      "abstract": "Major deployed generative AI advertising systems preserve a visible boundary between commercial content and AI-generated responses. Yet empirical research shows that ads woven directly into large language model (LLM) outputs often go undetected by users. We argue that generative AI fundamentally changes advertising: rather than placing products into discrete slots, it enables interventions on the generative process itself, which induce commercial influence through less observable channels. This reframes generative AI advertising as a problem of trustworthy intervention rather than content placement. We introduce a taxonomy organized by influence tier, corresponding to interventions on progressively more latent variables: product mentions, information framing, behavioral redirection, and long-term preference shaping; and show how these tiers instantiate across modalities and system architectures, including retrieval-augmented generation and agentic pipelines where upstream decisions can sharply constrain downstream outcomes. Both major deployed systems and designed mechanisms concentrate on the most observable and easiest-to-govern tier, while the forms of commercial influence most consequential for user autonomy remain poorly understood and lack frameworks for detection, measurement, or disclosure. The central challenge is whether commercial influence in generative systems can be made trustworthy, i.e., attributable, measurable, contestable, and aligned with user welfare.",
+      "authors": [
+        "Jingyi Qiu",
+        "Qiaozhu Mei"
+      ],
+      "primary_category": "cs.CY",
+      "categories": [
+        "cs.CY",
+        "cs.CL"
+      ],
+      "published": "2026-05-18T17:15:06+00:00",
+      "link": "https://arxiv.org/pdf/2605.18673v1",
+      "tags": [
+        "keyword:LLMApp",
+        "keyword:广告",
+        "query:LLMApp",
+        "query:广告"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "Generative AI advertising and trust",
+      "llm_evidence_cn": "生成式AI广告及可信度分析",
+      "llm_evidence": "生成式AI广告及可信度分析",
+      "canonical_evidence": "生成式AI广告及可信度分析",
+      "llm_tldr_en": "Taxonomy and analysis of generative AI advertising interventions",
+      "llm_tldr_cn": "生成式AI广告干预的分类与分析",
+      "llm_tldr": "生成式AI广告干预的分类与分析",
+      "llm_tags": [
+        "query:q3"
+      ],
+      "matched_query_tag": "query:q3",
+      "matched_query_text": "large language model for advertising",
+      "matched_requirement_id": "req-3",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2605.18920v1",
+      "source": "arxiv",
+      "title": "SynGR: Unleashing the Potential of Cross-Modal Synergy for Generative Recommendation",
+      "abstract": "Generative Recommendation (GR) has emerged as a promising paradigm by formulating item recommendation as a sequence-to-sequence generation task over item identifiers. Recent studies have incorporated multimodal signals to provide richer token-level evidence for generation. However, existing approaches largely rely on alignment-centric fusion and underexplore synergistic information across modalities. In practice, synergistic information plays a critical role in capturing emergent item properties that cannot be inferred from any single modality alone. Such properties encode intrinsic item semantics and guide user preferences, enabling models to move beyond surface-level feature matching. To address this limitation, we propose \\textbf{SynGR}, a synergistic generative recommendation framework that explicitly encourages the exploitation of cross-modal dependencies during generation. By constraining overreliance on dominant modalities, SynGR enables the model to capture emergent item semantics beyond shared or modality-specific signals. Extensive experiments across three benchmark datasets demonstrate that SynGR achieves superior performance.",
+      "authors": [
+        "Wei Chen",
+        "Xingyu Guo",
+        "Shuang Li",
+        "Fuwei Zhang",
+        "Meng Yuan",
+        "Jing Fan",
+        "Zhao Zhang",
+        "Deqing Wang",
+        "Fuzhen Zhuang"
+      ],
+      "primary_category": "cs.IR",
+      "categories": [
+        "cs.IR",
+        "cs.AI"
+      ],
+      "published": "2026-05-18T09:03:23+00:00",
+      "link": "https://arxiv.org/pdf/2605.18920v1",
+      "tags": [
+        "keyword:LLMApp",
+        "keyword:广告",
+        "query:LLMApp",
+        "query:广告"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "cross-modal generative recommendation",
+      "llm_evidence_cn": "跨模态生成式推荐",
+      "llm_evidence": "跨模态生成式推荐",
+      "canonical_evidence": "跨模态生成式推荐",
+      "llm_tldr_en": "SynGR leverages cross-modal synergy for improved generative recommendation",
+      "llm_tldr_cn": "SynGR利用跨模态协同改进生成式推荐",
+      "llm_tldr": "SynGR利用跨模态协同改进生成式推荐",
+      "llm_tags": [
+        "query:llmapp"
+      ],
+      "matched_query_tag": "query:llmapp",
+      "matched_query_text": "LLM for recommendation",
+      "matched_requirement_id": "req-10",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2605.21556v1",
+      "source": "arxiv",
+      "title": "Beyond Single Slot: Joint Optimization for Multi-Slot Guaranteed Display Advertising",
+      "abstract": "Guaranteed display advertising is crucial for platform monetization, yet existing methods often operate under a single-slot assumption, limiting their ability to optimize allocation across multi-slot page views. In this paper, we propose a novel joint optimization framework for multi-slot GD allocation, addressing key challenges such as slot-level redundancy, contract imbalance, and exposure concentration. Our approach formulates the allocation as an offline bipartite matching problem with a contract roulette mechanism for slot exclusivity and Page View constraints for impression control, and incorporates a scalable allocation optimization algorithm for efficient large-scale deployment. Extensive online tests on the Meituan advertising platform demonstrate that our method significantly improves merchant ROI, platform revenue efficiency, and contract fulfillment robustness. Specifically, online A/B tests show a 28.99% increase in Average Revenue Per User under 70% traffic, and DID analysis further indicates improved contract stability, demonstrating the strong applicability and effectiveness of our framework in real-world advertising deployments.",
+      "authors": [
+        "Zhaoqi Zhang",
+        "Jiaming Deng",
+        "Miao Xie",
+        "Linyou Cai",
+        "Qianlong Xie",
+        "Xingxing Wang",
+        "Siqiang Luo",
+        "Gao Cong"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG"
+      ],
+      "published": "2026-05-20T13:32:47+00:00",
+      "link": "https://arxiv.org/pdf/2605.21556v1",
+      "tags": [
+        "keyword:LLMApp",
+        "keyword:广告",
+        "query:LLMApp",
+        "query:广告"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "joint optimization for multi-slot display advertising allocation",
+      "llm_evidence_cn": "多槽位展示广告分配优化",
+      "llm_evidence": "多槽位展示广告分配优化",
+      "canonical_evidence": "多槽位展示广告分配优化",
+      "llm_tldr_en": "Optimizes guaranteed display ad allocation across multiple slots on Meituan.",
+      "llm_tldr_cn": "优化美团多槽位担保展示广告分配。",
+      "llm_tldr": "优化美团多槽位担保展示广告分配。",
+      "llm_tags": [
+        "query:q2"
+      ],
+      "matched_query_tag": "query:q2",
+      "matched_query_text": "advertising technology",
+      "matched_requirement_id": "req-2",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2605.21736v1",
+      "source": "arxiv",
+      "title": "Support-aware offline policy selection for advertising marketplaces",
+      "abstract": "Logged advertising auctions make offline reserve-price evaluation attractive but risky. Replay tables can identify policies with large apparent yield gains, yet they can also hide weak threshold support, multiple-comparison effects, subgroup harm, and bidder-response uncertainty. Existing replay and off-policy evaluation methods estimate or rank policy values, but they do not directly answer the operational question of whether the available evidence is strong enough to justify validation. This paper develops a support-aware offline decision framework for reserve-policy selection. Rather than outputting a single point-estimate winner, the framework converts logged evidence into a conservative decision object consisting of certified policies, statistically dominated alternatives, and unresolved candidates requiring further validation. The main theoretical result gives a unified finite-catalog guarantee showing that, under simultaneous uncertainty control and conservative support gates, the framework preserves the best gate-passing policy while eliminating only policies with certified regret. Supporting results characterize support-localized replay generalization, establish information-theoretic threshold-resolution limits, and quantify when heterogeneous bidder response can overturn localized replay rankings. Experiments on iPinYou real-time-bidding logs show that the leading reserve rule achieves a 47.66% replay lift in season two, a 40.71% simultaneous lower-bound lift, and a 43.87% frozen out-of-time replay lift in season three. The framework reduces a 19-policy catalog to a two-policy validation shortlist while certifying non-harm across 44 advertiser, exchange, and region segments. The results support the central claim that offline reserve-policy evaluation should produce certified validation decisions rather than point-estimate rankings alone.",
+      "authors": [
+        "Prashant Shekhar",
+        "Caroline Howard"
+      ],
+      "primary_category": "stat.ML",
+      "categories": [
+        "stat.ML",
+        "cs.AI",
+        "cs.LG"
+      ],
+      "published": "2026-05-20T20:57:18+00:00",
+      "link": "https://arxiv.org/pdf/2605.21736v1",
+      "tags": [
+        "keyword:广告",
+        "query:LLMApp",
+        "query:广告"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "advertising marketplace policy selection",
+      "llm_evidence_cn": "广告市场策略选择",
+      "llm_evidence": "广告市场策略选择",
+      "canonical_evidence": "广告市场策略选择",
+      "llm_tldr_en": "Support-aware framework for offline reserve-price policy selection in ad auctions.",
+      "llm_tldr_cn": "支持感知的离线保留价策略选择框架用于广告拍卖。",
+      "llm_tldr": "支持感知的离线保留价策略选择框架用于广告拍卖。",
+      "llm_tags": [
+        "query:q2"
+      ],
+      "matched_query_tag": "query:q2",
+      "matched_query_text": "advertising technology",
+      "matched_requirement_id": "req-2",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2605.21832v1",
+      "source": "arxiv",
+      "title": "FLUID: From Ephemeral IDs to Multimodal Semantic Codes for Industrial-Scale Livestreaming Recommendation",
+      "abstract": "Modern recommender systems rely heavily on ID-based collaborative filtering: each item is represented by a unique ID embedding that accumulates collaborative signals from user interactions. Livestreaming recommendation, however, faces a unique challenge in this paradigm: a live room typically broadcasts for only tens of minutes, so its item ID remains poorly learned in a persistent cold-start state and ID-centric ranking models fail to generalize. We present FLUID, the first framework to fully retire the candidate-side item ID from a production-scale livestreaming ranker. FLUID couples a cross-domain multimodal encoder, jointly trained on short videos and livestreams to produce discrete hierarchical codes (LUCID), with a late-fusion, ID-free design that injects slice-level and room-level LUCID as independent tokens, stabilized by a staged warmup under online incremental training. Deployed on our industrial livestreaming recommenders with a cross-platform combined user base of over one billion globally, FLUID delivers significant online gains of +0.55% Quality Watch Duration, +2.05% Cold-Start Room Views, and +0.05% Active Hours.",
+      "authors": [
+        "Xinhang Yuan",
+        "Zexi Huang",
+        "Anjia Cao",
+        "Xudong Lu",
+        "Zikai Wang",
+        "Penghao Zhou",
+        "Chang Liu",
+        "Wentao Guo",
+        "Qinglei Wang"
+      ],
+      "primary_category": "cs.AI",
+      "categories": [
+        "cs.AI"
+      ],
+      "published": "2026-05-20T23:52:51+00:00",
+      "link": "https://arxiv.org/pdf/2605.21832v1",
+      "tags": [
+        "keyword:LLMApp",
+        "keyword:广告",
+        "query:LLMApp",
+        "query:广告"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "multimodal livestreaming recommendation for advertising",
+      "llm_evidence_cn": "多模态直播推荐用于广告",
+      "llm_evidence": "多模态直播推荐用于广告",
+      "canonical_evidence": "多模态直播推荐用于广告",
+      "llm_tldr_en": "FLUID removes item IDs for multimodal livestreaming recommendation.",
+      "llm_tldr_cn": "FLUID去除物品ID用于多模态直播推荐。",
+      "llm_tldr": "FLUID去除物品ID用于多模态直播推荐。",
+      "llm_tags": [
+        "query:q1"
+      ],
+      "matched_query_tag": "query:q1",
+      "matched_query_text": "recommendation system for advertising",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "quick_skim": [
+    {
+      "id": "2605.17079v1",
+      "source": "arxiv",
+      "title": "Can LLMs Think Like Consumers? Benchmarking Crowd-Level Reaction Reconstruction with ConsumerSimBench",
+      "abstract": "LLMs are increasingly used as ``digital consumers'' to simulate public opinion, pre-test marketing decisions, and anticipate audience response. However, existing evaluations rarely ask whether a model can reconstruct the concrete reaction patterns that real consumers surface in public discourse. We introduce ConsumerSimBench, a benchmark built from 1,553 real Chinese social-media topics and 23,122 atomic, rule-audited criteria spanning four reaction families. Rather than scoring open-ended generations with a holistic preference judge, ConsumerSimBench decomposes each task into auditable yes-no decisions over concrete reaction points, raising three-judge agreement from 65.8% to 92.1% with 98.4% agreement between pointwise judge decisions and human-majority labels. Across 13 frontier generators, the strongest model, Gemini-3.1-Pro, covers only 47.8% of real reaction criteria, while GPT-5.2 and Claude-4.6 trail far behind despite their strength on technical benchmarks. The failures reveal a sharp gap between technical-benchmark performance and socially grounded consumer intuition. A direct structured reasoning prompt decreases coverage, while a generate--reflect multi-agent pipeline improves MiMo-V2.5-Pro from 32.9% to 37.6% on a subset. ConsumerSimBench reframes consumer simulation as a forecasting problem over real public-discourse reactions, showing that frontier LLMs remain far from reliably predicting what consumers will actually care about in high-context Chinese consumer discourse.",
+      "authors": [
+        "Tianyu Wang",
+        "Jiajun Li",
+        "Jianghao Lin"
+      ],
+      "primary_category": "cs.CL",
+      "categories": [
+        "cs.CL",
+        "cs.AI",
+        "cs.CY"
+      ],
+      "published": "2026-05-16T16:55:31+00:00",
+      "link": "https://arxiv.org/pdf/2605.17079v1",
+      "tags": [
+        "keyword:LLMApp",
+        "keyword:广告",
+        "query:LLMApp",
+        "query:广告"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "Benchmark for LLM consumer simulation",
+      "llm_evidence_cn": "大模型消费者模拟基准测试",
+      "llm_evidence": "大模型消费者模拟基准测试",
+      "canonical_evidence": "大模型消费者模拟基准测试",
+      "llm_tldr_en": "Benchmark to evaluate LLMs as digital consumers for marketing",
+      "llm_tldr_cn": "评估大模型作为数字消费者的营销基准",
+      "llm_tldr": "评估大模型作为数字消费者的营销基准",
+      "llm_tags": [
+        "query:llmapp"
+      ],
+      "matched_query_tag": "query:llmapp",
+      "matched_query_text": "Applications of LLMs in advertising and personalized marketing",
+      "matched_requirement_id": "req-15",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "8plus"
+    },
+    {
+      "id": "2605.16834v1",
+      "source": "arxiv",
+      "title": "Learning Relative Representations for Fine-Grained Multimodal Alignment with Limited Data",
+      "abstract": "Multimodal pre-training demonstrates strong generalization performance, but this paradigm is often impractical in domains where paired data are scarce. A promising alternative is post-hoc multimodal alignment, which aligns separately pre-trained unimodal encoders using a limited number of paired examples. However, existing methods focus primarily on aligning global representations, missing patch-token relations. This may hinder transfer to tasks that require fine-grained cross-modal matching beyond coarse sample-level semantics. To address this issue, we propose a post-hoc alignment method that learns token-level cross-modal structure using relative representations. Specifically, we represent images and texts through their token-level similarities to a set of learnable anchors in each modality space, which are trained to induce consistent cross-modal similarity patterns for matched pairs. Despite learning only the anchors without heavy projection layers, our approach consistently outperforms existing methods in zero-shot classification, cross-modal retrieval, and zero-shot segmentation by a substantial margin. This highlights the importance of modeling fine-grained cross-modal structure for effective post-hoc multimodal alignment with limited paired data.",
+      "authors": [
+        "Shiwon Kim",
+        "Yu Rang Park"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV",
+        "cs.AI",
+        "cs.LG"
+      ],
+      "published": "2026-05-16T06:33:38+00:00",
+      "link": "https://arxiv.org/pdf/2605.16834v1",
+      "tags": [
+        "keyword:LLMApp",
+        "keyword:广告",
+        "query:LLMApp"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "fine-grained multimodal alignment with limited data",
+      "llm_evidence_cn": "有限数据下的细粒度多模态对齐",
+      "llm_evidence": "有限数据下的细粒度多模态对齐",
+      "canonical_evidence": "有限数据下的细粒度多模态对齐",
+      "llm_tldr_en": "Uses relative representations for token-level cross-modal alignment.",
+      "llm_tldr_cn": "利用相对表示进行令牌级跨模态对齐。",
+      "llm_tldr": "利用相对表示进行令牌级跨模态对齐。",
+      "llm_tags": [
+        "query:llmapp"
+      ],
+      "matched_query_tag": "query:llmapp",
+      "matched_query_text": "Multimodal LLM models and their applications",
+      "matched_requirement_id": "req-16",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2605.17432v1",
+      "source": "arxiv",
+      "title": "DP-SelFT: Differentially Private Selective Fine-Tuning for Large Language Models",
+      "abstract": "Large language models (LLMs) are commonly adapted to downstream tasks through fine-tuning, but fine-tuning data often contains sensitive information that may be leaked by the resulting model. Differential privacy (DP) offers formal protection against such leakage, yet DP fine-tuning of LLMs still suffers from substantial utility degradation due to gradient clipping and noise injection. Existing work improves this trade-off by combining DP with parameter-efficient fine-tuning methods such as LoRA, which constrain the form of updates. In this work, we study a complementary direction: selective fine-tuning, which constrains where updates are applied.   We propose DP-SelFT, a framework for differentially private selective fine-tuning of LLMs. DP-SelFT addresses three DP-specific challenges in parameter selection: avoiding repeated privacy cost, improving stability under noisy estimates, and selecting parameters that remain useful under clipped and noisy updates. It first constructs a lightweight DP synthetic dataset and performs selection only on this synthetic data, so the selection stage incurs no additional privacy cost. It then conducts layer-level selection by temporarily training candidate layer subsets on a synthetic training split and evaluating them on a synthetic validation split. Crucially, this temporary training is performed under a perturbation regime matched to downstream DP fine-tuning, with worst-case perturbations of the same scale as DP noise. This favors layer subsets that are not only learnable but also robust to noisy private updates. Experiments on benchmark tasks show that DP-SelFT consistently improves the privacy--utility trade-off over existing DP fine-tuning baselines under the same privacy guarantees.",
+      "authors": [
+        "Haichao Sha",
+        "Zihao Wang",
+        "Yuncheng Wu",
+        "Hong Chen",
+        "Wei Dong"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG",
+        "cs.CR"
+      ],
+      "published": "2026-05-17T12:55:11+00:00",
+      "link": "https://arxiv.org/pdf/2605.17432v1",
+      "tags": [
+        "keyword:LLMApp",
+        "keyword:广告",
+        "query:LLMApp"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "differentially private selective fine-tuning of LLMs",
+      "llm_evidence_cn": "差分隐私选择性微调大语言模型",
+      "llm_evidence": "差分隐私选择性微调大语言模型",
+      "canonical_evidence": "差分隐私选择性微调大语言模型",
+      "llm_tldr_en": "Proposes DP-SelFT for private fine-tuning by selecting where to update.",
+      "llm_tldr_cn": "提出DP-SelFT实现隐私保护微调。",
+      "llm_tldr": "提出DP-SelFT实现隐私保护微调。",
+      "llm_tags": [
+        "query:llmapp"
+      ],
+      "matched_query_tag": "query:llmapp",
+      "matched_query_text": "fine tuning large models for tasks",
+      "matched_requirement_id": "req-12",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2605.17267v1",
+      "source": "arxiv",
+      "title": "RAGR: Review-Augmented Generative Recommendation",
+      "abstract": "Sequential recommendation (SR) is traditionally formulated as next-item prediction over a chronological sequence of interacted items. Although recent generative recommendation (GR) methods introduce new machinery, such as semantic IDs, autoregressive decoding, and unified token spaces, they largely inherit the same item-only modeling assumption. We argue that this design constitutes a structural bottleneck, because user decision-making is not purely behavioral: while item interactions reveal what users choose, review feedback often explain why they choose it by exposing latent evaluative factors.   Motivated by this observation, we propose Review-Augmented Generative Recommendation (RAGR), a novel GR framework that incorporates review feedback directly into the generative user sequence rather than treating reviews as auxiliary side information. Specifically, RAGR introduces a Review-Augmented User Sequence Modeling mechanism that interleaves item semantic IDs and review semantic IDs in chronological order to construct a mixed behavioral-semantic sequence, enabling review signals to participate directly in autoregressive next-token generation. To preserve the recommendation objective, we further introduce an Item-Centric Task Generation Alignment strategy based on direct preference optimization (DPO), which encourages the model to favor item tokens over review tokens at prediction positions. Experiments on three real-world datasets show that RAGR yields consistent and significant gains over strong GR backbones across all metrics. Our code and data are available at \\url{https://github.com/Zhang-Yingyi/TKDE_RAGR}.",
+      "authors": [
+        "Yingyi Zhang",
+        "Junyi Li",
+        "Yejing Wang",
+        "Wenlin Zhang",
+        "Xiaowei Qian",
+        "Sheng Zhang",
+        "Yue Feng",
+        "Yichao Wang",
+        "Yong Liu",
+        "Xiangyu Zhao",
+        "Xianneng Li"
+      ],
+      "primary_category": "cs.IR",
+      "categories": [
+        "cs.IR"
+      ],
+      "published": "2026-05-17T05:21:23+00:00",
+      "link": "https://arxiv.org/pdf/2605.17267v1",
+      "tags": [
+        "keyword:LLMApp",
+        "keyword:广告",
+        "query:LLMApp",
+        "query:广告"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "uses LLM-based generative recommendation with review augmentation",
+      "llm_evidence_cn": "利用基于大模型的生成式推荐并融入用户评论",
+      "llm_evidence": "利用基于大模型的生成式推荐并融入用户评论",
+      "canonical_evidence": "利用基于大模型的生成式推荐并融入用户评论",
+      "llm_tldr_en": "RAGR integrates review feedback into generative recommendation for better accuracy",
+      "llm_tldr_cn": "RAGR将评论反馈融入生成式推荐提升准确性",
+      "llm_tldr": "RAGR将评论反馈融入生成式推荐提升准确性",
+      "llm_tags": [
+        "query:llmapp"
+      ],
+      "matched_query_tag": "query:llmapp",
+      "matched_query_text": "LLM for recommendation",
+      "matched_requirement_id": "req-10",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "8plus"
+    },
+    {
+      "id": "2605.17357v1",
+      "source": "arxiv",
+      "title": "Dual-Diffusional Generative Fashion Recommendation",
+      "abstract": "Personalized generative recommender systems have emerged as a promising solution for fashion recommendation. However, existing methods primarily rely on implicit visual embeddings from historical interactions, which often contain preference-irrelevant information and result in insufficient user behavior modeling. Moreover, these models typically generate only item images, providing limited interpretability. To address these limitations, we propose DualFashion, a Dual-Diffusional Generative Fashion Recommendation Architecture that jointly models image and text modalities for personalized and explainable recommendation. DualFashion adopts a dual-diffusion Transformer with image and text branches, where structured attribute-level captions and visual outfit information are jointly used as conditioning signals to model user behavior. The proposed architecture produces both fashion item images and textual descriptions, ensuring visual compatibility while providing explicit semantic interpretability. Furthermore, we introduce a text-augmented fine-tuning strategy that enhances generation diversity and enables effective cross-modal knowledge transfer without incurring heavy computational costs. Extensive experiments on iFashion and Polyvore-U across Personalized Fill-in-the-Blank and Generative Outfit Recommendation tasks demonstrate that DualFashion achieves strong performance in behavior modeling, interpretability, and efficiency compared to state-of-the-art methods. Our code and model checkpoints are available at https://github.com/LinkMingzhe/DualFashion.",
+      "authors": [
+        "Mingzhe Yu",
+        "Lei Wu",
+        "Qianru Sun",
+        "Yunshan Ma"
+      ],
+      "primary_category": "cs.IR",
+      "categories": [
+        "cs.IR",
+        "cs.MM"
+      ],
+      "published": "2026-05-17T09:52:18+00:00",
+      "link": "https://arxiv.org/pdf/2605.17357v1",
+      "tags": [
+        "keyword:LLMApp",
+        "keyword:广告",
+        "query:LLMApp",
+        "query:广告"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "dual-diffusion transformer for multimodal fashion recommendation",
+      "llm_evidence_cn": "用于多模态时尚推荐的双扩散Transformer",
+      "llm_evidence": "用于多模态时尚推荐的双扩散Transformer",
+      "canonical_evidence": "用于多模态时尚推荐的双扩散Transformer",
+      "llm_tldr_en": "Proposes a dual-diffusion generative model that jointly uses image and text for personalized fashion recommendation.",
+      "llm_tldr_cn": "提出双扩散生成模型，联合图像和文本进行个性化时尚推荐。",
+      "llm_tldr": "提出双扩散生成模型，联合图像和文本进行个性化时尚推荐。",
+      "llm_tags": [
+        "query:q6"
+      ],
+      "matched_query_tag": "query:q6",
+      "matched_query_text": "multimodal learning for advertising",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2605.17596v1",
+      "source": "arxiv",
+      "title": "NeuSymMS: A Hybrid Neuro-Symbolic Memory System for Persistent, Self-Curating LLM Agents",
+      "abstract": "We present NeuSymMS, an adaptive memory system that enables large language model (LLM) agents to learn, remember, and reason about users across sessions via a hybrid neuro-symbolic architecture. NeuSymMS couples neural fact extraction from unstructured dialogue with a CLIPS-based expert system that classifies, deduplicates, and reconciles facts under explicit lifecycle rules. The system represents knowledge as subject-relation-value triples stored in relational database management system, supports user/agents/agent-to-agents scoping, and implements a dual-horizon short-term/long-term memory model with access-based promotion and time-based pruning. NeuSymMS maintains continuity of memory while avoiding context-window bloat and cross-entity contamination. We argue that this architecture offers a practical path to trustworthy, auditable memory for production agentic systems and discuss its novelty relative to log retrieval, summarization, and key-value approaches.",
+      "authors": [
+        "Mujahid Sultan",
+        "Sri Thuraisamy",
+        "Daya Rajaratnam"
+      ],
+      "primary_category": "cs.AI",
+      "categories": [
+        "cs.AI"
+      ],
+      "published": "2026-05-17T18:48:19+00:00",
+      "link": "https://arxiv.org/pdf/2605.17596v1",
+      "tags": [
+        "keyword:LLMApp",
+        "keyword:广告",
+        "query:LLMApp",
+        "query:广告"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "LLM memory system agent",
+      "llm_evidence_cn": "大模型记忆系统代理",
+      "llm_evidence": "大模型记忆系统代理",
+      "canonical_evidence": "大模型记忆系统代理",
+      "llm_tldr_en": "NeuSymMS provides persistent memory for LLM agents using neuro-symbolic architecture.",
+      "llm_tldr_cn": "NeuSymMS使用神经符号架构为大模型代理提供持久记忆。",
+      "llm_tldr": "NeuSymMS使用神经符号架构为大模型代理提供持久记忆。",
+      "llm_tags": [
+        "query:llmapp"
+      ],
+      "matched_query_tag": "query:llmapp",
+      "matched_query_text": "large language model applications",
+      "matched_requirement_id": "req-9",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2605.17648v1",
+      "source": "arxiv",
+      "title": "SAPO: Step-Aligned Policy Optimization for Reasoning-Based Generative Recommendation",
+      "abstract": "Generative recommendation treats next-item prediction as autoregressive item-identifier generation. Specifically, items are encoded as semantic identifiers (SIDs), which are short coarse-to-fine token sequences whose early tokens capture broad semantics and later tokens refine them. Recent work augments this paradigm with reasoning traces and optimizes them via reinforcement learning with verifiable rewards, typically outcome-reward algorithm with exact-match feedback on the generated SID. However, in large-catalog recommendation, exact-match feedback on the generated SID only reports whether the final item is correct; when a generated SID mismatches, outcome-reward cannot identify which SID-token prediction caused the mismatch and may penalize matched SID-token positions together with the mismatched position. We identify that the natural unit of credit assignment in this setting is a single reasoning step (one thinking block paired with one SID token). We instantiate this idea in SAPO (Step-Aligned Policy Optimization): rather than broadcasting one advantage to the whole response, SAPO computes a separate group-relative advantage for each reasoning step and applies it only to the corresponding thinking block and SID token. Across three real-world recommendation datasets, SAPO stabilizes reinforcement-learning training and consistently improves over existing generative recommendation baselines, with the largest gains where sparse exact-match feedback makes reasoning-step credit assignment important. Our results suggest that reinforcement-learning objectives for structured generation should mirror the decoder's own decomposition of the output.",
+      "authors": [
+        "Zaiyi Zheng",
+        "Guanghui Min",
+        "Yaochen Zhu",
+        "Liang Wu",
+        "Liangjie Hong",
+        "Chen Chen",
+        "Jundong Li"
+      ],
+      "primary_category": "cs.AI",
+      "categories": [
+        "cs.AI"
+      ],
+      "published": "2026-05-17T20:53:08+00:00",
+      "link": "https://arxiv.org/pdf/2605.17648v1",
+      "tags": [
+        "keyword:LLMApp",
+        "keyword:广告",
+        "query:LLMApp",
+        "query:广告"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "optimizes generative recommendation with step-aligned policy gradient",
+      "llm_evidence_cn": "使用步骤对齐的策略梯度优化生成式推荐",
+      "llm_evidence": "使用步骤对齐的策略梯度优化生成式推荐",
+      "canonical_evidence": "使用步骤对齐的策略梯度优化生成式推荐",
+      "llm_tldr_en": "SAPO improves generative recommendation by aligning SID token rewards",
+      "llm_tldr_cn": "SAPO通过对齐语义ID令牌奖励改进生成式推荐",
+      "llm_tldr": "SAPO通过对齐语义ID令牌奖励改进生成式推荐",
+      "llm_tags": [
+        "query:llmapp"
+      ],
+      "matched_query_tag": "query:llmapp",
+      "matched_query_text": "LLM for recommendation",
+      "matched_requirement_id": "req-10",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "8plus"
+    },
+    {
+      "id": "2605.17779v1",
+      "source": "arxiv",
+      "title": "Learning Variable-Length Tokenization for Generative Recommendation",
+      "abstract": "Generative recommendation reformulates recommendation as next-token prediction over discrete semantic identifiers (IDs). A fundamental yet unexplored design choice is that existing methods employ fixed-length tokenization for all items, implicitly assuming uniform encoding capacity regardless of item characteristics. Through systematic experiments across four datasets, we discover the Popularity-Length Paradox: popular items achieve optimal performance with short IDs, while tail items require substantially longer codes to capture discriminative semantics. This reveals a critical mismatch where popular items benefit from abundant collaborative signals and require minimal semantic detail, whereas tail items must rely on fine-grained content features due to sparse interaction data.   To address this, we propose VarLenRec, a framework for learning variable-length tokenization. We develop Popularity-Weighted Information Budget Allocation (PIBA), an information-theoretic framework proving that optimal ID length should scale as a negative power of popularity. Directly implementing variable-length allocation faces two technical challenges: standard Euclidean residual quantization lacks geometric capacity to support diverse code lengths without distortion, and discrete length decisions are non-differentiable. We address these through Hyperbolic Residual Quantization, which leverages the exponential volume growth of the Poincaré ball to naturally stratify encoding capacity, and a Soft Length Controller, which enables differentiable length prediction via continuous layer retention probabilities regularized by PIBA-derived priors. Extensive experiments demonstrate that VarLenRec achieves significant improvements over state-of-the-art methods in recommendation accuracy and training/inference efficiency, revealing the importance of adaptive encoding capacity in generative recommendation.",
+      "authors": [
+        "Minhao Wang",
+        "Bowen Wu",
+        "Wei Zhang"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG"
+      ],
+      "published": "2026-05-18T02:57:19+00:00",
+      "link": "https://arxiv.org/pdf/2605.17779v1",
+      "tags": [
+        "keyword:LLMApp",
+        "keyword:广告",
+        "query:LLMApp",
+        "query:广告"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "Variable-length tokenization for generative recommendation",
+      "llm_evidence_cn": "可变长度分词用于生成式推荐",
+      "llm_evidence": "可变长度分词用于生成式推荐",
+      "canonical_evidence": "可变长度分词用于生成式推荐",
+      "llm_tldr_en": "Discovers popularity-length paradox and proposes adaptive tokenization for generative recommendation",
+      "llm_tldr_cn": "发现流行度-长度悖论并提出自适应分词用于生成式推荐",
+      "llm_tldr": "发现流行度-长度悖论并提出自适应分词用于生成式推荐",
+      "llm_tags": [
+        "query:llmapp"
+      ],
+      "matched_query_tag": "query:llmapp",
+      "matched_query_text": "LLM for recommendation",
+      "matched_requirement_id": "req-10",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2605.17788v1",
+      "source": "arxiv",
+      "title": "Uncertainty-Calibrated Recommendations for Low-Active Users",
+      "abstract": "A fundamental challenge in recommender systems is balancing reliability for Low-Active Users (LAUs) with diversity for High-Active Users (HAUs). The key to this balance lies in quantifying model uncertainty, which approximates the risk of prediction errors and reveals the limits of the model's current knowledge. On large-scale short-video and livestream platforms, model uncertainty can warn of low-quality recommendations that may lead to disengagement of LAUs and at the same time identify opportunities to diversify content recommendation for HAUs. To leverage this dichotomy, we introduce a unified, production-ready framework that calibrates uncertainty to drive differentiated strategies. Specifically, we implement a model-uncertainty-based risk-averse deboosting policy for LAUs to suppress unreliable recommendations, while employing a risk-seeking Upper Confidence Bound (UCB) strategy for HAUs to encourage exploration. Validated on a major livestream platform, our framework demonstrates significant improvements in retention (active hours) and satisfaction (quality watch time ratio) for LAUs as well as remarkable increases in interest diversity and category coverage for HAUs, proving the value of uncertainty-aware recommendation in industrial settings.",
+      "authors": [
+        "Bob Junyi Zou",
+        "Sai Li",
+        "Tianyun Sun",
+        "Wentao Guo",
+        "Qinglei Wang"
+      ],
+      "primary_category": "cs.IR",
+      "categories": [
+        "cs.IR",
+        "cs.LG"
+      ],
+      "published": "2026-05-18T03:11:17+00:00",
+      "link": "https://arxiv.org/pdf/2605.17788v1",
+      "tags": [
+        "keyword:LLMApp",
+        "keyword:广告",
+        "query:LLMApp",
+        "query:广告"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "Recommendation system for low-active users on video platforms",
+      "llm_evidence_cn": "视频平台上低活跃用户的推荐系统",
+      "llm_evidence": "视频平台上低活跃用户的推荐系统",
+      "canonical_evidence": "视频平台上低活跃用户的推荐系统",
+      "llm_tldr_en": "Uncertainty-calibrated recommendations to balance low-active and high-active users",
+      "llm_tldr_cn": "不确定性校准推荐以平衡低活跃和高活跃用户",
+      "llm_tldr": "不确定性校准推荐以平衡低活跃和高活跃用户",
+      "llm_tags": [
+        "query:q1"
+      ],
+      "matched_query_tag": "query:q1",
+      "matched_query_text": "recommendation system for advertising",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2605.18044v1",
+      "source": "arxiv",
+      "title": "Modality-Aware Identity Construction and Counterfactual Structure Learning for ID-Free Multimodal Recommendation",
+      "abstract": "Multimodal recommendation has attracted extensive attention by leveraging heterogeneous modality information to alleviate data sparsity and improve recommendation accuracy. Existing methods have attempted to replace ID embeddings with multimodal features and have achieved promising preliminary results. However, these methods still exhibit the following two limitations: (1) the reconstructed ID representations remain relatively static and fail to fully exploit multimodal semantics; and (2) the graph learning process is insufficient in mining latent long-tail semantic relations and is easily affected by popularity bias. To address these issues, we propose a novel method named Modality-Aware Identity Construction and Counterfactual Structure Learning for ID-free Multimodal Recommendation (MAIL). Specifically, we design a modality-aware identity construction module that dynamically modulates positional encodings with multimodal semantics to construct content-aware ID-free identity representations. Then, we propose a counterfactual structure learning paradigm that mines low-exposure semantic neighbors via popularity penalization and alleviates popularity bias. Extensive experiments are conducted on five public Amazon datasets. Experimental results show that MAIL achieves average improvements of 7.81% in Recall@10 and 12.81% in NDCG@10 compared with the baseline models. Our code is available at https://github.com/HubuKG/MAIL.",
+      "authors": [
+        "Hongjian Ma",
+        "Wenxin Huang",
+        "Yan Zhang",
+        "Zhifei Li",
+        "Zheng Wang"
+      ],
+      "primary_category": "cs.IR",
+      "categories": [
+        "cs.IR",
+        "cs.MM"
+      ],
+      "published": "2026-05-18T08:35:06+00:00",
+      "link": "https://arxiv.org/pdf/2605.18044v1",
+      "tags": [
+        "keyword:LLMApp",
+        "keyword:广告",
+        "query:LLMApp",
+        "query:广告"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "multimodal recommendation with counterfactual",
+      "llm_evidence_cn": "多模态推荐与反事实学习",
+      "llm_evidence": "多模态推荐与反事实学习",
+      "canonical_evidence": "多模态推荐与反事实学习",
+      "llm_tldr_en": "Modality-aware identity and counterfactual structure learning for ID-free multimodal recommendation.",
+      "llm_tldr_cn": "模态感知身份构建与反事实结构学习用于无ID多模态推荐。",
+      "llm_tldr": "模态感知身份构建与反事实结构学习用于无ID多模态推荐。",
+      "llm_tags": [
+        "query:q6"
+      ],
+      "matched_query_tag": "query:q6",
+      "matched_query_text": "multimodal learning for advertising",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "8plus"
+    },
+    {
+      "id": "2605.17863v1",
+      "source": "arxiv",
+      "title": "DADF: A Distribution-Aware Debiasing Framework for Watch-Time Regression in Recommender Systems",
+      "abstract": "Watch-time prediction is a central regression task in short-video recommender systems, where labels are highly long-tailed and residual errors vary systematically across observed watch-time regions. In practice, a model may appear globally calibrated while still overestimating short views and underestimating long views, because opposite errors cancel out in aggregate. Existing methods mainly improve the first-stage watch-time predictor, but often leave such residual distributional bias insufficiently corrected. We propose DADF, a distribution-aware debiasing framework for watch-time regression. Instead of replacing a deployed predictor, DADF performs second-stage multiplicative residual correction on top of it. DADF combines three complementary designs: a dynamic distribution-aware transformation for stabilizing long-tailed correction targets, a debias-factor-aware module for modeling heterogeneous residual patterns using inference-time observable factors, especially video duration, and a multi-label-aware module that exploits auxiliary prediction signals from engagement heads. We evaluate DADF on public short-video benchmarks and a large-scale industrial ranking system. DADF consistently improves both pointwise accuracy and ranking quality across datasets and backbones. In the industrial setting, it achieves a 1.88 percentage-point WUAUC gain over the production baseline, reduces MAE by 12.57%, and yields a statistically significant 0.347% lift in average time spent per device in online A/B testing. These results demonstrate that DADF effectively mitigates local calibration bias and provides a practical plug-in solution for debiasing long-tailed continuous targets. The source code is available at https://github.com/liuzhao09/DADF.",
+      "authors": [
+        "Yiqing Yang",
+        "Xinlong Zhao",
+        "Zhao Liu",
+        "Xiao Lv",
+        "Ruiming Tang",
+        "Han Li",
+        "Kun Gai"
+      ],
+      "primary_category": "cs.IR",
+      "categories": [
+        "cs.IR"
+      ],
+      "published": "2026-05-18T05:14:50+00:00",
+      "link": "https://arxiv.org/pdf/2605.17863v1",
+      "tags": [
+        "keyword:LLMApp",
+        "keyword:广告",
+        "query:LLMApp",
+        "query:广告"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "debiasing for watch-time regression in recommender systems",
+      "llm_evidence_cn": "推荐系统中观看时长回归的去偏方法",
+      "llm_evidence": "推荐系统中观看时长回归的去偏方法",
+      "canonical_evidence": "推荐系统中观看时长回归的去偏方法",
+      "llm_tldr_en": "Proposes DADF, a distribution-aware debiasing framework for watch-time prediction in recommenders.",
+      "llm_tldr_cn": "提出DADF，一种面向推荐系统中观看时长预测的分布感知去偏框架。",
+      "llm_tldr": "提出DADF，一种面向推荐系统中观看时长预测的分布感知去偏框架。",
+      "llm_tags": [
+        "query:q1"
+      ],
+      "matched_query_tag": "query:q1",
+      "matched_query_text": "recommendation system for advertising",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2605.18199v1",
+      "source": "arxiv",
+      "title": "PIPER: Content-Based Table Search via profiling and LLM-Generated Pseudoqueries",
+      "abstract": "The rapid growth of tabular datasets in data lakes, data spaces, and open data portals makes effective dataset search essential for reuse and analysis. Existing search systems rely mainly on metadata, which is often incomplete or low quality, especially for tables whose meaning depends on both schema and cell values. Recent advances in Large Language Models (LLMs) enable richer, content-based representations of tables. However, prior LLM-based retrieval methods have focused on Table Question Answering, where the goal is to select a single table to answer a question, rather than retrieve and rank relevant datasets. We propose PIPER, a content-driven retrieval method for tabular datasets that uses table profiles and LLM-generated queries embedded for dense retrieval. Designed for dataset search in poor-metadata settings, PIPER outperforms both classical metadata-based baselines and strong TableQA retrieval methods, demonstrating the value of LLM-based content modeling for tabular dataset search.",
+      "authors": [
+        "Riccardo Terrenzi",
+        "Matteo Falconi",
+        "Serkan Ayvaz",
+        "Pierluigi Plebani"
+      ],
+      "primary_category": "cs.IR",
+      "categories": [
+        "cs.IR",
+        "cs.AI"
+      ],
+      "published": "2026-05-18T10:39:42+00:00",
+      "link": "https://arxiv.org/pdf/2605.18199v1",
+      "tags": [
+        "keyword:LLMApp",
+        "keyword:广告",
+        "query:LLMApp",
+        "query:广告"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "LLM for content-based table search",
+      "llm_evidence_cn": "大模型用于基于内容的表格搜索",
+      "llm_evidence": "大模型用于基于内容的表格搜索",
+      "canonical_evidence": "大模型用于基于内容的表格搜索",
+      "llm_tldr_en": "PIPER uses LLM-generated queries for better table retrieval.",
+      "llm_tldr_cn": "PIPER利用大模型生成查询改进表格检索。",
+      "llm_tldr": "PIPER利用大模型生成查询改进表格检索。",
+      "llm_tags": [
+        "query:llmapp"
+      ],
+      "matched_query_tag": "query:llmapp",
+      "matched_query_text": "large language model applications",
+      "matched_requirement_id": "req-9",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    }
+  ]
+}

@@ -1,0 +1,38 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2605.21217v1/fig-001.webp",
+      "caption": "Figure 2: Homogeneous copying experiment evaluated on the common copying task. The top panel reports client-level masked next-token accuracy averaged over 100 replicates; the bottom panel reports relative accuracy change with respect to local LoRA fine-tuning.",
+      "page": 26,
+      "index": 1,
+      "width": 979,
+      "height": 666
+    },
+    {
+      "url": "assets/figures/arxiv/2605.21217v1/fig-002.webp",
+      "caption": "Table 1: Mean Frobenius-squared error averaged over clients and 100 replicates, with |C𝑐 | = 0.4𝐾 contaminated clients.",
+      "page": 22,
+      "index": 2,
+      "width": 748,
+      "height": 344
+    },
+    {
+      "url": "assets/figures/arxiv/2605.21217v1/fig-003.webp",
+      "caption": "Figure 1: Estimation error of 𝑃Â compared to 𝐾 across (𝑝, 𝑞, 𝑛) regimes.",
+      "page": 23,
+      "index": 3,
+      "width": 498,
+      "height": 454
+    },
+    {
+      "url": "assets/figures/arxiv/2605.21217v1/fig-004.webp",
+      "caption": "Figure 3: Heterogeneous copying experiment evaluated on client-specific tasks. The top panel reports client-level masked next-token accuracy averaged over 100 replicates; the bottom panel reports relative accuracy change with respect to local LoRA fine-tuning.",
+      "page": 27,
+      "index": 4,
+      "width": 979,
+      "height": 669
+    }
+  ]
+}

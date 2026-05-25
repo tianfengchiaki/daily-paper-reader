@@ -1,0 +1,54 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2605.17900v1/fig-001.webp",
+      "caption": "Figure 4: Main properties change with the iteration process.",
+      "page": 7,
+      "index": 1,
+      "width": 930,
+      "height": 190
+    },
+    {
+      "url": "assets/figures/arxiv/2605.17900v1/fig-002.webp",
+      "caption": "Figure 9: Training example for fine-tuning LLMs.",
+      "page": 14,
+      "index": 2,
+      "width": 404,
+      "height": 663
+    },
+    {
+      "url": "assets/figures/arxiv/2605.17900v1/fig-003.webp",
+      "caption": "Figure 8: The prompt iteration of ERNIE 4.0 in evaluation stage.",
+      "page": 13,
+      "index": 3,
+      "width": 902,
+      "height": 390
+    },
+    {
+      "url": "assets/figures/arxiv/2605.17900v1/fig-004.webp",
+      "caption": "Figure 2: The cooperative iterative learning in DuIVRS-2, which operates via an iterative two-step process: (1) the grow step augments data and generates responses evaluated by LLM-L and a Black-box LLM, with uncertain cases reviewed by humans; (2) the improve step updates LLM-S and LLM-L using accepted responses, while also refining the Black-box evaluator through in-context learning.",
+      "page": 4,
+      "index": 4,
+      "width": 796,
+      "height": 286
+    },
+    {
+      "url": "assets/figures/arxiv/2605.17900v1/fig-005.webp",
+      "caption": "Figure 3: Comparison of distributions before (log data) and after FSM-guided augmentation, highlighting the mitigation of long-tail issues.",
+      "page": 4,
+      "index": 5,
+      "width": 429,
+      "height": 356
+    },
+    {
+      "url": "assets/figures/arxiv/2605.17900v1/fig-006.webp",
+      "caption": "Figure 7: Illustration of the FSM structure (left) and its application in a dialogue interaction (right).",
+      "page": 12,
+      "index": 6,
+      "width": 446,
+      "height": 279
+    }
+  ]
+}

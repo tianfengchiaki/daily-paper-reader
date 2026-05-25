@@ -1,0 +1,94 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2605.18041v1/fig-001.webp",
+      "caption": "Figure 9: Qwen-2.5-Omni-3B and Qwen-2.5-Omni-7B performance on WorldSense (Left) and DailyOmni (Right) benchmarks at 30% and 45% pruning ratios.",
+      "page": 15,
+      "index": 1,
+      "width": 818,
+      "height": 381
+    },
+    {
+      "url": "assets/figures/arxiv/2605.18041v1/fig-002.webp",
+      "caption": "Figure 2: Illustration of modality importance variation across different questions.",
+      "page": 2,
+      "index": 2,
+      "width": 523,
+      "height": 321
+    },
+    {
+      "url": "assets/figures/arxiv/2605.18041v1/fig-003.webp",
+      "caption": "Figure 12: A Audio-Centric pruning case, including pruning results, answers, and per-temporal-group pruning ratios for our method and the baseline.",
+      "page": 18,
+      "index": 3,
+      "width": 664,
+      "height": 543
+    },
+    {
+      "url": "assets/figures/arxiv/2605.18041v1/fig-004.webp",
+      "caption": "Figure 13: A Video-Centric pruning case that OmniSelect’s answer corrects but Full Tokens does not, including pruning results, answers, and per-temporal-group pruning ratios for our method and the baseline.",
+      "page": 18,
+      "index": 4,
+      "width": 819,
+      "height": 431
+    },
+    {
+      "url": "assets/figures/arxiv/2605.18041v1/fig-005.webp",
+      "caption": "Figure 8: Left: The comparison of Bottom-K Selection strategy and Top-K Selection strategy. Right: Prompt Template for multiple-choice QA evaluations.",
+      "page": 13,
+      "index": 5,
+      "width": 801,
+      "height": 240
+    },
+    {
+      "url": "assets/figures/arxiv/2605.18041v1/fig-006.webp",
+      "caption": "Figure 5: Qwen-2.5-Omni-3B performance under varying frame budgets at 30% and 45% pruning.",
+      "page": 8,
+      "index": 6,
+      "width": 822,
+      "height": 254
+    },
+    {
+      "url": "assets/figures/arxiv/2605.18041v1/fig-007.webp",
+      "caption": "Figure 6: Performance under different frame budgets and different thresholds.",
+      "page": 8,
+      "index": 7,
+      "width": 826,
+      "height": 300
+    },
+    {
+      "url": "assets/figures/arxiv/2605.18041v1/fig-008.webp",
+      "caption": "Figure 4: Overview pipeline of our method OmniSelect. The overall process is divided into two stages: (1) Modality-Aware Dynamic Ratio Allocation that allocates the pruning ratio for each temporal group while ensuring the total pruning ratio meets the expected value; (2) Temporal Group Pruning Pipeline (TGP2) that prunes audio and video tokens based on attention score and cosine similarity score within each temporal group.",
+      "page": 4,
+      "index": 8,
+      "width": 824,
+      "height": 369
+    },
+    {
+      "url": "assets/figures/arxiv/2605.18041v1/fig-009.webp",
+      "caption": "Figure 11: A Video-Centric pruning case, including pruning results, answers, and per-temporal-group pruning ratios for our method and the baseline.",
+      "page": 17,
+      "index": 9,
+      "width": 664,
+      "height": 543
+    },
+    {
+      "url": "assets/figures/arxiv/2605.18041v1/fig-010.webp",
+      "caption": "Figure 7: Comparison of different token compression strategies under 30% and 45% retained ratios on Qwen-2.5Omni-3B and Qwen-2.5-Omni-7B. OmniSelect consistently achieves the best performance across all settings.",
+      "page": 9,
+      "index": 10,
+      "width": 487,
+      "height": 314
+    },
+    {
+      "url": "assets/figures/arxiv/2605.18041v1/fig-011.webp",
+      "caption": "Figure 10: Qwen-2.5-Omni-7B performance under varying frame budgets at 30% and 45% pruning.",
+      "page": 16,
+      "index": 11,
+      "width": 822,
+      "height": 483
+    }
+  ]
+}

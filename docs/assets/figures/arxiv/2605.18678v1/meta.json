@@ -1,0 +1,150 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2605.18678v1/fig-001.webp",
+      "caption": "Figure 5 Any-to-video generation (X2V) and video understanding (V2T) with Lance.",
+      "page": 6,
+      "index": 1,
+      "width": 986,
+      "height": 1206
+    },
+    {
+      "url": "assets/figures/arxiv/2605.18678v1/fig-002.webp",
+      "caption": "Figure 7 Illustration of modality-aware rotary positional encoding (MaPE).",
+      "page": 11,
+      "index": 2,
+      "width": 391,
+      "height": 431
+    },
+    {
+      "url": "assets/figures/arxiv/2605.18678v1/fig-003.webp",
+      "caption": "Table 5 Image generation results on DPG-Bench and GenEval. † refers to methods using LLM rewriters in GenEval. Bold: best results among unified models. Underline: second-best among unified models.",
+      "page": 15,
+      "index": 3,
+      "width": 982,
+      "height": 758
+    },
+    {
+      "url": "assets/figures/arxiv/2605.18678v1/fig-004.webp",
+      "caption": "Figure 12 Multimodal editing qualitative comparison. Lance performs precise image editing with realistic texture and structure preservation, and supports temporally coherent video editing with natural motion dynamics.",
+      "page": 21,
+      "index": 4,
+      "width": 986,
+      "height": 1135
+    },
+    {
+      "url": "assets/figures/arxiv/2605.18678v1/fig-005.webp",
+      "caption": "Table 9 Ablation on cross-task data. Gen. denotes base generation data, Und. denotes understanding data, and MT-Gen. denotes multi-task generation data, including editing, subject-driven generation, etc.",
+      "page": 22,
+      "index": 5,
+      "width": 972,
+      "height": 202
+    },
+    {
+      "url": "assets/figures/arxiv/2605.18678v1/fig-006.webp",
+      "caption": "Figure 13 Scaling behavior of image and video generation performance with increasing training tokens. We report DPG-Bench for image generation and VBench for video generation across different training token budgets.",
+      "page": 22,
+      "index": 6,
+      "width": 984,
+      "height": 310
+    },
+    {
+      "url": "assets/figures/arxiv/2605.18678v1/fig-007.webp",
+      "caption": "Figure 9 System prompts for generation tasks. Red placeholders denote user-provided text and visual inputs.",
+      "page": 14,
+      "index": 7,
+      "width": 986,
+      "height": 502
+    },
+    {
+      "url": "assets/figures/arxiv/2605.18678v1/fig-008.webp",
+      "caption": "Table 6 Video generation results on VBench. † refers to methods using LLM rewriters. Bold: best results among unified models. Underline: second-best among unified models.",
+      "page": 18,
+      "index": 8,
+      "width": 892,
+      "height": 1214
+    },
+    {
+      "url": "assets/figures/arxiv/2605.18678v1/fig-009.webp",
+      "caption": "Figure 14 Comparison of model variants trained with different token budgets. We present qualitative cases of text-to-image and video generation using model variants trained with 0.5T, 1T, and 1.5T tokens. As the training budget increases, the model demonstrates improved prompt alignment, visual fidelity, and temporal consistency.",
+      "page": 23,
+      "index": 9,
+      "width": 986,
+      "height": 908
+    },
+    {
+      "url": "assets/figures/arxiv/2605.18678v1/fig-010.webp",
+      "caption": "Table 4 Summary of task categories and sample statistics for Lance. Within each output type, high-quality data are listed separately and highlighted in gray. “Phases” indicates the training phase(s) where each data type is applied.",
+      "page": 13,
+      "index": 10,
+      "width": 918,
+      "height": 492
+    },
+    {
+      "url": "assets/figures/arxiv/2605.18678v1/fig-011.webp",
+      "caption": "Figure 8 System prompts for understanding tasks. Red placeholders denote user-provided text and visual inputs.",
+      "page": 13,
+      "index": 11,
+      "width": 986,
+      "height": 456
+    },
+    {
+      "url": "assets/figures/arxiv/2605.18678v1/fig-012.webp",
+      "caption": "Figure 11 T2V qualitative comparison. Instructions that are correctly reflected in our results but missed or incorrectly rendered by some baseline models are highlighted in red.",
+      "page": 19,
+      "index": 12,
+      "width": 940,
+      "height": 1225
+    },
+    {
+      "url": "assets/figures/arxiv/2605.18678v1/fig-013.webp",
+      "caption": "Table 2 Training hyperparameters of Lance.",
+      "page": 12,
+      "index": 13,
+      "width": 932,
+      "height": 389
+    },
+    {
+      "url": "assets/figures/arxiv/2605.18678v1/fig-014.webp",
+      "caption": "Figure 6 Overview of Lance. Given multi-task inputs spanning X2T, X2I, and X2V, Lance encodes all input tokens into a unified MaPE-enhanced multimodal context sequence. The dual-expert backbone performs generalized 3D causal attention over the shared context and produces task-specific hidden states, which are further decoded by an LM head for autoregressive next-token prediction and by a flow head for velocity prediction in the visual latent space.",
+      "page": 9,
+      "index": 14,
+      "width": 970,
+      "height": 435
+    },
+    {
+      "url": "assets/figures/arxiv/2605.18678v1/fig-015.webp",
+      "caption": "Table 7 Image editing results on GEdit-Bench. Bold: best results among unified models. Underline: second-best among unified models.",
+      "page": 20,
+      "index": 15,
+      "width": 986,
+      "height": 442
+    },
+    {
+      "url": "assets/figures/arxiv/2605.18678v1/fig-016.webp",
+      "caption": "Table 8 Video understanding results on MVBench. Bold: best results among unified models. Underline: second-best among unified models.",
+      "page": 20,
+      "index": 16,
+      "width": 982,
+      "height": 547
+    },
+    {
+      "url": "assets/figures/arxiv/2605.18678v1/fig-017.webp",
+      "caption": "Figure 4 Text-to-video generation (T2V) with Lance.",
+      "page": 5,
+      "index": 17,
+      "width": 982,
+      "height": 427
+    },
+    {
+      "url": "assets/figures/arxiv/2605.18678v1/fig-018.webp",
+      "caption": "Figure 10 T2I qualitative comparison. Instructions that are correctly reflected in our results but missed or incorrectly rendered by some baseline models are highlighted in red.",
+      "page": 16,
+      "index": 18,
+      "width": 980,
+      "height": 1038
+    }
+  ]
+}

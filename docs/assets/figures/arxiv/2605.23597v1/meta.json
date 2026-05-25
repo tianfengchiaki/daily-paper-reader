@@ -1,0 +1,14 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2605.23597v1/fig-001.webp",
+      "caption": "Figure 1: Structure-Guided Entity Resolution (SGER) methodology. Phase 1 fine-tunes Llama 3 8B to parse names into structured JSON using SFT with LoRA. The learned weights transfer to Phase 2, where the model performs binary name matching.",
+      "page": 4,
+      "index": 1,
+      "width": 779,
+      "height": 492
+    }
+  ]
+}

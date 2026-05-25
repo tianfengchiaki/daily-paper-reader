@@ -1,0 +1,62 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2605.23706v1/fig-001.webp",
+      "caption": "Table 2: Decomposition of delivery to female users, high-bid experiment. HC3 robust standard errors in parentheses; padj are wild-bootstrap Romano-Wolf step-down adjusted across the family of three contrasts (B = 5,000).",
+      "page": 15,
+      "index": 1,
+      "width": 718,
+      "height": 276
+    },
+    {
+      "url": "assets/figures/arxiv/2605.23706v1/fig-002.webp",
+      "caption": "Table 6: Per-cell decomposition of CTR by age × gender, high bid. Cells with |t| > 1.96 in bold.",
+      "page": 21,
+      "index": 2,
+      "width": 974,
+      "height": 391
+    },
+    {
+      "url": "assets/figures/arxiv/2605.23706v1/fig-003.webp",
+      "caption": "Table 4: Decomposition of female impression share by bid level. HC3 robust SEs in parentheses; padj are wild-bootstrap Romano-Wolf step-down adjusted within each bid-level family of three contrasts (B = 5,000).",
+      "page": 18,
+      "index": 3,
+      "width": 806,
+      "height": 255
+    },
+    {
+      "url": "assets/figures/arxiv/2605.23706v1/fig-004.webp",
+      "caption": "Table 8: Bernoulli vs HC3 standard errors and t-statistics, high-bid experiment.",
+      "page": 23,
+      "index": 4,
+      "width": 860,
+      "height": 236
+    },
+    {
+      "url": "assets/figures/arxiv/2605.23706v1/fig-005.webp",
+      "caption": "Figure 2: The three experimental arms as rendered to users. Arms 1 and 2 are pixel-identical to the user (the algorithm sees different metadata); Arm 3 replaces the body text with the explicit women-targeted fragment. The contrast between Arms 1 and 2 isolates the algorithmic targeting channel; the contrast between Arms 2 and 3 isolates the user-visible creative channel.",
+      "page": 13,
+      "index": 5,
+      "width": 976,
+      "height": 499
+    },
+    {
+      "url": "assets/figures/arxiv/2605.23706v1/fig-006.webp",
+      "caption": "Table 5: Decomposition of click-through rate, high-bid experiment. HC3 robust SEs in parentheses; padj are wild-bootstrap Romano-Wolf step-down adjusted across the family of three CTR contrasts (B = 5,000).",
+      "page": 20,
+      "index": 6,
+      "width": 740,
+      "height": 189
+    },
+    {
+      "url": "assets/figures/arxiv/2605.23706v1/fig-007.webp",
+      "caption": "Table 3: Per-cell decomposition of impression share, high-bid experiment. Cells in percentage points. HC3 robust t-statistics; padj from wild-bootstrap Romano-Wolf joint over all 36 contrasts (B = 5,000).",
+      "page": 16,
+      "index": 7,
+      "width": 786,
+      "height": 362
+    }
+  ]
+}

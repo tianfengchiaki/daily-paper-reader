@@ -1,0 +1,46 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2605.19223v1/fig-001.webp",
+      "caption": "Table 3: Unified results across HAVEN task families. Bold indicates the best performance in each column. “–” indicates that the model is not evaluated under the corresponding setting, either because the w/ Doc setting is not applied (for text-proxy LLMs) or due to input frame limitations (e.g., GPT-5.2 and GLM in summarization).",
+      "page": 6,
+      "index": 1,
+      "width": 824,
+      "height": 240
+    },
+    {
+      "url": "assets/figures/arxiv/2605.19223v1/fig-002.webp",
+      "caption": "Figure 1: Comparison between different MLLMs on HAVEN across different capabilities. We include text-proxy LLMs as baselines.",
+      "page": 2,
+      "index": 2,
+      "width": 397,
+      "height": 306
+    },
+    {
+      "url": "assets/figures/arxiv/2605.19223v1/fig-003.webp",
+      "caption": "Table 1: Source datasets used to construct HAVEN Benchmark.. “Alignment“ denotes aligned annotations between visual and texual data, “Kf” = key frames, “Df” = frame descriptions, “Ks” = key shots, and “Ds” = shot descriptions. “Avg Frames” and “Avg Shots” denote the average sampled frames and shots per video.",
+      "page": 3,
+      "index": 3,
+      "width": 850,
+      "height": 181
+    },
+    {
+      "url": "assets/figures/arxiv/2605.19223v1/fig-004.webp",
+      "caption": "Figure 2: Example of a data instance in HAVEN. We construct a hierarchically structured, multimodal dataset with aligned annotations at the frame, shot, and video (document) levels. Frame- and shot-level textual descriptions are generated from visual inputs and refined for quality, while higherlevel document and summary texts are composed by aggregating shot-level descriptions. Human annotations provide ground-truth signals for keyframes and key shots.",
+      "page": 3,
+      "index": 4,
+      "width": 826,
+      "height": 310
+    },
+    {
+      "url": "assets/figures/arxiv/2605.19223v1/fig-005.webp",
+      "caption": "Figure 3: Overview of tasks supported by HAVEN.",
+      "page": 5,
+      "index": 5,
+      "width": 664,
+      "height": 332
+    }
+  ]
+}

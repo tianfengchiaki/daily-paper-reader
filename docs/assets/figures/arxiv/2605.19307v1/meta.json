@@ -1,0 +1,54 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2605.19307v1/fig-001.webp",
+      "caption": "TABLE II: Failure rate (FR) comparison of MLLM-based KBVQA models on E-VQA and INFOSEEK. FR is computed for each QI pair and averaged over all samples within a dataset, while the final FR denotes the average across datasets. Lower values indicate stronger robustness under metamorphic perturbations. Note that lower FR indicate higher robustness of models,",
+      "page": 6,
+      "index": 1,
+      "width": 1072,
+      "height": 413
+    },
+    {
+      "url": "assets/figures/arxiv/2605.19307v1/fig-002.webp",
+      "caption": "Fig. 2: Overview of the MetaRA framework. The framework consists of four stages: Input Understanding, Case Generation, Inference Testing, and Failure Detection, which respectively estimate input difficulty, construct transformation ensembles, evaluate models via systematic testing, and analyze potential defects.",
+      "page": 3,
+      "index": 2,
+      "width": 1076,
+      "height": 402
+    },
+    {
+      "url": "assets/figures/arxiv/2605.19307v1/fig-003.webp",
+      "caption": "Fig. 6: Dataset-wise FR distribution of LLaVA-1.5 (7B) across KBVQA and OCR-VQA benchmarks. The radar chart highlights higher FR on INFOVQA and CHARTQA, indicating these datasets pose greater robustness challenges.",
+      "page": 8,
+      "index": 3,
+      "width": 406,
+      "height": 356
+    },
+    {
+      "url": "assets/figures/arxiv/2605.19307v1/fig-004.webp",
+      "caption": "Fig. 7: FR distribution comparison between KBVQA and OCR-VQA tasks. OCR-VQA exhibits a wider distribution range and higher overall FR, indicating increased difficulty in text-intensive multimodal reasoning.",
+      "page": 8,
+      "index": 4,
+      "width": 404,
+      "height": 312
+    },
+    {
+      "url": "assets/figures/arxiv/2605.19307v1/fig-005.webp",
+      "caption": "Fig. 9: Examples of metamorphic mutations in KBVQA and OCR-VQA QI pairs. The comparison illustrates how different mutation strategies affect visual-textual consistency across the two task types.",
+      "page": 9,
+      "index": 5,
+      "width": 529,
+      "height": 397
+    },
+    {
+      "url": "assets/figures/arxiv/2605.19307v1/fig-006.webp",
+      "caption": "TABLE I: Metamorphic relations (MRs) and their corresponding multimodal transformation operations. Each MR targets a specific aspect of robustness and is instantiated through a combination of question paraphrasing and imagelevel transformations.",
+      "page": 5,
+      "index": 6,
+      "width": 529,
+      "height": 229
+    }
+  ]
+}

@@ -1,0 +1,260 @@
+Title: Memento: Personalized RAG-Style Long-Retention Data Scaling for META Ads Recommendation
+
+URL Source: https://arxiv.org/pdf/2605.24051v1
+
+Published Time: Tue, 26 May 2026 00:11:08 GMT
+
+Number of Pages: 12
+
+Markdown Content:
+# Memento: Personalized RAG-Style Long-Retention Data Scaling for Online Ads Recommendation 
+
+Xiaoyu Chen 1, Ruichen Wang 1, Jieming Di 1, Suofei Feng 1, Nafis Abrar 1, Lilly Kumari 1, Tony Tsui 1, Yilin Liu 1, Yu Lu 1, Sowmya Patapati 1, Junwei Xiong 1, Qiao Yang 1, Dorothy Sun 1, Yang Cao 1, Victor Chen 1,
+
+Pan Chen 1, Ramsundar Sundarkumar 1, Shivendra Pratap Singh 1, Arnold Overwijk 1, Ling Leng 1, Dinesh Ramasamy 1, Sri Reddy 1, Robert Malkin 1, Sandeep Pandey 11Meta AI Modeling of long history data suffers from long-context window attention dilution, system efficiency and catastrophic forgetting problems, where naive linear scaling approach like LastN would fail. We introduce Memento, a personalized retrieval-augmented framework that treats historical user engagements as a document corpus and ad requests as queries, retrieving relevant interactions via Maximal Marginal Relevance (MMR) to balance similarity with diversity. We identify two complementary applications: Representation Memento , which retrieves historical embeddings for feature augmentation, and Data Memento , which retrieves past training examples for multipass training. Through infrastructure co-design—temporal chunking, INT8 quantization, and asynchronous serving—Memento achieves 5–10 × resource efficiency over linear scaling. Memento processes daily requests with sub-10 ms latency, yielding 0.25–0.3% Normalized Entropy gain on both click-through and conversion prediction. In production, Memento delivers a 1% CTR lift on Facebook Feed and Reels and a 1.2% CVR lift , scaling personalization to 365+ days of history.  
+
+> Date:
+
+May 26, 2026  
+
+> Correspondence:
+
+First Author at xochen@meta.com 
+
+# 1 Introduction 
+
+Many companies have explored lifelong user history with prolonged data retention (Pancha et al., 2022; Chang et al., 2023; YongjiWu et al., 2021), motivated by the intuition that a user’s long-term behavioral patterns—seasonal shopping habits, evolving inter-ests, life-stage transitions—contain signals that short-term windows miss entirely. The default strategy for data scaling is “LastN”—retaining the last N events or N days. While simple and effective as an implicit noise filter, this recency-first approach tends to over-fit (Zhang et al., 2022b), discards relevant historical context, and applies a uniform threshold to every user regardless of activity patterns. Generally speaking, there are three interrelated challenges: 
+
+Needle in the haystack. As the context window grows, relevant signals become increasingly sparse relative to noise. Transformer-based attention mech-anisms (Vaswani et al., 2017), which underpin most modern sequence models, compute pairwise interac-tions across all positions in a sequence. When the sequence is long and most entries are irrelevant to the current prediction, the attention weights over the truly informative entries are diluted by the sheer volume of distractors. This degradation is not merely theoretical: studies show that even GPT-4 suffers significant retrieval accuracy loss when relevant infor-mation is embedded within long, irrelevant context (Jolley, 2024), and similar findings have been reported in academic research (Du et al., 2025). In our set-ting, a user’s history may span hundreds of thousands of events, but only a handful are predictive for any given ad request—making this a particularly acute instance of the needle-in-the-haystack problem. 
+
+Resource constraints and system efficiency. Processing million-scale sequence lengths with prolonged data retention is computationally intractable for real-time ranking. Attention-based architectures incur O(n2)
+
+complexity in sequence length, and even with efficient variants (Zaheer et al., 2020; Beltagy et al., 2020; Dao et al., 2022), the storage, compute, and serving of maintaining and processing full user histories grow linearly to quadratically with data volume. At scale, even small per-request overheads compound. A prac-tical system must dramatically reduce the volume of history considered per request while preserving the most informative signals, analogous to how multi-1
+
+> arXiv:2605.24051v1 [cs.IR] 22 May 2026
+
+stage retrieval and ranking pipelines handle candidate selection in search.  
+
+> Catastrophic forgetting.
+
+Deep neural networks ex-hibit a well-documented tendency to lose previously learned knowledge when trained on new data (Kemker et al., 2018; Kirkpatrick et al., 2017). This phe-nomenon, known as catastrophic forgetting , is espe-cially pronounced in recommendation systems where models are continuously trained on rolling time win-dows of data. As the training window advances, the model’s parameters are updated to fit recent (user, ad, label) examples, and the gradient updates progres-sively overwrite representations of older behavioral patterns. Large recommendation models are often over-parameterized to achieve better in-distribution performance (Belkin et al., 2019), which paradoxi-cally makes them more susceptible to forgetting: the excess capacity that enables tight fitting of current data also means that parameter regions encoding older knowledge are more readily repurposed. In practice, we have observed that models trained on a 30-day window can lose more than 50% of their pre-dictive performance on patterns from 6 months ago. Common mitigation strategies fall into two categories identified by Kemker et al. (2018): rehearsal , which replays representative samples from earlier training data, and dual memory , which maintains separate fast- and slow-learning components. To address these three challenges, we introduce Me-mento : a personalized retrieval-augmented frame-work for long-retention data scaling in recommenda-tion systems. The key insight behind Memento is that history scaling is fundamentally an information retrieval problem. Just as Retrieval-Augmented Gen-eration (RAG) grounds LLMs with query-relevant external knowledge (Lewis et al., 2020; Guu et al., 2020), Memento treats a user’s full engagement his-tory as a document corpus and personalized our con-text window of each ad request with highly-relevant history. This is achieved with Maximal Marginal Relevance (MMR) (Carbonell and Goldstein, 1998), which balances similarity to the query with diversity among retrieved documents. This retrieval-augmented paradigm yields two com-plementary applications. Representation Memento 
+
+(section 3.2) retrieves relevant historical embeddings to augment the ranking model’s feature set, pro-viding a dual-memory solution to tackle forgetting issue. Data Memento (section 3.3) retrieves forgotten training examples for second-pass rehearsal, directly addressing catastrophic forgetting with a rehearsal method to focus on relevant historical patterns. Both applications share the same underlying retrieval in-frastructure and MMR formulation, but target differ-ent stages of the modeling pipeline—inference-time feature augmentation and training-time data augmen-tation, respectively. We make the following contributions: 
+
+• Algorithmic framing: We formalize user history retrieval as a document retrieval problem, intro-ducing a modified MMR objective that balances user-user similarity, user-ad similarity, and doc-ument diversity (Section 3). 
+
+• Dual application: We demonstrate two com-plementary uses— Representation Memento re-trieves relevant historical embeddings for feature augmentation, while Data Memento addresses catastrophic forgetting through retrieval-guided rehearsal (Section 3.2 and Section 3.3). 
+
+• Production system: We describe the infrastruc-ture co-design—including chunking, NormInt8 quantization, and asynchronous serving—that enables sub-10 ms retrieval latency and 5–10 ×
+
+resource efficiency over linear scaling (Section 5). 
+
+• Empirical validation: Memento achieves a 1% CTR lift and a 1.2% CVR lift, scaling personal-ization to 365+ days of history. 
+
+# 2 Related Work 
+
+2.1 RAG in LLMs 
+
+In the LLM domain, RAG (Lewis et al., 2020; Wu et al., 2022) has become the de facto method for incorporating external knowledge into language mod-els. RAG decouples storage (an indexed corpus) from reasoning (the generative model), enabling dy-namic knowledge injection without retraining. This paradigm has evolved into agentic LLMs that utilize tools, with traditional RAG representing the special case of tool-augmented systems using search engines for knowledge augmentation. Advances in RAG in-volve determining how to group similar chunks of information together and generating effective docu-ment and query encoders for retrieval. 
+
+2.2 Lifelong User Modeling 
+
+Recent work encodes lifelong user history into sum-marization models. TWIN (Chang et al., 2023) and its successor (Si et al., 2024) propose dedicated search layers for ultra-long context windows. These clustering-based methods assume queries and doc-uments share the same embedding space, limiting 2flexibility and preventing fine-grained retrieval of spe-cific historical events. Other approaches, such as PinnerFormer (Pancha et al., 2022) and DV365 (Lyu et al., 2025), jointly train long-term user summariza-tion with downstream tasks using temporal shifting to capture long-term interests. However, all these meth-ods are affected by the forgetting problem: gradients from recent labels dominate, biasing representations toward recent patterns. Our work draws intuition from both areas, with the following distinctions: (1) An explicit search module with a multi-purpose inverted index on lifelong user history, applicable to both user representation and training data augmentation; (2) Explicit modeling of query-to-document and document-to-document similarity through a modified MMR formulation; (3) Treating lifelong user history as augmentation, with explicit modeling of this additional context in the downstream ranking model. 
+
+# 3 Memento Design 
+
+The Memento platform adapts the core RAG paradigm—query formulation, document indexing, retrieval, and augmentation—to the recommenda-tion setting (see Figure 1). In traditional RAG for LLMs, a user question serves as the query, a text corpus serves as the document store, a retriever se-lects relevant passages, and the retrieved passages are prepended to the LLM’s context for grounded generation. Memento mirrors this pipeline with four analogous components tailored to user history re-trieval. A query is generated from each ad request, encoding dimensions such as temporal recency, user cohort, ad category features, and interest topics. These multi-dimensional queries provide flexible retrieval options: for example, a query can emphasize topical relevance (“show me history related to this ad category”) or temporal recency (“show me the user’s most recent engagement pattern”). The Memento index organizes a user’s full engagement history into coherent, retriev-able units across temporal and topical dimensions— analogous to document chunks in text-based RAG. Each index entry synthesizes user interactions over a defined time period and data source, serving as the atomic unit of retrieval. The retrieval model scores and selects the most relevant index entries for a given query, transforming sparse, noisy user event data into a compact set of high-quality signals. This com-ponent is extensible: it supports both applications of representation and data memento, as well as di-verse similarity objectives across different user–entity relationships. Finally, the retrieved entries are trans-formed into augmented user context —embeddings, event sequences, or training data—that the down-stream ranking model consumes as additional features or training examples. In the remainder of this section, we describe the re-trieval algorithms that power the retrieval model: MMR-based retrieval. We then present two appli-cations of this framework: Representation Memento 
+
+(Section 3.2), which retrieves relevant user embed-dings and events for inference-time feature augmen-tation, and Data Memento (Section 3.3), which re-trieves historical training data for second-pass re-hearsal against catastrophic forgetting. Both appli-cations share the retrieval infrastructure but target different stages of the modeling pipeline. 
+
+3.1 RAG-style Retrieval Model  
+
+> 3.1.1 MMR Model
+
+We represent documents and queries using intrinsic attributes, including traditional word tokens, pre-trained embeddings, and dense counter features. We then apply similarity functions to measure distances. We define three similarity functions: Sim U A (Q, D ), Sim U U (Q, D ), Sim U U (Di, D j )
+
+(1) These distinguish user-to-user similarity from user-to-ad similarity. The query can use only user-side information (e.g., current user interests) or incorpo-rate ad-side information (e.g., target ad taxonomy), which significantly affects retrieval efficiency for dif-ferent applications. We use a modified MMR scoring function that iteratively scores and retrieves docu-ments, balancing diversity and similarity: MMR = arg max 
+
+> Di∈R\S
+
+[α · Sim U U (Di, Q )+ β · Sim U A (Di, Q )
+
+−(1 − α − β) · max   
+
+> Dj∈S
+
+Sim U U (Di, D j )
+
+
+
+(2) where Q represents the query, D is the document (user history item), S is the set of already selected items, R is the candidate set, and Sim denotes cosine similarity between embeddings. The hyperparame-ters α and β control the trade-off: α weights user-to-user similarity, β weights user-to-ad similarity, and 
+
+(1 − α − β) weights diversity. We integrate user document history into VectorDP, Meta’s internal vector database platform, enabling in-3Figure 1 Memento detailed design diagram. Left:Memento Retrieval Stage Query patterns generate retrieval queries from ad requests; Memento indices organize user history into retrievable documents and retrieves through MMR; Right: Application as Representation and Data Memento. The application gives specific requirements through query and context, producing augmented user context for the ranking models in CTR/CVR prediction model 
+
+verted index construction and sub-10 ms vector search and retrieval at scale. We have implemented our unsupervised MMR in two configurations: 1. In-model MMR : Used for parameter tuning and exploration during the experimental phase. 2. Infra MMR : A precomputed solution for produc-tion to minimize training and inference latency.  
+
+> 3.1.2 Retrieval Infra Codesign
+
+The personalized retrieval system is built upon the co-design and integration of three specialized infras-tructure components: 
+
+• Data Generation and Aggregation: A unified event aggregation infrastructure processes both batch and streaming user events to create "mementos," which are coherent, synthesized representations of user history (e.g., user embeddings over spe-cific time windows). This infrastructure ensures high data freshness, with event processing and selection occurring with high frequency (e.g., 12-hour freshness). It also implements techniques like Maximal Marginal Relevance (MMR) for diversity-aware selection, ensuring the retrieved context is both relevant to the current request and non-redundant. 
+
+• Vector Indexing and Storage: A dedicated vector data platform is employed to build and maintain efficient indices for similarity search over the mas-sive user history corpus. Key features include distributed index building, support for flexible clustering and sharding (e.g., K-Means), and a two-level indexing architecture (Gateway and 4Leaf layers) to support ultra-low latency, trillion-scale queries. This component is optimized for efficiency through methods like data compression (e.g., 8-bit integer quantization) while supporting real-time index updates. 
+
+• Data Serving and Query Engine: A unified genera-tor serving framework is used for real-time and multi-hop data fetching. This system includes a flexible query layer that orchestrates complex online computation and retrieval across various backend services (e.g., unified data stores, vec-tor indices). It supports a wide range of data operators (e.g., KNN similarity search, graph random walk) and utilizes a ranking layer to select the highest-quality ad candidates from multiple generators based on a latency budget. 
+
+3.2 Application 1: Representation Memento  
+
+> 3.2.1 Retrieval Stage
+
+User histories are summarized into embeddings using an architecture similar to Zhang et al. (2024). These embeddings are generated on a daily schedule with dimension sizes typically ranging from 64 to 256, en-coding user interests for each day. Different sources are distinguished by objective task and traffic type, numbering approximately 40. With 365 days of his-tory, the effective sequence length reaches O(100 K).These embeddings are integrated into VectorDP for efficient KNN search through MMR. We apply chunking —temporal aggregation of consec-utive days into coarser epochs—to reduce retrieval granularity. Through our analysis of average embed-ding similarity across days and sources, we adopt a 7-day time-epoch-based chunking strategy that bal-ances compression with information retention. MMR is conducted by computing cosine similarity between the realtime user embedding and historical embeddings, as well as between the realtime ad em-bedding and historical embeddings. With MMR, we reduce embeddings by 50% without model perfor-mance loss. Combined with chunking and NormInt8 quantization, this yields a significant improvement over linear scaling.  
+
+> 3.2.2 Ember Architecture
+
+Beyond directly concatenating lifelong embeddings with the original features, we introduce a two-stage projection architecture named Ember (Memento Blended Enhanced Representations) to efficiently leverage retrieved embeddings while addressing com-putational complexity. 
+
+> Ember—Affine
+
+: Context-aware Feature Modulation using affine transformation (Perez et al., 2018). In production ads ranking models, embeddings are usu-ally just concatenated with the rest of the user-side features and projected independently — there’s no mechanism for the lifelong signal to actually shape how other features are represented. Simple concatena-tion leaves that capacity on the table, while standard interaction layers (e.g., DCN, cross-attention) are too expensive to run at the embedding layer in a model that already serves billions of requests per day. Ember—Affine sidesteps this cost by letting the lifelong context c modulate each user embedding 
+
+e(x) through a simple affine transform, rather than interacting with it through attention or crossing. A small MLP conditioned on c produces per-dimension scale ( γ) and shift ( β) parameters, which are applied elementwise: 
+
+e′(x; c) = γ(c) ⊙ e(x) + β(c) (3) The MLP itself is deep with RMSNorm and residual connections for training stability, and is initialized so that γ=1 and β=0 — the modulated embedding 
+
+e′(x; c) starts as an identity pass-through of e(x)
+
+and the model learns when to deviate. Each modu-lated feature has its own MLP head producing (γi, β i)
+
+from the shared context c, and the modulation it-self is element-wise — keeping the per-feature cost at O(d) and avoiding the pairwise interactions that make attention or feature crossing impractical at the embedding layer. 
+
+> Ember—Quadratic
+
+: Explicit cross-feature interactions via Quadratic Neural Networks (QNN) (Li et al., 2025). In our current Embedding Feature Architec-ture (EFA), explicit cross-feature interaction only happens after aggressive compression. The inter-action stack — LCE compression, followed by dot-product compress(DCPP) X(X⊤Y +Z) whose weight matrices Y, Z are generated by MLPs over the com-pressed input, feeding a deep ResidualMLP — has no explicit feature interaction before compression. By the time DCPP runs, the ∼ 3,800 input embedding slots have been linearly compressed to 64 slots (a 
+
+∼ 60 : 1 ratio), so signal that depends on the uncom-pressed structure of individual features is lost before interaction. We close this gap with a Quadratic Neu-ral Network (QNN) module (Li et al., 2025) that runs in parallel to LCE on a curated set of raw user embed-dings to compute explicit cross-feature interactions before compression. The final interaction equation of Ember—Quadratic adopts the T19 quadratic neuron from Li et al. (2025): a Hadamard-product quadratic with mid-5activation and an additive skip. Each layer applies a ReLU-gated quadratic transform, instantiated per head to reduce the interaction cost from O(dK 2) to 
+
+O(dK 2/H ):
+
+Ψ( Xh) = Xh ⊙ ReLU  W ha X + Xh. (4) The output is consumed by the DCPP’s weight-generation path: which lets the DCPP derive its weights from both the LCE-compressed view and the QNN cross-feature view, while preserving the 
+
+XX ⊤ outer product as an independent learning sig-nal. Production deployment parameters (selected feature count, projection dimension, layer and head counts, integration slot budget) are reported in Ta-ble ?? .
+
+3.3 Application 2: Data Memento 
+
+As discussed in the Introduction, recommendation models trained on rolling time windows suffer from catastrophic forgetting: the model progressively loses knowledge of earlier behavioral patterns as parameter updates overwrite representations learned from older data. In our production models, this manifests as measurable degradation in predictive performance on user cohorts whose behavior is best explained by historical patterns (e.g., seasonal shoppers, users with long purchase cycles). The standard mitigation— simply extending the training window—is limited by the computational cost of training on larger datasets and, more fundamentally, by the fact that uniform data scaling does not prioritize the most informative historical examples. Data Memento addresses this by treating the forget-ting problem as a retrieval problem. Rather than training on all historical data indiscriminately, we selectively retrieve the most relevant past training examples and replay them as augmentation during second-pass training—a targeted form of the rehearsal 
+
+strategy identified in the continual learning litera-ture (Kemker et al., 2018; Lopez-Paz and Ranzato, 2017). Each training row consists of a (user, ad, label) tuple, and the model trains from older timestamps toward the latest timestamp sequentially. During second-pass training, Memento retrieves “forgotten” historical examples that are most relevant to the cur-rent data distribution, re-exposing the model to pat-terns it would otherwise lose. We demonstrate that this approach substantially improves model general-ization (evaluation NE) compared to both uniform random replay and no replay at all.  
+
+> 3.3.1 Retrieval Stage
+
+We first represent training rows as dense embeddings. We train a standard two-tower model to produce user embeddings and ad embeddings as representations of each row. We further chunk training rows by hour, matching the natural partitions of our offline tables. During chunking, we apply positive and negative sampling of rows based on model loss, inspired by prior work (Paul et al., 2021) that quantifies the forgetting effect through model loss. We then index training data embeddings in VectorDP for inverted index construction and fast KNN search. MMR scores are calculated by measuring cosine sim-ilarity between recent and historical training row embeddings, from both the user side and the ad side. During offline training, augmented rows are retrieved and provided to the model as additional training examples.  
+
+> 3.3.2 Second-Pass Training with Knowledge Replay
+
+The second-pass training procedure is designed to integrate retrieved historical examples without allow-ing the model to overfit to them. Following Fan et al. (2024), we reset the deep neural network’s sparse pa-rameters (embedding tables) before the second pass. This reset serves a dual purpose: it prevents the model from simply memorizing the replayed exam-ples through its large embedding capacity, and it forces the dense layers to learn generalizable patterns from the combined recent and historical data. We also evaluated an alternative approach—embedding shrinking, which multiplies embedding parameters by a small fraction (e.g., 0.1) rather than fully resetting them—but as shown in our experiments (Section 4), full resetting outperforms shrinking by 0.04% NE, suggesting that the residual information in shrunken embeddings introduces more overfitting risk than useful signal. During each recurring training epoch, we first apply parameter resetting with an enlarged learning rate to accelerate re-learning, then incorporate MMR-retrieved historical examples alongside recent data for the second training pass. The enlarged learn-ing rate compensates for the information lost during resetting, while the retrieval-selected historical exam-ples provide the model with targeted rehearsal on the patterns most at risk of being forgotten. 64 Evaluation 
+
+4.1 Experimental Setup 
+
+> Dataset
+
+. All experiments were conducted on indus-trial datasets with online advertising data. Each training row is a triplet of (user, ad, label), where label = 1 for the CTR task if an impression is clicked, and label = 1 for the CVR task if a click leads to a conversion. We did not use public datasets due to in-compatibilities with our serving system and substan-tial discrepancies with internal model architectures. All models are trained on approximately 50B exam-ples for full convergence, with evaluation performed on the next billion-level examples. For Represen-tation Memento, documents consist of user history with an effective sequence length of O(100 K), com-prising approximately 20K embedding sequences and approximately 190K raw event sequences. For Data Memento, documents span 365 days of training data at exabyte scale.  
+
+> Evaluation Metrics: Normalized Entropy
+
+We use Nor-malized Entropy (NE) as the evaluation metric for offline model performance (He et al., 2014; Zhang et al., 2022a). NE measures the ratio of the model’s average log-loss per impression to the log-loss of a con-stant model predicting the background CTR. Lower NE indicates better predictive performance. NE = − 1
+
+> N
+
+PNi=1 [yi log( pi) + (1 − yi) log(1 − pi)] 
+
+− [p log( p) + (1 − p) log(1 − p)] 
+
+(5) where N is the total number of examples, yi ∈ { 0, 1}
+
+are the labels for i = 1 , 2, . . . , N , pi is the estimated click probability for each impression, and p is the average empirical CTR (or CVR, depending on the task). 
+
+4.2 RAG Performance 
+
+We first compare RAG-style scaling against LastN linear scaling. Our baseline CTR model trains on 30 days of retention, while the CVR model trains on 40 days. For the CTR model, LastN linear scaling saturates at approximately 70-day retention, beyond which further scaling yields minimal gain. For the CVR model, LastN scaling saturates at 180 days— much later than the CTR model due to the sparsity of click-conditioned conversion data. As shown in Figure 2, RAG-style scaling outperforms LastN by a substantial margin for both models, achieving 0.25– 0.30% NE gain at full 365-day retention. Next, we present the performance fine-tuning of the RAG retrieval model. The RAG configuration for 
+
+0 100 200 300 
+
+−0.4
+
+−0.2
+
+0
+
+Retention (days) NE% CTR Model Retention Scaling LastN Linear Scaling RAG-Style Scaling 
+
+0 100 200 300 
+
+−0.4
+
+−0.2
+
+0
+
+Retention (days) NE% CVR Model Retention Scaling LastN Linear Scaling RAG-Style Scaling   
+
+> Figure 2 Retention scaling comparison: LastN linear scaling vs. RAG-style scaling for CTR (bottom) and CVR (top) models. Lower NE% indicates better performance relative to baseline.
+
+MMR is specified in the format MMR@filter-rate, {α, β}, where a filter rate of 0.5 retains 50% of doc-uments. Our baseline is MMR@0.5 {0, 0}, which filters with maximum cross-document diversity. This baseline alone demonstrates the effectiveness of our unsupervised MMR method in addressing the needle-in-the-haystack problem. As shown in Table 1, at a filter rate of 50%, combining user-to-user similarity Sim U U (Di, Q ) with user-to-ad similarity Sim U A (Di, Q ) slightly outperforms using either alone (e.g., {0, 0.4} vs. {0, 0} at MMR@0.5). When the filter rate increases to MMR@0.25, the ben-efit of combining both similarity functions becomes more pronounced, with >0.06% NE improvement comparing {0.1, 0.8} to {0, 0}. However, if β is too high (e.g., 0.95), MMR performance degrades below 7the diversity-only baseline. 
+
+> MMR@0.5 (50% retrieval)
+
+{α, β} CTR N.E. CVR N.E. {0, 0} (baseline) – –{0.3, 0} +0.025% +0.021% {0.7, 0} +0.03% +0.03% {0, 0.4} -0.0% -0.01% MMR@0.25 (25% retrieval) 
+
+{α, β} CTR N.E. CVR N.E. {0, 0} (baseline) – –{0.1, 0.5} -0.02% -0.022% {0.05, 0.8} -0.06% -0.067% 
+
+{0.0, 0.95} +0.01% +0.025%  
+
+> Table 1 RAG fine-tuning with different filter rates and parameter configurations. NE values are relative to the diversity-only baseline MMR@0.5 {0, 0}; negative values indicate improvement (lower NE is better). Positive val-ues indicate degradation.
+
+4.3 Representation Memento Performance 
+
+For Representation Memento, we conduct an ex-tensive study on the effects of components beyond RAG configuration: embedding source scaling, Em-ber architecture variants, and efficiency optimizations (chunking, quantization). In addition to NE, we re-port infrastructure metrics including model inference QPS and storage measured in number of floats per user. All configurations apply MMR RAG by default. As shown in Table 2, we evaluate several versions: LITE is a minimum viable version scaling only 8 embedding sources. V1 retrieves 60 embeddings via MMR@0.5. V1-TQ adds 7-day chunking and NormInt8 quantization, which is approximately 50% more efficient than FP16. Ember architecture vari-ants (Quadratic, Affine) are tested on top of V1-TQ. NE gain scales with embedding count from 8 to 60. chunking and quantization reduce storage from 701K to 50K floats per user—a 14 × reduction—while pre-serving model quality. Ember architectures provide an additional 0.03% NE gain with improved inference QPS. 
+
+4.4 Data Memento Performance 
+
+Data Memento is evaluated primarily on CVR mod-els due to the scale of training data involved. As described earlier, we apply a multipass setup for the CVR model, where additional training data is augmented during second-pass training to improve generalization. We study the effects of multiple vari-ants, including second-pass data scaling and model resetting strategies. Our baseline CVR model is the production-deployed model trained on more than 150 days of data, fully saturated. The MP (Multipass) baseline resets the production model’s sparse parameters and retrains on the most recent 35 days. DM (Data Memento) variants further augment this process with an ad-ditional 25% of historical training data: RAND25 selects data randomly, while MMR25 selects via the MMR algorithm from O(365) days of history. We compare resetting (RS) against embedding shrinking (ES), which multiplies embeddings by 0.1 to reduce the norm. DM-MMR25-RS achieves the best result with 0.195% NE gain. Embedding shrinking exhibits high run variance, so numbers are averaged across three runs. Resetting outperforms shrinking by 0.04% NE; MMR outperforms random selection by 0.07% NE; and 25% data augmentation in the second pass nearly doubles the gain compared to the multipass baseline alone. Setup Eval N.E. MP -0.107% DM-RAND25-RS -0.12% DM-MMR25-ES -0.155% DM-MMR25-RS -0.195%    
+
+> Table 3 Data Memento experiments for the CVR model. NE values are relative to the V0 baseline (150+ day trained model); negative indicates improvement. MP = Multipass baseline (reset + 35-day retrain). DM variants add 25% historical data: RAND = random sampling, MMR = MMR-based selection. RS = parameter reset, ES = embedding shrinking ( 0.1×norm). Results averaged over 3 runs.
+
+# 5 Production Deployment and Online Performance  
+
+> History Data Preparation.
+
+To support scalable aggre-gation, truncation, and update of user history, the platform accesses historical user events and embed-dings through a highly scalable key-value abstraction with flexible triggering mechanisms. User embedding sequences are truncated to a bounded representa-tion that balances historical coverage and retrieval 8Experiment Results Name CTR N.E. CVR N.E. Inference QPS Storage LITE -0.05% -0.08% -0.5% 93K V1 -0.2% -0.17% -2.28% 701K V1-TQ -0.19% -0.168% -2.28% 50K V1-TQ-Ember(Affine) -0.22% -0.23% -5.28% 50K V1-TQ-Ember(Quadratic) -0.22% -0.26% -5.28% 50K V1-TQ-Ember(Affine + Quadratic) -0.25% -0.26% -7.00% 50K  
+
+> Table 2 Representation Memento experiments with different configurations. NE values are relative to the baseline (no Memento); negative indicates improvement. Inference QPS shows percentage change from baseline (negative indicates fewer queries served). Storage is in number of float-equivalent values per user.
+
+efficiency, preventing unbounded growth while pre-serving the most informative signals for long-term retrieval. Updates are scheduled incrementally, al-lowing history representations to evolve continuously without blocking online serving. To make heterogeneous histories usable for retrieval, we remove duplicate update triggers across sources and align updates to a uniform temporal interval. This alignment simplifies downstream retrieval and avoids redundant representation updates. The re-sulting embeddings are normalized into a row-wise representation, enabling consistent indexing and re-trieval across sources.  
+
+> Online Data Serving and Retrieval.
+
+Indices are gener-ated asynchronously and rebuilt when history updates are applied. Because index construction is decoupled from the online serving path, rebuilds do not block inference or retrieval. At serving time, retrieval oper-ates on the latest available index snapshot, ensuring stable and predictable behavior. During online inference, Memento performs nearest-neighbor retrieval over indexed history embeddings. Auxiliary operations such as query construction are executed asynchronously and in parallel with model computation. As a result, retrieval completes within a 10 ms budget, introducing negligible end-to-end serving overhead.  
+
+> Online Performance.
+
+For Representation Memento, we prepared two deployment versions: V1-LITE, a single embedding source with O(180) -day retention for smaller models with limited storage and serving budgets; and V1-FULL, the full set of 30+ embedding sources with O(360) -day retention and Ember archi-tecture for top-tier models. Across all production deployments, we observe no statistically significant (<5%) inference QPS increase. For Data Memento, deployment is limited to CVR models due to the large compute and storage for CTR models. We have deployed O(360) + day retention for second-pass data scaling. Aggressive down-sampling has been applied based on MMR (25–50%) so that training latency increase remains within budget and can be mitigated with additional trainers. Through several rounds of large-scale A/B testing, Memento has been shipped to our top production CTR and CVR models, demonstrating a 1% CTR lift and a 1.2% CVR lift on Offsite Conversion. These results validate that RAG-style long-retention data scaling is effective at production scale. 
+
+# 6 Conclusion 
+
+In this paper, we presented Memento, a personalized retrieval-augmented framework for long-retention data scaling in online advertising. By reframing his-tory scaling as an information retrieval problem, Me-mento selectively retrieves relevant historical signals using MMR. We demonstrated effectiveness through two complementary applications: Representation Me-mento and Data Memento . Both applications demon-strate that retrieval-based history scaling continues to improve where linear last-N retention saturates. Memento processes daily requests with sub-10 ms latency, delivering a 1% CTR lift and 1.2% CVR lift in production. Looking ahead, we aim to improve the retrieval algorithm through supervised approaches and extend the framework to additional data sources and platforms. 9References 
+
+Rahaf Aljundi, Min Lin, Baptiste Goujaud, and Yoshua Bengio. Online continual learning with maximally interfered retrieval. In NeurIPS , 2019. Mikhail Belkin, Daniel Hsu, Siyuan Ma, and Soumik Mandal. Reconciling modern machine-learning practice and the classical bias–variance trade-off. Proceedings of the National Academy of Sciences , 116(32):15849– 15854, 2019. Iz Beltagy, Matthew E. Peters, and Arman Cohan. Long-former: The long-document transformer. In arXiv preprint arXiv:2004.05150 , 2020. Jaime Carbonell and Jade Goldstein. The use of mmr, diversity-based reranking for reordering documents and producing summaries. In SIGIR , 1998. Jianxin Chang, Chenbin Zhang, Zhiyi Fu, Xiaoxue Zang, Lin Guan, Jing Lu, Yiqun Hui, Dewei Leng, Yanan Niu, Yang Song, et al. Twin: Two-stage interest network for lifelong user behavior modeling in ctr prediction at kuaishou. In Proceedings of the 29th ACM SIGKDD Conference on Knowledge Discovery and Data Mining ,pages 3785–3794, 2023. Heng-Tze Cheng, Levent Koc, Jeremiah Harmsen, Tal Shaked, Tushar Chandra, Hrishikesh Aradhye, Glen Anderson, et al. Wide & deep learning for recommender systems. Proceedings of the 1st Workshop on Deep Learning for Recommender Systems , 2016. Paul Covington, Jay Adams, and Emre Sargin. Deep neural networks for youtube recommendations. In 
+
+ACM Conference on Recommender Systems (RecSys) ,2016. Tri Dao, Daniel Y. Fu, Stefano Ermon, Atri Rudra, and Christopher Ré. Flashattention: Fast and memory-efficient exact attention with io-awareness. In NeurIPS ,2022. Yufeng Du, Minyang Tian, Srikanth Ronanki, Subendhu Rongali, Sravan Bodapati, Aram Galstyan, Azton Wells, Roy Schwartz, Eliu A Huerta, and Hao Peng. Context length alone hurts llm performance despite per-fect retrieval. arXiv preprint arXiv:2510.05381 , 2025. Zhongxiang Fan, Zhaocheng Liu, Jian Liang, Dongy-ing Kong, Han Li, Peng Jiang, Shuang Li, and Kun Gai. Multi-epoch learning with data augmentation for deep click-through rate prediction. arXiv preprint arXiv:2407.01607 , 2024. Ruiqi Guo, Philip Sun, Erik Lindgren, Quan Geng, David Simcha, Felix Chern, and Sanjiv Kumar. Accelerating large-scale inference with anisotropic vector quantiza-tion. In ICML , 2020. Kelvin Guu, Kenton Lee, Zora Tung, Panupong Pasupat, and Ming-Wei Chang. Realm: Retrieval-augmented language model pre-training. In International Confer-ence on Machine Learning (ICML) , 2020. Xiangnan He, Lizi Liao, Hanwang Zhang, Liqiang Nie, Xia Hu, and Tat-Seng Chua. Neural collaborative filtering. In WWW , 2017. Xinran He, Junfeng Pan, Ou Jin, Tianbing Xu, Bo Liu, Tao Xu, Yanxin Shi, Antoine Atallah, Ralf Herbrich, Stuart Bowers, et al. Practical lessons from predict-ing clicks on ads at facebook. In Proceedings of the eighth international workshop on data mining for online advertising , pages 1–9, 2014. Balázs Hidasi, Alexandros Karatzoglou, Linas Baltrunas, and Domonkos Tikk. Session-based recommendations with recurrent neural networks. In International Con-ference on Learning Representations (ICLR) , 2016. Jianheng Huang, Leyang Cui, Ante Wang, Chengyi Yang, Xinting Liao, Linfeng Song, Junfeng Yao, and Jinsong Su. Mitigating catastrophic forgetting in large language models with self-synthesized rehearsal. arXiv preprint arXiv:2403.01244 , 2024. Gautier Izacard and Edouard Grave. Leveraging passage retrieval with generative models for open domain ques-tion answering. In European Chapter of the Association for Computational Linguistics (EACL) , 2021. Jeff Johnson, Matthijs Douze, and Hervé Jégou. Billion-scale similarity search with gpus. IEEE Transactions on Big Data , 2019. Evan Jolley. The needle in a haystack test: Eval-uating the performance of llm rag systems, 2024. 
+
+https://arize .com/blog-course/the-needle-in-a-haystack-test-evaluating-the-performance-of-llm-rag-systems/ . Arize AI Blog, Published February 15, 2024. Vladimir Karpukhin, Barlas Oguz, Sewon Min, Patrick Lewis, Ledell Wu, Sergey Edunov, Danqi Chen, and Wen-tau Yih. Dense passage retrieval for open-domain question answering. In EMNLP , 2020. Ronald Kemker, Marc McClure, Angelina Abitino, Tyler Hayes, and Christopher Kanan. Measuring catastrophic forgetting in neural networks. In Proceedings of the AAAI conference on artificial intelligence , volume 32, 2018. James Kirkpatrick, Razvan Pascanu, Neil Rabinowitz, Joel Veness, Guillaume Desjardins, Andrei A. Rusu, Kieran Milan, John Quan, Tiago Ramalho, Agnieszka Grabska-Barwinska, et al. Overcoming catastrophic for-getting in neural networks. Proceedings of the National Academy of Sciences , 2017. Oren Kurland and Lillian Lee. The opposite of smoothing: A language model approach to ranking query-specific document clusters. In SIGIR , 2008. Patrick Lewis, Ethan Perez, Aleksandra Piktus, Fabio Petroni, Vladimir Karpukhin, Naman Goyal, Heinrich 
+
+10 Küttler, Mike Lewis, Wen-tau Yih, Tim Rocktäschel, et al. Retrieval-augmented generation for knowledge-intensive nlp tasks. Advances in neural information processing systems , 33:9459–9474, 2020. Yejing Li et al. Revisiting feature interactions from the perspective of quadratic neural networks for click-through rate prediction. In Proceedings of the 31st ACM SIGKDD Conference on Knowledge Discovery and Data Mining (KDD ’25) , 2025. doi: 10 .1145/ 3711896 .3737106. David Lopez-Paz and Marc’Aurelio Ranzato. Gradient episodic memory for continual learning. In NeurIPS ,2017. Wenhan Lyu, Devashish Tyagi, Yihang Yang, Ziwei Li, Ajay Somani, Karthikeyan Shanmugasundaram, Nikola Andrejevic, Ferdi Adeputra, Curtis Zeng, Arun K Singh, et al. Dv365: Extremely long user history modeling at instagram. In Proceedings of the 31st ACM SIGKDD Conference on Knowledge Discovery and Data Mining V. 2 , pages 4717–4727, 2025. Weixi Ma, Siyu Wang, Arnaud Venet, Junhua Gu, Subbu Subramanian, Rocky Liu, Yafei Yang, and Daniel P Friedman. F3: A compiler for feature engineering. In 
+
+Proceedings of the 2nd ACM SIGPLAN International Workshop on Functional Software Architecture , pages 3–9, 2024. Nikil Pancha, Andrew Zhai, Jure Leskovec, and Charles Rosenberg. Pinnerformer: Sequence modeling for user representation at pinterest. In Proceedings of the 28th ACM SIGKDD conference on knowledge discovery and data mining , pages 3702–3712, 2022. Mansheej Paul, Surya Ganguli, and Gintare Karolina Dziugaite. Deep learning on a data diet: Finding important examples early in training. Advances in neural information processing systems , 34:20596–20607, 2021. Ethan Perez, Florian Strub, Harm De Vries, Vincent Du-moulin, and Aaron Courville. Film: Visual reasoning with a general conditioning layer. In Proceedings of the AAAI conference on artificial intelligence , volume 32, 2018. Qi Pi, Guorui Zhou, Yujing Zhang, Zhe Wang, Lejian Ren, Ying Fan, Xiaoqiang Zhu, and Kun Gai. Search-based user interest modeling with lifelong sequential behavior data for click-through rate prediction. In Proceedings of the 29th ACM International Conference on Information & Knowledge Management , pages 2685–2692, 2020. Zihua Si, Lin Guan, ZhongXiang Sun, Xiaoxue Zang, Jing Lu, Yiqun Hui, Xingchao Cao, Zeyu Yang, Yichen Zheng, Dewei Leng, et al. Twin v2: Scaling ultra-long user behavior sequence modeling for enhanced ctr prediction at kuaishou. In Proceedings of the 33rd ACM International Conference on Information and Knowledge Management , pages 4890–4897, 2024. Ashish Vaswani, Noam Shazeer, Niki Parmar, Jakob Uszkoreit, Llion Jones, Aidan N. Gomez, Łukasz Kaiser, and Illia Polosukhin. Attention is all you need. In 
+
+Advances in Neural Information Processing Systems (NeurIPS) , 2017. Yuhuai Wu, Markus N Rabe, DeLesley Hutchins, and Christian Szegedy. Memorizing transformers. arXiv preprint arXiv:2203.08913 , 2022. Lee Xiong, Zhirong Chen, Rahul Mayuranath, Shangran Qiu, Arda Ozdemir, Lu Li, Yang Hu, Dave Li, Jingtao Ren, Howard Cheng, Fabian Souto Herrera, Ahmed Agiza, Baruch Epshtein, Anuj Aggarwal, Julia Ulzi-isaikhan, Chao Wang, Dinesh Ramasamy, Parshva Doshi, Sri Reddy, and Arnold Overwijk. Llatte: Scal-ing laws for multi-stage sequence modeling in large-scale ads recommendation, 2026. https://arxiv .org/ abs/2601 .20083 .Xiaoyue Xu, Qinyuan Ye, and Xiang Ren. Stress-testing long-context language models with lifelong icl and task haystack. Advances in Neural Information Processing Systems , 37:15801–15840, 2024. Lu Yin YongjiWu, Defu Lian, Mingyang Yin, Neil Zhen-qiang Gong, Jingren Zhou, and Hongxia Yang. Re-thinking lifelong sequential recommendation with in-cremental multi-interest attention. arXiv preprint arXiv:2105.14060 , 2021. Raquib Bin Yousuf, Nicholas Defelice, Mandar Sharma, Shengzhe Xu, and Naren Ramakrishnan. Llm augmen-tations to support analytical reasoning over multiple documents. In IEEE Big Data 2024 , 2024. https: //arxiv .org/html/2411 .16116v1 . Accepted in IEEE Big Data 2024. https://arxiv .org/html/2411 .16116v1 .Manzil Zaheer, Guru Guruganesh, Kumar Avinava Dubey, Joshua Ainslie, Chris Alberti, Santiago Ontanon, Peter Pham, Anirudh Ravula, Qifan Wang, Li Yang, and Amr Ahmed. Big bird: Transformers for longer sequences. In NeurIPS , 2020. Buyun Zhang, Liang Luo, Xi Liu, Jay Li, Zeliang Chen, Weilin Zhang, Xiaohan Wei, Yuchen Hao, Michael Tsang, Wenjun Wang, et al. Dhen: A deep and hierar-chical ensemble network for large-scale click-through rate prediction. arXiv preprint arXiv:2203.11014 ,2022a. Wei Zhang, Dai Li, Chen Liang, Fang Zhou, Zhongke Zhang, Xuewei Wang, Ru Li, Yi Zhou, Yaning Huang, Dong Liang, et al. Scaling user modeling: Large-scale online user representations for ads personalization in meta. In Companion Proceedings of the ACM Web Conference 2024 , pages 47–55, 2024. Zhao-Yu Zhang, Xiang-Rong Sheng, Yujing Zhang, Biye Jiang, Shuguang Han, Hongbo Deng, and Bo Zheng. Towards understanding the overfitting phenomenon of deep click-through rate prediction models. In Pro-ceedings of the 31st ACM International Conference on Information and Knowledge Management (CIKM ’22) ,
+
+11 pages 2202–2212, Atlanta, GA, USA, 2022b. ACM. doi: 10 .1145/3511808 .3557479. https://arxiv .org/pdf/ 2209 .06053 . arXiv:2209.06053. 
+
+12

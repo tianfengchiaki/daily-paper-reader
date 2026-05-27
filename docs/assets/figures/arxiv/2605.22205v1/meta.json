@@ -1,0 +1,78 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2605.22205v1/fig-001.webp",
+      "caption": "Table 1: Overall performance of SkillWeave and multi-skill baselines in the general capability setting using Llama-3.1-8B-Instruct as the backbone. The best results for baselines are shown in bold, our results are highlighted with a pink background, and performance gaps between the best and SkillWeave are marked in green.",
+      "page": 7,
+      "index": 1,
+      "width": 939,
+      "height": 927
+    },
+    {
+      "url": "assets/figures/arxiv/2605.22205v1/fig-002.webp",
+      "caption": "Figure 1: Overview of the SkillWeave framework. The top section illustrates the full pipeline, consisting of two stages: (1) decomposing a monolithic language model into task-specific skill vectors via preference-based training, and (2) compressing each skillpack into an inference-friendly form using structured quantization. The bottom section demonstrates the integration and inference process under an agent-style serving scenario. As a whole, the figure shows how SkillWeave reorganizes and refines the model’s internal knowledge structure to balance performance gains and parameter efficiency.",
+      "page": 3,
+      "index": 2,
+      "width": 940,
+      "height": 529
+    },
+    {
+      "url": "assets/figures/arxiv/2605.22205v1/fig-003.webp",
+      "caption": "Figure 5: The left panel reports the performance across five dimensions of AgentBench under different configurations. The right panel compares the end-to-end inference latency when simulating agentic service calls, measured on a single A100-80G GPU. The 5×7B setting denotes five independently fine-tuned Qwen2.5-7B-Instruct models, each specialized for a different agent task, while 1×32B refers to a single monolithic Qwen2.5-32B-Instruct model.",
+      "page": 18,
+      "index": 3,
+      "width": 757,
+      "height": 258
+    },
+    {
+      "url": "assets/figures/arxiv/2605.22205v1/fig-004.webp",
+      "caption": "Table 2: Ablation study on SKillZip and its comparison with other delta-compression baselines. We evaluate compression fidelity across multiple settings and methods.",
+      "page": 8,
+      "index": 4,
+      "width": 451,
+      "height": 437
+    },
+    {
+      "url": "assets/figures/arxiv/2605.22205v1/fig-005.webp",
+      "caption": "Figure 2: The activation X and the low-rank weight matrices A and B are initially hard to quantize due to outliers misaligned with quantization axes. By normalizing channel scales of X and spreading singular value energy across A and B, the resulting matrices become significantly more quantization-friendly.",
+      "page": 4,
+      "index": 5,
+      "width": 448,
+      "height": 398
+    },
+    {
+      "url": "assets/figures/arxiv/2605.22205v1/fig-006.webp",
+      "caption": "Table 6: End-to-end latency comparison.",
+      "page": 19,
+      "index": 6,
+      "width": 941,
+      "height": 311
+    },
+    {
+      "url": "assets/figures/arxiv/2605.22205v1/fig-007.webp",
+      "caption": "Figure 4: An example of misidentification of learned router.",
+      "page": 17,
+      "index": 7,
+      "width": 631,
+      "height": 331
+    },
+    {
+      "url": "assets/figures/arxiv/2605.22205v1/fig-008.webp",
+      "caption": "Table 5: Overall performance of SkillWeave in the general capability setting using Llama-3.2-1B-Instruct as the backbone. The best results for baselines are shown in bold and the second best are underlined.",
+      "page": 17,
+      "index": 8,
+      "width": 937,
+      "height": 256
+    },
+    {
+      "url": "assets/figures/arxiv/2605.22205v1/fig-009.webp",
+      "caption": "Table 7: Kernel latency comparison (ms). Left: FP16 X16W16. Right: Optimized X8A8A8.",
+      "page": 20,
+      "index": 9,
+      "width": 817,
+      "height": 210
+    }
+  ]
+}

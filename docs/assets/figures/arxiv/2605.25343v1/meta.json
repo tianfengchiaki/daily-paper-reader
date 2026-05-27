@@ -1,0 +1,62 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2605.25343v1/fig-001.webp",
+      "caption": "Figure 3. Illustrative examples of three primary NMM architectures considering input-output duality.",
+      "page": 6,
+      "index": 1,
+      "width": 473,
+      "height": 603
+    },
+    {
+      "url": "assets/figures/arxiv/2605.25343v1/fig-002.webp",
+      "caption": "Table 2. Training data for NMM, categorized as discussed in §4. The four main categories align with the section structure:",
+      "page": 15,
+      "index": 2,
+      "width": 990,
+      "height": 1016
+    },
+    {
+      "url": "assets/figures/arxiv/2605.25343v1/fig-003.webp",
+      "caption": "Figure 5. Training × Fusion: a stage-by-regime grid. Rows = training stages (PT/SFT/RL/OPD); columns = fusion regimes",
+      "page": 21,
+      "index": 3,
+      "width": 976,
+      "height": 433
+    },
+    {
+      "url": "assets/figures/arxiv/2605.25343v1/fig-004.webp",
+      "caption": "Table 3. Summary of major evaluation benchmarks for native multimodal models. Each benchmark is shown on its own row to",
+      "page": 29,
+      "index": 4,
+      "width": 990,
+      "height": 923
+    },
+    {
+      "url": "assets/figures/arxiv/2605.25343v1/fig-005.webp",
+      "caption": "Figure 4. A hierarchical taxonomy of the major technical challenges, core design axes, and representative NMM systems (as listed in Table 1), which is derived from the discussion in Section 3.",
+      "page": 8,
+      "index": 5,
+      "width": 972,
+      "height": 1237
+    },
+    {
+      "url": "assets/figures/arxiv/2605.25343v1/fig-006.webp",
+      "caption": "Table 1. Comprehensive comparison of recently released Native Multimodal Models. We limit our comparison to open-source models or technical reports with verified architecture and parameter transparency. *Indicates models employing the discrete unified scheme. () denotes effective(total) parameter counts of special architectural designs.",
+      "page": 4,
+      "index": 6,
+      "width": 980,
+      "height": 1038
+    },
+    {
+      "url": "assets/figures/arxiv/2605.25343v1/fig-007.webp",
+      "caption": "Figure 2. Evolutionary timeline and functional taxonomy of Native Multimodal Foundation Models (2023–2026). The upward trajectory charts the historical progression from early mid-fusion alignment to the early-fusion methods, i.e., born-native transformer.",
+      "page": 5,
+      "index": 7,
+      "width": 924,
+      "height": 425
+    }
+  ]
+}

@@ -1,0 +1,62 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2605.20584v1/fig-001.webp",
+      "caption": "Fig. 2. Content descriptors of The SimsTM FreeP lay and Netflix apps across App Store and Play Store.",
+      "page": 6,
+      "index": 1,
+      "width": 614,
+      "height": 421
+    },
+    {
+      "url": "assets/figures/arxiv/2605.20584v1/fig-002.webp",
+      "caption": "Fig. 6. Analysis of non-disclosed CRDs identified by QwenSafe. (i) Distribution of applications containing non-disclosed CRDs across Apple age rating categories (4+, 9+, 12+, and 17+) and descriptor types. (ii) Representative examples of applications where QwenSafe detects CRDs that are not declared in the app metadata.",
+      "page": 15,
+      "index": 2,
+      "width": 683,
+      "height": 346
+    },
+    {
+      "url": "assets/figures/arxiv/2605.20584v1/fig-003.webp",
+      "caption": "Fig. 4. The overview of the QwenSafe pipeline. The pipeline involves four stage process. a) metadata2CRD: constructing QwenSafe training data from Apple app metadata, b) supervised fine tuning Qwen3-VL model, c) DPO dataset generation and d) DPO optimisation.",
+      "page": 10,
+      "index": 3,
+      "width": 694,
+      "height": 263
+    },
+    {
+      "url": "assets/figures/arxiv/2605.20584v1/fig-004.webp",
+      "caption": "Table 1. Binary classification performance comparison. Positive class recall (R+) and negative precision (P−) across content rating descriptors for LLaVA-v1.6-mistral-7bhf [25], Qwen3-VL-8B [9], Gemini-2.5-Flash [16], and QwenSafe(ours). Best performance is denoted in bold.(values in percentage).",
+      "page": 14,
+      "index": 4,
+      "width": 727,
+      "height": 372
+    },
+    {
+      "url": "assets/figures/arxiv/2605.20584v1/fig-005.webp",
+      "caption": "Fig. 5. Example illustrating model behaviour on the Mature/Suggestive Themes descriptor. QwenSafe recognises the subtle cues present in both the screenshot and description and accurately labels the impact as mild, demonstrating improved sensitivity to low-intensity content.",
+      "page": 13,
+      "index": 5,
+      "width": 650,
+      "height": 211
+    },
+    {
+      "url": "assets/figures/arxiv/2605.20584v1/fig-006.webp",
+      "caption": "Fig. 1. Comparison of age ratings across major authorities (USK, PEGI, ESRB, IARC, ACB, and Apple)",
+      "page": 4,
+      "index": 6,
+      "width": 630,
+      "height": 314
+    },
+    {
+      "url": "assets/figures/arxiv/2605.20584v1/fig-007.webp",
+      "caption": "Fig. 3. (a) Content descriptor taxonomy and (b) mapping to 12 different Apple content rating descriptors",
+      "page": 9,
+      "index": 7,
+      "width": 686,
+      "height": 448
+    }
+  ]
+}

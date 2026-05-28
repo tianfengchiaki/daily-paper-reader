@@ -1,0 +1,54 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2605.21604v1/fig-001.webp",
+      "caption": "Figure 8. Embedding classifier suffices for binary labeling",
+      "page": 6,
+      "index": 1,
+      "width": 493,
+      "height": 245
+    },
+    {
+      "url": "assets/figures/arxiv/2605.21604v1/fig-002.webp",
+      "caption": "Figure 6. Argo decides labeling methods based on characteristics of the label and performance during profiling",
+      "page": 6,
+      "index": 2,
+      "width": 504,
+      "height": 283
+    },
+    {
+      "url": "assets/figures/arxiv/2605.21604v1/fig-003.webp",
+      "caption": "Figure 12. Argo finds multiple Pareto Efficient cost-quality tradeoff points for the SLM cascade and chooses the balance point (blue square) which achieves 148-167× cost reduction with comparable quality",
+      "page": 11,
+      "index": 3,
+      "width": 861,
+      "height": 225
+    },
+    {
+      "url": "assets/figures/arxiv/2605.21604v1/fig-004.webp",
+      "caption": "Figure 2. Label overlaps vary significantly across different subsets which should be used to guide the labeling system",
+      "page": 3,
+      "index": 4,
+      "width": 498,
+      "height": 320
+    },
+    {
+      "url": "assets/figures/arxiv/2605.21604v1/fig-005.webp",
+      "caption": "Figure 4. Varying the confidence thresholds for the SLM Cascade while keeping other knobs fixed",
+      "page": 4,
+      "index": 5,
+      "width": 458,
+      "height": 279
+    },
+    {
+      "url": "assets/figures/arxiv/2605.21604v1/fig-006.webp",
+      "caption": "Figure 5. Argo performs offline profiling to determine knob values and decisions to be used for email labeling",
+      "page": 5,
+      "index": 6,
+      "width": 968,
+      "height": 428
+    }
+  ]
+}

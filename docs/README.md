@@ -6,89 +6,88 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-05-27
-- 运行时间：2026-05-27 20:57:19 UTC
+- 最新运行日期：2026-05-28
+- 运行时间：2026-05-28 21:53:00 UTC
 - 运行状态：成功
-- 本次总论文数：23
-- 精读区：11
+- 本次总论文数：22
+- 精读区：10
 - 速读区：12
 
 ### 今日简报（AI）
-今日精选23篇论文，精读聚焦广告竞价与多槽位联合优化。最值得关注方向：多槽位展示广告联合优化（10分）与生成式自动竞价模型（9分）。建议重点研究多槽位投放策略及竞价模型，以提升广告系统效率。
-- 详情：[/202605/27/README](/202605/27/README)
+今日精读10篇，聚焦多槽广告联合优化与离线策略选择两大高分研究。  
+最值得关注《Beyond Single Slot》在广告展示提效上的突破，以及《Support-aware offline policy selection》对广告市场的实用价值。  
+建议普通读者优先精读这两篇，再速读速读列表中关于推荐鲁棒性和去偏的论文以拓展实践视角。
+- 详情：[/202605/28/README](/202605/28/README)
 
 ### 精读区论文标签
-1. [Beyond Single Slot: Joint Optimization for Multi-Slot Guaranteed Display Advertising](/202605/27/2605.21556v1-beyond-single-slot-joint-optimization-for-multi-slot-guaranteed-display-advertising)  
+1. [Beyond Single Slot: Joint Optimization for Multi-Slot Guaranteed Display Advertising](/202605/28/2605.21556v1-beyond-single-slot-joint-optimization-for-multi-slot-guaranteed-display-advertising)  
    标签：评分：10.0/10、query:q2
-   evidence：多槽位保量展示广告优化
-2. [Generative Auto-Bidding with Unified Modeling and Exploration](/202605/27/2605.19457v1-generative-auto-bidding-with-unified-modeling-and-exploration)  
+   evidence：多槽位保量展示广告的联合优化
+2. [Support-aware offline policy selection for advertising marketplaces](/202605/28/2605.21736v1-support-aware-offline-policy-selection-for-advertising-marketplaces)  
    标签：评分：9.0/10、query:q2
-   evidence：数字广告中的自动出价
-3. [Support-aware offline policy selection for advertising marketplaces](/202605/27/2605.21736v1-support-aware-offline-policy-selection-for-advertising-marketplaces)  
+   evidence：广告离线策略选择
+3. [PEARL: Unbiased Percentile Estimation via Contrastive Learning for Industrial-Scale Livestream Recommendation](/202605/28/2605.21752v1-pearl-unbiased-percentile-estimation-via-contrastive-learning-for-industrial-scale-livestream-recommendation)  
+   标签：评分：9.0/10、query:q1
+   evidence：用于直播的无偏推荐；直接涉及推荐系统
+4. [Behavior-Guided Candidate Calibration for Multimodal Recommendation](/202605/28/2605.22073v1-behavior-guided-candidate-calibration-for-multimodal-recommendation)  
+   标签：评分：9.0/10、query:q6
+   evidence：行为引导的多模态推荐候选校准
+5. [Algorithm or Creative? A Three-Arm Experimental Design for Decomposing Algorithmic Bias in Platform A/B Tests](/202605/28/2605.23706v1-algorithm-or-creative-a-three-arm-experimental-design-for-decomposing-algorithmic-bias-in-platform-ab-tests)  
    标签：评分：9.0/10、query:q2
-   evidence：广告市场离线策略选择
-4. [FLUID: From Ephemeral IDs to Multimodal Semantic Codes for Industrial-Scale Livestreaming Recommendation](/202605/27/2605.21832v1-fluid-from-ephemeral-ids-to-multimodal-semantic-codes-for-industrial-scale-livestreaming-recommendation)  
+   evidence：在线广告平台的三臂A/B测试设计
+6. [Memento: Personalized RAG-Style Long-Retention Data Scaling for META Ads Recommendation](/202605/28/2605.24051v1-memento-personalized-rag-style-long-retention-data-scaling-for-meta-ads-recommendation)  
    标签：评分：9.0/10、query:q1
-   evidence：多模态直播推荐
-5. [HARNESS-LM: A Three-Phase Training Recipe for Harnessing SLMs in Sponsored Search Retrieval](/202605/27/2605.23572v1-harness-lm-a-three-phase-training-recipe-for-harnessing-slms-in-sponsored-search-retrieval)  
+   evidence：个性化RAG框架用于Meta广告推荐
+7. [Choosing Online Experiment Designs under Interference in Ads, Recommendations, and Member-Experience Systems](/202605/28/2605.25290v1-choosing-online-experiment-designs-under-interference-in-ads-recommendations-and-member-experience-systems)  
    标签：评分：9.0/10、query:q2
-   evidence：基于小语言模型微调的赞助搜索检索
-6. [Memento: Personalized RAG-Style Long-Retention Data Scaling for META Ads Recommendation](/202605/27/2605.24051v1-memento-personalized-rag-style-long-retention-data-scaling-for-meta-ads-recommendation)  
-   标签：评分：9.0/10、query:q1
-   evidence：用于Meta广告推荐的个性化RAG框架
-7. [Meta-Modal Agent: Sequential Evidence Routing for Missing-Modality Candidate Reranking](/202605/27/2605.25007v1-meta-modal-agent-sequential-evidence-routing-for-missing-modality-candidate-reranking)  
-   标签：评分：9.0/10、query:llmapp
-   evidence：基于大模型的多模态推荐重排序
-8. [Choosing Online Experiment Designs under Interference in Ads, Recommendations, and Member-Experience Systems](/202605/27/2605.25290v1-choosing-online-experiment-designs-under-interference-in-ads-recommendations-and-member-experience-systems)  
-   标签：评分：9.0/10、query:q1
    evidence：广告和推荐系统的在线实验设计
-9. [From Item-Only to Query-Item: Query-Conditioned Generative Search with QGS in Quark](/202605/27/2605.25514v1-from-item-only-to-query-item-query-conditioned-generative-search-with-qgs-in-quark)  
-   标签：评分：9.0/10、query:llmapp
-   evidence：查询条件生成式搜索用于推荐
-10. [SIREN: Unified Multi-Granularity Semantic Interaction for Multi-Modal Lifelong User Interest Modeling](/202605/27/2605.25726v1-siren-unified-multi-granularity-semantic-interaction-for-multi-modal-lifelong-user-interest-modeling)  
+8. [Prominence-Stratified Failure Modes in Retrieval-Augmented Commercial Recommendation: A 37,000-Run Audit](/202605/28/2605.27439v1-prominence-stratified-failure-modes-in-retrieval-augmented-commercial-recommendation-a-37000-run-audit)  
    标签：评分：9.0/10、query:q1
-   evidence：多模态终身用户兴趣建模用于推荐
-11. [L2Rec: Towards Dual-View Understanding of LLMs for Personalized Recommendation](/202605/27/2605.26717v1-l2rec-towards-dual-view-understanding-of-llms-for-personalized-recommendation)  
+   evidence：AI助手作为商业查询的推荐引擎，审计品牌推荐
+9. [Joint Optimization of Relevance and Engagement in Multi-Task Ranking for E-Commerce with Efficient LLM Supervision](/202605/28/2605.27704v1-joint-optimization-of-relevance-and-engagement-in-multi-task-ranking-for-e-commerce-with-efficient-llm-supervision)  
    标签：评分：9.0/10、query:llmapp
-   evidence：具备双视图理解的LLM用于个性化推荐
+   evidence：大模型监督的多任务排序用于电商；将大模型应用于推荐
+10. [Fine-Tuned LLM as a Complementary Predictor Improving Ads System](/202605/28/2605.27856v1-fine-tuned-llm-as-a-complementary-predictor-improving-ads-system)  
+   标签：评分：9.0/10、query:q3
+   evidence：微调LLM作为广告辅助预测器
 
 ### 速读区论文标签
-1. [m3BERT: A Modern, Multi-lingual, Matryoshka Bidirectional Encoder](/202605/27/2605.19568v1-m3bert-a-modern-multi-lingual-matryoshka-bidirectional-encoder)  
-   标签：评分：8.0/10、query:q2
-   evidence：用于搜索和广告的多语言嵌入模型
-2. [PEARL: Unbiased Percentile Estimation via Contrastive Learning for Industrial-Scale Livestream Recommendation](/202605/27/2605.21752v1-pearl-unbiased-percentile-estimation-via-contrastive-learning-for-industrial-scale-livestream-recommendation)  
+1. [Robust Recommendation from Noisy Implicit Feedback: A GMM-Weighted Bayes-label Transition Matrix Framework](/202605/28/2605.20721v1-robust-recommendation-from-noisy-implicit-feedback-a-gmm-weighted-bayes-label-transition-matrix-framework)  
    标签：评分：8.0/10、query:q1
-   evidence：工业级直播推荐的无偏分位数估计
-3. [Behavior-Guided Candidate Calibration for Multimodal Recommendation](/202605/27/2605.22073v1-behavior-guided-candidate-calibration-for-multimodal-recommendation)  
-   标签：评分：8.0/10、query:q6
-   evidence：多模态推荐结合行为引导校准
-4. [Towards Generalizable and Efficient Large-Scale Generative Recommenders](/202605/27/2605.23312v1-towards-generalizable-and-efficient-large-scale-generative-recommenders)  
+   evidence：GMM权重的贝叶斯标签转移矩阵用于鲁棒推荐去噪
+2. [Robust Personalized Recommendation under Hidden Confounding in MNAR](/202605/28/2605.21066v1-robust-personalized-recommendation-under-hidden-confounding-in-mnar)  
+   标签：评分：8.0/10、query:q1
+   evidence：解决隐藏混杂的鲁棒个性化推荐方法
+3. [HARNESS-LM: A Three-Phase Training Recipe for Harnessing SLMs in Sponsored Search Retrieval](/202605/28/2605.23572v1-harness-lm-a-three-phase-training-recipe-for-harnessing-slms-in-sponsored-search-retrieval)  
+   标签：评分：8.0/10、query:q1
+   evidence：三阶段训练用于高效搜索广告检索
+4. [TubiFM: Unified Item, Carousel, and Search Ranking for Streaming Discovery](/202605/28/2605.23702v1-tubifm-unified-item-carousel-and-search-ranking-for-streaming-discovery)  
    标签：评分：8.0/10、query:llmapp
-   evidence：生成式推荐器从2M扩展到1B参数，大模型用于推荐
-5. [SimGym: A Framework for A/B Test Simulation in E-Commerce with Traffic-Grounded VLM Agents](/202605/27/2605.19219v1-simgym-a-framework-for-ab-test-simulation-in-e-commerce-with-traffic-grounded-vlm-agents)  
-   标签：评分：7.0/10、query:q7
-   evidence：使用VLM智能体的电商A/B测试模拟，实际广告场景
-6. [Divergence Meets Consensus: A Multi-Source Negative Sampling Framework for Sequential Recommendation](/202605/27/2605.19651v1-divergence-meets-consensus-a-multi-source-negative-sampling-framework-for-sequential-recommendation)  
-   标签：评分：7.0/10、query:q1
-   evidence：多源负采样用于序列推荐
-7. [Spectral bandits for smooth graph functions with applications in recommender systems](/202605/27/2605.20552v1-spectral-bandits-for-smooth-graph-functions-with-applications-in-recommender-systems)  
-   标签：评分：7.0/10、query:q1
-   evidence：基于图的推荐中的谱赌博机
-8. [QwenSafe: Multimodal Content Rating Description Identification via Preference-Aligned VLMs](/202605/27/2605.20584v1-qwensafe-multimodal-content-rating-description-identification-via-preference-aligned-vlms)  
+   evidence：使用预训练语言令牌和序列化用户故事统一排序
+5. [Argo: Efficient Importance Labeling for Enterprise Email Systems](/202605/28/2605.21604v1-argo-efficient-importance-labeling-for-enterprise-email-systems)  
    标签：评分：7.0/10、query:llmapp
-   evidence：多模态VLM用于内容评级识别
-9. [MetaRA: Metamorphic Robustness Assessment for Multimodal Large Language Model-based Visual Question Answering Systems](/202605/27/2605.19307v1-metara-metamorphic-robustness-assessment-for-multimodal-large-language-model-based-visual-question-answering-systems)  
+   evidence：大模型用于邮件重要性标注
+6. [AtelierEval: Agentic Evaluation of Humans & LLMs as Text-to-Image Prompters](/202605/28/2605.22645v1-ateliereval-agentic-evaluation-of-humans--llms-as-text-to-image-prompters)  
+   标签：评分：7.0/10、query:llmapp
+   evidence：评估人类和多模态LLM提示能力的基准
+7. [Building a privacy-preserving Federated Recommender system for mobile devices](/202605/28/2605.22924v1-building-a-privacy-preserving-federated-recommender-system-for-mobile-devices)  
+   标签：评分：7.0/10、query:q1
+   evidence：联邦推荐系统可应用于广告场景
+8. [Expand More, Shrink Less: Shaping Effective-Rank Dynamics for Dense Scaling in Recommendation](/202605/28/2605.23191v1-expand-more-shrink-less-shaping-effective-rank-dynamics-for-dense-scaling-in-recommendation)  
+   标签：评分：7.0/10、query:q1
+   evidence：推荐模型缩放方法
+9. [RankJudge: A Multi-Turn LLM-as-a-Judge Synthetic Benchmark Generator](/202605/28/2605.21748v1-rankjudge-a-multi-turn-llm-as-a-judge-synthetic-benchmark-generator)  
    标签：评分：6.0/10、query:llmapp
-   evidence：多模态大模型的鲁棒性测试
-10. [Skill Weaving: Efficient LLM Improvement via Modular Skillpacks](/202605/27/2605.22205v1-skill-weaving-efficient-llm-improvement-via-modular-skillpacks)  
+   evidence：多轮LLM裁判基准生成器
+10. [Beyond Binary Edits Robust Multimodal Knowledge Editing with Adversarial Subspace Alignment](/202605/28/2605.23780v1-beyond-binary-edits-robust-multimodal-knowledge-editing-with-adversarial-subspace-alignment)  
    标签：评分：6.0/10、query:llmapp
-   evidence：模块化技能包实现高效LLM微调
-11. [Divide-and-Conquer Inference for Large-Scale Visual Recognition with Multimodal Large Language Models](/202605/27/2605.24799v1-divide-and-conquer-inference-for-large-scale-visual-recognition-with-multimodal-large-language-models)  
+   evidence：多模态LLM知识编辑方法
+11. [Structure-Aware RAG: Structured Retrieval Augmented Generation from Noisy Data for Conversational Agents](/202605/28/2605.24366v1-structure-aware-rag-structured-retrieval-augmented-generation-from-noisy-data-for-conversational-agents)  
    标签：评分：6.0/10、query:llmapp
-   evidence：大规模视觉识别中多模态大模型的分治推理
-12. [Toward Native Multimodal Modeling: A Roadmap](/202605/27/2605.25343v1-toward-native-multimodal-modeling-a-roadmap)  
+   evidence：基于大模型的检索增强生成用于对话代理；通用的大模型应用方法
+12. [Mix-MoE: Improving Multilingual Machine Translation of Large Language Models through Mixed MoEs](/202605/28/2605.24681v1-mix-moe-improving-multilingual-machine-translation-of-large-language-models-through-mixed-moes)  
    标签：评分：6.0/10、query:llmapp
-   evidence：原生多模态建模路线图
+   evidence：Mix-MoE微调框架用于多语言翻译
 
 
 <div class="dpr-home-promo-card">

@@ -1,0 +1,38 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2605.21858v1/fig-001.webp",
+      "caption": "Table 3: Detailed ablation study of the proposed components.",
+      "page": 8,
+      "index": 1,
+      "width": 822,
+      "height": 193
+    },
+    {
+      "url": "assets/figures/arxiv/2605.21858v1/fig-002.webp",
+      "caption": "Table 2: Zero-shot performance on Cora-CC, PubMed, DBLP and IMDB datasets.",
+      "page": 8,
+      "index": 2,
+      "width": 822,
+      "height": 195
+    },
+    {
+      "url": "assets/figures/arxiv/2605.21858v1/fig-003.webp",
+      "caption": "Figure 2: Overall framework of the proposed Hyper-Align. In the figure, “OBRecon.” and “RelRecon.” denote order bucket reconstruction and relation reconstruction, respectively. Circles and triangles denote vertices and hyperedges, respectively, and gray dashed slots denote padded slots.",
+      "page": 4,
+      "index": 3,
+      "width": 826,
+      "height": 447
+    },
+    {
+      "url": "assets/figures/arxiv/2605.21858v1/fig-004.webp",
+      "caption": "Figure 5: CCDFs of vertex degree and hyperedge degree on the five formal datasets in HyperAlignBench. Vertex degree denotes the number of incident hyperedges of a vertex, while hyperedge degree denotes the number of vertices contained in a hyperedge.",
+      "page": 17,
+      "index": 4,
+      "width": 809,
+      "height": 328
+    }
+  ]
+}

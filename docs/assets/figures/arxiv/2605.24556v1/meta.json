@@ -1,0 +1,22 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2605.24556v1/fig-001.webp",
+      "caption": "Table 1: Monolingual Amharic retrievers evaluated in this paper. We include Medium and Base variants across dense, late-interaction, learned sparse, and cross-encoder paradigms; checkpoint names are abbreviated, with full identifiers in the released model collections. Dim. denotes output dimensionality (|V | for sparse vocabulary size), and MaxLen denotes the training truncation length. Objectives: MNR+MRL = MultipleNegativesRankingLoss with Matryoshka representations; ColBERT-IB = in-batch ColBERT training; SPLADE-SR = sparsity-regularized SPLADE loss; BCE-w7 = binary cross-entropy with pos_weight=7.",
+      "page": 5,
+      "index": 1,
+      "width": 950,
+      "height": 269
+    },
+    {
+      "url": "assets/figures/arxiv/2605.24556v1/fig-002.webp",
+      "caption": "Table 3: First-stage retrieval results on the Amharic Passage Retrieval Dataset V2. Best values are bolded and second-best values are underlined. Among zero-shot multilingual dense retrievers, snowflake-arctic-embed-l-v2.0 performs best. Amharic fine-tuning yields large gains, but the strongest monolingual Amharic retriever achieves the best results across all metrics. For zero-shot harrier-oss-v1-270m, we use the recommended query-side instruction prompt. † indicates significant improvement over the strongest Amharic-fine-tuned multilingual dense retriever, harrier-oss-v1-270m + FT, using paired t-tests over per-query scores with p < 0.05.",
+      "page": 6,
+      "index": 2,
+      "width": 942,
+      "height": 711
+    }
+  ]
+}

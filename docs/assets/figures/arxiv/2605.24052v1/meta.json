@@ -1,0 +1,78 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2605.24052v1/fig-001.webp",
+      "caption": "Fig. 4. Each worker i’s weight wt i of our truthful online mixed selection versus time slot t under limited worker feedback. Here we fix worker number N = 5, total time slot number T = 2500, and prompt number mt = 20.",
+      "page": 11,
+      "index": 1,
+      "width": 447,
+      "height": 350
+    },
+    {
+      "url": "assets/figures/arxiv/2605.24052v1/fig-002.webp",
+      "caption": "Fig. 5. Each worker i’s chosen probability wt i∑N i′=1 wt i′ of our truthful online mixed selection versus time slot t under limited worker feedback. Here we fix worker number N = 5, total time slot number T = 2500, and prompt number mt = 20.",
+      "page": 11,
+      "index": 2,
+      "width": 447,
+      "height": 341
+    },
+    {
+      "url": "assets/figures/arxiv/2605.24052v1/fig-003.webp",
+      "caption": "Fig. 3. Each worker i’s chosen probability wt i∑N i′=1 wt i′ of our truthful online weighted aggregation versus time slot t under full feedback. Here we fix worker number N = 5, total time slot T = 500, and prompt number mt = 20.",
+      "page": 11,
+      "index": 3,
+      "width": 443,
+      "height": 329
+    },
+    {
+      "url": "assets/figures/arxiv/2605.24052v1/fig-004.webp",
+      "caption": "Fig. 2. Each worker i’s weight wt i of our truthful online weighted aggregation versus time slot t under full feedback. Here we fix worker number N = 5, total time slot number T = 500, and prompt number mt = 20.",
+      "page": 10,
+      "index": 4,
+      "width": 443,
+      "height": 339
+    },
+    {
+      "url": "assets/figures/arxiv/2605.24052v1/fig-005.webp",
+      "caption": "Fig. 9. Time-average regrets of benchmarks 1, 3, 4 and our mechanism under limited worker feedback versus the time slot number T , respectively. Here we choose α = η = √ lnN",
+      "page": 13,
+      "index": 5,
+      "width": 433,
+      "height": 331
+    },
+    {
+      "url": "assets/figures/arxiv/2605.24052v1/fig-006.webp",
+      "caption": "Fig. 10. A prompt example for LLM fine-tuning training and testing regarding the downstream CSS task.",
+      "page": 13,
+      "index": 6,
+      "width": 529,
+      "height": 290
+    },
+    {
+      "url": "assets/figures/arxiv/2605.24052v1/fig-007.webp",
+      "caption": "Fig. 8. Time-average regrets of our mechanism under limited worker feedback versus the time slot number T for different worker numbers N ∈ {5, 10, 15, 20, 25}. Here we fix prompt number mt = 20 and choose α = √ lnN",
+      "page": 12,
+      "index": 7,
+      "width": 437,
+      "height": 332
+    },
+    {
+      "url": "assets/figures/arxiv/2605.24052v1/fig-008.webp",
+      "caption": "Fig. 6. Time-average regrets of our mechanism under full worker feedback versus the time slot number T for different worker numbers N ∈ {5, 10, 15, 20, 25}. Here we fix prompt number mt = 20 and choose the learning rate α = 2 3 √ 2 lnN T following Theorem 1.",
+      "page": 12,
+      "index": 8,
+      "width": 447,
+      "height": 329
+    },
+    {
+      "url": "assets/figures/arxiv/2605.24052v1/fig-009.webp",
+      "caption": "Fig. 7. Time-average regrets of benchmarks 1, 2, 3 and our mechanism under full worker feedback versus the time slot number T , respectively. Here we choose the same learning rate α = η = 2 3 √ 2 lnN T for both benchmark 2 and our method, consider a large worker scale of N = 50 and fix prompt number mt = 20.",
+      "page": 12,
+      "index": 9,
+      "width": 443,
+      "height": 329
+    }
+  ]
+}

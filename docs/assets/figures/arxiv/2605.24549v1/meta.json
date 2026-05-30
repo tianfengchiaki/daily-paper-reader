@@ -1,0 +1,126 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2605.24549v1/fig-001.webp",
+      "caption": "Table 1: Experimental setup.",
+      "page": 7,
+      "index": 1,
+      "width": 827,
+      "height": 287
+    },
+    {
+      "url": "assets/figures/arxiv/2605.24549v1/fig-002.webp",
+      "caption": "Figure 2: Visual evidence for distributed skill information. The SVF scaling factors show a sharp elbow and long tail, while the top SVF-selected components are scattered across singular-value rank rather than aligned with the largest singular values.",
+      "page": 7,
+      "index": 2,
+      "width": 822,
+      "height": 355
+    },
+    {
+      "url": "assets/figures/arxiv/2605.24549v1/fig-003.webp",
+      "caption": "Figure 4: SVF visualization for the Llama-3.1-8B-Instruct GSM8K expert.",
+      "page": 22,
+      "index": 3,
+      "width": 822,
+      "height": 355
+    },
+    {
+      "url": "assets/figures/arxiv/2605.24549v1/fig-004.webp",
+      "caption": "Figure 5: SVF visualization for the Llama-3.1-8B-Instruct MBPP expert.",
+      "page": 22,
+      "index": 4,
+      "width": 822,
+      "height": 354
+    },
+    {
+      "url": "assets/figures/arxiv/2605.24549v1/fig-005.webp",
+      "caption": "Figure 8: SVF visualization for the Mistral-7B-Instruct-v0.3 MBPP expert.",
+      "page": 23,
+      "index": 5,
+      "width": 822,
+      "height": 355
+    },
+    {
+      "url": "assets/figures/arxiv/2605.24549v1/fig-006.webp",
+      "caption": "Figure 6: SVF visualization for the Llama-3.1-8B-Instruct AI2-ARC expert.",
+      "page": 23,
+      "index": 6,
+      "width": 822,
+      "height": 351
+    },
+    {
+      "url": "assets/figures/arxiv/2605.24549v1/fig-007.webp",
+      "caption": "Figure 7: SVF visualization for the Mistral-7B-Instruct-v0.3 GSM8K expert.",
+      "page": 23,
+      "index": 7,
+      "width": 822,
+      "height": 355
+    },
+    {
+      "url": "assets/figures/arxiv/2605.24549v1/fig-008.webp",
+      "caption": "Table 3: Llama-3.1-8B: knowledge recall and skill accuracy across three reasoning benchmarks.",
+      "page": 8,
+      "index": 8,
+      "width": 610,
+      "height": 307
+    },
+    {
+      "url": "assets/figures/arxiv/2605.24549v1/fig-009.webp",
+      "caption": "Figure 1: PALoRA. Phase 1 trains and freezes an SVF expert, whose learned scaling vector identifies skill-critical singular components. Phase 2 trains a LoRA adapter for new facts while penalizing projections of the update onto those directions.",
+      "page": 4,
+      "index": 9,
+      "width": 582,
+      "height": 282
+    },
+    {
+      "url": "assets/figures/arxiv/2605.24549v1/fig-010.webp",
+      "caption": "Table 8: Notation used in the theoretical analysis and proofs.",
+      "page": 17,
+      "index": 10,
+      "width": 827,
+      "height": 887
+    },
+    {
+      "url": "assets/figures/arxiv/2605.24549v1/fig-011.webp",
+      "caption": "Figure 9: SVF visualization for the Mistral-7B-Instruct-v0.3 AI2-ARC expert.",
+      "page": 24,
+      "index": 11,
+      "width": 822,
+      "height": 355
+    },
+    {
+      "url": "assets/figures/arxiv/2605.24549v1/fig-012.webp",
+      "caption": "Table 4: Mistral-7B: knowledge recall and skill accuracy across three reasoning benchmarks.",
+      "page": 9,
+      "index": 12,
+      "width": 610,
+      "height": 306
+    },
+    {
+      "url": "assets/figures/arxiv/2605.24549v1/fig-013.webp",
+      "caption": "Figure 3: Training dynamics for Llama-3.1-8B with the GSM8K expert and 1000 unknown facts. The SFT loss decreases steadily, while the constraint suppresses projection of the LoRA update onto the critical skill subspace by more than an order of magnitude.",
+      "page": 9,
+      "index": 13,
+      "width": 822,
+      "height": 258
+    },
+    {
+      "url": "assets/figures/arxiv/2605.24549v1/fig-014.webp",
+      "caption": "Table 7: Notation for the PALoRA parameterization, SVD quantities, and protected subspaces.",
+      "page": 16,
+      "index": 14,
+      "width": 827,
+      "height": 529
+    },
+    {
+      "url": "assets/figures/arxiv/2605.24549v1/fig-015.webp",
+      "caption": "Table 6: General notation, data, and optimization variables used throughout the paper.",
+      "page": 16,
+      "index": 15,
+      "width": 826,
+      "height": 529
+    }
+  ]
+}

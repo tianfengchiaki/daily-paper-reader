@@ -1,0 +1,30 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2605.24675v1/fig-001.webp",
+      "caption": "Figure 1: Overview of VaaWIT. It addresses the complexity of Web image translation by decomposing the visual-linguistic alignment process into three integrated components: (1) Dual-Stream Visual Encoding, (2) Visual Feature Fusion, and (3) Visual-Aware LLM Adaptation. We adopt a two-stage strategy to train the VaaWIT framework: (1) Visual-Language Alignment and (2) Multi-Task Joint Learning.",
+      "page": 2,
+      "index": 1,
+      "width": 992,
+      "height": 279
+    },
+    {
+      "url": "assets/figures/arxiv/2605.24675v1/fig-002.webp",
+      "caption": "Figure 3: Case Study of VaaWIT Framework.",
+      "page": 9,
+      "index": 2,
+      "width": 470,
+      "height": 339
+    },
+    {
+      "url": "assets/figures/arxiv/2605.24675v1/fig-003.webp",
+      "caption": "Table 1: Comparison with Cascaded pipelines, SOTA LVLMs (Zero-Shot), and various tuning strategies (based on Qwen3-VL). Best results in each column are bolded. The last two rows (highlighted in Gray) represent VaaWIT with different LLM backbones (Qwen3 and LLaMA3.1). Subscripts denote standard deviations: values are computed over three random seeds. †Commercial model evaluations were conducted in October 2025.",
+      "page": 5,
+      "index": 3,
+      "width": 1048,
+      "height": 398
+    }
+  ]
+}

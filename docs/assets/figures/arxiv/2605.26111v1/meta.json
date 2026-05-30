@@ -1,0 +1,38 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2605.26111v1/fig-001.webp",
+      "caption": "Figure 4: Comparisons of our method with state-of-the-art subject-driven generation approaches. Red dashed lines indicate instances where other methods suffer from the copy-paste issue. In contrast, our method produces images that maintain strong subject identity, exhibit creative pose variations, and respect underlying physical constraints.",
+      "page": 6,
+      "index": 1,
+      "width": 700,
+      "height": 395
+    },
+    {
+      "url": "assets/figures/arxiv/2605.26111v1/fig-002.webp",
+      "caption": "Figure I: Screenshot of the instructions of our user study.",
+      "page": 30,
+      "index": 2,
+      "width": 820,
+      "height": 629
+    },
+    {
+      "url": "assets/figures/arxiv/2605.26111v1/fig-003.webp",
+      "caption": "Figure 1: Benefits of leveraging MLLMs for subject-driven generation. MLLMs mitigate the copy-paste issue within VAE-based methods, and enables the multimodal understanding of the subject-driven generation pipeline by jointly modeling input image and text, while VAE-based methods encode them separately.",
+      "page": 2,
+      "index": 3,
+      "width": 408,
+      "height": 330
+    },
+    {
+      "url": "assets/figures/arxiv/2605.26111v1/fig-004.webp",
+      "caption": "Figure 2: Overview of our framework. (a) The full model architecture, consisting of an MLLM for multimodal understanding, a VAE encoder for mapping images into latent space, a DiT backbone for diffusion denoising, and a Dual Layer Aggregator (DLA) that aligns MLLM embeddings for DiT. (b) Details of the token attention pooling module inside the DLA module, including its layerwise attention and pooling operations, to form MLLM aggregated embeddings from all MLLM layers.",
+      "page": 3,
+      "index": 4,
+      "width": 740,
+      "height": 501
+    }
+  ]
+}

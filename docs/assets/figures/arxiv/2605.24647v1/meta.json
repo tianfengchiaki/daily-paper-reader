@@ -1,0 +1,78 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2605.24647v1/fig-001.webp",
+      "caption": "Figure 3: A simulated MI-coaching session between a counselor and a patient",
+      "page": 22,
+      "index": 1,
+      "width": 826,
+      "height": 466
+    },
+    {
+      "url": "assets/figures/arxiv/2605.24647v1/fig-002.webp",
+      "caption": "Table 7: Hyperparameters for eval_sim.py.",
+      "page": 18,
+      "index": 2,
+      "width": 827,
+      "height": 392
+    },
+    {
+      "url": "assets/figures/arxiv/2605.24647v1/fig-003.webp",
+      "caption": "Table 6: General hyperparameters used in PUMA.",
+      "page": 18,
+      "index": 3,
+      "width": 826,
+      "height": 527
+    },
+    {
+      "url": "assets/figures/arxiv/2605.24647v1/fig-004.webp",
+      "caption": "Table 11: Case study of dynamic action selection. Base Counselor and DIIR fall into repetitive questioning, while PUMA first explores the user’s latent concerns and then selects targeted actions that trigger a sharp readiness increase.",
+      "page": 23,
+      "index": 4,
+      "width": 888,
+      "height": 1259
+    },
+    {
+      "url": "assets/figures/arxiv/2605.24647v1/fig-005.webp",
+      "caption": "Table 1: Dynamic evaluation on CAMI under Qwen3-8B and Llama-3.1-8B backbones. Higher values are better for Lift, Prep, and TrigCov, while lower values are better for Turns.",
+      "page": 8,
+      "index": 5,
+      "width": 818,
+      "height": 227
+    },
+    {
+      "url": "assets/figures/arxiv/2605.24647v1/fig-006.webp",
+      "caption": "Table 2: Counselor-side quality evaluation using MITI Global Scores on CAMI. We report four MI dimensions and their average score; higher scores indicate better counseling quality.",
+      "page": 8,
+      "index": 6,
+      "width": 818,
+      "height": 219
+    },
+    {
+      "url": "assets/figures/arxiv/2605.24647v1/fig-007.webp",
+      "caption": "Figure 1: Overview of PUMA. Given a user utterance, the system updates its belief over the hidden user state and maintains a world model of user-state dynamics. It then uses this world model to evaluate candidate actions with expected free energy, selecting actions that reduce uncertainty and guide goal-directed outcomes. Finally, the system produces a natural-language response, which gives rise to a user-state transition and the next user utterance, thereby starting the next interaction cycle.",
+      "page": 4,
+      "index": 7,
+      "width": 802,
+      "height": 431
+    },
+    {
+      "url": "assets/figures/arxiv/2605.24647v1/fig-008.webp",
+      "caption": "Table 3: Ablation study on CAMI. We remove belief, world-model input, and EFE-action selection to evaluate the contribution of each component; ∆Lift is computed relative to the full PUMA model.",
+      "page": 9,
+      "index": 8,
+      "width": 661,
+      "height": 232
+    },
+    {
+      "url": "assets/figures/arxiv/2605.24647v1/fig-009.webp",
+      "caption": "Figure 2: Temporal analysis of state prediction and readiness progression.",
+      "page": 9,
+      "index": 9,
+      "width": 782,
+      "height": 337
+    }
+  ]
+}

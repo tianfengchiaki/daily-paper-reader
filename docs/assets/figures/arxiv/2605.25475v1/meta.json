@@ -1,0 +1,62 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2605.25475v1/fig-001.webp",
+      "caption": "Figure 4. Scores on LongBench for Llama-3.1-8B-Instruct.",
+      "page": 6,
+      "index": 1,
+      "width": 473,
+      "height": 356
+    },
+    {
+      "url": "assets/figures/arxiv/2605.25475v1/fig-002.webp",
+      "caption": "Table 1. Ruler results under different compression ratios.",
+      "page": 6,
+      "index": 2,
+      "width": 1025,
+      "height": 342
+    },
+    {
+      "url": "assets/figures/arxiv/2605.25475v1/fig-003.webp",
+      "caption": "Figure 3. Needle-in-a-Haystack (NIAH) heatmaps of Llama-3.1-8B-Instruct under KV eviction at 50% compression ratio.",
+      "page": 6,
+      "index": 3,
+      "width": 1017,
+      "height": 229
+    },
+    {
+      "url": "assets/figures/arxiv/2605.25475v1/fig-004.webp",
+      "caption": "Table 4. Taxonomy of baselines considered in the main paper and this appendix.",
+      "page": 15,
+      "index": 4,
+      "width": 867,
+      "height": 222
+    },
+    {
+      "url": "assets/figures/arxiv/2605.25475v1/fig-005.webp",
+      "caption": "Figure 5. Ablation of Memory module on Llama-3.1-8B-Instruct of Longbench.",
+      "page": 7,
+      "index": 5,
+      "width": 1017,
+      "height": 383
+    },
+    {
+      "url": "assets/figures/arxiv/2605.25475v1/fig-006.webp",
+      "caption": "Figure 1. The overall pipeline of IndexMem is as follows: in the main attention stream, we use the learnable indexer to accurately select which KV tokens to save and evict the rest. The evicted tokens are then used to update a latent memory online, and the memory readout is added as a residual to compensate the main attention stream for the information lost due to eviction.",
+      "page": 3,
+      "index": 6,
+      "width": 915,
+      "height": 298
+    },
+    {
+      "url": "assets/figures/arxiv/2605.25475v1/fig-007.webp",
+      "caption": "Figure 2. Architectures of the Indexer and the Memory module. Left: the Indexer adopts an MQA-style design with norm on both multi head q and single head cached k (k are continuously cached during decoding); it computes token scores via gated q,k similarity, followed by max aggregation. Right: the Memory module produces a residual readout m(q) from a fixed-size latent state. Evicted tokens update the fast weights (M, b) online, while g(·) and Linearθ(·) are slow weights learned during training.",
+      "page": 3,
+      "index": 7,
+      "width": 442,
+      "height": 316
+    }
+  ]
+}

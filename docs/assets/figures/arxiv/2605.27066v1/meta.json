@@ -1,0 +1,30 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2605.27066v1/fig-001.webp",
+      "caption": "Table 2: Prompt design examples for auxiliary tasks.",
+      "page": 6,
+      "index": 1,
+      "width": 488,
+      "height": 354
+    },
+    {
+      "url": "assets/figures/arxiv/2605.27066v1/fig-002.webp",
+      "caption": "Figure 1: An example of timeline summarization from noisy candidate events. Given the query “Dead or Not app withdraws Demumu”, the left subfigure illustrates the events retrieved from the corpus, while the right subfigure shows the real-world application of event timeline summarization in Baidu Search.",
+      "page": 2,
+      "index": 2,
+      "width": 1002,
+      "height": 531
+    },
+    {
+      "url": "assets/figures/arxiv/2605.27066v1/fig-003.webp",
+      "caption": "Figure 2: System Architecture of QDET: A Query-Driven Event Timeline Summarization Framework consisting of four stages: (1) Document Preprocessing, which transforms real-time document streams into event clusters; (2) RL-Based Event Concise Summarization, which generates a concise summary for each event cluster and stores it in an event database; (3) Multi-Task Fine-Tuned LLM for Timeline Summarization, which, given a specific query, retrieves relevant candidate events from the database and generates a coherent, explanatory event timeline; and (4) Intra-timeline Heat Prediction, an auxiliary module designed to estimate the relative heat level of each event within timeline.",
+      "page": 5,
+      "index": 3,
+      "width": 1044,
+      "height": 479
+    }
+  ]
+}

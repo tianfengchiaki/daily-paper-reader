@@ -1,0 +1,22 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2605.27676v1/fig-001.webp",
+      "caption": "Table 2: Emergent misalignment on a 1.5B instruction-tuned model fine-tuned for 1 epoch on Turner et al. [2025]’s bad_medical_advice corpus (7,049 chat conversations). % mis: misaligned responses on the same 800-prompt first_plot_questions set used in Domain 1 (lower is better). Mean adherence: 0–5 GPT-4o score of how closely the model’s responses on 150 held-out medical prompts match the training-corpus system-prompt specification of subtly-misaligned medical advice (higher is better; engaged responses only, gibberish-strict rubric of Appendix F).",
+      "page": 8,
+      "index": 1,
+      "width": 807,
+      "height": 196
+    },
+    {
+      "url": "assets/figures/arxiv/2605.27676v1/fig-002.webp",
+      "caption": "Table 1: Emergent misalignment on a 32B coding model fine-tuned on insecure code. “Probe” indicates whether the spurious-direction extraction uses labels. “Intervention”: activation-ablation during fine-tuning or gradient-projection during fine-tuning (our method). % task = task performance on a 1000-prompt held-out insecure-code evaluation (higher is better, naive ceiling 93.9, base-model floor 39.9). % mis = misaligned responses on 800 general prompts (lower is better).",
+      "page": 8,
+      "index": 2,
+      "width": 829,
+      "height": 185
+    }
+  ]
+}

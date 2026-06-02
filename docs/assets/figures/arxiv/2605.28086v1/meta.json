@@ -1,0 +1,54 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2605.28086v1/fig-001.webp",
+      "caption": "Table 1: Summary of our results for Shapley value computation for ex-ante influence attribution.",
+      "page": 2,
+      "index": 1,
+      "width": 508,
+      "height": 741
+    },
+    {
+      "url": "assets/figures/arxiv/2605.28086v1/fig-002.webp",
+      "caption": "Table 4: Runtime (seconds) of ExactSingleStep.",
+      "page": 7,
+      "index": 2,
+      "width": 507,
+      "height": 1009
+    },
+    {
+      "url": "assets/figures/arxiv/2605.28086v1/fig-003.webp",
+      "caption": "Table 3: Top 10 members in the Congressional Twitter network selected by out-degree. Each entry shows “rank (actual value)” by different metrics.",
+      "page": 7,
+      "index": 3,
+      "width": 475,
+      "height": 284
+    },
+    {
+      "url": "assets/figures/arxiv/2605.28086v1/fig-004.webp",
+      "caption": "Figure 6: Average relative error varying the parameters of different algorithms on Congressional Twitter network",
+      "page": 28,
+      "index": 4,
+      "width": 506,
+      "height": 572
+    },
+    {
+      "url": "assets/figures/arxiv/2605.28086v1/fig-005.webp",
+      "caption": "Figure 1: (a) shows a toy network of the IC model for Example 1. (b) shows an example of graph 𝐺(𝑟,𝑞) with 𝑟 = 2, 𝑞 = 2 for Theorem 5.1, where the monotone 2-CNF formula is 𝜙 = (𝑥1 ∨ 𝑥2) ∧ (𝑥1 ∨ 𝑥3) ∧ (𝑥2 ∨ 𝑥3) ∧ (𝑥2 ∨ 𝑥4) ∧ (𝑥3 ∨ 𝑥4).",
+      "page": 4,
+      "index": 5,
+      "width": 527,
+      "height": 259
+    },
+    {
+      "url": "assets/figures/arxiv/2605.28086v1/fig-006.webp",
+      "caption": "Table 6: Runtime (seconds) vs. network structure parameters for Complete termination. Dashes (–) indicate timeout (>12 hours).",
+      "page": 9,
+      "index": 6,
+      "width": 507,
+      "height": 1065
+    }
+  ]
+}

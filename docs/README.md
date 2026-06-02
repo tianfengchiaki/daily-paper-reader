@@ -6,80 +6,77 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-06-01
-- 运行时间：2026-06-01 22:15:18 UTC
+- 最新运行日期：2026-06-02
+- 运行时间：2026-06-02 21:44:33 UTC
 - 运行状态：成功
-- 本次总论文数：20
-- 精读区：8
+- 本次总论文数：19
+- 精读区：7
 - 速读区：12
 
 ### 今日简报（AI）
-今日推荐系统研究日报共收录20篇论文，精读8篇，其中两篇获最高分9.0。最值得关注的是利用上下文特征的低秩分解提升特征交互效率，以及多任务排序中联合优化相关性与用户参与度的LLM监督方法。建议重点关注LLM在推荐系统中的安全微调生命周期与实验设计干扰问题。
-- 详情：[/202606/01/README](/202606/01/README)
+今日处理19篇推荐系统论文，精读7篇，广告系统与大模型融合成为核心看点。最值得关注的是LLM作为互补预测器提升广告系统的方案（10分）以及在线实验设计中的干扰应对策略（9分）。建议优先阅读这两篇精读论文，深入理解LLM在工业广告中的应用与实验方法改进。
+- 详情：[/202606/02/README](/202606/02/README)
 
 ### 精读区论文标签
-1. [Context Features Are Cheap: Rank-Aware Decomposition for Efficient Feature Interaction in Recommender Systems](/202606/01/2605.27450v1-context-features-are-cheap-rank-aware-decomposition-for-efficient-feature-interaction-in-recommender-systems)  
+1. [Fine-Tuned LLM as a Complementary Predictor Improving Ads System](/202606/02/2605.27856v1-fine-tuned-llm-as-a-complementary-predictor-improving-ads-system)  
+   标签：评分：10.0/10、query:q3
+   evidence：微调大语言模型作为广告系统中的互补预测器
+2. [Choosing Online Experiment Designs under Interference in Ads, Recommendations, and Member-Experience Systems](/202606/02/2605.25290v1-choosing-online-experiment-designs-under-interference-in-ads-recommendations-and-member-experience-systems)  
+   标签：评分：9.0/10、query:q2
+   evidence：广告和推荐系统中考虑干扰的在线实验设计选择
+3. [Constrained Auto-Bidding via Generative Response Modeling](/202606/02/2605.27811v1-constrained-auto-bidding-via-generative-response-modeling)  
+   标签：评分：9.0/10、query:q2
+   evidence：基于生成响应建模的自动竞价
+4. [Model Monotonicity in Autobidding Auctions: When Do Better Predictions Lead to Better Outcomes?](/202606/02/2605.31036v1-model-monotonicity-in-autobidding-auctions-when-do-better-predictions-lead-to-better-outcomes)  
+   标签：评分：9.0/10、query:q2
+   evidence：自动竞价广告拍卖中的模型单调性
+5. [ProductWebGen: Benchmarking Multimodal Product Webpage Generation](/202606/02/2606.01022v1-productwebgen-benchmarking-multimodal-product-webpage-generation)  
+   标签：评分：9.0/10、query:q6
+   evidence：多模态产品网页生成基准，用于广告营销
+6. [Quantizing Intent: Cross-Domain Semantic IDs from Organic Activity for Industrial Ranking](/202606/02/2606.01396v1-quantizing-intent-cross-domain-semantic-ids-from-organic-activity-for-industrial-ranking)  
    标签：评分：9.0/10、query:q1
-   evidence：秩感知分解提升推荐系统特征交互效率
-2. [Joint Optimization of Relevance and Engagement in Multi-Task Ranking for E-Commerce with Efficient LLM Supervision](/202606/01/2605.27704v1-joint-optimization-of-relevance-and-engagement-in-multi-task-ranking-for-e-commerce-with-efficient-llm-supervision)  
-   标签：评分：9.0/10、query:q3
-   evidence：大模型监督用于电商搜索多任务排序
-3. [Constrained Auto-Bidding via Generative Response Modeling](/202606/01/2605.27811v1-constrained-auto-bidding-via-generative-response-modeling)  
-   标签：评分：9.0/10、query:q2
-   evidence：基于生成响应模型的自动出价广告技术
-4. [Fine-Tuned LLM as a Complementary Predictor Improving Ads System](/202606/01/2605.27856v1-fine-tuned-llm-as-a-complementary-predictor-improving-ads-system)  
-   标签：评分：9.0/10、query:q3
-   evidence：微调开源大语言模型作为广告特定预测器
-5. [Mixture-of-Experts Knowledge Graph Retrieval-Augmented Generation for Multi-Agent LLM-based Recommendation](/202606/01/2605.28175v2-mixture-of-experts-knowledge-graph-retrieval-augmented-generation-for-multi-agent-llm-based-recommendation)  
-   标签：评分：9.0/10、query:llmapp
-   evidence：基于LLM的推荐，结合知识图谱检索和多智能体
-6. [ViASNet: A Video Ad Saliency Network for Predicting Dynamic Saliency and Viewer Engagement](/202606/01/2605.29302v1-viasnet-a-video-ad-saliency-network-for-predicting-dynamic-saliency-and-viewer-engagement)  
-   标签：评分：9.0/10、query:q2
-   evidence：视频广告深度显著性预测模型
-7. [Persona Conditioning of Brand Recommendations in Retrieval-Augmented Commercial Chat: A Prominence-Stratified Cross-Provider Audit](/202606/01/2605.30207v1-persona-conditioning-of-brand-recommendations-in-retrieval-augmented-commercial-chat-a-prominence-stratified-cross-provider-audit)  
-   标签：评分：9.0/10、query:llmapp
-   evidence：基于角色条件的LLM品牌推荐审计
-8. [Model Monotonicity in Autobidding Auctions: When Do Better Predictions Lead to Better Outcomes?](/202606/01/2605.31036v1-model-monotonicity-in-autobidding-auctions-when-do-better-predictions-lead-to-better-outcomes)  
-   标签：评分：9.0/10、query:q2
-   evidence：自动竞价拍卖中模型单调性研究，连接推荐质量与结果
+   evidence：利用跨域用户语义ID提升广告点击率预测
+7. [Usability Analysis of Configurator User Interfaces with Multimodal Large Language Models](/202606/02/2605.29456v1-usability-analysis-of-configurator-user-interfaces-with-multimodal-large-language-models)  
+   标签：评分：8.0/10、query:llmapp
+   evidence：将多模态大语言模型应用于配置器可用性分析
 
 ### 速读区论文标签
-1. [Security in the Fine-Tuning Lifecycle of Large Language Models: Threats, Defenses,Evaluation, and Future Directions](/202606/01/2605.25073v1-security-in-the-fine-tuning-lifecycle-of-large-language-models-threats-defensesevaluation-and-future-directions)  
-   标签：评分：8.0/10、query:llmapp
-   evidence：大语言模型微调生命周期安全
-2. [Choosing Online Experiment Designs under Interference in Ads, Recommendations, and Member-Experience Systems](/202606/01/2605.25290v1-choosing-online-experiment-designs-under-interference-in-ads-recommendations-and-member-experience-systems)  
-   标签：评分：8.0/10、query:q2
-   evidence：广告和推荐系统中考虑干扰的在线实验设计
-3. [Uniboost: Global Coordination with Value Alignment for Fair and Efficient Traffic Allocation](/202606/01/2605.26424v1-uniboost-global-coordination-with-value-alignment-for-fair-and-efficient-traffic-allocation)  
-   标签：评分：8.0/10、query:q1
-   evidence：推荐混排中具有价值对齐的统一流量分配框架
-4. [Bounded-Compute Multimodal Regression for Product-Rating Prediction](/202606/01/2605.27737v1-bounded-compute-multimodal-regression-for-product-rating-prediction)  
+1. [SIREN: Unified Multi-Granularity Semantic Interaction for Multi-Modal Lifelong User Interest Modeling](/202606/02/2605.25726v1-siren-unified-multi-granularity-semantic-interaction-for-multi-modal-lifelong-user-interest-modeling)  
    标签：评分：8.0/10、query:q6
-   evidence：多模态VLM回归用于广告中产品评分预测
-5. [Beyond Query Memorization: Large Language Model Routing with Query Decomposition and Historical Matching](/202606/01/2605.25558v1-beyond-query-memorization-large-language-model-routing-with-query-decomposition-and-historical-matching)  
+   evidence：多模态终身用户兴趣建模
+2. [DeGRe: Dense-supervised Generative Reranking for Recommendation](/202606/02/2605.25749v1-degre-dense-supervised-generative-reranking-for-recommendation)  
+   标签：评分：8.0/10、query:q1
+   evidence：生成式重排序用于推荐
+3. [Joint Optimization of Relevance and Engagement in Multi-Task Ranking for E-Commerce with Efficient LLM Supervision](/202606/02/2605.27704v1-joint-optimization-of-relevance-and-engagement-in-multi-task-ranking-for-e-commerce-with-efficient-llm-supervision)  
+   标签：评分：8.0/10、query:q1
+   evidence：使用LLM监督的多任务排序优化电商相关性和参与度
+4. [Efficient Shapley-Based Influence Attribution in Social Networks](/202606/02/2605.28086v1-efficient-shapley-based-influence-attribution-in-social-networks)  
+   标签：评分：8.0/10、query:q2
+   evidence：用于广告预算分配和影响者定价的影响力归因
+5. [Unsupervised Identification and Removal of Spurious Correlations During Fine-Tuning](/202606/02/2605.27676v1-unsupervised-identification-and-removal-of-spurious-correlations-during-fine-tuning)  
    标签：评分：7.0/10、query:llmapp
-   evidence：大模型路由框架优化性能成本权衡
-6. [Neural Router: Semantic Content Matching for Agentic AI](/202606/01/2605.25701v1-neural-router-semantic-content-matching-for-agentic-ai)  
+   evidence：微调期间去除虚假关联
+6. [ProRL: Effective Reinforcement Learning for Proactive Recommendation via Rectified Policy Gradient Estimation](/202606/02/2605.28293v1-prorl-effective-reinforcement-learning-for-proactive-recommendation-via-rectified-policy-gradient-estimation)  
+   标签：评分：7.0/10、query:q1
+   evidence：强化学习用于主动推荐
+7. [UniNote: A Unified Embedding Model for Multimodal Representation and Ranking](/202606/02/2605.29287v2-uninote-a-unified-embedding-model-for-multimodal-representation-and-ranking)  
+   标签：评分：7.0/10、query:q6
+   evidence：面向工业I2I检索的统一多模态嵌入模型
+8. [DMC-CF: Dynamic Multimodal CounterFactual QA benchmark for Causal Reasoning](/202606/02/2605.29339v1-dmc-cf-dynamic-multimodal-counterfactual-qa-benchmark-for-causal-reasoning)  
    标签：评分：7.0/10、query:llmapp
-   evidence：LLM作为多模态代理AI的语义匹配引擎
-7. [Linear and Neural Dueling Bandits with Delayed Feedback](/202606/01/2605.26554v1-linear-and-neural-dueling-bandits-with-delayed-feedback)  
-   标签：评分：7.0/10、query:llmapp
-   evidence：对偶赌博机用于推荐系统偏好学习
-8. [Large Language Model-Powered Query-Driven Event Timeline Summarization in Industrial Search](/202606/01/2605.27066v1-large-language-model-powered-query-driven-event-timeline-summarization-in-industrial-search)  
-   标签：评分：7.0/10、query:llmapp
-   evidence：工业搜索中基于大语言模型的查询驱动事件时间线摘要
-9. [First, do no harm: Breaking suicidogenic echo chambers in media recommendation](/202606/01/2605.25258v1-first-do-no-harm-breaking-suicidogenic-echo-chambers-in-media-recommendation)  
+   evidence：面向因果推理的多模态反事实问答基准，使用多模态大语言模型
+9. [Beyond Query Memorization: Large Language Model Routing with Query Decomposition and Historical Matching](/202606/02/2605.25558v1-beyond-query-memorization-large-language-model-routing-with-query-decomposition-and-historical-matching)  
    标签：评分：6.0/10、query:llmapp
-   evidence：基于大模型的重新排序方法用于安全推荐
-10. [LLM-as-a-Judge in Healthcare: A Scoping Analysis of Applications, Methods, and Human Alignment](/202606/01/2605.25273v1-llm-as-a-judge-in-healthcare-a-scoping-analysis-of-applications-methods-and-human-alignment)  
+   evidence：使用查询分解和历史匹配的大语言模型路由框架
+10. [Active Query Synthesis for Preference Learning](/202606/02/2605.26072v1-active-query-synthesis-for-preference-learning)  
+   标签：评分：6.0/10、query:q1
+   evidence：用于高效偏好学习的主动查询合成
+11. [RAGEAR: Retrieval-Augmented Graph-Enhanced Academic Recommender](/202606/02/2605.26819v1-ragear-retrieval-augmented-graph-enhanced-academic-recommender)  
+   标签：评分：6.0/10、query:q1
+   evidence：检索增强图增强的学术课程推荐系统
+12. [Can Retrieval Heads See Images? Multimodal Retrieval Heads in Long-Context Vision-Language Models](/202606/02/2605.27243v1-can-retrieval-heads-see-images-multimodal-retrieval-heads-in-long-context-vision-language-models)  
    标签：评分：6.0/10、query:llmapp
-   evidence：医疗中LLM作为法官的应用
-11. [Retrieval as Reasoning: Self-Evolving Agent-Native Retrieval via LLM-Wiki](/202606/01/2605.25480v2-retrieval-as-reasoning-self-evolving-agent-native-retrieval-via-llm-wiki)  
-   标签：评分：6.0/10、query:llmapp
-   evidence：面向LLM的智能体原生检索系统，使用维基百科式结构
-12. [Iterate Until Retrieved: Factual Nugget Optimization for Discoverable Continual Corrections in Agentic RAG](/202606/01/2605.25641v1-iterate-until-retrieved-factual-nugget-optimization-for-discoverable-continual-corrections-in-agentic-rag)  
-   标签：评分：6.0/10、query:llmapp
-   evidence：基于LLM的智能RAG中的迭代事实摘要优化
+   evidence：长上下文视觉语言模型中多模态检索头的检测
 
 
 <div class="dpr-home-promo-card">

@@ -1,0 +1,38 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2605.29287v2/fig-001.webp",
+      "caption": "Figure 1: We propose UniNote, a unified retrieval-ranking framework specifically designed for I2I retrieval, which is capable of encoding various modality inputs into a unified space with cross-modal alignment (task: Atomic-level Alignment, OCR Perception), localized retrieval (task: Semantic Extraction, Subordinate Retrieval), and relevance-aware ranking (task: Content Relevance) capabilities.",
+      "page": 2,
+      "index": 1,
+      "width": 1054,
+      "height": 350
+    },
+    {
+      "url": "assets/figures/arxiv/2605.29287v2/fig-002.webp",
+      "caption": "Table 3: Hard Negative Sample Ablation Results (%).",
+      "page": 8,
+      "index": 2,
+      "width": 960,
+      "height": 273
+    },
+    {
+      "url": "assets/figures/arxiv/2605.29287v2/fig-003.webp",
+      "caption": "Figure 2: The training pipeline, where (a) presents the training data construction strategy designed for item-to-item retrieval, including retrieval sample pairs and hard negative mining strategy; (b) represents the training stage 1: contrastive supervised fine-tuning (SFT); and (c) represents the training stage 2: relative rerank via reinforcement learning (RL).",
+      "page": 4,
+      "index": 3,
+      "width": 1052,
+      "height": 501
+    },
+    {
+      "url": "assets/figures/arxiv/2605.29287v2/fig-004.webp",
+      "caption": "Figure 3: Schematic illustration of the reward function. (a) The reward function comprises four components: Irrelevant Note Penalty, Base Relevant Reward, Absolute Position Reward, and Relative Order Reward. (b) The reward distribution for simulated prediction ranking is depicted. The reward increases in conjunction with the relevant hit rate and order precision, where the relevant hit rate plays a more decisive role in the overall reward value.",
+      "page": 5,
+      "index": 4,
+      "width": 496,
+      "height": 261
+    }
+  ]
+}

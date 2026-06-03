@@ -1,0 +1,438 @@
+Title: Quantizing Intent: Cross-Domain Semantic IDs from Organic Activity for Industrial Ranking
+
+URL Source: https://arxiv.org/pdf/2606.01396v1
+
+Published Time: Tue, 02 Jun 2026 01:42:36 GMT
+
+Number of Pages: 8
+
+Markdown Content:
+# Quantizing Intent: Cross-Domain Semantic IDs from Organic Activity for Industrial Ranking 
+
+# Julie Choi ∗
+
+julchoi@linkedin.com LinkedIn United States 
+
+# Haoran Ye ∗
+
+haye@linkedin.com LinkedIn United States 
+
+# Zhiwei Ding ∗
+
+zding@linkedin.com LinkedIn United States 
+
+# Bo Long 
+
+BLong@linkedin.com LinkedIn United States 
+
+# Benjamin Zelditch 
+
+bzelditch@linkedin.com LinkedIn United States 
+
+# Arpita Vats 
+
+avats@linkedin.com LinkedIn United States 
+
+## Abstract 
+
+Ads click-through rate (CTR) prediction is constrained by sparse user supervision: most users engage with ads infrequently while generating dense behavioral evidence in organic surfaces such as feed. Transferring these cross-domain signals into ads ranking is difficult due to domain mismatch, serving cost, and production complexity. We introduce cross-domain user Semantic IDs (SIDs) derived from organic feed activity and establish that behavioral activity richness governs cross-domain transfer quality : SIDs from user profile text yield +0.036% AUC; SIDs from a LLaMA-3.1-based user embedding model (contrastively fine-tuned on cross-domain activity data, with user profile as the input prompt) yield +0.107% ;and SIDs from direct feed activity behavioral embeddings yield 
+
++0.213% . This monotonic progression reveals that the amount of behavioral activity encoded in the source representation is the key determinant of downstream ads ranking quality. We propose RQ-FSQ (Residual + Finite Scalar Quantization) ,a method that pairs per-dimension scalar quantization with residual VAE quantization to discretize pre-trained embeddings while match-ing dense-embedding AUC. RQ-FSQ matches or slightly exceeds the AUC of the dense source embedding on two heterogeneous sources — Feed Activity ( +0.351% at ∼ 30 × smaller storage) and Activity-Tuned LLaMA ( +0.265% at ∼ 280 × smaller storage) — establishing it as a general-purpose discretizer for pre-trained embeddings. We further introduce the Hierarchical Discrete Embedding (HDE) Module , which encodes any 𝐾 -level SID via prefix n-gram sparse embedding tables trained end-to-end under the CTR objective. On a large-scale industrial production ads system, cold-start segment analysis shows gains reaching +1.522% for users with near-zero ad interaction history, directly validating the cross-domain behavioral transfer mechanism. 
+
+## CCS Concepts 
+
+• Information systems → Recommender systems ; Online advertising ; • Computing methodologies → Neural networks ;
+
+Learning latent representations .
+
+> ∗Corresponding author.
+
+## Keywords 
+
+Semantic IDs, Cross-Domain Recommendation, Ads CTR Predic-tion, Residual Quantization, Finite Scalar Quantization, Generative Recommendation 
+
+## 1 Introduction 
+
+Ads recommendation systems operate under extreme interaction sparsity. Compared with organic surfaces, where users generate frequent and diverse behavioral feedback, ad clicks are relatively rare and unevenly distributed across the user population. This creates a persistent challenge: for the large fraction of users with sparse ad interaction history, the model has little behavioral signal from which to infer intent. The problem is most acute in the cold-start regime — new or infrequent ad engagers — where the model must estimate user preferences from profile attributes alone. A natural source of supplemental evidence is organic feed ac-tivity. Users interact with feed content orders of magnitude more often than with ads, and those interactions encode evolving topical interests, content-type affinities, and engagement intent. However, transferring feed signals into an ads CTR model is difficult for three reasons: (1) domain mismatch between feed and ads feature spaces; (2) the high dimensionality and serving cost of dense behav-ioral embeddings; and (3) integration complexity within large-scale production training pipelines that cannot accommodate bespoke preprocessing per feature source. Semantic IDs (SIDs) [ 1, 2 ] have recently emerged as an effective way to discretize dense embeddings into compact token sequences via residual quantization (RQ-KMeans or RQ-VAE [ 3 ]), enabling standard embedding-table lookup and end-to-end fine-tuning un-der the downstream task objective. Prior SID work focuses almost exclusively on single-domain use: the embeddings being quantized originate in the same domain as the recommendation target [ 1, 2, 4 –6 ]. In this paper we study a different setting — cross-domain viewer SIDs — where user representations derived from organic feed behav-ior are quantized and used as input features for ads CTR prediction. To our knowledge, this is the first empirical study of cross-domain viewer SIDs for industrial ads CTR modeling. We integrate cross-domain viewer SIDs into a production decoder-only Transformer ranking model for ads CTR. The key design chal-lenge is the embedding module: how to map a 𝐾 -level discrete token sequence into a dense representation that is trainable end-to-end. 
+
+> 1
+> arXiv:2606.01396v1 [cs.IR] 31 May 2026 Julie Choi, Haoran Ye, Zhiwei Ding, Bo Long, Benjamin Zelditch, and Arpita Vats
+
+We introduce the Hierarchical Discrete Embedding (HDE) Mod-ule , which encodes each SID via prefix n-gram sparse embedding tables — prefix unigram, bigram, and trigram keys are each hashed to indices in dedicated trainable tables with bounded memory. 
+
+Contributions. 
+
+• We propose RQ-FSQ (Residual + Finite Scalar Quantization) ,a quantization method for pre-trained embeddings that pairs per-dimension scalar quantization (FSQ) with residual VAE quan-tization (RQ-VAE), preserving global geometry (RQ-VAE) and per-dimension fine structure (FSQ). RQ-FSQ matches or slightly exceeds dense-embedding AUC on two heterogeneous sources — Feed Activity ( +0.351% at ∼ 30 × smaller storage) and Activity-Tuned LLaMA ( +0.265% at ∼ 280 × smaller storage) — establishing it as a general-purpose discretizer for pre-trained embeddings. 
+
+• We introduce cross-domain viewer SIDs and establish the 
+
+behavioral activity richness principle : the quality of cross-domain SID transfer scales monotonically with the amount of behavioral activity encoded in the source embedding — profile text ( +0.036% ), activity-trained embeddings ( +0.107% ), and direct behavioral aggregations ( +0.213% ), with cold-start segment gains reaching +1.522% . This provides a general design principle for selecting SID sources. 
+
+• We introduce Multi-Source SID : a structured 9-code represen-tation where 𝑐 1–𝑐 3 come from Activity-Tuned LLaMA (back-bone; highest user coverage), 𝑐 4–𝑐 6 from Profile Qwen (missing codes inferred from Activity-Tuned LLaMA embeddings during SID training), and 𝑐 7–𝑐 9 from Feed Activity. Multi-Source SID achieves +0.036% AUC over naïvely summing three independent single-source SIDs, with the HDE Module encoding each source’s prefix n-gram tables independently and summing at the input layer — no architectural changes required. 
+
+## 2 Related Work 
+
+Sequential recommendation and ads CTR.. Transformer-based [ 7 ]sequential architectures are now the dominant backbone for rec-ommendation and ads CTR. SASRec [ 8] applies left-to-right self-attention to user interaction sequences; BERT4Rec [ 9] extends this with bidirectional masked prediction. For ads CTR specifi-cally, BST [ 10 ] introduces behavior-sequence Transformers, while DIN [ 11 ] and DIEN [ 12 ] model adaptive interest activation and evolution. DCN-V2 [ 13 ] combines explicit feature crossing with deep networks for large-scale ranking. The production baseline used in our experiments is a decoder-only Transformer for ads CTR with context-conditioned attention, timestamp-based RoPE, session masking, and FlashAttention [ 14 , 15 ]. This paper treats that model as a fixed backbone and focuses entirely on improving viewer-side input representations. 
+
+Semantic IDs for recommendation. TIGER [ 1] is the seminal work on SIDs for recommendation: it quantizes item content embed-dings via RQ-VAE [ 3 ] into hierarchical codeword tuples and trains a seq2seq Transformer to autoregressively decode the SID of the next item. Singh et al. [2] extend SIDs to the YouTube ranking stage using SentencePiece tokenization over codebook sequences, demonstrating improved generalization on tail and new items in production. IDGenRec [ 4] aligns LLMs with recommendation via jointly learned textual item IDs; LC-Rec [ 5] integrates collaborative filtering signals via vector quantization. LETTER [ 16 ] proposes learnable tokenization that adapts codebook assignment jointly with the downstream recommendation objective. Zheng et al. [6] deploy semantic ID prefix n-grams for item IDs in production ads ranking at Meta. Ramasamy et al. [17] introduce SIDE, which con-verts VQ codewords to collision-free discrete IDs via positional base-𝐶 encoding, enabling parameter-efficient embedding table lookups for long sequences. A common thread in all of these works is the single-domain 
+
+assumption: SIDs are derived from the same interaction space as the recommendation target. We break this assumption by constructing 
+
+user SIDs from cross-domain organic activity and using them for ads CTR prediction. 
+
+Cross-domain recommendation. Cross-domain recommendation has been studied through embedding-and-mapping (EMCDR [ 18 ]), shared hidden layer activations (CoNet [ 19 ]), and through dis-crete SID tokens for item vocabulary alignment across domains (GenCDR [ 20 ]). These methods typically require overlapping item or user sets between domains, or explicit domain-adaptation objec-tives. Our approach uses discrete SID tokens as a transfer interface 
+
+with no explicit alignment loss: the CTR objective drives adaptation of the cross-domain embedding tables to the target task. 
+
+Discrete representation learning. VQ-VAE [ 21 ] introduces vector quantization with straight-through gradients for discrete latent spaces. RQ-VAE [ 3 ] extends this with residual quantization, en-abling hierarchical multi-level codebooks where successive residu-als capture progressively finer structure — the foundation of SID hierarchies. We use RQ-KMeans (deterministic, no variational ob-jective) for production stability. Our HDE Module (Section 4.4) shares the goal of sparse trainable tables for discrete IDs with Ra-masamy et al. [17] , but adopts prefix n-gram hash-based lookups with bounded memory 𝐻 max , in contrast to SIDE’s collision-free positional base-𝐶 encoding which scales as 𝑂 (𝐶 𝐾 ). This trade-off — controlled collision for bounded memory — is required for industrial-scale deployment where unbounded tables are infeasible. We further extend the design to a Multi-Source SID setting where prefix tables are applied per-source independently (Section 4.2). 
+
+## 3 Production Ads Ranking Model 
+
+The baseline system is a decoder-only Transformer [ 14 ] trained for industrial ads CTR prediction. Given a user’s interaction sequence 
+
+x = (𝑒 1, . . . , 𝑒 𝐿 ) over a trailing window, the model predicts click probability autoregressively. Each event 𝑒 𝑡 carries embeddings for ad creative ID, campaign ID, format and charge type, OS, objective type, and other contextual features. Context-conditioned attention with timestamp RoPE handles positional information; session mask-ing aligns the attention pattern at training with the causal structure at serving time. Training uses DDP/FSDP2 [ 22 ] on H200 clusters. This paper extends the baseline with cross-domain viewer SIDs while leaving the Transformer backbone, attention stack, and pre-diction head unchanged : all improvements come from richer user input representations. 
+
+> 2Quantizing Intent: Cross-Domain Semantic IDs from Organic Activity for Industrial Ranking
+
+## 4 Method 4.1 SID Construction: RQ-KMeans and RQ-FSQ 
+
+For a dense user embedding v ∈ R𝑑 , residual quantization produces a 𝐾 -tuple of discrete tokens: 
+
+SID (v) = (𝑐 1, 𝑐 2, . . . , 𝑐 𝐾 ), 𝑐 𝑘 ∈ { 1, . . . , 𝐶 }, (1) where 𝐶 is the codebook size and 𝐾 is the number of quantization levels. We use two quantization methods, chosen based on whether the SID is trained from scratch or must align with a pre-trained embedding :
+
+RQ-KMeans. Operates deterministically over 𝐾 residual stages: (1) assign v to its nearest centroid in a 𝐶 -entry codebook, recording 
+
+𝑐 1; (2) compute residual r1 = v − 𝝁 𝑐 1 ; (3) repeat on successive resid-uals to obtain 𝑐 2, . . . , 𝑐 𝐾 . Because the uniform-variance assumption of 𝑘 -means fits well when quantizing embeddings from scratch, RQ-KMeans achieves excellent codebook utilization and produces reproducible offline assignments. 
+
+RQ-FSQ (Residual + Finite Scalar Quantization). A quantization method for pre-trained embeddings that preserves information at two complementary scales: global geometry (via RQ-VAE) and per-dimension fine structure (via FSQ). FSQ [ 23 ] independently quantizes each dimension of v to a finite integer alphabet L =
+
+{− 𝐿, . . . , 𝐿 }:
+
+ˆCFSQ = FSQ (v) = round (tanh (v) · 𝐿 ) . (2) RQ-VAE [ 3 ] quantizes successive residuals across 𝐾 stages, yielding 
+
+ˆCRQ = (𝑐 1, . . . , 𝑐 𝐾 ) where 𝑐 𝑖 is the nearest codebook entry at stage 
+
+𝑖 . The two streams are fused additively in the downstream model: 
+
+eRQ-FSQ = e ˆCRQ + 𝑓 ( ˆCFSQ ), (3) where e ˆCRQ is the downstream embedding for the RQ codes and 𝑓 
+
+is a linear projection to the model dimension. We apply RQ-FSQ to the Feed Activity source (Section 4.3). 
+
+Method selection. RQ-KMeans is simple, deterministic, and de-livers strong AUC gains on every source we tested (Table 2) at several times smaller storage than RQ-FSQ; RQ-FSQ matches the dense float baseline at modestly higher storage by adding a recon-struction objective that preserves source geometry RQ-KMeans’ nearest-centroid assignment can discard. Both produce the same 
+
+𝐾 -level token sequence consumed by the HDE Module (Section 4.4); the choice between them is a storage–fidelity trade-off rather than a binary preference. 
+
+## 4.2 Multi-Source SID 
+
+We study three cross-domain user SID sources. All viewer SIDs are request-level : constant across all sequence positions for a given user, keyed on user ID, and generated from data strictly available before the prediction timestamp. We use 𝐾 =3 codes per source in all experiments. A Multi-Source SID combines three cross-domain user em-bedding sources — forming a progression of increasing behavioral activity richness — into a single structured 9-code representation consumed by the HDE Module without architectural changes: 
+
+• 𝑐 1–𝑐 3 Activity-Tuned LLaMA SID : embedding from a LLaMA-3.1-based model contrastively fine-tuned on cross-domain activ-ity data with user profile as input. Encodes implicit behavioral intent even though input is profile text. 
+
+• 𝑐 4–𝑐 6 Profile Qwen SID : embedding from a Qwen-based lan-guage model encoding user profile text (title, skills, summary). Encodes text semantics with no direct behavioral activity signal. 
+
+• 𝑐 7–𝑐 9 Feed Activity SID : embedding aggregated from feed en-gagement signals over a 1-year trailing window. Provides the richest direct behavioral activity signal. 
+
+Backbone-based imputation for missing sources. Activity-Tuned LLaMA plays a second, distinct role beyond contributing 𝑐 1–𝑐 3: it serves as the backbone for cross-source imputation when Profile Qwen or Feed Activity is unavailable for a user. We pick it for this role because (i) it has the highest user coverage among the three sources — so it is the source most often available when others are missing — and (ii) it is already activity-trained, making it a reasonable estimator of the missing source’s content. Imputation preserves population coverage rather than silently zeroing out users with missing sources — an important property in production deployments where no single source achieves 100% coverage. Concretely, let u, v, w denote the Activity-Tuned LLaMA, Profile Qwen, and Feed Activity embeddings respectively, with ⊥ denoting a missing embedding. When v is observed, the Profile Qwen SID is 𝐶 𝑃 = RQ-KMeans 𝑃 (v); when v is missing it is imputed from u
+
+through a dedicated residual VAE quantizer: 
+
+ˆ𝐶 𝑃 =
+
+
+
+⊥ v =⊥, u =⊥
+
+RQ-VAE 𝑃 (𝑔 (u)) v =⊥, u ≠⊥
+
+𝐶 𝑃 v ≠⊥,
+
+(4) where 𝑔 is a linear projection from dim (u) to dim (v) and RQ-VAE 𝑃 
+
+is a 𝐾 -level residual VQ-VAE trained on users with both u and v
+
+present, with reconstruction target v and the standard objective: 
+
+LRQ-VAE 𝑃 = v−
+
+> 𝐾
+
+∑︁ 
+
+> 𝑙 =1
+
+e(𝑙 ) 22+
+
+> 𝐾
+
+∑︁ 
+
+> 𝑙 =1
+
+
+
+sg [r(𝑙 ) ]− e(𝑙 ) 22+𝛽 r(𝑙 ) −sg [e(𝑙 ) ] 22
+
+
+
+,
+
+(5) with r(𝑙 ) and e(𝑙 ) the residual and codebook embedding at level 𝑙 , sg 
+
+the stop-gradient operator, and 𝛽 the commitment loss coefficient. An independently trained RQ-VAE 𝐹 is used for the Feed Activ-ity source when w is missing. Each source uses its own codebook trained via RQ-KMeans: 𝐶 𝐴 = RQ-KMeans 𝐴 (u), 𝐶 𝑃 = RQ-KMeans 𝑃 (v),
+
+𝐶 𝐹 = RQ-KMeans 𝐹 (w).
+
+Cascade fallback. When the imputation backbone u is also miss-ing (i.e., v = u =⊥ in Eq. 4, and symmetrically for w), the affected source emits the padding code 𝑐 𝑘 =0 for all 𝐾 levels. The HDE Mod-ule maps padding codes to the zero embedding at every level (Eq. 6), so the user’s representation cleanly degrades to the contribution of the remaining sources without spurious lookups. 
+
+## 4.3 RQ-FSQ: Storage Footprint 
+
+An RQ-FSQ token sequence requires 𝐾 ·⌈ log 2 𝐶 ⌉+ 𝐷 ·⌈ log 2 𝐿 ⌉ 
+
+> 8
+
+≈ 36 bytes for our production configuration ( 𝐾 =3, 𝐶 =1024 , 𝐷 =64 , 𝐿 =16 ). The reduction relative to the float32 source scales with the source dimen-sionality: ∼ 30 × for the lower-dimensional Feed Activity source, 
+
+> 3Julie Choi, Haoran Ye, Zhiwei Ding, Bo Long, Benjamin Zelditch, and Arpita Vats
+
+and ∼ 280 × for the higher-dimensional Activity-Tuned LLaMA source — making RQ-FSQ particularly valuable for LLM-based en-coders, with no custom preprocessing required at serving time. 
+
+## 4.4 Hierarchical Discrete Embedding (HDE) Module 
+
+The HDE Module encodes any 𝐾 -level SID into a dense user em-bedding using prefix n-gram sparse embedding tables with hash-based lookups bounded by a memory cap 𝐻 max . For a 𝐾 -level SID s = (𝑐 1, . . . , 𝑐 𝐾 ) ∈ { 0, . . . , 𝐶 }𝐾 (with 0 denoting padding), each prefix (𝑐 1, . . . , 𝑐 𝑘 ) is hashed to an integer index and looked up in a dedicated trainable sparse table W𝑘 , yielding level-𝑘 embedding 
+
+e𝑘 . This is analogous to standard categorical embedding tables in recommendation systems, with prefix 𝑘 -grams serving as the composite feature ID. 
+
+Level 1 — prefix unigram. Direct embedding lookup: 
+
+e1 = W1 [𝑐 1], W1 ∈ R(𝐶 +1) × 𝑑 , W1 [0] = 0. (6) 
+
+Level 𝑘 ≥ 2 — prefix 𝑘 -gram. Polynomial hashing over the prefix 
+
+(𝑐 1, . . . , 𝑐 𝑘 ):idx 𝑘 =
+
+h 𝑘 ∑︁ 
+
+> 𝑗 =1
+
+(𝑐 𝑗 −1)· 𝐶 𝑘 − 𝑗 i
+
+mod 𝐻, e𝑘 = W𝑘 [idx 𝑘 ], W𝑘 ∈ R𝐻 ×𝑑 .
+
+(7) All hash tables are capped at the same maximum size: 
+
+𝐻 = min 
+
+ 𝐶 𝐾 /𝛼 , 𝐻 max 
+
+, (8) where 𝛼 is a compression factor and 𝐻 max caps memory. Level em-beddings are summed to produce the user embedding e = Í𝐾 𝑘 =1 e𝑘 .All tables {W𝑘 }𝐾 𝑘 =1 are initialized randomly and trained jointly under the CTR objective. 
+
+Multi-Source SID.. For the Multi-Source SID (Section 4.2), prefix n-gram tables are applied independently to each source’s 𝐾 -code block and all embeddings are summed: 
+
+euser =
+
+> 𝑆
+
+∑︁ 
+
+> 𝑠 =1
+
+HDE  s(𝑠 ) , (9) with s(1) =(𝑐 1, 𝑐 2, 𝑐 3), s(2) =(𝑐 4, 𝑐 5, 𝑐 6), s(3) =(𝑐 7, 𝑐 8, 𝑐 9), yielding 𝑆 ×𝐾 =9
+
+table lookups (Figure 1). 
+
+## 4.5 Integration into the Ads Ranking Model 
+
+User SIDs are request-level : the same 𝐾 -token sequence is broadcast across all 𝐿 positions in the interaction sequence for a given user. The input representation at event 𝑒 𝑡 is: 
+
+h𝑡 = LayerNorm 
+
+∑︁  
+
+> 𝑓 ∈ F
+
+e(𝑓 ) 
+
+> 𝑡
+
++ euser 
+
+, (10) where F is the standard feature set and euser = HDE (suser ) is the user embedding from the HDE Module, constant across positions. 
+
+Learning rates. HDE embedding tables use a higher learning rate (𝜂 HDE = 0.02 ) than Transformer weights ( 𝜂 TR = 4 × 10 −4), following established practice for embedding-heavy ranking systems [ 11 , 13 ].                
+
+> 𝑐 1𝑐 2𝑐 3
+> W1
+> unigram
+> W2
+> bigram (𝑐 1, 𝑐 2)
+> W3
+> trigram (𝑐 1, 𝑐 2, 𝑐 3)
+> e=e1+e2+e3
+> User embedding e∈R𝑑
+
+Figure 1: Hierarchical Discrete Embedding (HDE) Module illustrated for a single-source 𝐾 =3 SID. Level 1 looks up the prefix unigram 𝑐 1 in a direct table W1. Level 2 hashes the prefix bigram (𝑐 1, 𝑐 2) into table W2. Level 3 hashes the prefix trigram (𝑐 1, 𝑐 2, 𝑐 3) into table W3 (note arrows from all three tokens). All tables use hash size 𝐻 = min (⌊ 𝐶 𝐾 /𝛼 ⌋, 𝐻 max ) and are trained end-to-end under the CTR objective; level em-beddings are summed to produce e. In the Multi-Source SID setting, the same module is applied independently to each source’s 3-code block ( 𝑐 1–𝑐 3, 𝑐 4–𝑐 6, 𝑐 7–𝑐 9) and all embeddings are summed (Eq. 9). 
+
+Data pipeline. User SID tokens are materialized offline, nor-malized to exactly 𝐾 levels during data loading, and broadcast to [𝐵, 𝐿, 𝐾 ] integer tensors during batch collation, ensuring strict train-serve schema parity. Figure 2 illustrates the integration. 
+
+## 5 Experiments 
+
+Our experiments answer five research questions: 
+
+• RQ1 : Can cross-domain viewer SIDs improve ads CTR ranking over the no-SID production baseline? 
+
+• RQ2 : Does the AUC gain from a cross-domain SID scale with the amount of behavioral activity encoded in its source embedding? 
+
+• RQ3 : Does the structured Multi-Source SID with backbone-based imputation beat naïvely summing independent single-source SIDs? 
+
+• RQ4 : Does RQ-FSQ match the AUC of the dense source embed-ding across heterogeneous pre-trained sources? 
+
+• RQ5 : Are cross-domain viewer SIDs most valuable for users with sparse ad interaction history (cold-start)? 
+
+## 5.1 Setup 
+
+Data. Production ads logs from a large-scale industrial recom-mendation platform; 60 days of data for training and the subsequent 1 day for evaluation. All results are reported as relative AUC gains over the no-SID baseline; absolute values are withheld per confi-dentiality policy. 
+
+Model. The production ads click prediction ranking model de-scribed in Section 3. User SID default: codebook 𝐶 =1024 , levels 𝐾 =3,hash size 𝐻 = min (⌊ 𝐶 𝐾 /𝛼 ⌋, 𝐻 max ), embedding dimension 𝐷 = 64 .For RQ-VAE, commitment loss coefficient 𝛽 is 0.25.                        
+
+> 4Quantizing Intent: Cross-Domain Semantic IDs from Organic Activity for Industrial Ranking
+> Viewer SID
+> (𝑐 1, . . . , 𝑐 𝐾 )
+> HDE Module (§4.4)
+> Event features at position 𝑡
+> Embedding Tables
+> {W𝑓 }𝑓 ∈F
+> h𝑡 =LayerNorm  Í 𝑓 e(𝑓 )
+> 𝑡 +euser ,𝑡 =1, . . . , 𝐿
+> Transformer Stack (8 layers, FlashAttention 3, session masking)
+> ˆ𝑃 (click )
+> {h1, . . . , h𝐿 }
+> euser
+> const. across 𝑡 =1, . . . , 𝐿
+> {e(𝑓 )
+> 𝑡 }
+
+Figure 2: Integration of the HDE Module into the Ads Ranking Model. Left: The viewer SID (𝑐 1, . . . , 𝑐 𝐾 ) is encoded once per request by the HDE Module (Section 4.4), producing euser — a dense vector constant across all 𝐿 positions in the sequence. Right: Per-event features at position 𝑡 are encoded through standard embedding tables. Fusion (Eq. 10): At every position 𝑡 , the user embedding is summed with the event-level embeddings before a shared LayerNorm, yielding input tokens {h𝑡 }. The resulting sequence is processed by the Transformer stack and scored by the CTR head. All HDE embedding tables are trained end-to-end under the CTR objective. 
+
+Metric. AUC relative to the no-SID baseline. At industrial produc-tion scale, +0.1% offline AUC reliably corresponds to measurable online CTR impact; this correspondence has been validated on the same production system across multiple prior deployments [14]. 
+
+Controls. Random seed, batch size, optimizer schedule, and model depth are held fixed across all variants to isolate SID effects. 
+
+Hyperparameter sensitivity. We selected 𝐾 =3, 𝐶 =1024 , and 𝐷 =64 
+
+based on internal sweeps on pilot configurations: smaller 𝐾 under-fit, and larger 𝐾 or 𝐶 yielded no measurable improvement at our deployment scale. The hash-table cap 𝐻 max is a memory budget that bounds embedding-table size to keep downstream serving costs manageable, with no observed quality cost in our pilot studies. For RQ-FSQ, we use 𝐿 =16 levels per dimension (4 bits), chosen to keep the FSQ branch compact while retaining enough per-dimension resolution to preserve fine structure. 
+
+Serving cost. The HDE Module adds negligible inference latency over the no-SID baseline: all lookups are local memory accesses on standard categorical embedding tables, and per-request user SIDs are precomputed offline (Section 4.5). Training cost is essentially unchanged because the HDE tables share the same SGD step as the rest of the model. 
+
+## 5.2 Main Results (RQ1–RQ3) 
+
+Table 1 consolidates all SID results. The upper block covers single-source SIDs (RQ1, RQ2); the lower block covers multi-source com-binations (RQ3). All methods use the same production Ads ranking model and HDE Module with 𝐾 =3 codes per source. 
+
+## 5.3 Behavioral Activity Richness Governs Transfer Quality (RQ2) 
+
+The upper block of Table 1 reveals a systematic relationship: the downstream AUC gain scales monotonically with the amount of behavioral activity encoded in the source representation. Profile Qwen SID (text semantics, no behavioral signal) yields +0.036% .Activity-Tuned LLaMA SID, fine-tuned on cross-domain activity data, yields +0.107% — the implicit behavioral signal embedded during its training provides substantial additional value. Feed Ac-tivity SID, directly aggregating 1-year of engagement signals, yields 
+
++0.213% .We term this the behavioral activity richness principle : for cross-domain SID transfer, the quality of the transferred signal is determined by how much behavioral activity is encoded in the source representation, regardless of whether that activity is encoded directly (Feed Activity) or implicitly through an activity-trained model (Activity-Tuned LLaMA). Profile attributes alone provide a comparatively weak signal ( +0.036% ), consistent with the intuition that what a user does is more predictive of ad engagement than how their profile is described .
+
+Mechanism. Feed activity captures high-frequency, evolving be-havioral intent absent from both ads interaction logs and user profile descriptions. Discretizing these signals and fine-tuning end-to-end under the CTR loss performs implicit domain adaptation : the gradient re-specializes the embedding tables to map feed behav-ioral clusters toward ad engagement probability, with no explicit cross-domain alignment objective. 
+
+## 5.4 Multi-Source SID (RQ3) 
+
+The lower block of Table 1 shows the multi-source results. Inde-pendent combination — summing three separately-indexed single-source SIDs with no structural coordination — already yields +0.260% ,confirming that all three sources contribute complementary signal. The structured Multi-Source SID (Section 4.2) achieves +0.296% , a 
+
++0.036% gain over independent combination at identical parameter budget. The gain comes from two factors. First, per-source prefix n-gram tables avoid cross-source hash collisions that arise when independently-indexed tables are summed without source parti-tioning. Second, the Activity-Tuned LLaMA backbone fallback for 
+
+> 5Julie Choi, Haoran Ye, Zhiwei Ding, Bo Long, Benjamin Zelditch, and Arpita Vats
+
+Table 1: Cross-domain user SID results (RQ-KMeans quantization, 𝐾 =3 codes per source). ΔAUC relative to no-SID baseline. 
+
+Upper block : single-source SIDs ordered by behavioral activity richness. Lower block : multi-source combinations. The RQ-FSQ comparison against the same sources appears in Table 2. Method Description 𝚫 AUC 
+
+No SID Reference —
+
+Single-source SIDs (behavioral activity richness ↗)
+
+Profile Qwen SID Text semantics only, no behavioral signal +0.036% 
+
+Activity-Tuned LLaMA SID Activity-trained, profile-prompted +0.107% 
+
+Feed Activity SID Direct behavioral signals (1-yr agg.) +0.213% 
+
+Multi-source combinations ( 𝐾 =3 per source, 9 total codes) 
+
+Independent combination 3 SIDs, separately indexed and summed +0.260% 
+
+Multi-Source SID Structured 9-code, Activity-Tuned LLaMA backbone +0.296 %
+
+missing Profile Qwen codes preserves population coverage rather than silently zeroing out the affected users. 
+
+## 5.5 RQ-FSQ Across Pre-Trained Embeddings (RQ4) 
+
+We evaluate RQ-FSQ on two heterogeneous pre-trained sources — a lower-dimensional Feed Activity embedding and a higher-dimensional Activity-Tuned LLaMA embedding — against the dense float baseline, RQ-KMeans, and FSQ alone. The pattern is consistent across both sources. RQ-KMeans re-duces storage substantially but loses AUC because deterministic centroid assignment does not optimize a reconstruction objective. FSQ alone recovers most of the gap by preserving per-dimension structure. RQ-FSQ matches or slightly exceeds the dense float base-line on both sources, because the reconstruction loss in the RQ-VAE branch preserves global embedding geometry while the FSQ branch preserves per-dimension fine structure. The storage benefit grows with source dimensionality: ∼ 30 × for the lower-dimensional Feed Activity source, ∼ 280 × for the higher-dimensional Activity-Tuned LLaMA source — making RQ-FSQ particularly valuable for higher-dimensional LLM-based encoders, where dense float storage is prohibitive at production scale. 
+
+## 5.6 Cross-Domain User SIDs and User Cold-Start (RQ5) 
+
+The cold-start hypothesis — that cross-domain viewer SIDs are most valuable for users with sparse ad interaction history — is directly testable by stratifying by user activity level. We partition the validation set into three segments by number of distinct ad impressions in the trailing history: most cold-start (near-zero ad history; bottom 8% of users by trailing-history size), infrequent (the intermediate 64%), and frequent (top 28% of users by trailing-history size). The pattern directly validates the cross-domain transfer mecha-nism: gains scale monotonically with sparsity. Most cold-start users benefit the most ( +1.522% ), where the ads history is near-empty and the cross-domain feed activity SID provides the primary behavioral evidence available to the model. Infrequent users gain +0.874% , and frequent users — who already have rich first-party ads signals — gain +0.131% , with feed activity SIDs serving as a complementary source. Feed activity SIDs effectively act as a behavioral cold-start bridge , delivering the largest per-impression benefit precisely where the existing model is weakest. 
+
+## 5.7 Public-Data Validation 
+
+To confirm the RQ-FSQ > RQ-KMeans ordering generalizes beyond our production data, we replicate the comparison on the public MovieLens-100K benchmark. Movie text (title + genres) is encoded with the open-weight all-MiniLM-L6-v2 sentence encoder; user embeddings are the mean of liked-movie embeddings, the public analog of cross-domain behavioral aggregation. We quantize user embeddings via RQ-KMeans, FSQ, and RQ-FSQ ( 𝐾 =3, 𝐶 =256 , 𝐿 =7,scaled down for the smaller dataset) and train a small MLP to pre-dict whether a held-out user–movie pair has rating ≥ 4; RQ-FSQ is warm-started from the trained RQ-KMeans weights, mirroring deployment of the FSQ residual on top of an existing RQ-KMeans system. Table 4 confirms RQ-FSQ achieves the highest AUC, exceed-ing both RQ-KMeans and the dense user embedding — matching Table 2 on a public benchmark. 
+
+## 6 Discussion 
+
+Behavioral activity richness as a general design principle. The monotonic progression from profile text ( +0.036% ) to activity-trained embeddings ( +0.107% ) to direct behavioral aggregations ( +0.213% )gives a concrete source-selection rule: prefer sources encoding recent behavioral signals over static attribute descriptions. This ex-tends the established finding that behavioral features dominate de-mographics for engagement prediction [ 11 , 12 ] to the cross-domain setting — behavioral richness in the source survives the discrete bottleneck and still drives downstream gains after quantization. 
+
+RQ-FSQ as a general-purpose discretizer for pre-trained embed-dings. RQ-FSQ matches or slightly exceeds dense-float AUC across two heterogeneous pre-trained sources because the branches are complementary: FSQ preserves per-dimension fine structure RQ-VAE can compress away; RQ-VAE preserves global geometry FSQ ignores. The design should generalize to any pipeline needing a compact discrete code over a pre-trained vector — item embeddings, multimodal encoders, LLM-based representations. 
+
+> 6Quantizing Intent: Cross-Domain Semantic IDs from Organic Activity for Industrial Ranking
+
+Table 2: RQ-FSQ on two heterogeneous pre-trained embedding sources. 𝚫 AUC is measured against the no-SID baseline — the production ranking model with no member SID input. Storage is the per-user serialization footprint relative to the raw float32 embedding of the same source. RQ-FSQ matches the dense embedding’s AUC on both sources at 30 –280 × smaller storage. Feed Activity Activity-Tuned LLaMA  
+
+> lower-dimensional source higher-dimensional source
+
+Method Storage 𝚫 AUC Storage 𝚫 AUC 
+
+Raw float embedding (dense) 1× +0.349% 1× +0.264% 
+
+RQ-KMeans ∼ 0.004 × +0.213% ∼ 0.0004 × +0.107% 
+
+FSQ ∼ 0.03 × +0.343% ∼ 0.003 × +0.248% 
+
+RQ-FSQ (ours) ∼ 0.03 × +0.351 % ∼ 0.003 × +0.265 %
+
+Table 3: Feed Activity SID gain by user activity segment. Seg-ments are defined by the number of distinct ad impressions in the trailing history window. User segment 𝚫 AUC (Feed Activity SID) 
+
+Most cold-start +1.522% 
+
+Infrequent +0.874% 
+
+Frequent +0.131% 
+
+Overall +0.213% 
+
+Table 4: Public replication on MovieLens-100K. ΔAUC vs. a no-SID (movie-only) baseline. Method AUC 𝚫 AUC 
+
+No SID (baseline) 0.7689 —Dense user emb 0.8078 +3.89% 
+
+RQ-KMeans 0.8215 +5.26% 
+
+RQ-FSQ (ours) 0.8343 +6.54 %
+
+Cross-domain transfer via discrete representations. Our results provide the first empirical evidence that viewer SIDs from a differ-ent domain (organic feed) are effective input features for ads CTR, and can outperform within-domain profile SIDs. The key enabler is the combination of discrete bottleneck and end-to-end fine-tuning :quantization strips domain-specific embedding geometry while pre-serving semantic cluster structure; the CTR gradient re-specializes the embedding tables toward the target task. This is qualitatively analogous to transfer learning via pre-training and fine-tuning, but operating in the discrete token space. 
+
+Generalizable artifacts. Our methodological contributions — RQ-FSQ, the HDE Module, Multi-Source SID with backbone-based im-putation, and the behavioral activity richness principle — depend only on pre-trained user embeddings and a downstream ranking objective, applying to any system meeting those conditions. Our three sources (Profile Qwen, Activity-Tuned LLaMA, Feed Activity) are platform-specific, but each maps to a category readily available in most large recommendation systems — a profile-text encoder, an activity-tuned user encoder, and a behavioral aggregation — repro-ducible with open-weight analogues. The public-data replication on MovieLens-100K (Section 5.7) confirms the RQ-FSQ > RQ-KMeans ordering on an open benchmark. 
+
+Broader impacts. The primary effect of cross-domain user SIDs in deployment is improved cold-start ranking quality, which reduces low-relevance impressions for users with sparse ad-domain history. The same mechanism increases the granularity at which inferred user interests can be associated across domains, so production use should remain subject to the standard consent and privacy con-trols already governing behavioral feature pipelines. The discrete bottleneck of SIDs is privacy-favorable relative to dense vector ex-posure: only 𝐾 low-bit codes are materialized per user, limiting the resolution at which raw activity is preserved. 
+
+## 7 Conclusion 
+
+We presented RQ-FSQ , a quantization method that pairs per-dimension scalar quantization with residual VAE quantization, matching or slightly exceeding dense-float AUC at ∼ 30 ×–280 × storage reduc-tion across two heterogeneous embedding sources. We established the behavioral activity richness principle — cross-domain trans-fer scales monotonically with the behavioral signal encoded in the source ( +0.036% /+0.107% /+0.213% ) — and introduced the HDE Module and Multi-Source SID (+0.296% AUC), deployable with-out architectural changes. Cold-start segment analysis confirms the transfer mechanism, with gains of +1.522% on the most cold-start users — cross-domain SIDs serve as a behavioral bridge precisely where ads-domain history fails. 
+
+Outlook. The same SID interface extends naturally to other rank-ing surfaces and multi-task heads beyond CTR — the discrete-token bottleneck enables a single unified user representation across the production stack, with shared HDE tables serving as the common substrate. 
+
+## References     
+
+> [1] Shashank Rajput, Nikhil Mehta, Anima Singh, Raghunandan H. Keshavan, Trung Vu, Lukasz Heldt, Lichan Hong, Yi Tay, Vinh Q. Tran, Jonah Samost, Maciej Kula, Ed H. Chi, and Maheswaran Sathiamoorthy. Recommender systems with generative retrieval. In Advances in Neural Information Processing Systems ,volume 36, 2023. [2] Anima Singh, Trung Vu, Nikhil Mehta, Raghunandan Keshavan, Maheswaran Sathiamoorthy, Yilin Zheng, Lichan Hong, Lukasz Heldt, Li Wei, Devansh Tandon, 7
+
+Julie Choi, Haoran Ye, Zhiwei Ding, Bo Long, Benjamin Zelditch, and Arpita Vats 
+
+Ed H. Chi, and Xinyang Yi. Better generalization with semantic IDs: A case study in ranking for recommendations. arXiv preprint arXiv:2306.08121 , 2023. [3] Doyup Lee, Chiheon Kim, Saehoon Kim, Minsu Cho, and Wook-Shin Han. Au-toregressive image generation using residual quantization. In Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition , pages 11523–11532, 2022. [4] Juntao Tan, Shuyuan Xu, Wenyue Hua, Yingqiang Ge, Zelong Li, and Yongfeng Zhang. IDGenRec: LLM-RecSys alignment with textual ID learning. In Proceed-ings of the 47th International ACM SIGIR Conference on Research and Development in Information Retrieval , 2024. [5] Bowen Zheng, Yupeng Hou, Hongyu Lu, Yu Chen, Wayne Xin Zhao, Ming Chen, and Ji-Rong Wen. Adapting large language models by integrating collaborative semantics for recommendation. In 2024 IEEE 40th International Conference on Data Engineering (ICDE) , 2024. [6] Carolina Zheng, Minhui Huang, Dmitrii Pedchenko, Kaushik Rangadurai, Siyu Wang, Gaby Nahum, Jie Lei, Yang Yang, Tao Liu, Zutian Luo, Xiaohan Wei, Dinesh Ramasamy, Jiyan Yang, Yiping Han, Lin Yang, Hangjun Xu, Rong Jin, and Shuang Yang. Enhancing embedding representation stability in recommendation systems with semantic ID. arXiv preprint arXiv:2504.02137 , 2025. [7] Ashish Vaswani, Noam Shazeer, Niki Parmar, Jakob Uszkoreit, Llion Jones, Aidan N. Gomez, Lukasz Kaiser, and Illia Polosukhin. Attention is all you need. In Advances in Neural Information Processing Systems , volume 30, 2017. [8] Wang-Cheng Kang and Julian McAuley. Self-attentive sequential recommen-dation. In 2018 IEEE International Conference on Data Mining (ICDM) , pages 197–206, 2018. [9] Fei Sun, Jun Liu, Jian Wu, Changhua Pei, Xiao Lin, Wenwu Ou, and Peng Jiang. BERT4Rec: Sequential recommendation with bidirectional encoder representa-tions from transformer. In Proceedings of the 28th ACM International Conference on Information and Knowledge Management , pages 1441–1450, 2019. [10] Qiwei Chen, Huan Zhao, Wei Li, Pipei Huang, and Wenwu Ou. Behavior sequence transformer for e-commerce recommendation in alibaba. In Proceedings of the 1st International Workshop on Deep Learning Practice for High-Dimensional Sparse Data , 2019. [11] Guorui Zhou, Chengru Song, Xiaoqiang Zhu, Ying Fan, Han Zhu, Xiao Ma, Yanghui Yan, Junqi Jin, Han Li, and Kun Gai. Deep interest network for click-through rate prediction. In Proceedings of the 24th ACM SIGKDD International Conference on Knowledge Discovery & Data Mining , pages 1059–1068, 2018. [12] Guorui Zhou, Na Mou, Ying Fan, Qi Pi, Weijie Bian, Chang Zhou, Xiaoqiang Zhu, and Kun Gai. Deep interest evolution network for click-through rate prediction. In Proceedings of the AAAI Conference on Artificial Intelligence , volume 33, pages 5941–5948, 2019. [13] Ruoxi Wang, Rakesh Shivanna, Derek Z. Cheng, Sagar Jain, Dong Lin, Lichan Hong, and Ed H. Chi. DCN V2: Improved deep & cross network and practi-cal lessons for web-scale learning to rank systems. In Proceedings of the Web Conference 2021 , pages 1785–1797, 2021. [14] David Pardoe, Neil Daftary, Miro Furtado, Aditya Aiyer, Yu Wang, Liuqing Li, Tao Song, Lars Hertel, Young Jin Yun, Senthil Radhakrishnan, Zhiwei Wang, Tommy Li, Khai Tran, Ananth Nagarajan, Ali Naqvi, Yue Zhang, Renpeng Fang, Avi Romascanu, Arjun Kulothungun, Deepak Kumar, Praneeth Boda, Fedor Borisyuk, and Ruoyan Wang. CADET: Context-conditioned ads CTR prediction with a decoder-only transformer. arXiv preprint arXiv:2602.11410 , 2026. [15] Tri Dao, Daniel Y. Fu, Stefano Ermon, Atri Rudra, and Christopher Ré. FlashAtten-tion: Fast and memory-efficient exact attention with IO-awareness. In Advances in Neural Information Processing Systems , volume 35, 2022. [16] Wenjie Wang, Hongrui Lin, Fuli Feng, Shuqing Ding, and Xiangnan He. Learnable item tokenization for generative recommendation. In Proceedings of the 33rd ACM International Conference on Information and Knowledge Management , 2024. [17] Dinesh Ramasamy, Shakti Kumar, Chris Cadonic, Jiaxin Yang, Sohini Roychowd-hury, Esam Abdel Rhman, and Srihari Reddy. SIDE: Semantic ID embedding for effective learning from sequences. arXiv preprint arXiv:2506.16698 , 2025. [18] Tong Man, Huawei Shen, Xiaolong Jin, and Xueqi Cheng. Cross-domain recom-mendation: An embedding and mapping approach. In Proceedings of the 26th International Joint Conference on Artificial Intelligence , pages 2464–2470, 2017. [19] Guangneng Hu, Yu Zhang, and Qiang Yang. CoNet: Collaborative cross networks for cross-domain recommendation. In Proceedings of the 27th ACM International Conference on Information and Knowledge Management , pages 667–676, 2018. [20] Peiyu Hu, Wayne Lu, and Jia Wang. From IDs to semantics: A generative frame-work for cross-domain recommendation with adaptive semantic tokenization. In Proceedings of the AAAI Conference on Artificial Intelligence , volume 40, 2026. [21] Aaron van den Oord, Oriol Vinyals, and Koray Kavukcuoglu. Neural discrete representation learning. In Advances in Neural Information Processing Systems ,volume 30, 2017. [22] Yanli Zhao, Andrew Gu, Rohan Varma, Liang Luo, Chien-Chin Huang, Min Xu, Less Wright, Hamid Shojanazeri, Myle Ott, Sam Sheng, Alban Bhatt, Aniruddha Arnab, Shen Dey, Menghan Yan, Jessica Specker, and Bryan Catanzaro. PyTorch FSDP: Experiences on scaling fully sharded data parallel. In Proceedings of the VLDB Endowment , volume 16, 2023. [23] Fabian Mentzer, David Minnen, Eirikur Agustsson, and Michael Tschannen. Finite scalar quantization: VQ-VAE made simple. arXiv preprint arXiv:2309.15505 ,2023. URL https://arxiv.org/abs/2309.15505. 8

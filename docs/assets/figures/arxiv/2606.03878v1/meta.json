@@ -1,0 +1,70 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2606.03878v1/fig-001.webp",
+      "caption": "Figure 1: Privacy-robust incrementality measurement as a decision problem. A randomized advertising experiment identifies clean lift before reporting constraints are applied (as summarized in Table 1). The proposed framework maps the resulting privacy-degraded report to a decision/certification frontier and returns the strongest justified decision: (i) certify positive incrementality, (ii) reject it, or (iii) mark the claim unresolved.",
+      "page": 2,
+      "index": 1,
+      "width": 901,
+      "height": 604
+    },
+    {
+      "url": "assets/figures/arxiv/2606.03878v1/fig-002.webp",
+      "caption": "Figure 4: Reporting granularity diagnostics. The horizontal axis is the number of reported cells in the partition. The left panel compares the share of cells that clear the population signal-loss lower bound with the share that clear the finite-sample lower bound after simultaneous uncertainty and reporting noise are added. The middle panel reports aggregation-threshold suppression with fixed threshold m = 100. The right panel reports the empirical segment-heterogeneity penalty, computed as the largest nested fine-cell treatment-effect deviation inside each reported cell and used as a proxy for Hdiam(g) in Eq. (13). Finer reports reduce this heterogeneity penalty but create smaller cells and more suppression, so aggregate or population-level lift should not be read as subgroup safety.",
+      "page": 14,
+      "index": 2,
+      "width": 904,
+      "height": 250
+    },
+    {
+      "url": "assets/figures/arxiv/2606.03878v1/fig-003.webp",
+      "caption": "Figure 3: Sample-complexity and minimax scaling under privacy signal loss. The left panel evaluates the finite-sample radius Radn from Eq. (9) as the per-arm sample size and reportable-retention lower bound qmin vary. The right panel evaluates the implemented constant-scaled minimax curve 0.08B/ √ qn, corresponding to the universal-constant lowerbound rate in Theorem 5.3. Lower retention enlarges both quantities, showing that privacy signal loss reduces effective information rather than merely adding a removable constant error.",
+      "page": 13,
+      "index": 3,
+      "width": 901,
+      "height": 310
+    },
+    {
+      "url": "assets/figures/arxiv/2606.03878v1/fig-004.webp",
+      "caption": "Figure 5: Sharp compatibility fiber for a controlled degraded-report example. This diagnostic is not dataset-specific. It fixes degraded treated and control means µ̃1 = 0.12 and µ̃0 = 0.08, with retention ambiguity q ∈ [0.5, 1.0]. The shaded interval is the full set of clean incrementality values compatible with the same released report and ambiguity set. A business threshold below the interval is certifiable, a threshold at or above the interval is rejectable, and a threshold inside the interval is unresolved because compatible clean worlds exist on both sides of the decision boundary.",
+      "page": 19,
+      "index": 4,
+      "width": 777,
+      "height": 396
+    },
+    {
+      "url": "assets/figures/arxiv/2606.03878v1/fig-005.webp",
+      "caption": "Figure 2: Population and finite-sample certification frontiers under auditable signal-loss stress layers. The purple curve is the population lower bound, which applies signal-loss uncertainty while treating the degraded arm means as exactly known. The green curve is the finite-sample lower bound, which adds simultaneous randomization uncertainty and randomized reporting-noise uncertainty to the same signal-loss band. A claim can therefore be population-certifiable and still finite-sample unresolved.",
+      "page": 12,
+      "index": 5,
+      "width": 901,
+      "height": 310
+    },
+    {
+      "url": "assets/figures/arxiv/2606.03878v1/fig-006.webp",
+      "caption": "Figure 6: Privacy-aware minimum detectable effects. Reporting noise increases the detectable-effect floor most strongly for small effective cell sizes, while large cells dilute the noise contribution.",
+      "page": 20,
+      "index": 6,
+      "width": 635,
+      "height": 401
+    },
+    {
+      "url": "assets/figures/arxiv/2606.03878v1/fig-007.webp",
+      "caption": "Figure 7: Heterogeneous signal loss can reverse segment decisions. Two clean segment-level worlds induce the same aggregate degraded report, while the lower-bound certification rule certifies different segments.",
+      "page": 20,
+      "index": 7,
+      "width": 904,
+      "height": 323
+    },
+    {
+      "url": "assets/figures/arxiv/2606.03878v1/fig-008.webp",
+      "caption": "Table 1: Mapping the paper’s signal-loss layers to deployed ads-reporting primitives and model components. Here qa,s is the reportable-retention multiplier defined in (6). The empirical stress layers are simplified, auditable instantiations of these primitives over public randomized datasets, not proprietary production API traces.",
+      "page": 5,
+      "index": 8,
+      "width": 889,
+      "height": 348
+    }
+  ]
+}

@@ -1,0 +1,465 @@
+Title: Taiji: Pareto Optimal Policy Optimization with Semantics-IDs Trade-off for Industrial LLM-Enhanced Recommendation
+
+URL Source: https://arxiv.org/pdf/2606.03866v1
+
+Published Time: Wed, 03 Jun 2026 01:36:31 GMT
+
+Number of Pages: 8
+
+Markdown Content:
+# Taiji: Pareto Optimal Policy Optimization with Semantics-IDs Trade-off for Industrial LLM-Enhanced Recommendation 
+
+# Yuecheng Li 
+
+Kuaishou Technology Beijing, China liych168168@gmail.com 
+
+# Zeyu Song 
+
+Kuaishou Technology Beijing, China songzyzzz@gmail.com 
+
+# Jing Yao 
+
+Kuaishou Technology Beijing, China airanabetter07@gmail.com 
+
+# Chi Lu 
+
+Kuaishou Technology Beijing, China looc0727@gmail.com 
+
+# Peng Jiang 
+
+Kuaishou Technology Beijing, China jp2006@139.com 
+
+# Kun Gai 
+
+Unaffiliated Beijing, China gai.kun@qq.com 
+
+## Abstract 
+
+Scaling recommender systems via large language models (LLMs) has become a prominent trend in the industry. However, align-ing the LLM’s semantic space with the recommender’s ID space via post-training (e.g., SFT and RL) remains challenging. Existing LLM4Rec paradigms are bottlenecked by two main issues: (1) the difficulty of measuring and improving chain-of-thought (CoT) quality in open-domain recommendation during SFT , and (2) the neglect of the trade-off between LLM semantic rewards and recommendation prefer-ence rewards during RL alignment . Inspired by these challenges, we present Taiji , a novel LLM-as-Enhancer framework designed for industrial recommender systems. To overcome the SFT bottleneck, we utilize reverse-engineered reasoning and open-ended rejection sampling to generate high-quality, domain-specific CoT data. To resolve the RL alignment issue, we propose Pareto Optimal Policy 
+
+Optimization ( POPO ), which adaptively adjusts cross-domain re-ward weights. Theoretically, it achieves an optimal trade-off be-tween the semantic world knowledge of LLMs and the collaborative ID features representing online user preferences. Extensive offline evaluations and online A/B tests validate the effectiveness of Taiji. Deployed on Kuaishou’s advertising platform since May 2026, Taiji currently serves over 400 million users daily, yielding significant commercial revenue and demonstrating its robust scalability in web-scale environments. 
+
+## CCS Concepts 
+
+• Information systems → Recommender systems ; Learning to rank ; Language models ; • Computing methodologies → Rein-forcement learning .
+
+## Keywords 
+
+Large Language Models, Advertising Recommendation, Reinforce-ment Alignment  
+
+> Permission to make digital or hard copies of all or part of this work for personal or classroom use is granted without fee provided that copies are not made or distributed for profit or commercial advantage and that copies bear this notice and the full citation on the first page. Copyrights for components of this work owned by others than the author(s) must be honored. Abstracting with credit is permitted. To copy otherwise, or republish, to post on servers or to redistribute to lists, requires prior specific permission and/or a fee. Request permissions from permissions@acm.org.
+> Under Review,
+> ©2018 Copyright held by the owner/author(s). Publication rights licensed to ACM. ACM ISBN 978-1-4503-XXXX-X/2018/06 https://doi.org/XXXXXXX.XXXXXXX
+
+ACM Reference Format: 
+
+Yuecheng Li, Zeyu Song, Jing Yao, Chi Lu, Peng Jiang, and Kun Gai. 2018. Taiji: Pareto Optimal Policy Optimization with Semantics-IDs Trade-off for Industrial LLM-Enhanced Recommendation. In Proceedings of (Under Review). ACM, New York, NY, USA, 8 pages. https://doi.org/XXXXXXX. XXXXXXX 
+
+## 1 Introduction 
+
+With the deep integration of LLMs and recommender systems, the field of Large Language Models for Recommendation (LLM4Rec) has progressively evolved into three primary paradigms: Generative Recommendation [ 4, 17 , 25 ], Ranking Model Scaling [ 11 , 29 , 30 ], and 
+
+LLM-as-Enhancer [3 , 7 , 8 , 14 , 21 ]. Through distinct technical path-ways, these three paradigms aim to unleash the generalization and scaling capabilities of LLMs within large-scale recommender sys-tems. Among them, the LLM-as-Enhancer paradigm has achieved the most widespread adoption in industrial applications, primarily due to its architectural decoupling from online serving models and relatively controllable costs [ 12 , 21 – 23 ]. Specifically, this paradigm leverages frozen pre-trained or post-trained LLMs to generate se-mantic representations of user profiles or item content, thereby augmenting the input features of downstream recommendation backbones. To bridge the semantic gap between LLMs and recommenda-tion tasks, existing LLM-as-Enhancer approaches can be broadly categorized into three progressive methodologies: Direct Inference, Domain Fine-tuning, and Reinforcement Alignment. Early works rely on Direct Inference, where models like KAR [ 21 ] and HiT-LBM [ 22 ] utilize prompting strategies or tree-search mechanisms to extract user preferences and item factual knowledge from LLMs, converting them into augmented vectors compatible with arbi-trary recommendation models. To further enhance domain-specific reasoning, subsequent methods adopt Domain Fine-tuning. Frame-works such as 𝑅 4ec [ 8], and TrackRec [ 23 ] employ supervised fine-tuning (SFT) and iterative refinement mechanisms to generate reli-able, recommendation-specific Chain-of-Thought (RecCoT) data, mitigating the reasoning hallucinations of LLMs. More recently, to strictly align LLM outputs with downstream recommendation objectives, Reinforcement Alignment has gained significant traction. Approaches including DEEPER [ 3 ], RecLM [ 10 ], Rec-R1 [ 14 ], Lang-PTune [ 7], and RecGPT-v2 [ 24 ] leverage reinforcement learning algorithms (e.g., PPO, DPO, GRPO) to directly optimize the LLM’s  
+
+> arXiv:2606.03866v1 [cs.IR] 2 Jun 2026 Under Review, , Yuecheng Li, Zeyu Song, Jing Yao, Chi Lu, Peng Jiang, and Kun Gai
+
+generation policy using recommendation metrics (e.g., NDCG, Re-call) or user feedback (e.g., click-through rate, user retention) as reward signals. This paradigm effectively mitigates the exposure bias inherent in supervised fine-tuning by directly optimizing real-world recommendation objectives, thereby aligning model outputs more closely with business goals. However, existing post-training paradigms still face significant limitations across different stages: (1) In the SFT stage : Previous works often over-rely on the CoT generation capabilities of powerful teacher LLMs [ 10 , 21 ] or heuristic CoT refinement experiences [ 8]. Alternatively, they evaluate CoT quality solely based on the correctness of the fi-nal answer [ 23 ]. Due to the open-domain nature of recommen-dation tasks, there remains a lack of reasonable and systematic metrics to accurately measure the quality of recommendation-specific CoT. 
+
+(2) In the RL stage : Although current methods utilize LLM semantic rewards [ 10 , 14 ] and recommendation feedback rewards [ 7, 14 ] for preference optimization, they fail to con-sider the dynamic balance between these two types of het-erogeneous information. For the LLM-as-Enhancer paradigm, effectively aligning and balancing the world knowledge seman-tics of LLMs with the online user preferences of recommender systems is a critical issue . Existing approaches focus merely on alignment, lacking a profound trade-off mechanism. To tackle these two critical challenges, we propose Taiji (named after the Taiji/Yin–Yang diagram to symbolize the dynamic unity and mutual reinforcement between LLMs and recommender sys-tems), an industrial-scale LLM-as-Enhancer comprising four key modules: Data Construction , Reasoning Activation , LLM-Recommendation Collaboration , and Online Ranking . First, we collect a large-scale dataset from real-world online video streaming logs on the Kuaishou platform, encompassing user profiles and their recent behavioral sequences. Subsequently, we introduce Reverse-Engineered User Preference Reasoning (EUPR) . By utilizing ground-truth user-item collaborative relations as prompts, we distill high-quality rea-soning CoT data from the advanced QwQ-32B [ 19 ]. Next, we pro-pose Open-Ended Rejection Sampling Fine-Tuning (ORFT) ,which filters out low-quality CoT samples based on the Perplex-ity (PPL) metric and performs SFT on the DeepSeek-R1-7B [9]. To effectively balance the LLM semantic rewards and recommenda-tion preference rewards, we propose Pareto Optimality Policy Optimization (POPO) , enabling a comprehensive exploration of the Pareto fronts within the cross-domain space. Finally, the out-puts from the RL-aligned LLM are encoded to construct quantized sparse features and retrieved cross-user sequences,respectively, which are subsequently incorporated into the online advertising ranking model. Overall, the primary contributions of this paper are summarized as follows: 
+
+• We present Taiji, a novel framework for industrial LLM-enhanced recommendation, which addresses two core lim-itations during the post-training stage of the conventional LLM-as-Enhancer pipeline. Specifically, in the SFT stage, we integrate EUPR and ORFT to asymptotically enhance the quality of recommendation-specific CoT. Furthermore, in the RL stage, we introduce POPO, which dynamically adapts the weights of LLM semantic rewards and recommendation pref-erence rewards, achieving a theoretically guaranteed Pareto optimal trade-off between heterogeneous information. 
+
+• We conduct extensive offline experiments and ablation stud-ies, rigorously validating the effectiveness of each module within Taiji. Furthermore, online A/B testing demonstrates that Taiji yields a 2.83% overall ADVV improvement for Ad-vertiser Value and drives a 3.30% increase in overall Revenue for Kuaishou’s Advertising platform. 
+
+• Taiji has been fully deployed in the production environment since May 2026, stably supporting over 400 million daily active users (DAU). 
+
+## 2 Methodology 
+
+To enhance the quality of CoT reasoning during the SFT stage and optimize the cross-domain information trade-off in the RL stage within the LLM-as-Enhancer , while seamlessly adapting to industrial recommenders, we propose a novel framework named 
+
+Taiji . Specifically, Section 2.1 details the construction of the offline dataset and the generation process of recommendation-specific CoT, which serve as the foundation for the subsequent SFT (Section 2.2) and RL (Section 2.3) training phases. Finally, Section 2.4 presents our enhancement strategies for the online advertising recommendation model. The overall pipeline is illustrated in Figure 1. 
+
+## 2.1 Data Construction: Reverse-Engineered User Preference Reasoning 
+
+To align LLMs with recommender systems, we sample extensive user data from the real-world online logs of a short-video platform for the post-training of the LLM. Furthermore, unlike mathematical reasoning or code generation, LLM-based recommendation is inher-ently an open-ended generation task. Consequently, when distilling CoT data from a teacher model, it is challenging to precisely verify the accuracy of the generated reasoning trajectories and the final answers. Therefore, we employ Reverse-Engineered User Prefer-ence Reasoning (RUPR) to generate preliminary, relatively accurate CoT while ensuring the ground-truth validity of the answers. 
+
+2.1.1 Data Collection. To construct high-quality datasets for in-struction fine-tuning and reinforcement learning, we collect large-scale user profiles and behavioral sequences from real-world online logs on Kuaishou, and convert them into LLM-friendly natural lan-guage texts. Specifically, our data collection consists of two key components: 
+
+• Multimodal and Multidimensional User Profile . We in-tegrate multiple data tables to extract comprehensive user features. These encompass basic demographics (e.g., gender, age, city tier, marital status, education), device and lifestyle attributes (e.g., phone model, residential consumption level), and multimodal interaction preferences on the short-video platform (e.g., active apps, search queries, video engagements like saves/likes/comments, live-streaming interactions, and historical e-commerce/ad behaviors). These fine-grained fea-tures are serialized into structured natural language descrip-tions to provide rich personalized contexts for LLMs. Taiji: Pareto Optimal Policy Optimization with Semantics-IDs Trade-off for Industrial LLM-Enhanced Recommendation Under Review, , 
+
+Figure 1: The overall framework of Taiji. It consists of four stages: (1) Data Construction. Taiji collects real-world data from the production platform, constructs distillation prompts via reverse engineering, and leverages a teacher LLM to generate user preference CoT reasoning. (2) Reasoning Activation. Taiji filters low-quality CoT samples using PPL-based rejection sampling and performs supervised fine-tuning on a 7B LLM. (3) LLM-Recommendation Collaboration. Taiji proposes POPO to dynamically adjust cross-domain reward weights during the RL process. (4) Online Ranking. Taiji performs near-online inference on live user data using the RL-optimized LLM, generating quantized sparse features and retrieved cross-user sequences as inputs to the online ad ranking model. 
+
+• Fine-Grained Historical Behavioral Sequence . We col-lect users’ recent ad interaction logs, including item views and purchases. To ensure timeliness, we retain the 50 most recent interactions in reverse chronological order. For each interaction, detailed item meta-information (e.g., title, multi-level categories, price) is extracted and templated into text sequences (e.g., "Item title: ...; Category L1: ...; Category L2: ...; Category L3: ..." ). This enables the LLM to accurately capture users’ evolving interest and purchasing logic. Through this collection and text serialization process, we trans-form conventional tabular recommendation features into semanti-cally rich prompts, laying a solid foundation for subsequent CoT generation, model fine-tuning, and RL-based alignment. 
+
+2.1.2 CoT Generation. For open-ended generation tasks such as LLM-based recommendation, inspired by [ 6, 20 ], we propose Reverse-Engineered User Preference Reasoning (RUPR) to generate reliable initial CoTs. Specifically, based on the collected online data, we construct distillation prompts for RUPR, as depicted in Stage 1 of Figure 1. Meanwhile, we utilize QWQ-32B [ 19 ] to perform reverse preference reasoning by conditioning on the user’s ground-truth next purchased item. 
+
+## 2.2 Reasoning Activation: Open-Ended Rejection Sampling Fine-Tuning 
+
+In this section, we employ open-ended rejection sampling to further filter and obtain high-quality CoT data. Subsequently, we perform supervised fine-tuning (SFT) to activate the reasoning capabilities of the smaller model, thereby enhancing the LLM’s comprehension of user preferences and its proficiency in item recommendation. 
+
+2.2.1 CoT Refinement. To further improve the quality of recommendation-oriented CoTs, we use the perplexity (PPL) of the user’s ground-truth next purchased item 𝑦 (enclosed by the <answer>...</answer> 
+
+tag) as a proxy for the quality of a given reasoning CoT (enclosed by the <think>...</think> tag). The computation is defined as: 
+
+PPL = exp 
+
+
+
+− 1
+
+𝑇 log _𝑙𝑖𝑘𝑒𝑙𝑖ℎ𝑜𝑜𝑑 
+
+
+
+,
+
+log _𝑙𝑖𝑘𝑒𝑙𝑖ℎ𝑜𝑜𝑑 =
+
+> 𝑇
+
+∑︁ 
+
+> 𝑡 =1
+
+log 𝑃 (𝑦 𝑡 | context , 𝑦 1, . . . , 𝑦 𝑡 −1) .
+
+(1) where context=[ query , user profile , behavioral history , CoT ], 𝑦 =
+
+[𝑦 1, 𝑦 2, . . . , 𝑦 𝑇 ] represents the ground-truth answer sequence, and T is the number of tokens. A lower PPL indicates that the CoT assigns higher probability mass to the ground-truth item, suggesting a more reliable reasoning trajectory. Concretely, we leverage the advanced reasoning model QwQ-32B [ 19 ] to generate 𝑘 = 3 candidate CoTs for each user-specific distil-lation prompt, and retain those satisfying PPL < 𝑅 as training data for subsequent fine-tuning (yielding 0–3 retained reasoning paths per prompt). Here, 𝑅 is a preset PPL cutoff threshold, empirically determined as the median (50th percentile) of the PPL distribution computed over a sampled subset of the data. As illustrated in Figure 2, when PPL is excessively high, logical inconsistencies emerge between the CoT and the answer, indicating that such training sam-ples are highly likely to degrade the LLM’s reasoning performance. Under Review, , Yuecheng Li, Zeyu Song, Jing Yao, Chi Lu, Peng Jiang, and Kun Gai 
+
+Figure 2: Illustration of Open-Ended Rejection Sampling for CoT Refinement. Given the same user profile, behavioral history and target item, two candidate CoTs are generated by QwQ-32B. 𝐶𝑜𝑇 1 (left, red box) incorrectly infers summer fashion needs and yields high perplexity (PPL = 28.4 > 𝑅 ), indicating poor alignment with the ground-truth bedspread purchase, and is thus rejected. In contrast, 𝐶𝑜𝑇 2 (right, green box) accurately reasons about the user’s home textile upgrade intent, achieving low perplexity (PPL = 1.2 < 𝑅 ) and being retained for fine-tuning. 
+
+2.2.2 LLM Fine-Tuning. To activate the reasoning capabilities of LLMs for recommendation tasks, we perform supervised fine-tuning on DeepSeek-R1-7B [ 9] using the refined CoT data. Specifically, the SFT training samples are constructed as follows: 
+
+SFT Prompt 
+
+Input 
+
+- Query : You are a professional e-commerce analyst. Based on the following information, reason about why the user might purchase the advertised item and predict potential follow-up purchases. - User Profile : Female, Age: 31-40, Inner Mongolia, Married with children, Value-conscious ... 
+
+- Behavioral History : Purchased/browsed 50 items (dresses, casual pants, earrings, girls’ sandals, bed sheets, ...) 
+
+Output 
+
+<think> Refined CoT </think> ; <answer> Item title :Sensen Main Push [Clearance] Kapok Crinkle Gauze Double-Layer Lace Trim Oversized Bed Skirt Bedspread; Category L1: Home Textiles; Category L2 : Bedding; Category L3 : Bedspread;</answer> 
+
+Training Objective . The training loss for this fine-tuning pro-cess is formulated as a standard next-token prediction objective over the reasoning chain and the final answer: 
+
+LORFT = − 1
+
+𝑁 
+
+> 𝑁
+
+∑︁ 
+
+> 𝑖 =1
+> 𝑙 𝑖
+
+∑︁ 
+
+> 𝑗 =1
+
+log 𝑃 (𝑡 𝑗 | 𝑞 𝑖 , 𝑡 <𝑗 ), (2) where 𝑞 𝑖 denotes the input query (including user profile and behav-ioral history), 𝑡 𝑗 represents the 𝑗 -th token in the complete output sequence (i.e., both the <think> CoT and <answer> sections), 𝑙 𝑖 is the total number of tokens in the output, and 𝑁 is the batch size. 
+
+## 2.3 LLM-Recommendation Collaboration: Pareto Optimality Policy Optimization 
+
+After the SFT stage, the reasoning capabilities of the LLM in the recommendation domain are initially activated. To further enhance the LLM’s generalization ability across diverse user-item inter-action patterns, we propose a GRPO-like reinforcement learning process in this section. However, prior work typically applies fixed weights to combine semantic rewards from LLMs and preference-based rewards from recommender systems [ 26 , 27 ], making it diffi-cult to achieve a dynamic equilibrium between the two objectives. Specifically, from an effectiveness perspective, static reward weights struggle to capture the complex, non-convex Pareto front. From an optimization efficiency perspective, the inherent differences in learning difficulties among various reward signals often lead to suboptimal convergence rate. To address these limitations, we pro-pose Pareto Optimality Policy Optimization (POPO) , which employs dynamic reward weighting during the GRPO process to achieve a Pareto-optimal trade-off between LLM-based semantic understanding and recommendation-oriented collaborative signals. 
+
+2.3.1 LLM Semantic Reward. To evaluate the semantic alignment between the LLM-generated reasoning output and the ground-truth target item, we propose an LLM semantic reward 𝑟 𝑠 that operates in the textual semantic space. Specifically, we employ the Qwen3-Embedding-0.6B [ 28 ] model to encode both the LLM-predicted answer (extracted from the <answer>...</answer> tags) and the ground-truth item description into dense semantic embeddings. The semantic reward is then computed as the cosine similarity between these two embeddings, formally defined as: 
+
+𝑟 𝑠 = CosineSim (epred , egt ), (3) where epred = Qwen3-Emb (Answer LLM ) and egt = Qwen3-Emb (Item gt )
+
+denote the semantic embeddings of the predicted answer and the ground-truth item, respectively. The cosine similarity is computed as: CosineSim (epred , egt ) = epred ·egt    
+
+> ∥epred ∥ ∥ egt ∥
+
+.
+
+This reward signal captures the semantic coherence between the LLM’s reasoning output and the actual user purchase, providing a language-grounded supervision signal that complements traditional recommendation metrics. 
+
+2.3.2 Recommendation ID Collaborative Reward. To capture the collaborative filtering signals in the numerical continuous space, we propose a recommendation ID collaborative reward 𝑟 id de-rived from the online ranking model deployed in the advertising system. This ranking model leverages user features, item features, cross features, and historical interaction labels to provide accurate probabilistic predictions of user-item interaction behaviors. Specif-ically, to align the LLM’s reasoning outputs with real-world user preference patterns, we adopt the click-through and conversion rate (CTCVR) as the recommendation ID collaborative reward: 
+
+𝑟 id = CTCVR (𝑢, 𝑖 ) = 𝑃 (click ∧ conversion | 𝑢, 𝑖 ), (4) where 𝑢 and 𝑖 denote the user and the predicted item, respectively. To balance optimization across different rewards, we apply min-max normalization to the raw CTCVR values. The CTCVR metric reflects the joint probability of both click and conversion events, providing a comprehensive measure of user purchase intent. Taiji: Pareto Optimal Policy Optimization with Semantics-IDs Trade-off for Industrial LLM-Enhanced Recommendation Under Review, , 
+
+Offline Simulation Environment. To address the latency is-sue inherent in online evaluation, we construct an offline simula-tion environment by sampling user-item pairs and their prediction scores from the production system. This simulated environment enables efficient reward evaluation during the RL training process without requiring real-time online deployment, significantly accel-erating the policy optimization while maintaining high fidelity to real-world user behaviors. 
+
+2.3.3 Pareto Optimality Policy Optimization. Inspired by recent advances in adaptive multi-domain optimization [ 5 , 15 ], we propose 
+
+POPO , which adaptively re-weights heterogeneous reward signals during RL training so as to dynamically navigate the Pareto front between the LLM-side semantic reward 𝑟 𝑠 and the recommendation-side collaborative reward 𝑟 𝑖𝑑 .Concretely, let K = {𝑠, 𝑖𝑑 } denote the set of reward sources, 
+
+L𝑘 (𝜃 ) the GRPO objective induced by reward 𝑟 𝑘 , and 𝑤 (𝑡 ) 
+
+> 𝑘
+
+its weight at the 𝑡 -th RL iteration. The POPO update rule is defined as 
+
+𝒘 (𝑡 ) = ˜𝒘 (𝑡 )
+
+Í𝑘 ∈ K ˜𝑤 (𝑡 )
+
+> 𝑘
+
+, ˜𝒘 (𝑡 ) = ˜𝒘 (𝑡 −1) ⊙ exp 
+
+ 𝜂 (𝑡 ) 𝑰 (𝑡 )
+
+𝜇 
+
+
+
+, (5) where 𝜂 (𝑡 ) is the learning rate, 𝜇 > 0 is a regularization factor, and 
+
+⊙ denotes the Hadamard product. The gradient alignment indicator 
+
+𝑰 (𝑡 ) is computed as: 
+
+𝐼 (𝑡 ) 
+
+> 𝑖
+
+=
+
+D
+
+∇𝜃 L𝑖 
+
+ 𝜃 (𝑡 ) ,∑︁  
+
+> 𝑘 ∈ K
+
+∇𝜃 L𝑘 
+
+ 𝜃 (𝑡 ) E
+
+. (6) Intuitively, 𝐼 (𝑡 ) 
+
+> 𝑖
+
+measures the alignment between the gradient of the 𝑖 -th reward and the aggregated gradient direction of all rewards. 
+
+Whenever a reward objective exhibits a large gradient magnitude and its gradient is well-aligned with the other objectives, exploiting it yields cooperative progress across all rewards and is therefore assigned a higher weight. Conversely, if its gradient conflicts with the other objectives, its weight is automatically suppressed, preventing it from dragging the policy off the Pareto front. 
+
+Pareto-Optimality Guarantee . The above update can be rigor-ously interpreted as a first-order solution to the following bi-level optimization problem [15]: 
+
+𝒘 ∗ ∈ arg min  
+
+> 𝒘 ∈Δ|K |
+
+∑︁ 𝑖 ∈ K 
+
+L𝑖 
+
+ 𝜃 ∗ (𝒘 ), s.t. 𝜃 ∗ (𝒘 ) ∈ arg min 
+
+> 𝜃
+
+∑︁ 𝑖 ∈ K 
+
+𝑤 𝑖 L𝑖 (𝜃 ),
+
+where Δ| K | = {𝒘 ∈ R| K | ≥0 | Í𝑘 𝑤 𝑘 = 1} is the probability simplex. The lower-level problem reduces to a standard weighted GRPO update over the policy parameters 𝜃 , while the upper-level problem further optimizes the reward weights 𝒘 on top of the best-response policy 𝜃 ∗ (𝒘 ). The exponentiated-gradient update above can be shown to be a mirror-descent approximation [ 1] of this bi-level problem, and any of its stationary points (𝒘 ∗, 𝜃 ∗ (𝒘 ∗)) satisfies the Pareto-optimality condition: no policy 𝜃 ′ exists such that L𝑘 (𝜃 ′) ≤ L𝑘 (𝜃 ∗) for all 𝑘 ∈ K with at least one strict inequality. 
+
+POPO-light : an lightweight approximate POPO. In industrial-scale RL training, explicitly computing the cross-domain gradient inner product 𝐼 (𝑡 ) 
+
+> 𝑖
+
+at every step incurs non-negligible time and memory overhead. To strike a better trade-off between effectiveness and efficiency, we further introduce POPO-light, a simplified variant that approximates the per-reward optimization potential purely from rollout-level reward statistics: 
+
+𝒘 (𝑡 ) = ˜𝒘 (𝑡 )
+
+Í𝑘 ∈ K ˜𝑤 (𝑡 )
+
+> 𝑘
+
+, ˜𝑤 (𝑡 ) 
+
+> 𝑖
+
+= 𝜎 (𝑡 )
+
+> 𝑖
+
+𝜇 (𝑡 ) 
+
+> 𝑖
+
++ 𝜀 , (7) where 𝜇 (𝑡 ) 
+
+> 𝑖
+
+and 𝜎 (𝑡 ) 
+
+> 𝑖
+
+are respectively the within-group mean and standard deviation of reward 𝑟 𝑖 at step 𝑡 , and 𝜀 is a small constant for numerical stability. This formulation is exactly the coefficient of variation of each reward: a reward with large within-group variance relative to its magnitude indicates that the current policy is still highly discriminable along that direction and therefore de-serves a larger weight; once a reward saturates (vanishing variance), its weight is automatically attenuated. Since POPO-light depends solely on forward reward scalars and avoids any additional back-ward gradient inner-product computation, it can be seamlessly plugged into the GRPO training loop with essentially zero extra overhead, making it particularly suitable for web-scale industrial deployment. 
+
+Training Objective. Building upon the proposed POPO, we optimize the policy with GRPO under dynamically re-weighted rewards, so as to achieve a more favorable trade-off between LLM semantic understanding and user preference modeling in LLM4Rec. Concretely, the training loss is formulated as 
+
+LPOPO (𝜃 ) = E 𝑞 ∼ 𝑃 (𝑄 ), {𝑜 𝑖 }𝐺 𝑖 =1 ∼ 𝜋 𝜃 old (𝑂 | 𝑞 ) 
+
+1
+
+𝐺 
+
+> 𝐺
+
+∑︁ 
+
+> 𝑖 =1
+
+1
+
+|𝑜 𝑖 | 
+
+> |𝑜 𝑖 |
+
+∑︁  
+
+> 𝑡 =1
+
+(
+
+min 𝜌 𝑖,𝑡 (𝜃 ) ˆ𝐴 𝑖,𝑡 , clip  𝜌 𝑖,𝑡 (𝜃 ), 1 − 𝜀, 1 + 𝜀  ˆ𝐴 𝑖,𝑡 
+
+ − 𝛽 DKL [𝜋 𝜃 ∥ 𝜋 ref ]
+
+)
+
+,
+
+(8) where 𝜌 𝑖,𝑡 (𝜃 ) = 𝜋 𝜃 (𝑜 𝑖,𝑡 | 𝑞, 𝑜 𝑖, <𝑡 )/ 𝜋 𝜃 old (𝑜 𝑖,𝑡 | 𝑞, 𝑜 𝑖, <𝑡 ), and ˆ𝐴 𝑖,𝑡 = 
+
+> ˜𝑟 𝑖 −mean
+
+ { ˜𝑟 1, ˜𝑟 2,..., ˜𝑟 𝐺 }
+
+
+
+> std
+
+ { ˜𝑟 1, ˜𝑟 2,..., ˜𝑟 𝐺 }
+
+ is the group-normalized advantage. Here 𝐺 denotes the group size, i.e., the number of candidate responses roll out from 𝜋 𝜃 old 
+
+for each query 𝑞 , and 𝜀 , 𝛽 are the clipping ratio and the KL regularization coefficient, respectively. The scalar reward of each rollout is given by the POPO-weighted combination of the two heterogeneous reward sources, 
+
+˜𝑟 𝑖 = 𝑤 (𝑡 ) 
+
+> 𝑠
+
+𝑟 𝑠 (𝑜 𝑖 ) + 𝑤 (𝑡 ) 
+
+> id
+
+𝑟 id (𝑜 𝑖 ), (9) where 𝑤 (𝑡 ) 
+
+> 𝑠
+
+and 𝑤 (𝑡 ) 
+
+> id
+
+are the adaptive weights at iteration 𝑡 from Eq. (5)/(7), and 𝜋 ref is the SFT-initialized reference policy obtained from Section 2.2. 
+
+## 2.4 Online Ranking: Intra-User Features & Cross-User Sequences Enhancement 
+
+After the RL-based policy optimization, the fine-tuned LLM is deployed for near-online inference to enhance the online ad ranking system. As illus-trated in Figure 1, this Stage 4 bridges the gap between LLM reasoning and traditional recommendation models through two complementary mecha-nisms: intra-user feature quantization and cross-user sequence retrieval. 
+
+Intra-User Feature Quantization. For each incoming user request, we extract the user profile and behavioral history from online logs and feed them into the post-trained LLM to generate reasoning outputs in the format <think>CoT</think>; <answer>Item Info</answer> . To convert the textual reasoning into numerical features compatible with the ranking model, we employ the Qwen-Embedding-0.6B [ 28 ] to encode the CoT&Item Info into dense embeddings. These embeddings are then quantized using product quantization [ 13 ] to produce sparse ID vectors that capture the LLM’s personalized understanding of user preferences. Under Review, , Yuecheng Li, Zeyu Song, Jing Yao, Chi Lu, Peng Jiang, and Kun Gai 
+
+Table 1: Offline performance comparison on the test dataset. Bold and underline denote the best and the second-best results, respectively. Semantic Hit-Rate measures the LLM’s recommendation reasoning quality (multi-level category accuracy and item-title Hit-Rate), while Preference Hit-Rate (CTCVR) reflects the alignment with online user preferences. Pink text indicates the relative improvement over the backbone model DeepSeek-R1-7B. 
+
+Metric Method DeepSeek-R1-7B QwQ-32B Taiji (ORFT) Taiji (ORFT+POPO-light) Taiji (ORFT+POPO) 
+
+Semantic Hit-Rate Category_L1_ACC 0.1560 0.1974 0.2012 0.2347 ( ↑ 50.45%) 0.2433 (↑ 55.96%) Category_L2_ACC 0.0608 0.0767 0.0690 0.0877 ( ↑ 44.24%) 0.0888 (↑ 46.05%) Category_L3_ACC 0.0251 0.0039 0.0245 0.0307 ( ↑ 22.31%) 0.0347 (↑ 38.25%) Title_Hit-Rate@50 0.0496 0.0563 0.0449 0.0558 ( ↑ 12.50%) 0.0567 (↑ 14.31%) Title_Hit-Rate@100 0.0646 0.0733 0.0606 0.0762 (↑ 17.96%) 0.0720 ( ↑ 11.46%) Preference Hit-Rate CTCVR 0.003417 0.003675 0.003723 0.003802 ( ↑ 11.27%) 0.003816 (↑ 11.68%) 
+
+Cross-User Sequence Retrieval. To leverage collaborative signals across users, we perform similarity-based retrieval in the embedding space. Specifically, for a target user 𝑢 , we retrieve the top-1 most similar users based on cosine similarity between their LLM-generated embeddings. The recent-100 behavioral sequences of the similar user are then aggregated and fed as additional features to the ranking model, enabling the model to capture cross-user interaction patterns that complement intra-user reasoning. 
+
+Integration with Ranking Model. Both the quantized sparse features and the retrieved cross-user sequences are concatenated with traditional features and fed into the online ad ranking model. This hybrid feature representation allows the ranking model to benefit from both the deep semantic understanding of LLMs and the collaborative filtering signals from user interactions, leading to improved ranking performance in production. 
+
+## 3 Experiments 
+
+In this section, we conduct extensive offline/online experiments and de-tailed ablation studies based Kuaishou’s Advertising services, to validate the effectiveness and scalability of our Taiji. 
+
+## 3.1 Experimental Setup 
+
+3.1.1 Datasets. We sample 1.11 million user records from the production system, each containing user profile information and behavioral sequences from the past month. The dataset is partitioned as follows: 1 million samples are allocated for SFT (Stage 2), where we generate 𝑘 = 3 recommendation CoT samples per user using QwQ-32B as the teacher model. The PPL trun-cation threshold is set to 𝑅 = 4.6, determined as the median PPL value computed over a validation set of 2.3K samples. An additional 100K samples are randomly selected for RL (Stage 3), and the remaining 10K samples constitute the test dataset. The ground-truth labels primarily consist of item titles and third-level category information. 
+
+3.1.2 Evaluation Metrics. For offline evaluation, we measure LLM perfor-mance using accuracy (ACC), hit rate at top-50 and top-100 (Hit-Rate@50, Hit-Rate@100), and click-through and conversion rate (CTCVR). For online A/B testing, we adopt advertiser value (ADVV) [ 2] and platform Revenue [16 ] as key business metrics to assess the impact on advertiser ROI and platform monetization, respectively. 
+
+3.1.3 Implementation Details. We employ DeepSeek-R1-7B 1 as the base model and conduct training on 3 nodes with 8*A800 GPUs each. During the SFT stage, we perform full-parameter fine-tuning for 1 epoch with a learning rate of 1 × 10 −7 and a per-GPU batch size of 32. In the RL stage, we train for 1 epoch with a learning rate of 2 × 10 −5, a per-GPU batch size of 16, 
+
+> 1https://huggingface.co/deepseek-ai/DeepSeek-R1-Distill-Qwen-7B
+
+a rollout group size of 𝐺 = 4, a maximum prompt length of 13,000 tokens, and a maximum completion length of 2,048 tokens. The reward weights are initialized as 𝑤 𝑠 = 0.5 and 𝑤 id = 0.5.
+
+## 3.2 Offline Experiments 
+
+We compare Taiji against two strong base LLMs: DeepSeek-R1-7B [ 9] (the un-tuned backbone of Taiji), and QwQ-32B [ 19 ] (the teacher model used for CoT distillation). We evaluate two complementary aspects of recommendation quality on the held-out 10K test dataset: (i) Semantic Hit-Rate , which reflects how accurately the LLM reasons about user preferences in the textual space (multi-level category accuracy and item-title Hit-Rate@ {50 , 100 }); and (ii) 
+
+Preference Hit-Rate , measured by the offline-simulated CTCVR, which re-flects how well the LLM’s outputs align with online user behavior signals. The results are summarized in Table 1. Several observations can be drawn: 
+
+• ORFT effectively activates reasoning capabilities. Taiji (ORFT) 
+
+demonstrates substantial improvements over DeepSeek-R1-7B on category-level semantic understanding (+28.97% on Category_L1, +13.49% on Category_L2) and user preference alignment (+8.96% on CTCVR), validating the effectiveness of reverse-engineered distil-lation. However, we observe a performance trade-off on title-level hit-rates, attributed to the limited generalization of SFT while ORFT only successfully learns coarse-grained user-item matching patterns from training samples. Additionally, QwQ-32B’s anomalously low Category_L3 accuracy reflects its tendency toward overly general predictions without domain-specific fine-tuning. These limitations motivate the necessity of RL-based optimization to balance semantic understanding with lexical precision. 
+
+• POPO yields consistent gains over both the 32B teacher and the SFT-only variant. Equipping ORFT with POPO substantially boosts almost metrics and surpasses QwQ-32B ( e.g. , +23.25% on Category_L1 accuracy, and +3.84% on CTCVR) and DeepSeek-R1-7B (e.g. , +14.31% on Title_Hit-Rate@50, and 11.68% on CTCVR), con-firming that dynamically balancing semantic and ID-collaborative rewards effectively activates fine-grained recommendation prefer-ence signals in a much smaller 7B model. 
+
+• POPO and POPO-light are complementary. The full POPO achieves the best score on five out of six metrics, while the light-weight variant POPO-light, despite using only rollout-level reward statistics and incurring negligible overhead, attains the second-best score on most metrics and even outperforms POPO on Title_Hit-Rate@100. This makes POPO-light an attractive deployment choice when GPU budget is tight, while POPO remains the preferred option when training cost is not the bottleneck. Taiji: Pareto Optimal Policy Optimization with Semantics-IDs Trade-off for Industrial LLM-Enhanced Recommendation Under Review, , 
+
+Table 2: Online A/B test results of Advertising services. Taiji demonstrates significant improvements in both ADVV and Revenue across different user segments. The long-tail setting focuses on users with sparse interaction histories. 
+
+Method Setting Intra-User Features Enhancement Cross-User Sequences Enhancement Overall ADVV Revenue ADVV Revenue ADVV Revenue Taiji all +1.06% +1.35% +1.77% +1.95% +2.83% +3.30% long-tail +2.78% +4.12% +2.48% +1.20% +5.26% +5.32% 
+
+Table 3: Ablation study on the RUPR module. w/o RUPR uses CoT and item predictions directly generated by QwQ-32B, while w/ RUPR leverages ground-truth labels from online logs to guide reasoning. Pink text indicates the relative im-provement over directed distillation. 
+
+Metric Type Metric w/o RUPR w/ RUPR Improv. 
+
+Format Accuracy Think_Tag_Presence_Rate 0.9613 0.9947 +3.47% Think_Non_Empty_Rate 0.9613 0.9921 +3.20% Answer_Non_Empty_Rate 0.9607 0.9892 +2.97% Semantics Hit-Rate Category_L1_ACC 0.1679 0.2012 +19.83% Category_L2_ACC 0.0535 0.0690 +28.97% Category_L3_ACC 0.0185 0.0245 +32.43% Title_Hit-Rate@50 0.0405 0.0449 +10.86% Title_Hit-Rate@100 0.0545 0.0606 +11.19% 
+
+Table 4: Ablation study on the POPO algorithm. GRPO uses fixed reward weights ( 𝑤 𝑠 = 𝑤 id = 0.5), while POPO dynami-cally adjusts weights to achieve Pareto optimality. Pink text indicates the relative improvement over GRPO. 
+
+Metric ORFT+GRPO ORFT+POPO-light ORFT+POPO 
+
+Category_L1_ACC 0.2180 0.2347 ( ↑ 7.66%) 0.2433 (↑ 11.61%) Category_L2_ACC 0.0806 0.0877 ( ↑ 8.81%) 0.0888 (↑ 10.17%) Category_L3_ACC 0.0269 0.0307 ( ↑ 14.13%) 0.0347 (↑ 29.00%) Title_Hit-Rate@50 0.0512 0.0558 ( ↑ 8.98%) 0.0567 (↑ 10.74%) Title_Hit-Rate@100 0.0698 0.0762 (↑ 9.17%) 0.0720 ( ↑ 3.15%) CTCVR 0.003788 0.003802 ( ↑ 0.37%) 0.003816 (↑ 0.74%) 
+
+## 3.3 Ablation Study 
+
+To further validate the critical roles of RUPR (Section 2.1.2) and POPO (Section 2.3.3) in the Taiji framework, we conduct comprehensive ablation studies, as shown in Table 3 and Table 4. 
+
+3.3.1 Impact of Reverse-Engineered User Preference Reasoning (RUPR). Ta-ble 3 demonstrates two key findings. First, the format accuracy after the SFT stage is already high ( ∼ 99%), establishing a solid foundation for subsequent RL training. Second, Taiji (ORFT w/o RUPR) uses CoT and item predictions directly generated by QwQ-32B from user profiles and behavior sequences, whereas Taiji (ORFT w/ RUPR) leverages ground-truth labels sampled from online logs to guide the CoT generation, providing dual semantic guarantees. Consequently, RUPR significantly improves semantic hit-rates, particularly for fine-grained metrics such as Category_L3_Accuracy (+32.43%). 
+
+3.3.2 Impact of Pareto Optimality Policy Optimization (POPO). Unlike POPO, which dynamically adjusts reward weights, GRPO [ 18 ] uses fixed weights ( 𝑤 𝑠 = 𝑤 id = 0.5) for both the LLM semantic reward and the recom-mendation ID collaborative reward. As shown in Table 4, Taiji (ORFT+POPO) 
+
+simultaneously improves both Semantic Hit-Rate and Preference Hit-Rate compared to Taiji (ORFT+GRPO) , validating that POPO indeed pushes the policy toward the Pareto front rather than trading one objective off for the other —the central design goal of our framework. 
+
+## 3.4 Online Performance 
+
+To validate the real-world effectiveness of Taiji, we conduct large-scale A/B tests on Kuaishou’s advertising recommendation platform. We allocate 10% of traffic to the baseline and 10% to Taiji, running the experiment for one week. As shown in Table 2, Taiji achieves significant improvements in both ADVV (Advertiser Value) and Revenue (Platform Revenue). Notably, the gains are more pronounced for long-tail users with sparse interaction histo-ries, where ADVV and Revenue increase by +5.26% and +5.32%, respectively. These results demonstrate that Taiji’s reasoning-enhanced recommendation effectively bridges the semantic gap between user intent and item attributes, particularly benefiting users with limited behavioral data. 
+
+## 4 Related Works 
+
+LLM-as-Enhancer via Reinforcement Alignment. To bridge the se-mantic gap between LLM outputs and recommendation objectives, recent work explores RL-based alignment for the LLM-as-Enhancer paradigm. Re-cLM [ 10 ] applies PPO with an LLM-side semantic reward to refine generated user profiles, while DEEPER [ 3 ] drives a tri-objective offline RL+DPO loop with behavior-prediction discrepancy as the recommendation-side signal. Rec-R1 [ 14 ] closes the loop with a black-box recommender via GRPO, jointly optimizing semantic and NDCG/Recall rewards, and LangPTune [ 7] jointly trains a profile encoder and recommendation decoder through RLSO with contrastive learning. RecGPT-V2 [ 24 ] further scales this paradigm with a hi-erarchical multi-agent system and constrained RL. However, these methods either rely on a single reward source or combine heterogeneous rewards with static , hand-crafted weights, failing to characterize the non-convex Pareto front between LLM world knowledge and online user preferences. 
+
+## 5 Conclusions 
+
+In this paper, we presented Taiji , an industrial-scale LLM-as-Enhancer framework that addresses two key limitations in the LLM4Rec post-training pipeline. In the SFT stage, we proposed Reverse-Engineered User Prefer-ence Reasoning (RUPR) together with Open-Ended Rejection sampling Fine-Tuning (ORFT) to distill and curate high-quality recommendation-specific CoT data. In the RL stage, we further introduced Pareto Optimal Policy Optimization (POPO), which adaptively re-weights the LLM semantic reward and the recommendation collaborative reward, achieving a theoreti-cally grounded Pareto-optimal trade-off between LLMs’ world knowledge and online user preferences. Extensive offline experiments and online A/B tests validate the effectiveness of Taiji, which has been fully deployed on Kuaishou’s Advertising platform, stably serving over 400 million users. Under Review, , Yuecheng Li, Zeyu Song, Jing Yao, Chi Lu, Peng Jiang, and Kun Gai 
+
+## References 
+
+[1] Amir Beck and Marc Teboulle. 2003. Mirror descent and nonlinear projected subgradient methods for convex optimization. Operations Research Letters 31, 3 (2003), 167–175. [2] Zheng Chai, Qin Ren, Xijun Xiao, Huizhi Yang, Bo Han, Sijun Zhang, Di Chen, Hui Lu, Wenlin Zhao, Lele Yu, Xionghang Xie, Shiru Ren, Xiang Sun, Yaocheng Tan, Peng Xu, Yuchao Zheng, and Di Wu. 2025. LONGER: Scaling Up Long Sequence Modeling in Industrial Recommenders. In Proceedings of the Nineteenth ACM Conference on Recommender Systems (RecSys ’25) . Association for Computing Machinery, New York, NY, USA, 247–256. doi:10.1145/3705328.3748065 [3] Aili Chen, Chengyu Du, Jiangjie Chen, Jinghan Xu, Yikai Zhang, Siyu Yuan, Zulong Chen, Liangyue Li, and Yanghua Xiao. 2025. Deeper insight into your user: Directed persona refinement for dynamic persona modeling. In Proceedings of the 63rd Annual Meeting of the Association for Computational Linguistics (Volume 1: Long Papers) . 24157–24180. [4] Jiaxin Deng, Shiyao Wang, Kuo Cai, Lejian Ren, Qigen Hu, Weifeng Ding, Qiang Luo, and Guorui Zhou. 2025. Onerec: Unifying retrieve and rank with generative recommender and iterative preference alignment. arXiv preprint arXiv:2502.18965 
+
+(2025). [5] Simin Fan, Matteo Pagliardini, and Martin Jaggi. 2024. DOGE: Domain Reweight-ing with Generalization Estimation. In International Conference on Machine Learn-ing . PMLR, 12895–12915. [6] William Fleshman and Benjamin Van Durme. 2025. RE-AdaptIR: Improving Infor-mation Retrieval through Reverse Engineered Adaptation (SIGIR ’25) . Association for Computing Machinery, New York, NY, USA, 2632–2636. doi:10.1145/3726302. 3730240 [7] Zhaolin Gao, Joyce Zhou, Yijia Dai, and Thorsten Joachims. 2025. LangPTune: Optimizing Language-based User Profiles for Recommendation. In Proceedings of the 34th ACM International Conference on Information and Knowledge Management .707–717. [8] Hao Gu, Rui Zhong, Yu Xia, Wei Yang, Chi Lu, Peng Jiang, and Kun Gai. 2025. R 4ec: A reasoning, reflection, and refinement framework for recommendation sys-tems. In Proceedings of the Nineteenth ACM Conference on Recommender Systems .411–421. [9] Daya Guo, Dejian Yang, Haowei Zhang, Junxiao Song, Peiyi Wang, Qihao Zhu, Runxin Xu, Ruoyu Zhang, Shirong Ma, Xiao Bi, et al. 2025. Deepseek-r1: Incen-tivizing reasoning capability in llms via reinforcement learning. arXiv preprint arXiv:2501.12948 (2025). [10] Yangqin Jiang, Yuhao Yang, Lianghao Xia, Da Luo, Kangyi Lin, and Chao Huang. 2025. Reclm: Recommendation instruction tuning. In Proceedings of the 63rd Annual Meeting of the Association for Computational Linguistics (Volume 1: Long Papers) . 15443–15459. [11] Yuchen Jiang, Jie Zhu, Xintian Han, Hui Lu, Kunmin Bai, Mingyu Yang, Shikang Wu, Ruihao Zhang, Wenlin Zhao, Shipeng Bai, et al . 2026. TokenMixer-Large: Scaling Up Large Ranking Models in Industrial Recommenders. arXiv preprint arXiv:2602.06563 (2026). [12] Yuecheng Li, Hengwei Ju, Zeyu Song, Wei Yang, Chi Lu, Peng Jiang, and Kun Gai. 2026. RecGOAT: Graph Optimal Adaptive Transport for LLM-Enhanced Multimodal Recommendation with Dual Semantic Alignment. arXiv preprint arXiv:2602.00682 (2026). [13] Defu Lian, Xing Xie, Enhong Chen, and Hui Xiong. 2020. Product quantized collaborative filtering. IEEE Transactions on Knowledge and Data Engineering 33, 9 (2020), 3284–3296. [14] Jiacheng Lin, Tian Wang, and Kun Qian. 2025. Rec-R1: Bridging Generative Large Language Models and User-Centric Recommendation Systems via Reinforcement Learning. Transactions on Machine Learning Research (2025). https://openreview. net/forum?id=YBRU9MV2vE [15] Yining Lu, Zilong Wang, Shiyang Li, Xin Liu, Changlong Yu, Qingyu Yin, Zhan Shi, Zixuan Zhang, and Meng Jiang. 2025. Learning to optimize multi-objective alignment through dynamic reward weighting. arXiv preprint arXiv:2509.11452 
+
+(2025). [16] Xinchen Luo, Jiangxia Cao, Tianyu Sun, Jinkai Yu, Rui Huang, Wei Yuan, Hezheng Lin, Yichen Zheng, Shiyao Wang, Qigen Hu, Changqing Qiu, Jiaqi Zhang, Xu Zhang, Zhiheng Yan, Jingming Zhang, Simin Zhang, Mingxing Wen, Zhaojie Liu, and Guorui Zhou. 2025. QARM: Quantitative Alignment Multi-Modal Recom-mendation at Kuaishou (CIKM ’25) . Association for Computing Machinery, New York, NY, USA, 5915–5922. doi:10.1145/3746252.3761502 [17] Shashank Rajput, Nikhil Mehta, Anima Singh, Raghunandan Hulikal Keshavan, Trung Vu, Lukasz Heldt, Lichan Hong, Yi Tay, Vinh Tran, Jonah Samost, et al .2023. Recommender systems with generative retrieval. Advances in Neural Information Processing Systems 36 (2023), 10299–10315. [18] Zhihong Shao, Peiyi Wang, Qihao Zhu, Runxin Xu, Junxiao Song, Xiao Bi, Haowei Zhang, Mingchuan Zhang, YK Li, et al . 2024. Deepseekmath: Pushing the limits of mathematical reasoning in open language models. arXiv preprint arXiv:2402.03300 
+
+(2024). [19] Qwen Team. 2024. QwQ: Reflect Deeply on the Boundaries of the Unknown. https://qwenlm.github.io/blog/qwq-32b-preview/ [20] Haozhe Wang, Haoran Que, Qixin Xu, Minghao Liu, Wangchunshu Zhou, Jiazhan Feng, Wanjun Zhong, Wei Ye, Tong Yang, Wenhao Huang, et al . 2025. Reverse-engineered reasoning for open-ended generation. arXiv preprint arXiv:2509.06160 
+
+(2025). [21] Yunjia Xi, Weiwen Liu, Jianghao Lin, Xiaoling Cai, Hong Zhu, Jieming Zhu, Bo Chen, Ruiming Tang, Weinan Zhang, and Yong Yu. 2024. Towards open-world recommendation with knowledge augmentation from large language models. In 
+
+Proceedings of the 18th ACM Conference on Recommender Systems . 12–22. [22] Yu Xia, Rui Zhong, Hao Gu, Wei Yang, Chi Lu, Peng Jiang, and Kun Gai. 2025. Hierarchical tree search-based user lifelong behavior modeling on large language model. In Proceedings of the 48th International ACM SIGIR Conference on Research and Development in Information Retrieval . 1758–1767. [23] Yu Xia, Rui Zhong, Zeyu Song, Wei Yang, Junchen Wan, Qingpeng Cai, Chi Lu, and Peng Jiang. 2026. Trackrec: Iterative alternating feedback with chain-of-thought via preference alignment for recommendation. (2026). [24] Chao Yi, Dian Chen, Gaoyang Guo, Jiakai Tang, Jian Wu, Jing Yu, Mao Zhang, Wen Chen, Wenjun Yang, Yujie Luo, et al . 2025. RecGPT-V2 Technical Report. 
+
+arXiv preprint arXiv:2512.14503 (2025). [25] Jiaqi Zhai, Lucy Liao, Xing Liu, Yueming Wang, Rui Li, Xuan Cao, Leon Gao, Zhaojie Gong, Fangda Gu, Jiayuan He, et al . 2024. Actions speak louder than words: trillion-parameter sequential transducers for generative recommendations. In Proceedings of the 41st International Conference on Machine Learning . 58484– 58509. [26] Jun Zhang, Yi Li, Yue Liu, Changping Wang, Yuan Wang, Yuling Xiong, Xun Liu, Haiyang Wu, Qian Li, Enming Zhang, et al . 2025. GPR: Towards a Generative Pre-trained One-Model Paradigm for Large-Scale Advertising Recommendation. 
+
+arXiv preprint arXiv:2511.10138 (2025). [27] Kun Zhang, Jingming Zhang, Wei Cheng, Yansong Cheng, Jiaqi Zhang, Hao Lu, Xu Zhang, Haixiang Gan, Jiangxia Cao, Tenglong Wang, et al . 2026. OneMall: One Model, More Scenarios–End-to-End Generative Recommender Family at Kuaishou E-Commerce. arXiv preprint arXiv:2601.21770 (2026). [28] Yanzhao Zhang, Mingxin Li, Dingkun Long, Xin Zhang, Huan Lin, Baosong Yang, Pengjun Xie, An Yang, Dayiheng Liu, Junyang Lin, et al . 2025. Qwen3 embedding: Advancing text embedding and reranking through foundation models. arXiv preprint arXiv:2506.05176 (2025). [29] Zhaoqi Zhang, Haolei Pei, Jun Guo, Tianyu Wang, Yufei Feng, Hui Sun, Shaowei Liu, and Aixin Sun. 2026. Onetrans: Unified feature interaction and sequence modeling with one transformer in industrial recommender. In Proceedings of the ACM Web Conference 2026 . 8162–8170. [30] Jie Zhu, Zhifang Fan, Xiaoxie Zhu, Yuchen Jiang, Hangyu Wang, Xintian Han, Haoran Ding, Xinmin Wang, Wenlin Zhao, Zhen Gong, et al . 2025. Rankmixer: Scaling up ranking models in industrial recommenders. In Proceedings of the 34th ACM International Conference on Information and Knowledge Management .6309–6316.

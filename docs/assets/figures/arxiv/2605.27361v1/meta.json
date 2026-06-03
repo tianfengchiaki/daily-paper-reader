@@ -1,0 +1,118 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2605.27361v1/fig-001.webp",
+      "caption": "Table 3: Configuration search space. Synthesis methods are shared across all benchmarks; LLMs, retrievers, and retrieval depth k vary by benchmark to reflect differences in benchmark difficulty and retrieval requirements.",
+      "page": 15,
+      "index": 1,
+      "width": 841,
+      "height": 686
+    },
+    {
+      "url": "assets/figures/arxiv/2605.27361v1/fig-002.webp",
+      "caption": "Table 8: Achieved accuracy under a 50% budget goal. Companion to Table 1: each method is run at 50% of the best static configuration’s cost-per-query, and we report the highest accuracy achievable within that budget (n/a = no configuration fits). Higher accuracy is better. The best learned method per benchmark is in bold.",
+      "page": 21,
+      "index": 2,
+      "width": 544,
+      "height": 321
+    },
+    {
+      "url": "assets/figures/arxiv/2605.27361v1/fig-003.webp",
+      "caption": "Figure 1: Cost-quality design space of knowledge-search pipelines on BrowseComp-Plus across 60 profiled configurations. Circles denote static pipelines, colored by synthesis method (LLM-only, per-chunk summary, agent loop). Each configuration also varies the LLM, retriever, and number of retrieved documents; Appendix A.1 lists the full space. Squares mark prior-work baselines. Pipeline cost spans roughly three orders of magnitude on a single workload. BRANE’s per-query Pareto trace (yellow diamonds; star marks the headline operating point) dominates the static Pareto frontier (black dashed line) across the full cost-quality range (green region): BRANE exceeds the most accurate static pipeline by 0.7% in accuracy at 81.7% lower cost.",
+      "page": 2,
+      "index": 3,
+      "width": 826,
+      "height": 316
+    },
+    {
+      "url": "assets/figures/arxiv/2605.27361v1/fig-004.webp",
+      "caption": "Figure 9: BRANE cost saving by query featurizer (mean ± 1σ across 5 CV folds). Bars show % cost saving vs. the cheapest static configuration that already meets each accuracy goal (higher is better; bars below zero mean the router is more expensive than the cheapest qualifying baseline). Hatched bars labeled n/a indicate the goal is unreachable: no router operating point achieves the column’s accuracy floor. Error bars are the per-fold cost standard deviation at the selected operating point, scaled to % saving.",
+      "page": 22,
+      "index": 4,
+      "width": 826,
+      "height": 296
+    },
+    {
+      "url": "assets/figures/arxiv/2605.27361v1/fig-005.webp",
+      "caption": "Table 2: Ablation on the characterization model and the configuration predictor. Top block: BRANE with different query characterization models (three LLMs proposed characteristics versus OpenAI embeddings). Bottom block: BRANE’s classical per-configuration predictors are replaced by end-toend fine-tuned neural variants spanning two backbones (BERT, Qwen3-4B with LoRA); details in Appendix A.6. Cell formatting follows Table 1.",
+      "page": 10,
+      "index": 5,
+      "width": 830,
+      "height": 256
+    },
+    {
+      "url": "assets/figures/arxiv/2605.27361v1/fig-006.webp",
+      "caption": "Figure 5: Synthesis strategies in the configuration space. We consider four pipeline families: LLMonly generation, RAG with concatenated retrieved chunks, RAG over summarized chunks, and a search-augmented agent loop. Gear icons indicate configurable knobs selected per query, including the model, retriever, retrieval depth k, and synthesis strategy.",
+      "page": 14,
+      "index": 6,
+      "width": 829,
+      "height": 631
+    },
+    {
+      "url": "assets/figures/arxiv/2605.27361v1/fig-007.webp",
+      "caption": "Figure 2: BRANE framework. BRANE selects a pipeline configuration per query to minimize cost at a target accuracy. (1) Configuration profiling: we run each query against every candidate configuration on the workload, recording correctness and dollar cost. (2) Predictor training: a frontier LLM proposes workload-specific binary characteristics (e.g., requires multi-hop reasoning, involves people) from a small sample of queries; a cheaper LLM then labels all profiled queries against these characteristics. We train one lightweight predictor per Pareto configuration to estimate the probability that it answers a query correctly given its characteristics. Pareto configurations are an order of magnitude fewer than the full set. (3) Inference (reconfigurable): given an accuracy or budget target, BRANE characterizes the incoming query once, scores every Pareto configuration, and selects the one that best trades predicted accuracy against cost. The engineer retargets at any time without retraining. See §4.2 for the selection rule.",
+      "page": 3,
+      "index": 7,
+      "width": 824,
+      "height": 258
+    },
+    {
+      "url": "assets/figures/arxiv/2605.27361v1/fig-008.webp",
+      "caption": "Figure 7: Prompt template used for the Qwen cross-encoder baseline.",
+      "page": 18,
+      "index": 8,
+      "width": 829,
+      "height": 231
+    },
+    {
+      "url": "assets/figures/arxiv/2605.27361v1/fig-009.webp",
+      "caption": "Table 12: Per-query accuracy and cost for each synthesis strategy on BrowseComp-Plus (LLM fixed to GPT-5-mini, ten runs per cell). Row-wise best in light green. The optimal strategy differs across queries, and the cost gap between the cheapest and most expensive correct configuration spans four orders of magnitude (Q1).",
+      "page": 23,
+      "index": 9,
+      "width": 690,
+      "height": 534
+    },
+    {
+      "url": "assets/figures/arxiv/2605.27361v1/fig-010.webp",
+      "caption": "Table 1: Cost savings at matched static configuration accuracy. For each benchmark we evaluate three accuracy goals: (i) match the best static configuration’s accuracy; (ii) reach 95% of that accuracy; (iii) reach 90% of that accuracy. Each cell reports % cost saving vs. the cheapest static configuration that reaches the column’s accuracy floor. BRANE uses GPT-5-mini as the characterization LLM, and the cost of characterization is already included in the reported savings. We extend prior baselines (METIS, Adaptive RAG, and CARROT) to cover BRANE’s configuration space for a stricter and fair comparison; baseline details are in Appendix A.2. Green marks cheaper-than-static cells; orange (X× cost) marks more expensive than static configurations cells; n/a marks goals the method cannot reach. Higher cost saving is better. The best learned method per benchmark is in bold. Complementary 50% budget-goal results are in Table 8 (Appendix C).",
+      "page": 8,
+      "index": 10,
+      "width": 830,
+      "height": 261
+    },
+    {
+      "url": "assets/figures/arxiv/2605.27361v1/fig-011.webp",
+      "caption": "Figure 4: Cost–quality Pareto frontier on MuSiQue, BrowseComp-Plus, and FinanceBench at the 100% accuracy target. BRANE (yellow diamonds) traces the upper-left bound of the static configurations (grey circles), pushing past the original static Pareto frontier. Dotted yellow diamonds mark BRANE operating points that exceed the best static configuration’s accuracy at lower cost. BRANE dominates the baselines (squares) across the full cost range on MuSiQue, BrowseCompPlus, and FinanceBench at this accuracy target. Baselines are extended to cover BRANE’s full configuration space for a stricter comparison (Appendix A.2). All reported BRANE costs already include the GPT-5-mini characterization overhead.",
+      "page": 8,
+      "index": 11,
+      "width": 806,
+      "height": 232
+    },
+    {
+      "url": "assets/figures/arxiv/2605.27361v1/fig-012.webp",
+      "caption": "Figure 10: Raw BrowseComp-Plus queries used in our motivating examples.",
+      "page": 24,
+      "index": 12,
+      "width": 850,
+      "height": 585
+    },
+    {
+      "url": "assets/figures/arxiv/2605.27361v1/fig-013.webp",
+      "caption": "Table 7: Example query characterization questions generated by GPT-5-mini for each benchmark. Each question yields a binary feature used by the routing predictor.",
+      "page": 20,
+      "index": 13,
+      "width": 865,
+      "height": 442
+    },
+    {
+      "url": "assets/figures/arxiv/2605.27361v1/fig-014.webp",
+      "caption": "Figure 8: BRANE cost saving vs. number of LLM-proposed query characteristics (N ) with GPT-5mini featurizer per-benchmark line at the 100% accuracy goal. Saving rises sharply from N=5 to N=10 and plateaus after that, indicating that a small set of well-chosen characteristics captures most of the routable structure.",
+      "page": 20,
+      "index": 14,
+      "width": 826,
+      "height": 263
+    }
+  ]
+}

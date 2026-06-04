@@ -1,0 +1,46 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2606.03221v1/fig-001.webp",
+      "caption": "Table 3: Ablation study of VirtualMLE on Baby and Beauty.",
+      "page": 5,
+      "index": 1,
+      "width": 494,
+      "height": 263
+    },
+    {
+      "url": "assets/figures/arxiv/2606.03221v1/fig-002.webp",
+      "caption": "Table 1: Overall performance on three datasets. R@K and N@K denote Recall@K and NDCG@K, respectively. The best results are in bold and the second-best results are underlined. “Improv.” denotes the relative improvement of VirtualMLE over the best baseline within the same backbone group.",
+      "page": 4,
+      "index": 2,
+      "width": 1044,
+      "height": 611
+    },
+    {
+      "url": "assets/figures/arxiv/2606.03221v1/fig-003.webp",
+      "caption": "Table 2: Search efficiency on Baby and Beauty. “#Trials” is the trial index at which the best validation NDCG@10 was first reached. Lower is better.",
+      "page": 4,
+      "index": 3,
+      "width": 494,
+      "height": 254
+    },
+    {
+      "url": "assets/figures/arxiv/2606.03221v1/fig-004.webp",
+      "caption": "Table 4: Robustness of VirtualMLE across LLM backbones on the SASRec backbone. “Cost” is the monetary cost (USD) of LLM calls for one complete optimization session, computed from public token pricing.",
+      "page": 6,
+      "index": 4,
+      "width": 496,
+      "height": 254
+    },
+    {
+      "url": "assets/figures/arxiv/2606.03221v1/fig-005.webp",
+      "caption": "Figure 1: Overview of VirtualMLE compared with conventional AutoML paradigms. Conventional AutoML (left) treats each (dataset, model) pair as an independent black-box problem, whereas VirtualMLE (right) closes a reflect & plan → act → observe → update loop over a hierarchical memory system, redirecting compute from exhaustive exploration to cognitive pruning.",
+      "page": 3,
+      "index": 5,
+      "width": 1056,
+      "height": 525
+    }
+  ]
+}

@@ -1,0 +1,118 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2605.30337v1/fig-001.webp",
+      "caption": "Table 1: Per-subset BPB% at time budgets T=1.75s (left) and T=2.0s (right), using each method’s average selection size. ∆ shows the difference between the best baseline (kNN or SIFT) and HullFT. T=1.75s",
+      "page": 6,
+      "index": 1,
+      "width": 816,
+      "height": 314
+    },
+    {
+      "url": "assets/figures/arxiv/2605.30337v1/fig-002.webp",
+      "caption": "Figure 2: Left: BPB% vs total runtime (selection + finetuning) as we sweep N ∈ [1, 50] for each method. Our method (green) is Pareto-dominant for every budget T ≲4s. Vertical lines at T=1.75s and T=2.0s mark the BPB% gap to the best baseline: our method is 3.83% and 3.44% lower than the best baseline at those budgets, respectively. Right: Quality gap (best-baseline BPB% − ours) in % as a function of the total-runtime budget T , where the best baseline is the lower-BPB% method among kNN and SIFT at that budget. Positive values (green) mean our method wins at that budget; negative (grey) means the best baseline wins. Our method dominates for every T ≤4.5s with largest margins at tight budgets, which is exactly the regime a latency-sensitive deployment cares about.",
+      "page": 6,
+      "index": 2,
+      "width": 736,
+      "height": 229
+    },
+    {
+      "url": "assets/figures/arxiv/2605.30337v1/fig-003.webp",
+      "caption": "Figure 13: Per-subset breakdown against SIFT for all 12 Pile subsets (2 subsets per row). For each subset we show, left: BPB% vs. wall-clock time, and right: the quality gap (SIFT − HullFT) as a function of the total-runtime budget T .",
+      "page": 21,
+      "index": 3,
+      "width": 822,
+      "height": 732
+    },
+    {
+      "url": "assets/figures/arxiv/2605.30337v1/fig-004.webp",
+      "caption": "Figure 1: Our test-time finetuning pipeline. 1. Frank-Wolfe Support: Given a prompt q, we retrieve a candidate pool from the corpus, then approximate q as a sparse convex combination to select a support set. 2. Integerization: Fractional weights are converted to integer counts forming an exact N -point multiset. 3. Finetuning & Inference: The base LLM is finetuned on this multiset before evaluating q via gradient reusing on repeated samples.",
+      "page": 2,
+      "index": 4,
+      "width": 748,
+      "height": 252
+    },
+    {
+      "url": "assets/figures/arxiv/2605.30337v1/fig-005.webp",
+      "caption": "Figure 3: Per-subset breakdown for all 12 Pile subsets (2 subsets per row). For each subset we show, left: BPB% vs. wall-clock time, and right: the quality gap (best baseline − HullFT, where the best baseline is the better of kNN and SIFT) as a function of the total-runtime budget T .",
+      "page": 7,
+      "index": 5,
+      "width": 740,
+      "height": 658
+    },
+    {
+      "url": "assets/figures/arxiv/2605.30337v1/fig-006.webp",
+      "caption": "Figure 14: Per-subset breakdown against kNN for all 12 Pile subsets (2 subsets per row). For each subset we show, left: BPB% vs. wall-clock time, and right: the quality gap (kNN − HullFT) as a function of the total-runtime budget T .",
+      "page": 22,
+      "index": 6,
+      "width": 822,
+      "height": 732
+    },
+    {
+      "url": "assets/figures/arxiv/2605.30337v1/fig-007.webp",
+      "caption": "Figure 9: BPB% for the three FW integerization strategies. Left: BPB% vs. selection budget N . Right: BPB% vs. total runtime in seconds.",
+      "page": 18,
+      "index": 7,
+      "width": 817,
+      "height": 256
+    },
+    {
+      "url": "assets/figures/arxiv/2605.30337v1/fig-008.webp",
+      "caption": "Figure 10: BPB% for Carathéodory selection (Alg. 5) with three integerization strategies, with HullFT (FW + geometric integerization) plotted for reference. Left: BPB% vs. selection budget N . Right: BPB% vs. total runtime (selection + finetuning, seconds); the Carathéodory curves shift right relative to HullFT, reflecting its higher selection cost.",
+      "page": 18,
+      "index": 8,
+      "width": 818,
+      "height": 255
+    },
+    {
+      "url": "assets/figures/arxiv/2605.30337v1/fig-009.webp",
+      "caption": "Figure 15: Fidelity of geometric integerization to Frank–Wolfe weights. Mean ℓ2 distance between FW weights w on the support and empirical weights ŵ with ŵi = ci/N . Each point averages over test queries within a subset, then over twelve Pile subsets; the band shows ± one standard deviation across subsets.",
+      "page": 23,
+      "index": 9,
+      "width": 802,
+      "height": 406
+    },
+    {
+      "url": "assets/figures/arxiv/2605.30337v1/fig-010.webp",
+      "caption": "Figure 11: BPB% vs. FW tolerance ε at N=20 (left) and N=50 (right). The x-axis is inverted so that the plot reads left-to-right as loose-to-exact; ε=0 (exact solution) is placed one decade beyond 10−8 for visibility.",
+      "page": 19,
+      "index": 10,
+      "width": 813,
+      "height": 298
+    },
+    {
+      "url": "assets/figures/arxiv/2605.30337v1/fig-011.webp",
+      "caption": "Figure 8: BPB% averaged over 12 Pile subsets as a function of selection budget N for kNN, SIFT, and ours.",
+      "page": 17,
+      "index": 11,
+      "width": 810,
+      "height": 421
+    },
+    {
+      "url": "assets/figures/arxiv/2605.30337v1/fig-012.webp",
+      "caption": "Figure 16: 3D t-SNE projections of the candidate pool (gray) and the N=20 points selected by each method (colored) for a representative test query (pink star) from GitHub (top) and FreeLaw (bottom). HullFT delivers a selection geometry comparable to SIFT through convex reconstruction, at substantially lower selection latency (Sec. 4).",
+      "page": 24,
+      "index": 12,
+      "width": 800,
+      "height": 517
+    },
+    {
+      "url": "assets/figures/arxiv/2605.30337v1/fig-013.webp",
+      "caption": "Figure 7: 3D t-SNE projection of the candidate pool (gray) and the N=20 points selected by kNN, SIFT, and HullFT (colored) for a representative ArXiv query (pink star). HullFT produces a similarly diverse selection to SIFT through convex geometry, while incurring substantially lower selection latency (Sec. 4).",
+      "page": 9,
+      "index": 13,
+      "width": 665,
+      "height": 197
+    },
+    {
+      "url": "assets/figures/arxiv/2605.30337v1/fig-014.webp",
+      "caption": "Figure 12: Effect of the kNN pre-selection pool size k on BPB% at N=20 (left) and N=50 (right).",
+      "page": 20,
+      "index": 14,
+      "width": 814,
+      "height": 299
+    }
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2606.04110v1/fig-001.webp",
+      "caption": "Figure 2: Empirical distribution of 𝑧-statistics for GMV (x-axis) from A/A tests at different traffic levels (Top: 1%, 5%, 10%; Bottom: 20%, 30%). The y-axis represents frequency. Deviations from the standard normal (orange curve) indicate CLT failure.",
+      "page": 2,
+      "index": 1,
+      "width": 506,
+      "height": 263
+    },
+    {
+      "url": "assets/figures/arxiv/2606.04110v1/fig-002.webp",
+      "caption": "Figure 1: Distribution of Pre-experiment Raw GMV (total GMV calculated using pre-experiment data at user level). The box plot (x-axis values omitted for confidentiality) shows the median, quartiles, and outliers. The extreme outliers contribute disproportionately to variance, causing statistical instability.",
+      "page": 2,
+      "index": 2,
+      "width": 506,
+      "height": 398
+    }
+  ]
+}

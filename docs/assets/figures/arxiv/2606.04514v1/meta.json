@@ -1,0 +1,126 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2606.04514v1/fig-001.webp",
+      "caption": "Table 1: Overall recommendation performance on MovieLens-1M and Amazon-Book. The best results are in bold, and the second-best results are underlined.",
+      "page": 6,
+      "index": 1,
+      "width": 958,
+      "height": 494
+    },
+    {
+      "url": "assets/figures/arxiv/2606.04514v1/fig-002.webp",
+      "caption": "Figure 4: Prompt used for training SAILRec.",
+      "page": 11,
+      "index": 2,
+      "width": 458,
+      "height": 319
+    },
+    {
+      "url": "assets/figures/arxiv/2606.04514v1/fig-003.webp",
+      "caption": "Figure 5: Examples of phrase-level codebook tags for MovieLens-1M. The codebooks cover style, emotion, and ideology, with 220 tags in each semantic dimension.",
+      "page": 11,
+      "index": 3,
+      "width": 458,
+      "height": 300
+    },
+    {
+      "url": "assets/figures/arxiv/2606.04514v1/fig-004.webp",
+      "caption": "Figure 8: Layer-wise answer attention to semantic and collaborative tokens in SAILRec on Amazon-Book. The upper panel compares attention to item titles, item-side Collab. tokens, and summed user-side Collab. tokens, while the lower panel decomposes the attention to the three user-side Collab. tokens.",
+      "page": 15,
+      "index": 4,
+      "width": 455,
+      "height": 614
+    },
+    {
+      "url": "assets/figures/arxiv/2606.04514v1/fig-005.webp",
+      "caption": "Figure 1: Mean attention from the answer position to key token groups under different semantic alignment settings on MovieLens-1M. Collaborative embedding utilization is depth-dependent and alignment-sensitive. No alignment shows less ordered early use and sharp item-side activation, item-side-only alignment improves late-layer accessibility of collaborative signals, and dual-side alignment achieves better performance with more balanced collaborative use and increased top-layer user-side attention.",
+      "page": 2,
+      "index": 5,
+      "width": 944,
+      "height": 309
+    },
+    {
+      "url": "assets/figures/arxiv/2606.04514v1/fig-006.webp",
+      "caption": "Table 2: Performance comparison for SAILRec and variants. Here, S, U, I, and C denote attention steering, userside alignment, item-side alignment, and codebooks.",
+      "page": 7,
+      "index": 6,
+      "width": 458,
+      "height": 288
+    },
+    {
+      "url": "assets/figures/arxiv/2606.04514v1/fig-007.webp",
+      "caption": "Figure 3: Models’ performance on warm/cold data.",
+      "page": 7,
+      "index": 7,
+      "width": 455,
+      "height": 619
+    },
+    {
+      "url": "assets/figures/arxiv/2606.04514v1/fig-008.webp",
+      "caption": "Figure 7: Layer-wise answer attention to semantic and collaborative tokens in SAILRec on MovieLens-1M, with user-side attention further decomposed into three embeddings.",
+      "page": 14,
+      "index": 8,
+      "width": 454,
+      "height": 614
+    },
+    {
+      "url": "assets/figures/arxiv/2606.04514v1/fig-009.webp",
+      "caption": "Table 3: Performance comparison of different layer-wise attention steering schedules. S, N, and E denote suppression, no steering, and enhancement, respectively.",
+      "page": 8,
+      "index": 9,
+      "width": 950,
+      "height": 296
+    },
+    {
+      "url": "assets/figures/arxiv/2606.04514v1/fig-010.webp",
+      "caption": "Figure 2: The overall architecture of SAILRec. The left part illustrates the main recommendation pipeline with collaborative embedding injection and hierarchical attention steering. The right part shows the dual-side warm-up process for user and item collaborative embedding mappers. Marker (a) denotes the construction of user-side alignment targets from historical interactions and semantic codebooks, while marker (b) denotes the dual-side contrastive learning process for user-side and item-side semantic alignment.",
+      "page": 4,
+      "index": 10,
+      "width": 946,
+      "height": 569
+    },
+    {
+      "url": "assets/figures/arxiv/2606.04514v1/fig-011.webp",
+      "caption": "Table 5: Inference-time attention bias masking results on MovieLens-1M and Amazon-Book. SAIL-mask-U, SAIL-mask-I, and SAIL-mask-UI mask the attention paths to user-side, item-side, and both-side Collab. tokens, respectively. SAIL-mask-Shallow, SAIL-mask-Middle, and SAIL-mask-Deep mask the attention paths to all Collab. tokens in the corresponding layer groups.",
+      "page": 17,
+      "index": 11,
+      "width": 950,
+      "height": 249
+    },
+    {
+      "url": "assets/figures/arxiv/2606.04514v1/fig-012.webp",
+      "caption": "Table 6: Performance comparison on MovieLens-1M and Amazon-Book using Qwen3-8B as the backbone.",
+      "page": 17,
+      "index": 12,
+      "width": 950,
+      "height": 227
+    },
+    {
+      "url": "assets/figures/arxiv/2606.04514v1/fig-013.webp",
+      "caption": "Figure 6: Examples of phrase-level codebook tags for Amazon-Book. The book-domain codebooks are adapted from the movie-domain codebooks and expanded to 240 tags for each semantic dimension.",
+      "page": 12,
+      "index": 13,
+      "width": 457,
+      "height": 319
+    },
+    {
+      "url": "assets/figures/arxiv/2606.04514v1/fig-014.webp",
+      "caption": "Figure 9: t-SNE visualization of the three user-side Collab. tokens on MovieLens-1M and Amazon-Book. Different colors denote the three semantic directions learned by the user-side C-QFormer.",
+      "page": 16,
+      "index": 14,
+      "width": 929,
+      "height": 348
+    },
+    {
+      "url": "assets/figures/arxiv/2606.04514v1/fig-015.webp",
+      "caption": "Figure 10: Similarity heatmaps between learned Collab. tokens and semantic alignment targets on MovieLens-1M and Amazon-Book. Rows correspond to user-side and item-side Collab. tokens, and columns correspond to codebook tags and item-title semantic targets.",
+      "page": 16,
+      "index": 15,
+      "width": 934,
+      "height": 311
+    }
+  ]
+}

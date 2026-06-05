@@ -1,0 +1,78 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2606.05671v1/fig-001.webp",
+      "caption": "Figure 1: Illustration of the query recommendation process in QueryAgent-R1. Without a current query context, the system generates the personalized query from the user’s historical behavior sequence.",
+      "page": 1,
+      "index": 1,
+      "width": 434,
+      "height": 420
+    },
+    {
+      "url": "assets/figures/arxiv/2606.05671v1/fig-002.webp",
+      "caption": "Figure 3: Training dynamics comparison between GDPO and GRPO. GDPO demonstrates superior convergence and higher asymptotic performance in all three key metrics within the multi-reward optimization framework.",
+      "page": 11,
+      "index": 2,
+      "width": 950,
+      "height": 229
+    },
+    {
+      "url": "assets/figures/arxiv/2606.05671v1/fig-003.webp",
+      "caption": "Figure 5: User prompt template representing the input structure, dynamically populating real-time behavior sequences and localized user tags.",
+      "page": 15,
+      "index": 3,
+      "width": 950,
+      "height": 371
+    },
+    {
+      "url": "assets/figures/arxiv/2606.05671v1/fig-004.webp",
+      "caption": "Figure 6: System prompt template for the User Memory Manager, responsible for abstracting sequential, fine-grained interaction logs into layered, structured JSON user profiles.",
+      "page": 15,
+      "index": 4,
+      "width": 950,
+      "height": 910
+    },
+    {
+      "url": "assets/figures/arxiv/2606.05671v1/fig-005.webp",
+      "caption": "Figure 2: QueryAgent-R1 Architecture. The policy model is optimized via RL to interleave a Memory Tool (compressing long logs) and a Search Tool (grounding generation in real inventory), unified by a Chain-ofRetrieval outcome reward.",
+      "page": 2,
+      "index": 5,
+      "width": 415,
+      "height": 475
+    },
+    {
+      "url": "assets/figures/arxiv/2606.05671v1/fig-006.webp",
+      "caption": "Table 5: Full baseline results for Gemini, GPT, Qwen, and DeepSeek model families based on the Industrial dataset, evaluating the performance impact of incorporating Memory. Green checkmarks (✓) and red crossmarks (×) indicate performance gains and degradation when incorporating Memory, respectively.",
+      "page": 10,
+      "index": 6,
+      "width": 937,
+      "height": 685
+    },
+    {
+      "url": "assets/figures/arxiv/2606.05671v1/fig-007.webp",
+      "caption": "Figure 4: System prompt template used to instruct the Query Prediction and Search Agent, enforcing multi-tool calling protocols and target formatting constraints.",
+      "page": 14,
+      "index": 7,
+      "width": 950,
+      "height": 1327
+    },
+    {
+      "url": "assets/figures/arxiv/2606.05671v1/fig-008.webp",
+      "caption": "Table 1: Offline experimental results on industrial and public datasets.",
+      "page": 4,
+      "index": 8,
+      "width": 461,
+      "height": 338
+    },
+    {
+      "url": "assets/figures/arxiv/2606.05671v1/fig-009.webp",
+      "caption": "Table 4: Full baseline results for Gemini, GPT, Qwen, and DeepSeek model families. The top three results in each",
+      "page": 9,
+      "index": 9,
+      "width": 937,
+      "height": 748
+    }
+  ]
+}

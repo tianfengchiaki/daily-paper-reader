@@ -1,0 +1,54 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2606.00494v1/fig-001.webp",
+      "caption": "Table 7. Complete results of Common Sense tasks with accuracy in each datasets.",
+      "page": 15,
+      "index": 1,
+      "width": 717,
+      "height": 650
+    },
+    {
+      "url": "assets/figures/arxiv/2606.00494v1/fig-002.webp",
+      "caption": "Table 6. Fine-tuning results across Common Sense Reasoning, WikiText-2, and GSM8K tasks under 4-bit quantization.",
+      "page": 15,
+      "index": 2,
+      "width": 691,
+      "height": 400
+    },
+    {
+      "url": "assets/figures/arxiv/2606.00494v1/fig-003.webp",
+      "caption": "Table 1. Results on general NLU benchmarks for LLaMA2, Qwen2.5 and Qwen3 models under 2-bit quantization (ra = rd = 64).",
+      "page": 7,
+      "index": 3,
+      "width": 933,
+      "height": 410
+    },
+    {
+      "url": "assets/figures/arxiv/2606.00494v1/fig-004.webp",
+      "caption": "Table 5. Results on general NLU benchmarks of LLaMA2 and Qwen2.5 model under 2 bit quantization.",
+      "page": 14,
+      "index": 4,
+      "width": 1000,
+      "height": 506
+    },
+    {
+      "url": "assets/figures/arxiv/2606.00494v1/fig-005.webp",
+      "caption": "Figure 1. Overview of the proposed framework ProjQ. ProjQ shapes activation-space quantization error into a low-rank subspace that LoRA can correct easily, while minimizing the uncorrectable orthogonal residual.",
+      "page": 3,
+      "index": 5,
+      "width": 977,
+      "height": 550
+    },
+    {
+      "url": "assets/figures/arxiv/2606.00494v1/fig-006.webp",
+      "caption": "Table 2. Fine-tuning results across Common Sense Reasoning, WikiText-2, and GSM8K tasks.",
+      "page": 8,
+      "index": 6,
+      "width": 1008,
+      "height": 658
+    }
+  ]
+}

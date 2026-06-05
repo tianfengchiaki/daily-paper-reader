@@ -1,0 +1,14 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2606.04448v1/fig-001.webp",
+      "caption": "Figure 1: Overview of the proposed RGCD-Rep framework.",
+      "page": 4,
+      "index": 1,
+      "width": 1042,
+      "height": 464
+    }
+  ]
+}

@@ -1,0 +1,62 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2606.00724v1/fig-001.webp",
+      "caption": "Figure 1: Performance comparison at different context lengths on the niah_single_1 subset of Ruler. (a) illustrates the accuracy (%) of the LLaDA-8b-Instruct and its variants with various KV Cache methods; (b) displays the corresponding throughput (Tokens/sec).",
+      "page": 1,
+      "index": 1,
+      "width": 420,
+      "height": 461
+    },
+    {
+      "url": "assets/figures/arxiv/2606.00724v1/fig-002.webp",
+      "caption": "Table 1: Comprehensive benchmark results of LLaDA-8B-Instruct and Dream-v0-Base-7B on Longbench. Each cell displays the accuracy (top row), the decoding throughput in Tokens/sec, and the speedup ratio relative to the LLaDA and Dream baselines (bottom row, blue: throughput/orange: speedup). The symbol \"-\" denotes out of memory errors.",
+      "page": 6,
+      "index": 2,
+      "width": 941,
+      "height": 382
+    },
+    {
+      "url": "assets/figures/arxiv/2606.00724v1/fig-003.webp",
+      "caption": "Table 2: Comprehensive benchmark results of LLaDA-8B-Instruct on Ruler. Each cell displays the accuracy (top row), the decoding throughput in Tokens/sec, and the speedup ratio relative to the LLaDA baselines (bottom row, blue: throughput/orange: speedup).",
+      "page": 7,
+      "index": 3,
+      "width": 943,
+      "height": 285
+    },
+    {
+      "url": "assets/figures/arxiv/2606.00724v1/fig-004.webp",
+      "caption": "Table 4: Comprehensive benchmark results of LLaDA-8B-Instruct and Dream-v0-Base-7B on Longbench. Each cell displays the total generated tokens (top row), and the total runtime in minutes (bottom row, green: runtime). The symbol \"-\" denotes out of memory errors.",
+      "page": 14,
+      "index": 4,
+      "width": 943,
+      "height": 523
+    },
+    {
+      "url": "assets/figures/arxiv/2606.00724v1/fig-005.webp",
+      "caption": "Table 5: Comprehensive benchmark results of LLaDA-8B-Instruct on Ruler. Each cell displays the total generated tokens (top row), and the total runtime in minutes (bottom row, green: runtime).",
+      "page": 14,
+      "index": 5,
+      "width": 941,
+      "height": 367
+    },
+    {
+      "url": "assets/figures/arxiv/2606.00724v1/fig-006.webp",
+      "caption": "Figure 3: Ablation study and performance analysis of WaveFilter combined with different caching methods on LLaDA-8B-Instruct. (a)-(c) evaluate Fast-dLLM & WaveFilter on the Longbench-Qsp dataset, while (d)-(f) evaluate Elastic-Cache & WaveFilter on the Longbench-MulF dataset. The heatmaps illustrate the joint effects of Scale (y-axis) and Proportion (x-axis) across three key metrics: (a, d) Accuracy (%), (b, e) Throughput (Tokens/sec), and (c, f) Total Runtime (min). Darker colors indicate higher values for each respective metric.",
+      "page": 8,
+      "index": 6,
+      "width": 815,
+      "height": 473
+    },
+    {
+      "url": "assets/figures/arxiv/2606.00724v1/fig-007.webp",
+      "caption": "Figure 2: Schematic pipeline of WaveFilter. Consists of four parts: (a) Decoding steps & Motivation: It illustrates the decoding mechanism of discrete diffusion models and introduces a coarse-to-fine retrieval strategy to address the challenge of key token extraction in long-context tasks. (b) Discrete Wavelet Transform: Decomposition is performed on the cache keys via DWT to extract low-frequency components. (c) Importance Assessment & Selection: Computes the correlation between the query vector and the low-frequency components of the cached keys, and utilizes Top-K selection to identify key candidate regions. (d) Multi-scale Recursive Filtering: Recursively refines candidate regions across different scales, ultimately selecting the most informative sparse KV matrix.",
+      "page": 4,
+      "index": 7,
+      "width": 915,
+      "height": 442
+    }
+  ]
+}

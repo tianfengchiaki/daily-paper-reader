@@ -1,0 +1,142 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2605.31545v1/fig-001.webp",
+      "caption": "Figure 4: Intrinsic analysis of induced user rubrics across five rubric induction variants on three personalized text generation tasks. The visualization reveals a clear pattern shift from sparse, narrow clusters (LM-8B / LM-235B) and semantic collapse (dense redundancy in PARL-0) to well-distributed, structured scattering (tailored diversity in PARL-A and PARL-B).",
+      "page": 11,
+      "index": 1,
+      "width": 727,
+      "height": 373
+    },
+    {
+      "url": "assets/figures/arxiv/2605.31545v1/fig-002.webp",
+      "caption": "Figure 5: Qualitative analysis of induced rubrics on the Amazon Review task. R1, R2, and R3 denote the induced rubrics for the target user. We evaluate whether the authentic user-authored GT and the AI model-generated output satisfy these rubrics.",
+      "page": 25,
+      "index": 2,
+      "width": 818,
+      "height": 874
+    },
+    {
+      "url": "assets/figures/arxiv/2605.31545v1/fig-003.webp",
+      "caption": "Table 13: The prompt used to evaluate the model-generated outputs and user-authored ground truth using personalized user rubrics on Amazon Review dataset.",
+      "page": 30,
+      "index": 3,
+      "width": 827,
+      "height": 595
+    },
+    {
+      "url": "assets/figures/arxiv/2605.31545v1/fig-004.webp",
+      "caption": "Table 14: The prompt used to evaluate the model-generated outputs and user-authored ground truth using personalized user rubrics on Reddit Post dataset.",
+      "page": 30,
+      "index": 4,
+      "width": 827,
+      "height": 615
+    },
+    {
+      "url": "assets/figures/arxiv/2605.31545v1/fig-005.webp",
+      "caption": "Table 12: The prompt used to induce personalized user rubrics for the News Headline dataset.",
+      "page": 29,
+      "index": 5,
+      "width": 827,
+      "height": 979
+    },
+    {
+      "url": "assets/figures/arxiv/2605.31545v1/fig-006.webp",
+      "caption": "Table 3: Statistical data overview of three personalized text generation tasks.",
+      "page": 18,
+      "index": 6,
+      "width": 571,
+      "height": 267
+    },
+    {
+      "url": "assets/figures/arxiv/2605.31545v1/fig-007.webp",
+      "caption": "Table 7: Detailed evaluation results of induced rubrics across three personalized text generation tasks on user-level accuracy.",
+      "page": 23,
+      "index": 7,
+      "width": 822,
+      "height": 1054
+    },
+    {
+      "url": "assets/figures/arxiv/2605.31545v1/fig-008.webp",
+      "caption": "Table 11: The prompt used to induce personalized user rubrics for the Reddit Post dataset.",
+      "page": 28,
+      "index": 8,
+      "width": 827,
+      "height": 1402
+    },
+    {
+      "url": "assets/figures/arxiv/2605.31545v1/fig-009.webp",
+      "caption": "Table 1: Evaluation results of induced rubrics across three personalized text generation tasks. GT denotes the user-level accuracy of user-authentic responses, while Max-Diff indicates the difference between GT and the strongest non-GT alternative. Within each rubric evaluation group, the highest result is bolded, and the second-best is underlined. The symbol * indicates p-value < 0.05 in t-tests. The user coverage is reported as a percentage.",
+      "page": 8,
+      "index": 9,
+      "width": 822,
+      "height": 263
+    },
+    {
+      "url": "assets/figures/arxiv/2605.31545v1/fig-010.webp",
+      "caption": "Table 18: The prompt used to evaluate the model-generated outputs and user-authored ground truth using LLM-as-a-judge on News Headline dataset.",
+      "page": 32,
+      "index": 10,
+      "width": 827,
+      "height": 561
+    },
+    {
+      "url": "assets/figures/arxiv/2605.31545v1/fig-011.webp",
+      "caption": "Table 17: The prompt used to evaluate the model-generated outputs and user-authored ground truth using LLM-as-a-judge on Reddit Post dataset.",
+      "page": 32,
+      "index": 11,
+      "width": 826,
+      "height": 541
+    },
+    {
+      "url": "assets/figures/arxiv/2605.31545v1/fig-012.webp",
+      "caption": "Table 10: The prompt used to induce personalized user rubrics for the Amazon Review dataset.",
+      "page": 27,
+      "index": 12,
+      "width": 827,
+      "height": 1421
+    },
+    {
+      "url": "assets/figures/arxiv/2605.31545v1/fig-013.webp",
+      "caption": "Table 8: Detailed evaluation results of induced rubrics across three personalized text generation tasks on Rubric-level Accuracy.",
+      "page": 24,
+      "index": 13,
+      "width": 818,
+      "height": 1233
+    },
+    {
+      "url": "assets/figures/arxiv/2605.31545v1/fig-014.webp",
+      "caption": "Table 16: The prompt used to evaluate the model-generated outputs and user-authored ground truth using LLM-as-a-judge on Amazon Review dataset.",
+      "page": 31,
+      "index": 14,
+      "width": 827,
+      "height": 542
+    },
+    {
+      "url": "assets/figures/arxiv/2605.31545v1/fig-015.webp",
+      "caption": "Table 15: The prompt used to evaluate the model-generated outputs and user-authored ground truth using personalized user rubrics on News Headline dataset.",
+      "page": 31,
+      "index": 15,
+      "width": 826,
+      "height": 596
+    },
+    {
+      "url": "assets/figures/arxiv/2605.31545v1/fig-016.webp",
+      "caption": "Table 5: Comparison of different cardinality constraints during rubric generator training.",
+      "page": 20,
+      "index": 16,
+      "width": 390,
+      "height": 325
+    },
+    {
+      "url": "assets/figures/arxiv/2605.31545v1/fig-017.webp",
+      "caption": "Figure 1: Overview of our proposed PARL framework for inducing personalized user rubrics for evaluating LLM personalization. PARL consists of two core modules: (1) Preference Induction & Consistency Validation; (2) Discriminative Optimization via RL. The final induced rubrics serve as high-fidelity evaluation metrics for personalized text generation.",
+      "page": 5,
+      "index": 17,
+      "width": 790,
+      "height": 307
+    }
+  ]
+}

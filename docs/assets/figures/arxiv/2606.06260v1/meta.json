@@ -1,0 +1,310 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2606.06260v1/fig-001.webp",
+      "caption": "Figure 3 | Three failure/success modes of MLLM chain-of-thought reasoning given the same visual input. (a) Alignment failure: the model miscounts due to weak visual grounding. (b) CoT quality failure: correct perception but faulty reasoning drift. (c) Robust reasoning: deep alignment and logical CoT lead to the correct answer.",
+      "page": 6,
+      "index": 1,
+      "width": 983,
+      "height": 502
+    },
+    {
+      "url": "assets/figures/arxiv/2606.06260v1/fig-002.webp",
+      "caption": "Table 9 | Performance comparison (in %) of different optimization strategies. Both RFT and MOPD effectively integrate domain-specific knowledge and outperform Mix-RL across different domains.",
+      "page": 43,
+      "index": 2,
+      "width": 983,
+      "height": 1365
+    },
+    {
+      "url": "assets/figures/arxiv/2606.06260v1/fig-003.webp",
+      "caption": "Table 17 | Token-aligned comparison of non-thinking recommendation performance (in %). The 100K unCoT setting and the 40K CoT + 50K unCoT setting use the same training budget of 0.25B tokens. For each domain-metric pair, the better setting is highlighted in bold.",
+      "page": 53,
+      "index": 3,
+      "width": 800,
+      "height": 305
+    },
+    {
+      "url": "assets/figures/arxiv/2606.06260v1/fig-004.webp",
+      "caption": "Figure 24 | ℓ𝑡 denotes the conditional log-likelihood of the ground-truth target given the input context and the first 𝑡 reasoning segments. CoT prefix index t=0 denote the thinking mode prediction without CoT, while brown stars indicate the peak likelihood achieved along the reasoning trajectory for each domain. Across all domains, progressively incorporating CoT prefixes consistently improves the likelihood relative to the no-CoT thinking mode, demonstrating that the generated CoT contributes useful predictive information rather than serving as a purely post-hoc explanation. Moreover, compared with SFT, the RFT model typically reaches its optimal likelihood at substantially earlier reasoning prefixes, suggesting that predictive evidence is concentrated into a smaller portion of the reasoning process and revealing potential opportunities for CoT compression and adaptive early stopping.",
+      "page": 47,
+      "index": 4,
+      "width": 916,
+      "height": 346
+    },
+    {
+      "url": "assets/figures/arxiv/2606.06260v1/fig-005.webp",
+      "caption": "Figure 9 | Score distribution and mean-score profile for reasoning-trace quality across safety, consistency, logic, factuality, and informativeness dimensions.",
+      "page": 29,
+      "index": 5,
+      "width": 969,
+      "height": 366
+    },
+    {
+      "url": "assets/figures/arxiv/2606.06260v1/fig-006.webp",
+      "caption": "Figure 18 | Overview of the information-gain-aware trajectory filtering mechanism.",
+      "page": 39,
+      "index": 6,
+      "width": 983,
+      "height": 434
+    },
+    {
+      "url": "assets/figures/arxiv/2606.06260v1/fig-007.webp",
+      "caption": "Figure 12 | Illustrations of two optimization-stabilizing strategies.",
+      "page": 34,
+      "index": 7,
+      "width": 983,
+      "height": 276
+    },
+    {
+      "url": "assets/figures/arxiv/2606.06260v1/fig-008.webp",
+      "caption": "Figure 25 | Non-thinking recommendation gains across different CoT/unCoT mixture ratios. All models are evaluated with non-thinking decoding. The horizontal axis denotes the CoT ratio (1 − 𝛼), and the vertical axis reports the relative Pass@32 gain over the 100% unCoT baseline. Stars mark the best mixture ratio for each domain.",
+      "page": 54,
+      "index": 8,
+      "width": 983,
+      "height": 746
+    },
+    {
+      "url": "assets/figures/arxiv/2606.06260v1/fig-009.webp",
+      "caption": "Figure 22 | Comparison of different student models before and after MOPD training. Dark bars denote the performance before MOPD, while light bars denote the performance after MOPD. This suggests that MOPD improvements are bounded by the teacher: weaker students can catch up, but rarely surpass it substantially.",
+      "page": 42,
+      "index": 9,
+      "width": 983,
+      "height": 338
+    },
+    {
+      "url": "assets/figures/arxiv/2606.06260v1/fig-010.webp",
+      "caption": "Figure 11 | Overview of recommendation-oriented GRPO.",
+      "page": 33,
+      "index": 10,
+      "width": 971,
+      "height": 256
+    },
+    {
+      "url": "assets/figures/arxiv/2606.06260v1/fig-011.webp",
+      "caption": "Figure 14 | Ablation study on reward optimization. Diversity reward strengthens thinking-based recommendation, with recall@K improvements more significant at larger K.",
+      "page": 35,
+      "index": 11,
+      "width": 967,
+      "height": 291
+    },
+    {
+      "url": "assets/figures/arxiv/2606.06260v1/fig-012.webp",
+      "caption": "Figure 23 | For each model-domain pair, Δ𝐿𝐿 is computed as the difference between the log-likelihood of the ground-truth target under thinking mode and that under non-thinking mode. Positive values indicate that the generated CoT increases the model’s confidence in the ground-truth target, whereas negative values suggest that the CoT distracts the prediction process. Across all four domains, the SFT model exhibits consistently negative Δ𝐿𝐿, while the RFT model achieves positive Δ𝐿𝐿, demonstrating that RFT substantially enhances the effectiveness and utility of thinking reasoning relative to the non-thinking setting.",
+      "page": 46,
+      "index": 12,
+      "width": 671,
+      "height": 321
+    },
+    {
+      "url": "assets/figures/arxiv/2606.06260v1/fig-013.webp",
+      "caption": "Table 2 | Each experiment builds on the previous one by adding a new granularity or replacing an existing component. We report pass@64 (%) for Itemic Pattern Grounding and cross-domain recommendation, and macro-weighted F1 (%) for the remaining tasks. All values are reported as percentages. The results show a consistent performance progression, with the largest gains in cross-domain recommendation emerging after User-granularity data is introduced.",
+      "page": 18,
+      "index": 13,
+      "width": 737,
+      "height": 413
+    },
+    {
+      "url": "assets/figures/arxiv/2606.06260v1/fig-014.webp",
+      "caption": "Table 10 | The four-criterion diagnostic framework organised on a 2×2matrix: Symbolic vs. Probabilistic (kind of check) × Local vs. Global (reference scope). Within each row, the local cell strictly strengthens the global cell (Property P1). Across rows, symbolic checks are cheap/label-free while probabilistic checks are forward-pass/label-bound (Property P2). The four cells are jointly necessary; each guards against a distinct failure mode.",
+      "page": 45,
+      "index": 14,
+      "width": 723,
+      "height": 195
+    },
+    {
+      "url": "assets/figures/arxiv/2606.06260v1/fig-015.webp",
+      "caption": "Table 23 | Comparison of benchmarks across categories. OneReason-Bench is the only benchmark covering all five capabilities.",
+      "page": 72,
+      "index": 15,
+      "width": 983,
+      "height": 641
+    },
+    {
+      "url": "assets/figures/arxiv/2606.06260v1/fig-016.webp",
+      "caption": "Figure 6 | Distribution of the positive–negative similarity margin across the four itemic domains. A rightward shift indicates stronger cross-modal alignment. Our corpora consistently outperform the reproduced OpenOneRec baseline.",
+      "page": 13,
+      "index": 16,
+      "width": 975,
+      "height": 356
+    },
+    {
+      "url": "assets/figures/arxiv/2606.06260v1/fig-017.webp",
+      "caption": "Table 14 | Baselines on cross-domain recommendation (in %). Best results are bolded; second-best results are underlined.",
+      "page": 50,
+      "index": 17,
+      "width": 983,
+      "height": 511
+    },
+    {
+      "url": "assets/figures/arxiv/2606.06260v1/fig-018.webp",
+      "caption": "Table 26 | Data mixtures for pre-training (General-Domain Corpora).",
+      "page": 82,
+      "index": 18,
+      "width": 983,
+      "height": 1392
+    },
+    {
+      "url": "assets/figures/arxiv/2606.06260v1/fig-019.webp",
+      "caption": "Table 1 | Task taxonomy of OneReason-Bench organized across four reasoning layers.",
+      "page": 8,
+      "index": 19,
+      "width": 983,
+      "height": 181
+    },
+    {
+      "url": "assets/figures/arxiv/2606.06260v1/fig-020.webp",
+      "caption": "Figure 19 | Relative Recall@K changes of MOPD across four domains. (a) reports the improvement of the student before and after MOPD, computed as (After − Before)/Before. (b) reports the gap between the student after MOPD and the teacher, computed as (Student−Teacher)/Teacher. Positive values indicate higher Recall@K for the first term in each comparison. Solid and dashed lines denote thinking and non-thinking evaluation settings, respectively. Overall, MOPD consistently improves the student while keeping its performance close to the teacher across domains.",
+      "page": 40,
+      "index": 20,
+      "width": 983,
+      "height": 515
+    },
+    {
+      "url": "assets/figures/arxiv/2606.06260v1/fig-021.webp",
+      "caption": "Table 25 | Data mixtures for pre-training (Recommendation Corpora).",
+      "page": 81,
+      "index": 21,
+      "width": 983,
+      "height": 657
+    },
+    {
+      "url": "assets/figures/arxiv/2606.06260v1/fig-022.webp",
+      "caption": "Figure 15 | Ablation study on optimization strategies. Stage-wise clipping consistently improves recommendation performance.",
+      "page": 36,
+      "index": 22,
+      "width": 966,
+      "height": 293
+    },
+    {
+      "url": "assets/figures/arxiv/2606.06260v1/fig-023.webp",
+      "caption": "Figure 16 | Ablation study on optimization strategies. Negative-sample down-weighting helps stabilize RL training.",
+      "page": 36,
+      "index": 23,
+      "width": 967,
+      "height": 290
+    },
+    {
+      "url": "assets/figures/arxiv/2606.06260v1/fig-024.webp",
+      "caption": "Figure 7 | The three-stage pre-training recipe. Stage 1 only tunes the incremental itemic-patternrelated parameters, while Stages 2 and 3 tune all parameters.",
+      "page": 19,
+      "index": 24,
+      "width": 739,
+      "height": 327
+    },
+    {
+      "url": "assets/figures/arxiv/2606.06260v1/fig-025.webp",
+      "caption": "Table 15 | Performance comparison on R0–R2 tasks in OneReason-Bench (in %). For R0 tasks, results are macro-averaged over all domains. The grounding task is reported by Pass@64. For the R2 tasks evaluated by action-logic score, matching for text-based models uses 10-gram soft matching instead of exact matching. Best results are bolded; second-best results are underlined.",
+      "page": 51,
+      "index": 25,
+      "width": 983,
+      "height": 437
+    },
+    {
+      "url": "assets/figures/arxiv/2606.06260v1/fig-026.webp",
+      "caption": "Figure 27 | The overall structure of OneReason for OneRec.",
+      "page": 68,
+      "index": 26,
+      "width": 721,
+      "height": 671
+    },
+    {
+      "url": "assets/figures/arxiv/2606.06260v1/fig-027.webp",
+      "caption": "Figure 10 | Overview of the “specialize-then-unify” pipeline.",
+      "page": 32,
+      "index": 27,
+      "width": 983,
+      "height": 444
+    },
+    {
+      "url": "assets/figures/arxiv/2606.06260v1/fig-028.webp",
+      "caption": "Figure 5 | Overview of our four-granularity pre-training recommendation corpora, ordered from fine-grained token-level semantics to coarse-grained user behavior modeling.",
+      "page": 12,
+      "index": 28,
+      "width": 900,
+      "height": 661
+    },
+    {
+      "url": "assets/figures/arxiv/2606.06260v1/fig-029.webp",
+      "caption": "Table 27 | Data mixture for the SFT stage. Sample counts in units of 104; ratio in %.",
+      "page": 88,
+      "index": 29,
+      "width": 912,
+      "height": 692
+    },
+    {
+      "url": "assets/figures/arxiv/2606.06260v1/fig-030.webp",
+      "caption": "Figure 20 | Effect of the information-gain-aware (IG) filter on MOPD performance across recommendation domains. We report the relative Recall@K change between MOPD with IG filtering and the base MOPD setting, computed as (IG Filter − Base)/Base. Positive values indicate that IG filtering improves Recall@K over the base setting. Solid and dashed lines denote thinking and non-thinking evaluation settings, respectively. Overall, IG filtering brings consistent gains in most domains and evaluation settings, especially at larger values of K.",
+      "page": 41,
+      "index": 30,
+      "width": 983,
+      "height": 286
+    },
+    {
+      "url": "assets/figures/arxiv/2606.06260v1/fig-031.webp",
+      "caption": "Figure 21 | Policy-gradient loss during MOPD training with and without IG filtering. The IG filter removes low-information trajectories based on tokenlevel advantage statistics, leading to a smoother and more stable policy-gradient signal.",
+      "page": 41,
+      "index": 31,
+      "width": 475,
+      "height": 287
+    },
+    {
+      "url": "assets/figures/arxiv/2606.06260v1/fig-032.webp",
+      "caption": "Figure 8 | Effect of interest expansion width 𝑛 during Interest Expansion. Across the cross-video, cross-product, cross-ad, and cross-live domains, compact expansion with 𝑛 ∈ {1, 3, 5} consistently outperforms broader widths such as 10 or 20 on think-mode Pass@64 and Recall@64.",
+      "page": 27,
+      "index": 32,
+      "width": 966,
+      "height": 221
+    },
+    {
+      "url": "assets/figures/arxiv/2606.06260v1/fig-033.webp",
+      "caption": "Figure 26 | The online deployment architecture of OneReason.",
+      "page": 56,
+      "index": 33,
+      "width": 983,
+      "height": 545
+    },
+    {
+      "url": "assets/figures/arxiv/2606.06260v1/fig-034.webp",
+      "caption": "Figure 4 | Illustration of the task taxonomy. Each task is specified with its instruction, context, and target format.",
+      "page": 9,
+      "index": 34,
+      "width": 983,
+      "height": 1094
+    },
+    {
+      "url": "assets/figures/arxiv/2606.06260v1/fig-035.webp",
+      "caption": "Figure 17 | Relative gains of RFT over Mix-RL across Recall@K. RFT generally shows larger improvements as K increases.",
+      "page": 37,
+      "index": 35,
+      "width": 967,
+      "height": 284
+    },
+    {
+      "url": "assets/figures/arxiv/2606.06260v1/fig-036.webp",
+      "caption": "Table 16 | General benchmark performance comparison (in %). Best results are bolded; second-best results are underlined.",
+      "page": 52,
+      "index": 36,
+      "width": 979,
+      "height": 369
+    },
+    {
+      "url": "assets/figures/arxiv/2606.06260v1/fig-037.webp",
+      "caption": "Figure 2 | The pre-training, SFT, RL, and benchmarking pipeline of OneReason.",
+      "page": 5,
+      "index": 37,
+      "width": 983,
+      "height": 1025
+    },
+    {
+      "url": "assets/figures/arxiv/2606.06260v1/fig-038.webp",
+      "caption": "Table 24 | Mean cosine similarity of positive and negative item–caption pairs, and the resulting average margin Δ, computed under the baseline (the reproduced OpenOneRec in Section 4.3) and our model across four domains, at two probe depths: the first embedding layer and the final hidden layer. Larger Δ indicates stronger representational discriminability.",
+      "page": 80,
+      "index": 38,
+      "width": 804,
+      "height": 298
+    }
+  ]
+}

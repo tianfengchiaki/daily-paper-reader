@@ -1,0 +1,513 @@
+Title: Bridging Short Videos and Live Streams: Reasoning-Guided Multimodal LLMs for Cross-Domain Representation Learning
+
+URL Source: https://arxiv.org/pdf/2606.04448v1
+
+Published Time: Thu, 04 Jun 2026 00:34:10 GMT
+
+Number of Pages: 9
+
+Markdown Content:
+# Bridging Short Videos and Live Streams: Reasoning-Guided Multimodal LLMs for Cross-Domain Representation Learning 
+
+## Le Zhang 1,* , Xiaolan Zhu 1,* , Yuchen Wang 1,* , Shilong Kang 1, Jiaqi Xue 1,Xiaoyu Zhang 1, Xiang Chen 1, Yalong Guan 1, Xiangyu Wu 1,Shijun Wang 1, †, Lantao Hu 1, Kun Gai 1
+
+> 1
+
+Kuaishou Technology, Beijing, China {zhangle07, zhuxiaolan, wangyuchen11, kangshilong, xuejiaqi03, zhangxiaoyu, chenxiang08, guanyalong, wuxiangyu06, wangshijun03, hulantao}@kuaishou.com, kun.gai@qq.com 
+
+## Abstract 
+
+As live streaming services grow, many platforms offer short videos and live streams to meet diverse needs. Short videos carry substan-tial traffic and rich behavior signals, whereas live streaming is a core conversion scenario with sparse behavior data, making cold start severe. Transferring user interests from short videos to live streaming recommendation can alleviate these issues. Meanwhile, short videos and live streams are complex multimodal items, and integrating multimodal signals improves recommendation perfor-mance. Although Multimodal Large Language Models (MLLMs) show strong multimodal understanding and reasoning, their appli-cation to cross-domain recommendation remains underexplored. To this end, we propose Reasoning-Guided Cross-Domain Repre-sentation Learning ( RGCD-Rep ), a reasoning-guided framework for cross-domain recommendation from short videos to live streams. RGCD-Rep introduces MLLM reasoning resource-efficiently and learns transferable item representations guided by behavioral col-laboration via two-stage training. First, reasoning-aware distillation lets a frozen teacher MLLM generate structured cross-domain rea-soning knowledge and distills it into a lightweight student MLLM. Second, transferability-guided cross-domain representation learn-ing decomposes item representations into transferable and domain residual representations. The resulting representations are com-puted offline and integrated into downstream retrieval tasks, en-abling low-cost industrial deployment. Extensive offline experi-ments demonstrate RGCD-Rep’s superiority. After deployment in Kuaishou’s live streaming recommendation system, A/B tests show significant gains across multiple core business metrics, confirming its effectiveness and practicality in real industrial scenarios. RGCD-Rep is fully deployed and serves over 400 million users daily. 
+
+## CCS Concepts 
+
+• Information systems → Recommender systems .
+
+## Keywords 
+
+Live Streaming Recommendation, Cross-Domain Recommendation, Multimodal Representation Learning 
+
+## 1 Introduction 
+
+With mobile internet technologies advancing rapidly, live stream-ing has grown in recent years [ 3, 9, 25 ]. Meanwhile, more platforms, 
+
+> ∗Equal contribution.
+> †Corresponding authors.
+
+such as YouTube, TikTok, and Kuaishou, provide short videos along-side live streams to meet users’ and content creators’ diverse needs. In platform ecosystems, short videos carry substantial traffic with active user behaviors and rich interaction data, whereas live stream-ing serves as a core conversion scenario where users interact in real time through virtual gifts and other actions, contributing signifi-cantly to platform revenue. However, due to exposure differences across content domains, live streaming behavior data is usually sparse, and high-value behaviors such as follows and virtual gifting are particularly scarce [ 8, 16 ]. In addition, cold start is especially severe for new streamers and users. To alleviate data sparsity and cold-start issues in live streaming, a straightforward solution is cross-domain recommendation(CDR), which connects short videos with live streams and transfers user interests from short videos to live streaming recommendation [ 14 , 15 , 35 ]. Existing studies mainly improve CDR from three per-spectives. First, transfer modules integrate source-domain repre-sentations into target-domain recommendation [ 12 , 22 ]. Second, graph neural networks [ 20 , 32 ] and sequential models capture cross-domain behavioral dependencies [ 2, 13 ]. Third, with increas-ingly available visual, audio, and textual signals, item-level multi-modal content is incorporated to enhance CDR [ 6, 33 ]. For example, MOTKD [ 33 ] introduces a multimodal graph attention network to model user preferences and transfer them to the target domain. UniEmbedding [ 6] extracts item representations via a domain-aware multimodal adapter and a user-view projection module. Since live streams and short videos are complex items with visual, audio, and textual modalities, incorporating multimodal content is crucial for CDR. However, existing studies commonly rely on pre-extracted modality-specific representations for item model-ing [ 6, 33 ]. Such static features are limited in deep semantic reasoning over multimodal content and provide weak expla-nations for why items from two domains can be behaviorally transferable. These limitations motivate exploring MLLMs for multimodal CDR. MLLMs integrate multimodal information into a unified textual semantic space, improving recommendation sys-tems’ ability to understand and explain complex multimodal in-puts [ 7, 18 ]. This offers a promising way to model complex cross-domain user behaviors and improve recommendation accuracy. However, MLLM-enhanced CDR still faces three major challenges. 
+
+Ch1: Large-scale MLLMs incur high computational costs, making direct industrial deployment impractical [ 1 , 34 ]. Ch2: Relying only on MLLMs’ open-world knowledge may yield task-irrelevant or in-accurate interpretations [ 34 ]. Ch3: User behavior patterns in CDR  
+
+> arXiv:2606.04448v1 [cs.IR] 3 Jun 2026 Conference acronym ’XX, June 03–05, 2018, Woodstock, NY Zhang et al.
+
+are complex, and cross-domain interests are not always consistent. Directly aggregating shared and domain-specific information from both domains may thus cause negative transfer [24, 37]. To address these challenges, we propose RGCD-Rep, a reasoning-guided cross-domain representation learning method. RGCD-Rep introduces MLLM reasoning resource-efficiently and learns gener-ally transferable item representations. To address Ch1 , we design a reasoning-aware distillation strategy that transfers the reason-ing capability of a large teacher MLLM to a lightweight student MLLM. Specifically, CoT prompting guides the teacher to generate structured reasoning knowledge, while distillation enables the stu-dent MLLM to learn step-by-step reasoning patterns and perform structured cross-domain reasoning. To address Ch2 , we design a behavior-grounded two-stage training framework. By constructing behavior-grounded cross-domain samples and learning objectives, the lightweight model is fine-tuned end-to-end. Thus, the student model inherits teacher reasoning ability and captures cross-domain behavioral co-occurrence signals. To address Ch1 and Ch3 , we further design a transferable-residual query-aware aggregation module on top of the student MLLM, which decomposes item repre-sentations into transferable and residual components. The resulting transferable representations can be generated offline and directly integrated into downstream retrieval tasks, enabling low-cost indus-trial deployment. We summarize our main contributions as follows: 
+
+• To the best of our knowledge, this is the first study to intro-duce MLLM reasoning into CDR, offering a new perspective on transfer among complex multimodal items. 
+
+• We propose RGCD-Rep, a reasoning-guided cross-domain repre-sentation learning framework. RGCD-Rep transfers CoT reason-ing from a large teacher MLLM to a lightweight student MLLM via reasoning-aware distillation and learns behavior-grounded, generally transferable item representations through end-to-end fine-tuning, enabling resource-efficient industrial deployment. 
+
+• Extensive experiments on industrial datasets and online de-ployment in a real recommendation system demonstrate the effectiveness and practicality of RGCD-Rep, with significant gains in both offline performance and online business metrics. 
+
+## 2 Related Work 
+
+Cross-domain Recommendation. CDR aims to transfer useful knowledge from a source domain to a target domain to improve target-domain recommendation performance, effectively alleviat-ing cold-start and data sparsity issues. Early studies mainly transfer collaborative signals by sharing user representations or model-ing cross-domain user–item interactions. For example, CoNet [ 12 ]introduces cross connections between the networks of two do-mains to enable cross-domain knowledge transfer. PTUPCDR [ 37 ]learns personalized preference transfer functions that adaptively transfer user preferences from the source domain to the target domain. Subsequent studies employ graph neural networks and se-quential models to capture user behaviors across multiple domains. C2DSR [ 2] constructs a cross-domain item transition graph based on item co-occurrence relations, thereby capturing associations between items from different domains. From the perspective of user sequence modeling, Tri-CDR [ 21 ] designs multiple contrastive learning tasks to capture fine-grained global interests from mixed behavior sequences. In live streaming recommendation, recent stud-ies begin to exploit short video behaviors to alleviate the sparsity of live streaming interactions. FARM [ 16 ] transfers user preferences from the short video domain to the live streaming domain, and MGCCDR [ 25 ] further constructs multi-graph contrastive learning signals between short videos and streamers, demonstrating the effectiveness of short video behaviors for live streaming recommen-dation. Although these methods bridge different domains through behavior sequences, item co-occurrence, or graph structures, they are still mainly driven by collaborative signals and provide limited semantic explanations for why cross-domain items are transferable. 
+
+Multimodal Recommendation. With the rapid growth of vi-sual, textual, and audio content on online platforms, multimodal rec-ommendation has been widely studied for user preference modeling and item representation learning. Early studies mainly incorporate multimodal features as auxiliary information into recommenda-tion models. For example, VECF [ 5] employs a visual encoder to capture image-region information for user preference modeling. while ACF [ 4 ] designs item- and component-level attention over visual features for multimedia recommendation. With the devel-opment of graph neural networks, many studies further exploit high-order user–item relations for multimodal preference learning. MMGCN [ 31 ] and GRCN [ 30 ] construct modality-aware user–item graphs or multimodal interaction graphs to model preferences from different modalities. Recently, multimodal information has also been introduced into CDR. MOTKD [ 33 ] introduces a multimodal graph attention network to model users’ multimodal preference representations and transfer them to the target domain. UniEmbed-ding [ 6] learns general multimodal multi-domain item representa-tions through a domain-aware multimodal adapter and a user-view projection module. These studies show the effectiveness of multi-modal information in recommendation and CDR. However, most existing methods directly adopt pre-extracted multimodal features, or learn multimodal representations through shallow alignment and feature fusion. They lack explicit semantic reasoning over mul-timodal content and provide limited explanations for why items from different domains can be behaviorally transferable. 
+
+## 3 Preliminaries 
+
+We focus on multimodal CDR between the short video domain and the live streaming domain, where the short video domain serves as the source domain and the live streaming domain serves as the target domain. In principle, the proposed method is also applicable to knowledge transfer across multiple domains. Let 
+
+U = {𝑢 1, 𝑢 2, . . . , 𝑢 𝑁 𝑈 } denote the user set, L = {𝑙 1, 𝑙 2, . . . , 𝑙 𝑁 𝐿 }
+
+denote the live streams and S = {𝑠 1, 𝑠 2, . . . , 𝑠 𝑁 𝑆 } denote the short videos, where 𝑁 𝑈 , 𝑁 𝐿 , and 𝑁 𝑆 are the numbers of users, live streams, and short videos, respectively. We define E𝑈 𝐿 ∈ { 0, 1}𝑁 𝑈 ×𝑁 𝐿 with entries {𝑒 𝑢𝑙 | 𝑢 ∈ U , 𝑙 ∈ L} as the user interactions in the live streaming domain, and G ∈ { 0, 1}𝑁 𝑈 ×𝑁 𝑆 with entries {𝑔 𝑢𝑠 | 𝑢 ∈U, 𝑠 ∈ S} as the user interactions in the short video domain. Here, 
+
+𝑒 𝑢𝑙 , 𝑔 𝑢𝑠 ∈ { 0, 1}, and a value of 1 indicates that the correspond-ing user and item interact with each other. In addition, each item contains multimodal content, including video frames, OCR/ASR transcripts, title text, and other metadata. The goal of this paper is to learn a general cross-domain transferable representation that Bridging Short Videos and Live Streams Conference acronym ’XX, June 03–05, 2018, Woodstock, NY 
+
+captures user interest factors shared between the short video and live streaming domains while filtering domain residual information that may lead to negative transfer. 
+
+## 4 Methodology 4.1 Overview 
+
+RGCD-Rep is a two-stage cross-domain representation learning framework, as shown in Figure 1. It aims to introduce MLLM mul-timodal understanding and reasoning resource-efficiently while learning offline-deployable cross-domain transferable item repre-sentations. We first construct cross-domain item pairs from real behavioral logs, and a frozen teacher MLLM generates structured transfer reasoning knowledge as structured cross-domain reasoning supervision. In Stage 1, item-level content understanding knowl-edge is distilled into a lightweight student MLLM, enabling multi-modal understanding across both domains. In Stage 2, the student MLLM serves as a shared encoder and, with transferable-residual query-aware aggregation, learns cross-domain transferable and domain residual representations. Together with cross-domain con-trastive learning and transferable routing, this stage models pair-level transfer relationships and mitigates negative transfer. 
+
+## 4.2 Behavior-Grounded Cross-Domain Reasoning Supervision 
+
+4.2.1 Behavior-Collaborative Pair Construction. A key challenge in cross-domain transfer from short videos to live streaming is identifying item pairs that reflect users’ transferable interests. We construct behavior-collaborative pairs from user interaction logs by collecting each user’s behaviors in both domains. Intuitively, if a user shows strong interest in a short video and a live stream within the same time window, the two items likely share latent preference factors from the user’s perspective. Formally, we construct the behavior-collaborative pair dataset as 
+
+D = {( 𝑠 𝑖 , 𝑙 𝑖 , 𝑏 𝑖 )} 𝑁 𝐷  
+
+> 𝑖 =1
+
+, (1) where 𝑠 𝑖 denotes a short video, 𝑙 𝑖 denotes a live stream, and 𝑏 𝑖 
+
+denotes pair transferability strength. The strength 𝑏 𝑖 is computed from two signals. The first is behavioral co-occurrence, which mea-sures how frequently 𝑠 𝑖 and 𝑙 𝑖 co-occur among the same user group within the same time window. The second is behavioral intensity, which measures user interaction strength with the two items. For short videos, we consider watch duration, completion rate, likes, comments, and shares. For live streams, we consider watch duration, virtual-gift interactions, follows, likes, and comments. Finally, we retain high-confidence behavioral pairs according to 
+
+𝑏 𝑖 , which serve as training data for both Stage 1 and Stage 2. 
+
+4.2.2 Structured Cross-Domain Reasoning Generation. We use a frozen 35B MLLM as the teacher model to generate structured cross-domain transfer reasoning knowledge for the behavior-collaborative pairs constructed in Section 4.2.1. For each pair (𝑠 𝑖 , 𝑙 𝑖 ), the teacher MLLM takes the multimodal content of both items as input and is prompted to analyze whether the user interests reflected in the short video can be transferred to the live stream. Instead of directly using free-form CoT text as supervision, we convert the reasoning results of the teacher model into structured supervision signals. Specifically, the teacher model generates two types of reasoning knowledge. The first type is item-level multi-modal content understanding . For the short video 𝑠 𝑖 and the live stream 𝑙 𝑖 , the teacher model decomposes the content into three semantic dimensions: 
+
+K = {vertical domain , key subject , content topic }. (2) For each semantic dimension 𝑘 ∈ K , the teacher model outputs a semantic label and a brief evidence description. The second type is pair-level cross-domain transfer reasoning . For each semantic di-mension 𝑘 , the teacher model determines whether the short video and the live stream match in this dimension: 
+
+𝑚 𝑘 𝑖 ∈ { 0, 1}, (3) where 𝑚 𝑘 𝑖 = 1 indicates that the two items match in semantic dimension 𝑘 , and 𝑚 𝑘 𝑖 = 0 indicates that they do not match. The teacher model also generates a brief rationale for each matching decision. Furthermore, we aggregate the matching labels across the three dimensions into a semantic transferability score from the perspective of teacher reasoning: 
+
+𝑟 𝑖 = 1
+
+|K | ∑︁ 𝑘 ∈ K 
+
+𝑚 𝑘 𝑖 . (4) This score measures the semantic transferability strength of pair 
+
+(𝑠 𝑖 , 𝑙 𝑖 ) from the reasoning perspective of the teacher model. 
+
+## 4.3 Stage 1: Reasoning-Aware Distillation for Item Understanding 
+
+4.3.1 Pair-to-Item Reasoning Decomposition. Although the teacher MLLM reasons over short video and live stream pairs, directly training the student model with pairwise inputs would reduce its deployability in industrial recommendation systems. Therefore, we decompose teacher-generated pair-level reasoning knowledge into item-level distillation datasets Ditem .For each pair (𝑠 𝑖 , 𝑙 𝑖 ), the item-level multimodal content under-standing results generated by the teacher model are decomposed into two independent supervision samples for the 𝑠 𝑖 and the 𝑙 𝑖 ,respectively. Each sample contains semantic labels and evidence descriptions corresponding to the three semantic dimensions in K.Through this decomposition, the student MLLM acquires multi-modal content understanding capability from a dual-domain per-spective. Meanwhile, it can independently encode any short video or live stream, supporting large-scale offline embedding generation. 
+
+4.3.2 Student MLLM Backbone with Learnable Chorus Tokens. RGCD-Rep adopts a lightweight MLLM equipped with learnable chorus tokens as the student backbone, following the design of CREM [ 19 ]. The core idea is to insert a compact set of learnable tokens into the multimodal prompt, allowing the model to aggregate multimodal se-mantics from visual, audio, and textual signals into a small number of representation tokens while preserving its original generation capability. Compared with directly adopting a single pooled token or the EOS token as the item representation, chorus tokens provide a richer and more flexible representation interface for multimodal understanding and downstream embedding-based tasks. Formally, given an item 𝑥 , its multimodal input contains video frames, OCR/ASR text, the title, and other metadata. We insert 𝑁 𝐶 Conference acronym ’XX, June 03–05, 2018, Woodstock, NY Zhang et al. Behavior -Grounded Cross -Domain Reasoning Supervision 
+
+热⻔ .png         
+
+> Short Video Domain Live Streaming Domain
+> LIVE
+> LIVE
+> …
+> …
+> User
+> Behavior
+> Behavior -Collaborative Pair
+> Behavior -Collaborative Pair Construction
+> Teacher MLLM
+> Short Video Item Live Stream Item
+> Structured Cross -Domain
+> Reasoning Generation
+> 1) Item -level multimodal
+> content understanding
+> Vertical
+> Domain
+> Key
+> Subject
+> Content
+> Topic
+
+…   
+
+> Vertical
+> Domain
+> Key
+> Subject
+> Content
+> Topic
+> 2) Pair -level cross -domain
+> transfer reasoning.
+> Match / Not Match
+> Evidence Description:
+> ……
+> Vertical
+> Domain
+> Key
+> Subject
+> Content
+> Topic
+
+Stage 1: Reasoning -Aware 
+
+Distillation for Item Understanding    
+
+> Student MLLM
+> Learnable Chorus Tokens
+
+…    
+
+> Single Item Inputs
+> …
+> LIVE
+> Dual -domain Multimodal Understanding
+> Vertical
+> Domain
+> Key
+> Subject
+> Content
+> Topic
+> Structured
+> Understanding
+> Next -token
+> Prediction
+
+…
+
+Stage 2: Transferability -Guided 
+
+Cross -Domain Representation Learning       
+
+> Transferable -Residual Query -
+> Aware Aggregation
+> Transferable
+> Representation
+> Residual
+> Representation
+> Transferable
+> Representation
+> Residual
+> Representation
+> InfoNCE Loss Routing Loss
+> Cross -Domain
+> Contrastive Learning
+> Routing
+> Module
+> Transferable Routing
+> Shared
+> Student MLLM
+> Learnable Chorus Tokens
+
+…    
+
+> Short Video Item
+> Live Stream Item
+> Short Video Item Live Stream Item
+> Short Video Item
+> Live Stream Item
+
+Figure 1: Overview of the proposed RGCD-Rep framework. 
+
+learnable chorus tokens into the input sequence: 
+
+𝐶 = [𝑐 1, 𝑐 2, · · · , 𝑐 𝑁 𝐶 ], (5) where 𝑐 𝑖 denotes the 𝑖 -th chorus token. The student MLLM jointly encodes the multimodal input and chorus tokens, and outputs the hidden states of these chorus tokens from the last layer: 
+
+𝐻 𝑥 = [ℎ1
+
+𝑥 , ℎ 2
+
+𝑥 , · · · , ℎ 𝑁 𝐶 
+
+𝑥 ] ∈ R𝑁 𝐶 ×𝑑 , (6) where ℎ𝑖 𝑥 denotes the hidden state corresponding to the 𝑖 -th chorus token, and 𝑑 denotes the hidden dimension. Following the default setting of CREM, we set 𝑁 𝐶 to 16 in this paper. 
+
+4.3.3 Student MLLM Distillation Objective. The student model is a trainable lightweight 2B MLLM initialized from a general-purpose multimodal backbone. The item-level multimodal content under-standing results generated by the teacher MLLM are then converted into fine-tuning samples for the student model. For each item 𝑥 , where 𝑥 can be either a short video or a live stream, the input prompt consists of the multimodal content of the item and a task instruction that asks the model to extract the verti-cal category, key subject, and content theme of the item. The target answer is the item-level multimodal content understanding result generated by the teacher MLLM, as described in Section 4.3.1. For-mally, each sample is represented as (𝑞 𝑥 , 𝑦 𝑥 ), where 𝑞 𝑥 denotes the multimodal instruction input for item 𝑥 , and 𝑦 𝑥 = {𝑦 1, 𝑦 2, · · · , 𝑦 𝐴 𝑥 }
+
+denotes the target answer sequence generated by the teacher model. The student MLLM is optimized with the standard next-token prediction objective. Given the input prompt 𝑞 𝑥 , the chorus tokens 
+
+𝐶 , and the previously generated target tokens 𝑦 <𝑡 , the student model predicts the next target token 𝑦 𝑡 :
+
+LNTP = −∑︁ 
+
+𝑥 ∈ D item 
+
+𝐴 𝑥 ∑︁ 
+
+𝑡 =1
+
+log 𝑃 𝜃 (𝑦 𝑡 | 𝑞 𝑥 , 𝐶, 𝑦 <𝑡 ) , (7) where 𝜃 denotes the parameters of the student MLLM, 𝐴 𝑥 denotes the length of the target answer sequence for item 𝑥 , and Ditem 
+
+denotes the item-level distillation dataset. After Stage 1 training, the student MLLM acquires structured multimodal understanding capabilities for both short videos and live streams without relying on the teacher model. 
+
+## 4.4 Stage 2: Transferability-Guided Cross-Domain Representation Learning 
+
+4.4.1 Weight-Sharing MLLM Encoder. In Stage 2, the student MLLM distilled in Stage 1 serves as the encoding backbone, and is shared by the short video and live streaming domains. This design has two benefits. First, it maps short videos and live streams into a uni-fied semantic space. Second, it transfers the structured multimodal understanding capability learned in Stage 1 to the representation learning process in Stage 2. Specifically, 
+
+𝐻 𝑠 = 𝑓 𝜃 (𝑠 𝑖 ), 𝐻 𝑙 = 𝑓 𝜃 (𝑙 𝑖 ), (8) where 𝑓 𝜃 (·) denotes the weight-shared student MLLM encoder. Rather than relying on a single pooled representation, we take the hidden states of the chorus tokens in the last layer as item representations. Therefore, for the item 𝑥 , the encoder output is represented as: 
+
+𝐻 𝑥 = [ℎ1
+
+𝑥 , ℎ 2
+
+𝑥 , · · · , ℎ 𝑁 𝐶 
+
+𝑥 ] ∈ R𝑁 𝐶 ×𝑑 , (9) where ℎ𝑐 𝑥 denotes the hidden state of the 𝑐 -th special chorus token, and 𝑑 denotes the hidden dimension. 
+
+4.4.2 Transferable-Residual Query-Aware Aggregation. Although the weight-shared MLLM encoder maps items from both domains into a unified semantic space, chorus-token representations may still entangle transferable and domain-specific factors. Therefore, Bridging Short Videos and Live Streams Conference acronym ’XX, June 03–05, 2018, Woodstock, NY 
+
+we further extract domain-transferable and domain residual repre-sentations from the chorus tokens. Given the chorus-token representation 𝐻 𝑥 of item 𝑥 , two inde-pendent learnable query vectors perform weighted aggregation over the token sequence, yielding two semantic views: the trans-ferable view and the residual view. For the transferable view, a learnable query vector 𝑞 𝑇 ∈ R𝑑 computes token attention weights: 
+
+𝛼 𝑇 𝑥 = softmax 
+
+ 𝐻 𝑥 𝑞 𝑇 
+
+√𝑑 
+
+
+
+∈ R𝑁 𝐶 , (10) and the transferable representation is obtained by weighted pooling: 
+
+𝑧 𝑇 𝑥 = Norm 
+
+> 𝑁 𝐶
+
+∑︁ 
+
+> 𝑐 =1
+
+𝛼 𝑇 𝑥,𝑐 ℎ𝑐 𝑥 
+
+!
+
+. (11) Similarly, for the residual view, another learnable query vector 
+
+𝑞 𝑅 ∈ R𝑑 computes token weights: 
+
+𝛼 𝑅 𝑥 = softmax 
+
+ 𝐻 𝑥 𝑞 𝑅 
+
+√𝑑 
+
+
+
+∈ R𝑁 𝐶 , (12) 
+
+𝑧 𝑅 𝑥 = Norm 
+
+> 𝑁 𝐶
+
+∑︁ 
+
+> 𝑐 =1
+
+𝛼 𝑅 𝑥,𝑐 ℎ𝑐 𝑥 
+
+!
+
+. (13) The module outputs the transferable representation 𝑧 𝑇 𝑥 and resid-ual representation 𝑧 𝑅 𝑥 for each item. Its parameters are instantiated separately for the short video and live streaming domains, while shared among items within each domain. 
+
+4.4.3 Cross-Domain Contrastive Learning. Cross-domain contrastive learning optimizes the transferable embeddings. Given a mini-batch 
+
+B = {( 𝑠 𝑖 , 𝑙 𝑖 )} 𝐵 𝑖 =1, the transferable embeddings (𝑧 𝑇 𝑠 𝑖 , 𝑧 𝑇 𝑙 𝑖 ) of each behavior-collaborative pair are treated as a positive pair. For each item, the unmatched items from the opposite domain in the same mini-batch serve as in-batch negative samples. The contrastive loss from the short video domain to the live streaming domain is defined as 
+
+L𝑠 →𝑙 = − 1
+
+|B| 
+
+> | B |
+
+∑︁ 
+
+> 𝑖 =1
+
+log exp 
+
+
+
+sim (𝑧 𝑇 𝑠 𝑖 , 𝑧 𝑇 𝑙 𝑖 )/ 𝜏 
+
+Í| B |  
+
+> 𝑗 =1
+
+exp 
+
+
+
+sim (𝑧 𝑇 𝑠 𝑖 , 𝑧 𝑇 𝑙 𝑗 )/ 𝜏 
+
+ . (14) Similarly, the contrastive loss from the live streaming domain to the short video domain is defined as 
+
+L𝑙 →𝑠 = − 1
+
+|B| 
+
+> | B |
+
+∑︁ 
+
+> 𝑖 =1
+
+log exp 
+
+
+
+sim (𝑧 𝑇 𝑙 𝑖 , 𝑧 𝑇 𝑠 𝑖 )/ 𝜏 
+
+Í| B |  
+
+> 𝑗 =1
+
+exp 
+
+
+
+sim (𝑧 𝑇 𝑙 𝑖 , 𝑧 𝑇 𝑠 𝑗 )/ 𝜏 
+
+ . (15) The final cross-domain contrastive loss is 
+
+Lcon = 12 (L 𝑠 →𝑙 + L 𝑙 →𝑠 ) . (16) Here, sim (· , ·) denotes cosine similarity, and 𝜏 denotes the temper-ature coefficient. 
+
+4.4.4 Transferable Routing. Behavioral co-occurrence alone does not ensure true cross-domain transferability. For low-transferability pairs, pulling their transferable embeddings together may cause negative transfer. To address this, we introduce a transferable rout-ing objective that determines whether a pair should be mainly explained by the transferable or residual space. For a pair (𝑠 𝑖 , 𝑙 𝑖 ),we compute its matching scores in the two spaces: 
+
+𝑠 𝑇 (𝑠 𝑖 , 𝑙 𝑖 ) =
+
+
+
+𝑧 𝑇 𝑠 𝑖 
+
+⊤
+
+𝑧 𝑇 𝑙 𝑖 , (17) 
+
+𝑠 𝑅 (𝑠 𝑖 , 𝑙 𝑖 ) =
+
+
+
+𝑧 𝑅 𝑠 𝑖 
+
+⊤
+
+𝑧 𝑅 𝑙 𝑖 . (18) The probability that this pair should be explained by the transferable space is 
+
+𝑃 𝑇 (𝑠 𝑖 , 𝑙 𝑖 ) = 𝜎 (𝛾 (𝑠 𝑇 (𝑠 𝑖 , 𝑙 𝑖 ) − 𝑠 𝑅 (𝑠 𝑖 , 𝑙 𝑖 ))) , (19) where 𝜎 (·) denotes the sigmoid function, and 𝛾 is the routing-logit scaling coefficient. The routing label 𝜋 𝑖 is constructed from both the behavioral transfer strength 𝑏 𝑖 and the semantic transferability score 𝑟 𝑖 . Specif-ically, we first compute a joint transferability score: 
+
+𝑞 𝑖 = 𝑏 𝑖 + 𝑟 𝑖 . (20) We then rank all training pairs according to 𝑞 𝑖 . Let T + and 
+
+T − denote the top 𝑝 % and bottom 𝑝 % training pairs ranked by 𝑞 𝑖 ,respectively. Pairs in T + are treated as high-purity transferable pairs, while pairs in T − are treated as low-purity pairs: 
+
+𝜋 𝑖 =
+
+(
+
+1, (𝑠 𝑖 , 𝑙 𝑖 ) ∈ T +,
+
+0, (𝑠 𝑖 , 𝑙 𝑖 ) ∈ T − . (21) The remaining pairs are regarded as uncertain samples and excluded from the routing loss. The routing loss is defined as 
+
+Lroute = − 1
+
+|B route |∑︁ 𝑖 ∈ B route 
+
+[𝜋 𝑖 log 𝑃 𝑇 (𝑠 𝑖 , 𝑙 𝑖 )+( 1 − 𝜋 𝑖 ) log (1 − 𝑃 𝑇 (𝑠 𝑖 , 𝑙 𝑖 ))] ,
+
+(22) where Broute denotes high-purity and low-purity pairs in the mini-batch participating in routing training. For high-purity pairs, the routing loss encourages 𝑠 𝑇 (𝑠 𝑖 , 𝑙 𝑖 ) > 𝑠 𝑅 (𝑠 𝑖 , 𝑙 𝑖 ), so the pair is mainly represented by transferable embeddings. For low-purity pairs, it encourages 𝑠 𝑅 (𝑠 𝑖 , 𝑙 𝑖 ) > 𝑠 𝑇 (𝑠 𝑖 , 𝑙 𝑖 ), allowing residual embeddings to absorb domain-specific factors or behavioral noise. 
+
+4.4.5 Overall Training Objective. The overall training objective of Stage 2 combines the cross-domain contrastive learning loss and the transferable routing loss: 
+
+Lstage2 = Lcon + 𝜆 route Lroute , (23) where 𝜆 route controls the weight of the routing loss. After training, 
+
+𝑧 𝑇 serves as the final cross-domain transferable item representation and is passed to downstream recommendation tasks. 
+
+## 5 Experiments 
+
+In this section, we conduct extensive offline experiments and online A/B tests on Kuaishou live streaming services, including Kuaishou and Kuaishou Lite, to answer the following research questions: 
+
+• RQ1: How does the proposed RGCD-Rep framework perform compared with existing methods in the offline retrieval task? 
+
+• RQ2: How do the key modules of RGCD-Rep contribute? 
+
+• RQ3: Can RGCD-Rep improve long-tail recommendation? 
+
+• RQ4: Can RGCD-Rep benefit sparse-behavior users? 
+
+• RQ5: How does RGCD-Rep perform in online A/B tests? Conference acronym ’XX, June 03–05, 2018, Woodstock, NY Zhang et al. 
+
+Table 1: Statistics of the Kuaishou dataset.             
+
+> Domain Users Items Interactions Avg. Len. Live streaming 109,523 98,190 2,275,888 20.78 Short video 109,523 3,787,061 24,635,008 224.93
+
+## 5.1 Experimental Settings 
+
+5.1.1 Kuaishou Dataset. We conduct offline experiments on the Kuaishou dataset. Specifically, based on real user behavior logs col-lected over one consecutive week on the Kuaishou live streaming platform in 2026, we randomly sample 109 ,523 users who access both short video and live streaming services, and record their his-torical positive interactions in both domains. The dataset consists of a training set and a test set. The training set contains users’ real positive interaction logs from the first six days, covering short videos and live streams observed during this training period. The test set is constructed from the seventh day, where each user’s last positive live streaming interaction on that day is used as the predic-tion target. Each item contains multimodal information, including video frames, OCR/ASR transcripts, title text, and other metadata. The statistics of the datasets are reported in Table 1. 
+
+5.1.2 Baselines. To validate the effectiveness of RGCD-Rep, we compare it with three groups of baselines. 
+
+• Single-domain multimodal recommendation methods 
+
+model user preferences or item representations within one do-main, including FREEDOM [ 36 ], SMORE [ 23 ], and AlphaRec [ 27 ]. 
+
+• Cross-domain unimodal recommendation methods lever-age information from different domains to alleviate data spar-sity and cold-start issues in the target domain. However, these baselines mainly rely on unimodal representations as the cross-domain bridge, including UniSRec [11] and VQ-Rec [10]. 
+
+• Cross-domain multimodal recommendation methods learn transferable representations from item content such as text and visual information. However, existing methods directly adopt pre-extracted modality-specific representations as item features. These features are static and shallow, lack deep semantic rea-soning over multimodal content. This category includes MISS-Rec [28], PMMRec [17], and UniEmbedding [6]. 
+
+5.1.3 Implementation Details. We implement RGCD-Rep in Py-Torch on eight NVIDIA H800 (140GB) GPUs. The teacher model is Qwen3.6-35B-A3B [ 26 ], and the student model is Qwen2-VL-2B-Instruct [ 29 ]. The number of fine-tuning samples is 60 ,000 in Stage 1 and 250 ,000 in Stage 2. During fine-tuning, the LoRA rank is set to 32 , and Adam serves as the optimizer. In Stage 1, the batch size is 8, and the learning rate is 1 × 10 −4. In Stage 2, the batch size is 
+
+64 , and the learning rate is 1 × 10 −4. For the loss function, the tem-perature coefficient is set to 𝜏 = 0.05 , the routing loss weight is set to 𝜆 route = 0.05 , the routing logit scaling coefficient is set to 𝛾 = 10 .For routing-label construction, we set 𝑝 = 20 . The final transferable embedding dimension is 1536 . For all baselines, we carefully tune their hyperparameters to obtain the best performance. 
+
+5.1.4 Evaluation Metrics. Following previous studies [ 6, 33 ], we evaluate RGCD-Rep and the baseline methods on the retrieval task, with HR@ 𝐾 and NDCG@ 𝐾 as evaluation metrics, where 𝐾 = 10 .
+
+## 5.2 Offline Performance on Matching Task (RQ1) 
+
+Table 2 compares RGCD-Rep with all baselines and ablation vari-ants on the Kuaishou Dataset. For the matching task, we mean-pool the transferable representations of a user’s interacted short videos as the user interest representation, and retrieve live streams by maximum inner product search over candidate transferable repre-sentations. The results yield the following observations. First, single-domain multimodal methods perform relatively weakly. Although FREEDOM [ 36 ], SMORE [ 23 ], and AlphaRec [ 27 ]exploit multimodal item content, they mainly target single-domain recommendation and lack explicit modeling of interest transfer from short videos to live streaming. Thus, they struggle to alleviate sparsity in live streaming recommendation. Second, cross-domain multimodal methods achieve stronger overall performance. MISSRec [ 28 ], PMMRec [ 17 ], and UniEmbed-ding [ 6 ] jointly exploit multimodal item content and cross-domain behavioral collaboration signals, learning more effective matching representations. Among all baselines, UniEmbedding [ 6] performs best, indicating that combining multimodal content with cross-domain behavior signals helps capture shared interest patterns between short videos and live streams. Finally, RGCD-Rep achieves the best performance on all metrics and significantly outperforms all baselines, with improvements of 
+
+17 .59% and 30 .93% over the strongest baseline, respectively. This demonstrates that RGCD-Rep learns cross-domain transferable item representations better suited to the live streaming recommendation. 
+
+## 5.3 Ablation Study (RQ2) 
+
+To validate each component in RGCD-Rep, we conduct ablation experiments on the matching task, with the results reported in Ta-ble 2. First, we remove the Stage 1 training objective, denoted as w/o Stage 1. This variant causes a slight performance drop, indicating that reasoning-aware distillation provides a beneficial semantic ini-tialization for CDR. Next, we remove the Stage 2 training objective, denoted as w/o Stage 2. The model performance decreases substan-tially, showing that the item-level multimodal content understand-ing learned through Stage 1 distillation alone cannot fully support recommendation from short videos to live streams. In contrast, pair-wise cross-domain representation learning explicitly aligns transferable interest relations between the two domains based on behavior-collaborative samples, which serves as a key source of performance improvement. Finally, we freeze the MLLM backbone in Stage 2 and only train the transferable-residual query-aware ag-gregation module, denoted as w/o Stage 2 MLLM. Its performance is clearly lower than that of the full model. This result suggests that fixed multimodal representations remain relatively static for CDR and fail to sufficiently model deep semantic associations and transferable relations between short videos and live streams. 
+
+## 5.4 Performance on Long-tail Items (RQ3) 
+
+We rank items by their occurrence frequency in the training set and label the top 50% as head items and the remaining items as tail items. Interactions with tail items account for only 10 .90% of all interactions, indicating a clear interaction sparsity issue in live streaming recommendation. Figure 2 reports the performance of Bridging Short Videos and Live Streams Conference acronym ’XX, June 03–05, 2018, Woodstock, NY 
+
+Table 2: Offline performance on the matching task and ablation study. The best results are highlighted in bold, and the strongest baseline results are underlined.                                     
+
+> Metric FREEDOM SMORE AlphaRec UniSRec VQ-Rec MISSRec PMMRec UniEmbedding RGCD-Rep w/o Stage 1 w/o Stage 2 w/o Stage 2 MLLM HR@10 0.0040 0.0089 0.0117 0.0134 0.0087 0.0147 0.0089 0.0216 0.0254 0.0249 0.0101 0.0189 NDCG@10 0.0018 0.0032 0.0050 0.0059 0.0041 0.0066 0.0040 0.0097 0.0127 0.0122 0.0046 0.0088
+
+Figure 2: Performance comparison on tail and head items. 
+
+Figure 3: Performance comparison on cold-start and active users. 
+
+different methods on head and tail items. All methods perform worse on tail items than on head items, showing that long-tail recommendation is more challenging under sparse interactions. RGCD-Rep achieves the best performance on both head and tail items, with a more pronounced advantage on tail items. This result suggests that RGCD-Rep can maintain more reliable recommenda-tion performance in sparse long-tail scenarios by jointly modeling collaborative information and multimodal information. 
+
+## 5.5 Performance across User Groups (RQ4) 
+
+To further evaluate RGCD-Rep’s ability to alleviate behavioral spar-sity in the target live streaming domain, we divide test users into cold-start users and active users based on their historical live stream-ing feedback. Specifically, a user is regarded as cold-start if they have no positive live streaming feedback during the six days be-fore the prediction day and generate positive feedback only on the prediction day; otherwise, the user is regarded as active. Cold-start users account for 14 .65% of the test users. Figure 3 reports the results of different methods on the two user groups. RGCD-Rep outperforms all baselines for both cold-start users and active users, indicating that it improves recommendation performance not only for active users but also for users with sparse live stream-ing behaviors. More importantly, the improvement of RGCD-Rep over the strongest baseline is more pronounced for cold-start users than for active users, suggesting that its performance gain does not merely come from modeling existing live streaming behaviors. 
+
+Table 3: Online A/B test performance in live streaming ser-vices of Kuaishou and Kuaishou Lite.             
+
+> Application Exposure Click Effective Room-entry Follow
+> Kuaishou +0.37% +0.34% +0.28% +0.83%
+> Kuaishou Lite +0.38% +0.13% +0.22% +0.93%
+
+By effectively transferring user interests from the short video do-main, RGCD-Rep supplements user preference signals when live streaming behaviors are sparse, thereby alleviating the user-side cold-start problem in the live streaming domain. 
+
+## 5.6 Online A/B Tests (RQ5) 
+
+We deploy RGCD-Rep to the live streaming recommendation scenar-ios of Kuaishou and Kuaishou Lite, serving hundreds of millions of users at the retrieval stage, and conduct a one-week online A/B test. For deployment, we rebuild the training data from recent produc-tion logs and select about one million high-quality pairs to train the student MLLM. After training, the student MLLM offline generates transferable representations for all short videos and live streams, which are stored in the item feature system. During online retrieval, we build a cross-domain nearest-neighbor index from these offline embeddings and retrieve transferable live streams candidates based on users’ short video interests as a new retrieval channel. As shown in Table 3, RGCD-Rep brings significant gains on both applications. Follows improve most notably, reaching +0.83% and 
+
++0.93% , respectively, while core metrics such as effective room-entry rate and clicks also increase steadily. These results show that introducing MLLM-based cross-domain reasoning into transferable representation learning can accurately capture transfer relations from short video interests to live streamers, especially improving users’ following of new streamers and enabling more efficient live streaming content distribution. 
+
+## 6 Conclusion 
+
+This paper proposes RGCD-Rep, a reasoning-guided cross-domain representation learning framework for short video to live stream-ing recommendation that incorporates MLLM multimodal under-standing and cross-domain reasoning into transferable item repre-sentation learning. The transferable item representations can be generated offline and integrated into downstream recommenda-tion systems, meeting industrial low-cost deployment requirements while leveraging MLLM reasoning. Extensive offline experiments and online A/B tests show that RGCD-Rep brings consistent im-provements in live streaming matching and sparse scenarios such as long-tail and cold-start recommendation. RGCD-Rep is deployed at Kuaishou, serving over 400 million users in real-world live stream-ing services. Conference acronym ’XX, June 03–05, 2018, Woodstock, NY Zhang et al. 
+
+## References 
+
+[1] Davide Caffagni, Federico Cocchi, Luca Barsellotti, Nicholas Moratelli, Sara Sarto, Lorenzo Baraldi, Lorenzo Baraldi, Marcella Cornia, and Rita Cucchiara. 2024. The Revolution of Multimodal Large Language Models: A Survey. In Findings of the Association for Computational Linguistics: ACL 2024 . doi:10.18653/v1/2024. findings-acl.807 [2] Jiangxia Cao, Xin Cong, Jiawei Sheng, Tingwen Liu, and Bin Wang. 2022. Con-trastive Cross-Domain Sequential Recommendation. In Proceedings of the 31st ACM International Conference on Information and Knowledge Management (CIKM ’22) . ACM, 138–147. doi:10.1145/3511808.3557262 [3] Jiangxia Cao, Ruochen Yang, Xiang Chen, Changxin Lao, Yueyang Liu, Yusheng Huang, Yuanhao Tian, Xiangyu Wu, Shuang Yang, Zhaojie Liu, and Guorui Zhou. 2026. Foresight Prediction Enhanced Live-Streaming Recommendation. In 
+
+Proceedings of the Nineteenth ACM International Conference on Web Search and Data Mining (WSDM ’26) . ACM. doi:10.1145/3773966.3779372 [4] Jingyuan Chen, Hanwang Zhang, Xiangnan He, Liqiang Nie, Wei Liu, and Tat-Seng Chua. 2017. Attentive Collaborative Filtering: Multimedia Recommendation with Item- and Component-Level Attention. In Proceedings of the 40th Interna-tional ACM SIGIR Conference on Research and Development in Information Retrieval (SIGIR ’17) . Association for Computing Machinery, New York, NY, USA, 335–344. doi:10.1145/3077136.3080797 [5] Xu Chen, Hanxiong Chen, Hongteng Xu, Yongfeng Zhang, Yixin Cao, Zheng Qin, and Hongyuan Zha. 2019. Personalized Fashion Recommendation with Visual Explanations based on Multimodal Attention Network: Towards Visually Explainable Recommendation. In Proceedings of the 42nd International ACM SIGIR Conference on Research and Development in Information Retrieval (SIGIR ’19) .Association for Computing Machinery, New York, NY, USA, 765–774. doi:10. 1145/3331184.3331254 [6] Boqi Dai, Zhaocheng Du, Jieming Zhu, Jintao Xu, Deqing Zou, Quanyu Dai, Zhenhua Dong, Rui Zhang, and Hai-Tao Zheng. 2024. UniEmbedding: Learn-ing Universal Multi-Modal Multi-Domain Item Embeddings via User-View Contrastive Learning. In Proceedings of the 33rd ACM International Confer-ence on Information and Knowledge Management (CIKM ’24) . ACM, 4446–4453. doi:10.1145/3627673.3680098 [7] Wenliang Dai, Junnan Li, Dongxu Li, Anthony Meng Huat Tiong, Junqi Zhao, Weisheng Wang, Boyang Li, Pascale Fung, and Steven C. H. Hoi. 2023. In-structBLIP: Towards General-purpose Vision-Language Models with Instruction Tuning. In Advances in Neural Information Processing Systems , Vol. 36. [8] Jiaxin Deng, Shiyao Wang, Yuchen Wang, Jiansong Qi, Liqin Zhao, Guorui Zhou, and Gaofeng Meng. 2024. MMBee: Live Streaming Gift-Sending Recommenda-tions via Multi-Modal Fusion and Behaviour Expansion. In Proceedings of the 30th ACM SIGKDD Conference on Knowledge Discovery and Data Mining (KDD ’24) . Association for Computing Machinery, New York, NY, USA, 4896–4905. doi:10.1145/3637528.3671511 [9] Ke Guo, Changle Qu, Xiao Zhang, Liqin Zhao, Shijun Wang, Yanan Niu, and Jun Xu. 2026. Room Matters: Dynamic Room-level Collaboration Information Model-ing for Live Streaming Recommendation. In Proceedings of The Web Conference 2026 . ACM, 6045–6056. doi:10.1145/3726302.3729914 [10] Yupeng Hou, Zhankui He, Julian McAuley, and Wayne Xin Zhao. 2023. Learn-ing Vector-Quantized Item Representation for Transferable Sequential Recom-menders. In Proceedings of the ACM Web Conference 2023 (WWW ’23) . Association for Computing Machinery, New York, NY, USA, 1162–1171. doi:10.1145/3543507. 3583434 [11] Yupeng Hou, Shanlei Mu, Wayne Xin Zhao, Yaliang Li, Bolin Ding, and Ji-Rong Wen. 2022. Towards Universal Sequence Representation Learning for Recom-mender Systems. In Proceedings of the 28th ACM SIGKDD Conference on Knowledge Discovery and Data Mining (KDD ’22) . Association for Computing Machinery, New York, NY, USA, 585–593. doi:10.1145/3534678.3539381 [12] Guangneng Hu, Yu Zhang, and Qiang Yang. 2018. CoNet: Collaborative Cross Networks for Cross-Domain Recommendation. In Proceedings of the 27th ACM International Conference on Information and Knowledge Management (CIKM 2018) .ACM, 667–676. doi:10.1145/3269206.3271684 [13] Jun Hu, Wenwen Xia, Xiaolu Zhang, Chilin Fu, Weichang Wu, Zhaoxin Huan, Ang Li, Zuoli Tang, and Jun Zhou. 2024. Enhancing Sequential Recommendation via LLM-based Semantic Embedding Learning. In Proceedings of The Web Conference 2024 (WWW ’24) . ACM, 103–111. doi:10.1145/3589335.3648307 [14] Hanyu Li, Weizhi Ma, Peijie Sun, Jiayu Li, Cunxiang Yin, Yancheng He, Guoqiang Xu, Min Zhang, and Shaoping Ma. 2024. Aiming at the Target: Filter Collabora-tive Information for Cross-Domain Recommendation. In Proceedings of the 47th International ACM SIGIR Conference on Research and Development in Information Retrieval (SIGIR ’24) . ACM, 2081–2090. doi:10.1145/3626772.3657713 [15] Hourun Li, Yifan Wang, Zhiping Xiao, Jia Yang, Changling Zhou, Ming Zhang, and Wei Ju. 2025. DisCo: graph-based disentangled contrastive learning for cold-start cross-domain recommendation. In Proceedings of the AAAI Conference on Artificial Intelligence , Vol. 39. 12049–12057. [16] Xiaodong Li, Ruochen Yang, Shuang Wen, Shen Wang, Yueyang Liu, Guoquan Wang, Weisong Hu, Qiang Luo, Jiawei Sheng, Tingwen Liu, Jiangxia Cao, Shuang Yang, and Zhaojie Liu. 2025. FARM: Frequency-Aware Model for Cross-Domain Live-Streaming Recommendation. CoRR abs/2502.09375 (2025). doi:10.48550/ arXiv.2502.09375 arXiv preprint. [17] Youhua Li, Hanwen Du, Yongxin Ni, Pengpeng Zhao, Qi Guo, Fajie Yuan, and Xiaofang Zhou. 2024. Multi-Modality is All You Need for Transferable Recom-mender Systems. In 2024 IEEE 40th International Conference on Data Engineering (ICDE) . IEEE, 5008–5021. doi:10.1109/ICDE60146.2024.00380 [18] Haotian Liu, Chunyuan Li, Qingyang Wu, and Yong Jae Lee. 2023. Visual Instruc-tion Tuning. In Advances in Neural Information Processing Systems , Vol. 36. [19] Lihao Liu, Yan Wang, Biao Yang, Da Li, Jiangxia Cao, Yuxiao Luo, Xiang Chen, Xiangyu Wu, Wei Yuan, Fan Yang, Guiguang Ding, Tingting Gao, and Guorui Zhou. 2026. CREM: Compression-Driven Representation Enhancement for Mul-timodal Retrieval and Comprehension. arXiv preprint arXiv:2602.19091 (2026). https://arxiv.org/abs/2602.19091 arXiv:2602.19091. [20] Meng Liu, Jianjun Li, Guohui Li, and Peng Pan. 2020. Cross Domain Recommen-dation via Bi-directional Transfer Graph Collaborative Filtering Networks. In 
+
+Proceedings of the 29th ACM International Conference on Information and Knowl-edge Management (CIKM ’20) . ACM, 885–894. doi:10.1145/3340531.3412012 [21] Haokai Ma, Ruobing Xie, Lei Meng, Xin Chen, Xu Zhang, Leyu Lin, and Jie Zhou. 2024. Triple Sequence Learning for Cross-domain Recommendation. ACM Transactions on Information Systems 42, 4, Article 91 (2024), 91:1–91:29 pages. doi:10.1145/3638351 [22] Tong Man, Huawei Shen, Xiaolong Jin, and Xueqi Cheng. 2017. Cross-Domain Recommendation: An Embedding and Mapping Approach. In Proceedings of the Twenty-Sixth International Joint Conference on Artificial Intelligence (IJCAI-17) .IJCAI Organization, 2464–2470. doi:10.24963/ijcai.2017/343 [23] Rongqing Kenneth Ong and Andy W. H. Khong. 2025. Spectrum-based Modality Representation Fusion Graph Convolutional Network for Multimodal Recom-mendation. In Proceedings of the Eighteenth ACM International Conference on Web Search and Data Mining (WSDM ’25) . Association for Computing Machinery, New York, NY, USA, 773–781. doi:10.1145/3701551.3703561 [24] Chung Park, Taesan Kim, Taekyoon Choi, Junui Hong, Yelim Yu, Mincheol Cho, Kyunam Lee, Sungil Ryu, Hyungjun Yoon, Minsung Choi, and Jaegul Choo. 2023. Cracking the Code of Negative Transfer: A Cooperative Game Theoretic Approach for Cross-Domain Sequential Recommendation. In Proceedings of the 32nd ACM International Conference on Information and Knowledge Management .2024–2033. doi:10.1145/3583780.3614828 [25] Changle Qu, Liqin Zhao, Yanan Niu, Xiao Zhang, and Jun Xu. 2025. Bridging Short Videos and Streamers with Multi-Graph Contrastive Learning for Live Streaming Recommendation. In Proceedings of the 48th International ACM SIGIR Conference on Research and Development in Information Retrieval (SIGIR ’25) . ACM, 2059–2069. doi:10.1145/3726302.3729914 [26] Qwen Team. 2026. Qwen3.6-35B-A3B: Agentic Coding Power, Now Open to All. https://qwen.ai/blog?id=qwen3.6-35b-a3b [27] Leheng Sheng, An Zhang, Yi Zhang, Yuxin Chen, Xiang Wang, and Tat-Seng Chua. 2025. Language Representations Can be What Recommenders Need: Findings and Potentials. In The Thirteenth International Conference on Learning Representations .https://openreview.net/forum?id=eIJfOIMN9z [28] Jinpeng Wang, Ziyun Zeng, Yunxiao Wang, Yuting Wang, Xingyu Lu, Tianxiang Li, Jun Yuan, Rui Zhang, Hai-Tao Zheng, and Shu-Tao Xia. 2023. MISSRec: Pre-training and Transferring Multi-modal Interest-aware Sequence Representation for Recommendation. In Proceedings of the 31st ACM International Conference on Multimedia (MM ’23) . Association for Computing Machinery, New York, NY, USA, 6548–6557. doi:10.1145/3581783.3611967 [29] Peng Wang, Shuai Bai, Sinan Tan, Shijie Wang, Zhihao Fan, Jinze Bai, Keqin Chen, Xuejing Liu, Jialin Wang, Wenbin Ge, Yang Fan, Kai Dang, Mengfei Du, Xuancheng Ren, Rui Men, Dayiheng Liu, Chang Zhou, Jingren Zhou, and Junyang Lin. 2024. Qwen2-VL: Enhancing Vision-Language Model’s Perception of the World at Any Resolution. arXiv preprint arXiv:2409.12191 (2024). [30] Yinwei Wei, Xiang Wang, Liqiang Nie, Xiangnan He, and Tat-Seng Chua. 2020. GRCN: Graph-Refined Convolutional Network for Multimedia Recommendation with Implicit Feedback. In Proceedings of the 28th ACM International Conference on Multimedia (MM ’20) . Association for Computing Machinery, New York, NY, USA, 3541–3549. doi:10.1145/3394171.3413556 [31] Yinwei Wei, Xiang Wang, Liqiang Nie, Xiangnan He, Richang Hong, and Tat-Seng Chua. 2019. MMGCN: Multi-modal Graph Convolution Network for Personalized Recommendation of Micro-video. In Proceedings of the 27th ACM International Conference on Multimedia (MM ’19) . Association for Computing Machinery, New York, NY, USA, 1437–1445. doi:10.1145/3343031.3351034 [32] Ruobing Xie, Qi Liu, Liangdong Wang, Shukai Liu, Bo Zhang, and Leyu Lin. 2022. Contrastive Cross-Domain Recommendation in Matching. In Proceedings of the 28th ACM SIGKDD Conference on Knowledge Discovery and Data Mining (KDD ’22) . ACM, 4226–4236. doi:10.1145/3534678.3539125 [33] Wei Yang, Jie Yang, and Yuan Liu. 2023. Multimodal Optimal Transport Knowl-edge Distillation for Cross-domain Recommendation. In Proceedings of the 32nd ACM International Conference on Information and Knowledge Management (CIKM ’23) . ACM, 2959–2968. doi:10.1145/3583780.3614983 Bridging Short Videos and Live Streams Conference acronym ’XX, June 03–05, 2018, Woodstock, NY 
+
+[34] Yuyang Ye, Zhi Zheng, Yishan Shen, Tianshu Wang, Hengruo Zhang, Peijun Zhu, Runlong Yu, Kai Zhang, and Hui Xiong. 2025. Harnessing Multimodal Large Language Models for Multimodal Sequential Recommendation. In Proceedings of the AAAI Conference on Artificial Intelligence , Vol. 39. 13069–13077. doi:10.1609/ aaai.v39i12.33426 [35] Chuang Zhao, Hongke Zhao, Ming He, Jian Zhang, and Jianping Fan. 2023. Cross -domain recommendation via user interest alignment. In Proceedings of The Web Conference 2023 (WWW ’23) . ACM, 887–896. doi:10.1145/3543507.3583263 [36] Xin Zhou and Zhiqi Shen. 2023. A Tale of Two Graphs: Freezing and Denoising Graph Structures for Multimodal Recommendation. In Proceedings of the 31st ACM International Conference on Multimedia (MM ’23) . Association for Computing Machinery, New York, NY, USA, 935–943. doi:10.1145/3581783.3611943 [37] Yongchun Zhu, Kaikai Ge, Fuzhen Zhuang, Ruobing Xie, Dongbo Xi, Xu Zhang, Leyu Lin, and Qing He. 2022. Personalized Transfer of User Preferences for Cross-domain Recommendation. In Proceedings of the Fifteenth ACM International Conference on Web Search and Data Mining . 1507–1515. doi:10.1145/3488560. 3498388

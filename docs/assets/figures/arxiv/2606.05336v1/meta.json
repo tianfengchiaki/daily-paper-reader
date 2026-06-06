@@ -1,0 +1,142 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2606.05336v1/fig-001.webp",
+      "caption": "Figure 7: LaMP-7 forward and backward judge prompts.",
+      "page": 15,
+      "index": 1,
+      "width": 461,
+      "height": 911
+    },
+    {
+      "url": "assets/figures/arxiv/2606.05336v1/fig-002.webp",
+      "caption": "Table 1: Main results on the LaMP benchmark under the time-based split. Each cell reports the dev-set metric for one (task, metric) pair under a given user-representation baseline; all methods share the same LoRA-SFT pipeline, so the textual prefix prepended to the input is the only point of variation across columns. Best per-row result in bold; second best underlined. All numbers are averaged over 3 random seeds.",
+      "page": 7,
+      "index": 2,
+      "width": 984,
+      "height": 475
+    },
+    {
+      "url": "assets/figures/arxiv/2606.05336v1/fig-003.webp",
+      "caption": "Table 2: Ablation on the bidirectional reward.",
+      "page": 7,
+      "index": 3,
+      "width": 448,
+      "height": 379
+    },
+    {
+      "url": "assets/figures/arxiv/2606.05336v1/fig-004.webp",
+      "caption": "Figure 5: LaMP-4 forward and backward judge prompts.",
+      "page": 14,
+      "index": 4,
+      "width": 461,
+      "height": 993
+    },
+    {
+      "url": "assets/figures/arxiv/2606.05336v1/fig-005.webp",
+      "caption": "Figure 6: LaMP-5 forward and backward judge prompts.",
+      "page": 14,
+      "index": 5,
+      "width": 458,
+      "height": 1031
+    },
+    {
+      "url": "assets/figures/arxiv/2606.05336v1/fig-006.webp",
+      "caption": "Table 10: Complementarity of self-supervised and tasksupervised rewards. The combined reward (right column) wins on every row. Best per-row result in bold.",
+      "page": 18,
+      "index": 6,
+      "width": 439,
+      "height": 377
+    },
+    {
+      "url": "assets/figures/arxiv/2606.05336v1/fig-007.webp",
+      "caption": "Figure 11: Training dynamics of the bidirectional reward across the six LaMP tasks. Each column shows one task; the top row plots Rfwd (blue) and the bottom row plots Rbwd (red). Light traces are the raw per-step mean; bold curves apply an EWMA smoother (α=0.1). Y-axes are scaled independently per subplot to highlight relative motion. Both directions rise monotonically on every task, confirming that the bidirectional reward delivers usable gradient throughout training.",
+      "page": 18,
+      "index": 7,
+      "width": 932,
+      "height": 290
+    },
+    {
+      "url": "assets/figures/arxiv/2606.05336v1/fig-008.webp",
+      "caption": "Figure 4: LaMP-3 forward and backward judge prompts.",
+      "page": 13,
+      "index": 8,
+      "width": 458,
+      "height": 967
+    },
+    {
+      "url": "assets/figures/arxiv/2606.05336v1/fig-009.webp",
+      "caption": "Table 6: LaMP statistics under the official time-based split. “#Train” and “#Dev” count unique users (each contributing one labeled query). “Avg. profile” is the mean number of historical interactions per user.",
+      "page": 13,
+      "index": 9,
+      "width": 917,
+      "height": 212
+    },
+    {
+      "url": "assets/figures/arxiv/2606.05336v1/fig-010.webp",
+      "caption": "Figure 3: LaMP-2 forward and backward judge prompts.",
+      "page": 13,
+      "index": 10,
+      "width": 461,
+      "height": 908
+    },
+    {
+      "url": "assets/figures/arxiv/2606.05336v1/fig-011.webp",
+      "caption": "Table 4: Ablation on the number of in-batch negs.",
+      "page": 8,
+      "index": 11,
+      "width": 393,
+      "height": 362
+    },
+    {
+      "url": "assets/figures/arxiv/2606.05336v1/fig-012.webp",
+      "caption": "Table 5: Ablation on the number of hard negatives Jhard used by BUMP+. The remaining 8 − Jhard negatives are sampled uniformly in-batch.",
+      "page": 8,
+      "index": 12,
+      "width": 456,
+      "height": 363
+    },
+    {
+      "url": "assets/figures/arxiv/2606.05336v1/fig-013.webp",
+      "caption": "Table 3: Ablation on the profile length.",
+      "page": 8,
+      "index": 13,
+      "width": 431,
+      "height": 362
+    },
+    {
+      "url": "assets/figures/arxiv/2606.05336v1/fig-014.webp",
+      "caption": "Table 8: Policy-size sweep. Judge J fixed at 4B.",
+      "page": 17,
+      "index": 14,
+      "width": 397,
+      "height": 381
+    },
+    {
+      "url": "assets/figures/arxiv/2606.05336v1/fig-015.webp",
+      "caption": "Table 9: Ablation on the number of debiasing permutations M . All other settings match Table 1; M=2 is the default.",
+      "page": 17,
+      "index": 15,
+      "width": 454,
+      "height": 361
+    },
+    {
+      "url": "assets/figures/arxiv/2606.05336v1/fig-016.webp",
+      "caption": "Table 7: Judge-size sweep. Policy πθ fixed at 4B.",
+      "page": 16,
+      "index": 16,
+      "width": 388,
+      "height": 382
+    },
+    {
+      "url": "assets/figures/arxiv/2606.05336v1/fig-017.webp",
+      "caption": "Figure 9: Zero-shot Gemini profile-generation prompts. The only systematic difference from the BUMP prompt of Figure 8 is the explicit “(2–3 sentences)” length constraint, which substitutes for the soft length penalty Rlen that BUMP applies during GRPO — the Gemini API baselines are not trained, so no learned length control is available.",
+      "page": 16,
+      "index": 17,
+      "width": 461,
+      "height": 802
+    }
+  ]
+}

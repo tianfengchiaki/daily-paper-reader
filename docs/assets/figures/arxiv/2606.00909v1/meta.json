@@ -1,0 +1,14 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2606.00909v1/fig-001.webp",
+      "caption": "Figure 2: PCA-tSNE representations of textual and visual tokens from intermediate transformer layers of the examined MLLMs.",
+      "page": 8,
+      "index": 1,
+      "width": 761,
+      "height": 1265
+    }
+  ]
+}

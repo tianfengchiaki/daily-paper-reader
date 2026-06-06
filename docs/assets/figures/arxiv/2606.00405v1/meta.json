@@ -1,0 +1,46 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2606.00405v1/fig-001.webp",
+      "caption": "Figure 1: Overview of the proposed logit-level multi-LLM ensemble framework. Left: Existing text-based multi-agent systems rely on iterative natural-language communication, requiring repeated LLM calls and causing high token usage, latency, and noisy reasoning propagation. Middle: Our framework replaces text exchange with semantic-layer collaboration at the output logit level. Each LLM performs one forward pass to produce a softmax distribution over K candidates. Consensus cases follow fast-path fusion, while disagreement cases activate a factor graph where variable nodes represent model beliefs and check nodes enforce calibration, domain, and agreement constraints through adaptive asymmetric belief propagation. Right: This design eliminates additional LLM calls during refinement, enabling sub-millisecond aggregation, lower latency, and over 97% token reduction while matching or outperforming text-based multi-agent baselines.",
+      "page": 2,
+      "index": 1,
+      "width": 826,
+      "height": 336
+    },
+    {
+      "url": "assets/figures/arxiv/2606.00405v1/fig-002.webp",
+      "caption": "Table 5: Summary of key symbols and parameters used in the framework.",
+      "page": 14,
+      "index": 2,
+      "width": 732,
+      "height": 1071
+    },
+    {
+      "url": "assets/figures/arxiv/2606.00405v1/fig-003.webp",
+      "caption": "Table 7: Domain-specific performance on MMLU. Our method achieves the highest accuracy across all domain categories while requiring fewer API calls than text-based multi-agent baselines.",
+      "page": 18,
+      "index": 3,
+      "width": 806,
+      "height": 196
+    },
+    {
+      "url": "assets/figures/arxiv/2606.00405v1/fig-004.webp",
+      "caption": "Table 4: Ablation study across four benchmarks. Individual check nodes improve over majority-based aggregation, while combining all relational constraints achieves the best overall performance.",
+      "page": 9,
+      "index": 4,
+      "width": 627,
+      "height": 214
+    },
+    {
+      "url": "assets/figures/arxiv/2606.00405v1/fig-005.webp",
+      "caption": "Table 2: Accuracy comparison across four reasoning benchmarks. Bold values indicate the best performance in each dataset. Our relational aggregation framework achieves the highest accuracy on all benchmarks, outperforming both single-agent experts and leading text-based multi-agent baselines.",
+      "page": 9,
+      "index": 5,
+      "width": 736,
+      "height": 399
+    }
+  ]
+}

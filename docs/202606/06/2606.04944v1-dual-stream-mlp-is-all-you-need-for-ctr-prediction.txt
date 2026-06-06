@@ -1,0 +1,898 @@
+Title: Dual-Stream MLP is All You Need for CTR Prediction
+
+URL Source: https://arxiv.org/pdf/2606.04944v1
+
+Published Time: Thu, 04 Jun 2026 01:12:52 GMT
+
+Number of Pages: 28
+
+Markdown Content:
+# Dual-Stream MLP is All You Need for CTR Prediction 
+
+KESHA OU ∗† , Gaoling School of Artificial Intelligence, Renmin University of China, China 
+
+ZHEN TIAN ∗, ByteDance, China 
+
+WAYNE XIN ZHAO ♠†, Gaoling School of Artificial Intelligence, Renmin University of China, China 
+
+LONG ZHANG, Meituan, China 
+
+SHENG CHEN, Meituan, China 
+
+JI-RONG WEN †, Gaoling School of Artificial Intelligence, Renmin University of China, China Click-through rate (CTR) prediction holds a pivotal role in online advertising and recommendation systems, where even small improvements can significantly boost revenue. Existing research primarily focuses on designing dual-stream architectures to capture effective complex feature interactions from both explicit and implicit perspectives. However, these approaches are faced with two major challenges: 1) the high complexity of feature interaction learning, which increases computational demands and the overfitting risk, and 2) the imbalance between explicit and implicit modules, where one module’s output may dominate the final prediction. To address these issues, in this paper, we propose Dual-Stream MLP (DS-MLP ), a novel feature interaction framework for the CTR prediction task. Specially, it leverages knowledge distillation to consolidate the capacity of learning explicit feature interaction into a main MLP network, while a parallel MLP simultaneously captures implicit feature interactions as a complement. To effectively optimize the dual-stream MLP architecture, we further design a specific learning approach with two alignment strategies for enhancing the compatibility of the two MLP components. Experiments demonstrate that DS-MLP , though merely a vanilla MLP structure (the final model), can achieve state-of-the-art performance across three widely used benchmarks, offering a scalable and efficient solution for large-scale recommendation systems. Our code is available at https://github.com/RUCAIBox/DS-MLP. CCS Concepts: • Information systems → Recommender systems .Additional Key Words and Phrases: CTR Prediction; Knowledge Distillation; Dual-Stream Model; Recommender Systems 
+
+ACM Reference Format: 
+
+Kesha Ou, Zhen Tian, Wayne Xin Zhao ♠, Long Zhang, Sheng Chen, and Ji-Rong Wen. 2026. Dual-Stream MLP is All You Need for CTR Prediction. ACM Trans. Knowl. Discov. Data. 1, 1 (January 2026), 28 pages. https://doi.org/10.1145/3819238 
+
+> ∗
+
+Both authors contributed equally to this research. 
+
+> †
+
+Also with Beijing Key Laboratory of Research on Large Models and Intelligent Governance. 
+
+♠ Corresponding author. This work was supported by the National Natural Science Foundation of China No. 92470205 and Beijing Major Science and Technology Project No. Z251100008425002. Authors’ Contact Information: Kesha Ou, Gaoling School of Artificial Intelligence, Renmin University of China, Beijing, China, keishaou@gmail.com; Zhen Tian, ByteDance, Beijing, China, chenyuwuxinn@gmail.com; Wayne Xin Zhao ♠, Gaoling School of Artificial Intelligence, Renmin University of China, Beijing, China, batmanfly@gmail.com; Long Zhang, Meituan, Beijing, China, zhanglong40@meituan.com; Sheng Chen, Meituan, Beijing, China, chensheng19@meituan.com; Ji-Rong Wen, Gaoling School of Artificial Intelligence, Renmin University of China, Beijing, China, jrwen@ruc.edu.cn. 
+
+This work is licensed under a Creative Commons Attribution 4.0 International License. 
+
+© 2026 Copyright held by the owner/author(s). ACM 1556-472X/2026/1-ART https://doi.org/10.1145/3819238 ACM Trans. Knowl. Discov. Data., Vol. 1, No. 1, Article . Publication date: January 2026.  
+
+> arXiv:2606.04944v1 [cs.IR] 3 Jun 2026 2Kesha Ou, Zhen Tian, Wayne Xin Zhao ♠, Long Zhang, Sheng Chen, and Ji-Rong Wen
+
+1 Introduction 
+
+Click-through rate (CTR) prediction has long been a critical task in ecommerce platforms such as Amazon, Netflix and Yelp. The key to achieving good performance is to accurately learn the intrinsic relationship among different features, so that the model can extrapolate well in various feature interaction cases. In the literature, a number of approaches have been proposed to capture the complex feature interactions, such as factorization machines (FM) [ 38 ] and deep cross networks [ 51 ]. Typically, mainstream approaches [ 5, 12 , 42 , 59 ] learn the feature interaction relationships in an ensemble way: they use the high-order multiplicative vector operations ( e.g., dot-product in FMs) to learn the explicit feature interactions, and meanwhile feed all features into an MLP component for capturing the implicit interaction characteristics. Despite the notable achievements, these approaches are nonetheless plagued by the following two inherent limitations: 
+
+• High complexity . Most approaches directly enumerate all feature interactions within a pre-defined order. In real-world scenarios, the interaction signals are normally associated with thousands of fields and millions of instances, which can even reach a much larger scale for large enterprises. Due to the exponentially increased feature combinations, modeling high-order interaction relationships in such a large-scale feature space is highly complex. Moreover, as the model architecture becomes more intricate, it would be more difficult to effectively optimize the model parameters and identify the optimal hyperparameters. 
+
+• Imbalanced fusion . Prior work [ 26 , 48 , 52 , 59 ] often combines the outputs of explicit and implicit modules by directly adding them to produce the final result. Since the structures of explicit and implicit components are highly different, it may lead to discrepancies in model outputs. A possible side effect is that one module’s output becomes the dominating factor in certain situations, overshadowing the output from the other component. Actually, the numerical range of the output of explicit feature interactions would be enlarged as the number of involved features increases [ 30 ], while the output of implicit feature interaction tends to diminish. In this case, the explicit component would finally dominate the final prediction results bypassing the implicit component. Considering the above limitations, several approaches propose adopting a similar architecture to model these two kinds of feature interactions. For example, MLP components are combined to simplify and unify the prediction framework [ 30 ]. However, it still relies on additional efforts and computational costs in feature selection to maintain performance. Furthermore, these studies lack effective design in interaction mechanism, so that the MLP component cannot well learn explicit feature interactions, result in limited expressive capacity for the CTR task. To address these issues, in this paper, we propose a novel feature interaction framework Dual-
+
+Stream MLP (DS-MLP ), which is simple , efficient yet capable , for the CTR prediction task. For simplicity, our approach is developed based on generic MLP components as in existing studies [ 30 ]. Instead of directly combining these MLP components, we gradually extend the network architecture by taking the optimization procedure: distillation → alignment → overall optimization . Specifically, we start with an initial MLP component (called main MLP ) and employ knowledge distillation to train it by learning from more powerful teacher models. In this process, we empirically find that the main MLP mainly learns explicit interaction relationships due to the imbalanced issues in the teacher model. Considering this problem, we further incorporate another auxiliary MLP component (called 
+
+parallel MLP ) to enhance the learning of implicit feature interactions. To reduce the discrepancies between the two MLP components, we further propose two new alignment strategies that align both the hidden states (with batch normalization ) and prediction results (with direct task supervision ). Such an alignment approach can effectively integrate the two MLP components, to make them focus on learning the explicit and implicit feature interactions accordingly. The contributions of this paper are summarized as follows:  
+
+> ACM Trans. Knowl. Discov. Data., Vol. 1, No. 1, Article . Publication date: January 2026. Dual-Stream MLP is All You Need for CTR Prediction 3
+
+• We propose a new feature interaction framework, DS-MLP , for CTR prediction based on dual-stream MLP architecture. Specifically, only MLP components with very few layers are involved in the final model ( simple and efficient ), while it can achieve better or comparable performance as complicated models ( capable ). 
+
+• We design a gradual training procedure that consists of distillation, alignment and overall optimization, which can effectively optimize the two involved MLP components for CTR prediction. In particular, the main and parallel MLPs can well capture explicit and implicit feature interactions, respectively. 
+
+• We conduct extensive experiments across three CTR prediction benchmarks. DS-MLP consis-tently outperforms all other CTR models, showing the effectiveness of our approach. In addition, it has low latency in dealing with large datasets, making it highly scalable in real-world application scenarios. 
+
+2 Preliminaries 
+
+Click-through rate (CTR) prediction seeks to estimate the probability that a user will click on an item. This task is conventionally framed as a binary classification problem, where the model predicts a binary label ( i.e., positive (clicked) or negative (non-clicked)). Formally, an instance is denoted as an input-label pair ⟨𝒙 , 𝑦 ⟩, where the input 𝒙 = {𝑥 1, 𝑥 2, ..., 𝑥 𝑚 } encapsulates a diverse set of contextual features, comprising user attributes ( e.g., user ID, gender), item profiles ( e.g., item ID, category) as well as interaction context ( e.g., device type, timestamp), while the corresponding label 𝑦 ∈ { 0, 1} indicates actual click behavior. Given a CTR prediction model 𝑓 (·) , it takes 𝒙 as input and outputs a predicted label ˆ𝑦 .The optimization of model 𝑓 (·) tpically involves minimizing the binary cross-entropy (BCE) loss across all training samples, calculated between the true labels and model predictions. This loss function is formally expressed as: 
+
+L𝐶𝑇 𝑅 = − 1
+
+𝑁 
+
+> 𝑁
+
+∑︁ 
+
+> 𝑖 =1
+
+
+
+𝑦 𝑖 log ( ˆ𝑦 𝑖 ) + ( 1 − 𝑦 𝑖 ) log (1 − ˆ𝑦 𝑖 )
+
+
+
+. (1) To improve the prediction accuracy, various CTR prediction methods [ 1, 4 , 51 ] have been proposed in the literature. In general, these methods mainly focus on modeling high-order feature interaction across the context features (encoded in the vector 𝒙 ), such as xDeepFM [ 26 ] and DCNv2 [ 52 ], thus resulting in increasing computational complexity. In our approach, we take these capable yet complex models as teacher models to guide the learning of lightweight student models via knowledge distillation. 
+
+3 Methodology 
+
+In this section, we present the proposed Dual-Stream MLP approach, named DS-MLP (Figure 1) for the CTR prediction task. Different from existing studies that couple or design intricate network structures, we seek a more simplified, efficient yet capable CTR model. Instead of simply combin-ing MLP components, we first train a capable main MLP component by knowledge distillation (Section 3.1), and further compensate its capacity on feature interaction learning by incorporating another parallel MLP component (Section 3.2). Next, we introduce the DS-MLP in detail. 
+
+3.1 Universal Feature Interaction Learning via Knowledge Distillation 
+
+In this section, we explore the role of knowledge distillation in enhancing model performance. We begin by discussing the characteristics of explicit and implicit feature interaction structures and then examine how to design distillation methods to effectively achieve knowledge transfer.  
+
+> ACM Trans. Knowl. Discov. Data., Vol. 1, No. 1, Article . Publication date: January 2026. 4Kesha Ou, Zhen Tian, Wayne Xin Zhao ♠, Long Zhang, Sheng Chen, and Ji-Rong Wen +
+> +
+> +
+
+𝒙  + 𝒚 Student  
+
+> MLP
+> Parallel
+> MLP
+> …
+> Input
+> Norm Norm
+> ＋
+> Output
+
+… … 
+
+> Multi -Layer Perceptrons
+
+𝒚 𝑴  𝒚 𝑷 
+
+ෝ𝒚 
+
+> Alignment
+
+# ℒ𝑀 = M P( )lg  M
+
+# ℒ𝑃 = M P( )lg  P
+
+> Dual MLPs Alignment
+
+𝒙 𝟏 
+
+𝒙 𝟐 
+
+𝒚 𝑻  
+
+> Distillation
+> Step 1. Step 2.
+> High -Order
+> Teache r
+
+# ℒ𝐾𝐷  M( )
+
+> Knowledge Distillation
+> T
+
+Fig. 1. The architecture of our proposed DS-MLP. Overall, it is trained with two main stages, namely knowledge distillation and fine-tuning. 
+
+3.1.1 Capable Feature Interaction Learner as the Teacher (T). Existing state-of-the-art methods predominantly adopt an explicit-implicit integrated way to characterize the complex interaction relations among the context features. In this approach, explicit interaction learning is developed based on the concrete feature combinations, while implicit interaction learning is conducted via deep feature fusion. Since explicit and implicit components are modeled by separate components, such an architecture is often called dual-stream architecture . Following this convention, we use the term “ stream ” to denote a separate component that contributes to the final output based on given input in a large neural network. In our approach, we adopt the capable GDCN [ 48 ] model as the teacher model, since it can achieve very impressive results on mainstream CTR benchmarks. Specifically, it employs the gated deep cross network (GCN) as the explicit component and another DNN component as the implicit component, and the final prediction is produced by combining the outputs of the two components, defined as follows: 
+
+𝜙 GDCN (𝒙 ) = 𝜙 GCN (𝒙 ) + 𝜙 DNN (𝒙 ). (2) The core of GDCN lies in the component GCN, which is designed with a more intricate structure for learning explicit feature interactions. At each interaction layer, it further utilizes the gated operation to enhance the cross feature interactions [48], defined as follows: 
+
+𝒙 𝑙 +1 = 𝒙 0 ⊙
+
+
+
+W𝑋 𝑙 𝒙 𝑙 + 𝒃 𝑙 
+
+| {z }
+
+> Feature Crossing
+
+⊙ 𝜎 
+
+
+
+W𝐺 𝑙 𝒙 𝑙 
+
+| {z }
+
+> Information Gate
+
++ 𝒙 𝑙 , (3) where “ ⊙” denotes the Hadamard product, W𝑋 𝑙 and W𝐺 𝑙 denote the weights at the 𝑙 -th layer for the feature crossing and gating, respectively. In this equation, the feature crossing part extends the interaction order and the information gate employs the previous interaction result ( i.e., 𝒙 𝑙 )to remove irrelevant information from existing feature interactions. Furthermore, 𝒙 𝑙 is added to generate the next-order interaction. In this way, we can increase the number of interaction layers to model higher-order explicit feature interactions, to achieve improved prediction results. 
+
+3.1.2 Simple MLP as the Student (S). In our approach, we consider using the simple MLP architec-ture to build the student model. The reasons are twofold. First, MLP is a universal unit to build neural networks of strong expressive capacity, and it theoretically can approximate various complex  
+
+> ACM Trans. Knowl. Discov. Data., Vol. 1, No. 1, Article . Publication date: January 2026. Dual-Stream MLP is All You Need for CTR Prediction 5
+
+function relations [ 7]. Second, existing dual-stream models typically adopt MLP to capture the implicit feature interaction, so that using MLPs as the student model is of potential advantage in model architecture. Specifically, MLP is developed based on layerwise information propagation by incorporating linear transformation and nonlinear activation as follows: 
+
+𝒙 𝑘 = 𝜎 (W(𝑘 ) 𝒙 (𝑘 −1) + 𝒃 𝑘 ), (4) where 𝑘 represents the layer number, 𝜎 is an activation function, and 𝒙 𝑘 is the output of the 𝑘 -th layer. The MLP architecture models implicit feature interactions by iteratively stacking more layers, enabling the model to learn high-order implicit feature interactions. In our approach, we aim to keep a lightweight student model, and set the layer number to three. 
+
+3.1.3 Knowledge Distillation (T → S). After setting the teacher (GDCN) and student (MLP) models, we further employ knowledge distillation for knowledge transfer, to obtain a capable MLP for the CTR prediction task. 
+
+Overall Framework . In the literature of machine learning, knowledge distillation (KD) [ 14 ] has been proposed to transfer the knowledge from a more powerful model ( i.e., teacher) to another less capable model ( i.e., student). The basic idea of KD is to conduct supervision signal by reducing the discrepancies between the target knowledge ( i.e., the information to be distilled) from teacher and student based on the given input, which can be formally described as: 
+
+L𝐾𝐷 = − 1
+
+𝑁 
+
+> 𝑁
+
+∑︁ 
+
+> 𝑖 =1
+
+𝐿 
+
+
+
+OP  M𝑇 (𝒙 𝑖 ), OP  M𝑆 (𝒙 𝑖 )
+
+, (5) where OP (·) is an operator that obtains the target knowledge ( e.g., logits or hidden state) that is produced by teacher model M𝑇 or student model M𝑆 given input 𝒙 , and 𝐿 (·) is the loss function that measures the difference between two inputs. 
+
+KD Instantiation . In our approach, we set M𝑇 to be a more powerful CTR model, e.g., GDCN introduced in Section 3.1.1, and M𝑆 to be a three-layer MLP component. We refer to the MLP as 
+
+main MLP , as it will be enhanced by another auxillary MLP component (Section 3.2). For knowledge distillation, we consider distilling the logits from the teacher network to guide the learning of the simple MLP network. Furthermore, we adopt the cross entropy loss for 𝐿 (·) in Eq. (5) . In order to alleviate the logit discrepancy between teacher and student models, we further incorporate a temperature coefficient to scale the logits. The final optimization objective of the knowledge distillation stage is given as follows: 
+
+L = L𝐶𝑇 𝑅 + 𝜆 L𝐾𝐷 , (6) where 𝜆 is a hyperparameter to balance the weights of these two loss functions. Note that our KD framework can be generally extended to other teacher model designs, while we adopt MLP as the student model due to its generality, lightweight nature, and expressiveness. 
+
+3.2 Capacity Compensation via Dual MLPs 
+
+After knowledge distillation, the performance of the student model can be largely improved by learning from the teacher model. Next, we further discuss how to enhance its performance by incorporating a new dual-MLP architecture with a specific training strategy. 
+
+3.2.1 Dual-stream MLP Architecture. In our preliminary experiments, we empirically find that, given the dual-stream teacher model GDCN (Section 3.1.1), the student model mainly focuses on learning the behavior of the explicit component from the teacher model. This is due to an imbalanced fusion of explicit and implicit feature interactions, where the explicit feature crossing dominates  
+
+> ACM Trans. Knowl. Discov. Data., Vol. 1, No. 1, Article . Publication date: January 2026. 6Kesha Ou, Zhen Tian, Wayne Xin Zhao ♠, Long Zhang, Sheng Chen, and Ji-Rong Wen
+
+the final prediction. As a result, the student model neglects the implicit feature interactions, which might limit its prediction performance. 
+
+Component Overwhelming . By inspecting the intermediate results, a possible reason is that in GDCN, explicit feature interactions are modeled via Hadamard product (Eq. (3) ), so that the numeric range tend to be enlarged for high-order feature interactions. As a comparison, implicit feature interactions are captured by a standard MLP, whose outputs are typically bounded by activation functions ( e.g., ReLU) and do not exhibit such exponential growth. As a result, since the teacher’s final prediction is the sum of the explicit and implicit components, the output of the explicit component can sometimes overwhelm the implicit component, causing it to dominate the final prediction. During knowledge distillation, the student MLP learns to match the teacher’s final logits via LKD (Eq. (6) ), primarily focusing on the dominant explicit component. As a result, the student underperforms in modeling implicit interactions. 
+
+Enhancement with Parallel MLP . To address this issue, we consider extending the single MLP network to a dual-stream MLP architecture by incorporating another MLP component. To discriminate the two MLP components, we refer to the original MLP that serves as the student model as main MLP , while the additionally incorporated MLP as parallel MLP . Similar to dual-stream models [ 17 , 26 ], the parallel MLP component mainly captures the knowledge from the implicit feature interaction, to compensate the performance of the main MLP component. Although dual MLP components have been explored for CTR prediction [ 12 , 42 ], they often simply treat both components as equal, while we employ the auxiliary component to enhance the main MLP component. The prediction function of our approach can be formulated as: 
+
+ˆ𝑦 𝑑𝑢𝑎𝑙 = 𝜎 
+
+ 12
+
+ 𝑦 𝑀 + 𝑦 𝑃 
+
+
+
+, (7) where 𝑦 𝑀 and 𝑦 𝑃 denote the logits of the main and parallel MLP components, respectively. 
+
+3.2.2 Dual MLPs Alignment. Since these two MLP components in our approach are trained in different ways (only the first MLP component is taught by KD), they tend to produce very divergent outputs, thus hindering the final prediction performance. Considering this issue, we propose two alignment strategies to combine their outputs in a compatible way, namely hidden state alignment and prediction alignment. 
+
+Hidden State Alignment . To achieve this goal, we first apply batch normalization (BN) to the hidden layers of both MLP components, formally given as: 
+
+ˆ𝑥 𝑚 𝑖 = 𝑥 𝑚 𝑖 − 𝜇 𝑚 
+
+> B
+
+√︃ 
+
+(𝜎 𝑚  
+
+> B
+
+)2 + 𝜖 , 𝑖 ∈ { 1, 2, . . . , 𝑁 } (8) where 𝜇 𝑚 𝐵 represents the mean of the 𝑚 -th feature within the mini-batch, and 𝜖 is a small constant used to prevent division by zero due to an extremely small variance (𝜎 𝑚  
+
+> B
+
+)2. By regularizing along the batch dimension, the outputs of the dual streams would become more stable and have similar numeric range. Consequently, the logits values obtained through linear mapping are more robust. This can alleviate the issue that the final output is dominated by some module in Eq. (7). 
+
+Prediction Alignment . Apart from the differences in learned feature interaction patterns, a simple combination of logits tend to result in a significant discrepancy in the outputs of both components. The major reason is that the two components are jointly optimized to fit the ground-truth label, while they might be unaware of the direct task goal as independent predictors. Therefore, after knowledge distillation, we further introduce the original CTR loss to fine-tune both components as  
+
+> ACM Trans. Knowl. Discov. Data., Vol. 1, No. 1, Article . Publication date: January 2026. Dual-Stream MLP is All You Need for CTR Prediction 7
+
+follows: 
+
+L𝑀 = − 1
+
+𝑁 
+
+> 𝑁
+
+∑︁ 
+
+> 𝑖 =1
+
+
+
+𝑦 𝑖 log ( ˆ𝑦 𝑀,𝑖 ) + ( 1 − 𝑦 𝑖 ) log (1 − ˆ𝑦 𝑀,𝑖 )
+
+
+
+,
+
+L𝑃 = − 1
+
+𝑁 
+
+> 𝑁
+
+∑︁ 
+
+> 𝑖 =1
+
+
+
+𝑦 𝑖 log ( ˆ𝑦 𝑃,𝑖 ) + ( 1 − 𝑦 𝑖 ) log (1 − ˆ𝑦 𝑃,𝑖 )
+
+
+
+,
+
+(9) where L𝑀 and L𝑃 represent the alignment losses for the main and parallel MLP components, respectively. This training loss helps both components adjust their predictions, to be compatible with each other. In addition, it can enhance the task capacity for each component independently, which also alleviates the overwhelming issue of the stronger component. 
+
+3.2.3 Overall Optimization. . Overall, our approach follows a procedure: distillation → alignment →
+
+overall optimization . In the above content, we have described the distillation method (Section 3.1.3) for learning from strong teacher models and the alignment method (Section 3.2.2) for combining both MLP components. Next, we introduce how to conduct joint optimization towards the task goal. We define the final optimization objective of the fine-tuning stage for dual-stream MLP architecture: 
+
+L = L𝐶𝑇 𝑅 + 𝛼 L𝑀 + 𝛽 L𝑃 , (10) where L𝐶𝑇 𝑅 is the main loss (Eq. (1) ) for the CTR task with the prediction from both components as in Eq. (7) , and 𝛼 L𝑀 , and 𝛽 L𝑃 are the prediction alignment loss functions defined in Eq. (9) . By adjusting the values of 𝛼 and 𝛽 , we can control the degree of alignment between the dual streams. It aims to ensure that their outputs are balanced: neither too extreme nor too identical for preserving the distinct characteristics of each MLP’s learned feature interactions. Another note is that the parallel MLP does not reuse the teacher’s feature embeddings, since it does not aim to imitate the behavior of the teacher model. We learn the feature embeddings from scratch to enhance its expressive capacity in capturing implicit feature interactions. 
+
+Effectiveness. Our method effectively leverages the complementary nature of explicit and implicit feature interactions. Through knowledge distillation, the student MLP captures the explicit feature crossing learned by the teacher network, while the parallel MLP learns the complementary implicit feature interactions. Unlike traditional dual-stream models that simply sum the explicit and implicit components, which often results in the explicit component dominating and undermining the implicit interactions, our method ensures a more balanced integration. By aligning the outputs of both MLPs via the alignment loss (Eq. (9) ), we prevent one component from overwhelming the other. This alignment allows the model to fully utilize both types of feature interactions, thereby improving overall predictive capacity without sacrificing either explicit or implicit interactions. 
+
+3.3 Algorithm Overview 
+
+Algorithm 1 presents the overall training procedure of our proposed DS-MLP framework for CTR prediction, which consists of two complementary stages: knowledge distillation and dual-MLP fine-tuning. 
+
+Stage I: Universal Feature Interaction Learning via Knowledge Distillation. In the first stage, the main MLP branch is trained under the supervision of a powerful teacher model. For each minibatch, the frozen teacher network produces predictions that serve as soft targets. Simultaneously, the main and parallel MLP branches generate their respective outputs, which are aggregated to obtain the overall prediction. Knowledge distillation is performed on the hidden representations extracted from the branches, encouraging the student network to mimic the teacher’s behavior. In parallel, the standard CTR prediction loss is computed based on the aggregated output. The main MLP is  
+
+> ACM Trans. Knowl. Discov. Data., Vol. 1, No. 1, Article . Publication date: January 2026. 8Kesha Ou, Zhen Tian, Wayne Xin Zhao ♠, Long Zhang, Sheng Chen, and Ji-Rong Wen
+
+Algorithm 1 Training Procedure of DS-MLP  
+
+> 1:
+
+Input: Training data D = {( 𝑥 𝑖 , 𝑦 𝑖 )} 𝑁 𝑖 =1; teacher model T ; main MLP M; parallel MLP P 
+
+> 2:
+
+Output: Final prediction 𝑦 𝑝𝑟𝑒𝑑  
+
+> 3:
+
+Part I: Universal Feature Interaction Learning (Knowledge Distillation)  
+
+> 4:
+
+for each minibatch (𝑥, 𝑦 ) ∈ D do  
+
+> 5:
+
+Generate teacher output: 𝑝 𝑇 = T ( 𝑥 ) (frozen)  
+
+> 6:
+
+Produce branch outputs: 𝑝 𝑀 = M ( 𝑥 ), 𝑝 𝑃 = P ( 𝑥 ) 
+
+> 7:
+
+Aggregate branchs prediction: 𝑝 = 𝛾𝑝 𝑀 + ( 1 − 𝛾 )𝑝 𝑃 (with 𝛾 = 0.5 in practice)  
+
+> 8:
+
+Extract hidden states (M 𝑇 , M𝑆 ) and compute distillation loss: 
+
+L𝐾𝐷 = KL (M 𝑇 ∥ M 𝑆 ) ▶ Eq. (5)  
+
+> 9:
+
+Compute CTR loss: L𝐶𝑇 𝑅 = BCE (𝑝, 𝑦 ) ▶ Eq. (1)  
+
+> 10:
+
+Update M via joint optimization: 
+
+L = L𝐶𝑇 𝑅 + 𝜆 L𝐾𝐷 ▶ Eq. (6)  
+
+> 11:
+
+end for  
+
+> 12:
+
+Part II: Capacity Compensation via Dual MLPs (Finetuning)  
+
+> 13:
+
+for each minibatch (𝑥, 𝑦 ) ∈ D do  
+
+> 14:
+
+Generate branch hidden output: ℎ𝑀 = M ( 𝑥 ), ℎ𝑃 = P ( 𝑥 ) 
+
+> 15:
+
+Hidden State Alignment: ˆℎ𝑀 = 𝐵𝑁 (ℎ𝑀 ), ˆℎ𝑃 = 𝐵𝑁 (ℎ𝑃 ) 
+
+> 16:
+
+Aggregate branchs prediction: 𝑝 = 𝛾𝑝 𝑀 + ( 1 − 𝛾 )𝑝 𝑃 (with 𝛾 = 0.5 in practice)  
+
+> 17:
+
+Compute branch-wise task losses: 
+
+L𝑀 = BCE (𝑝 𝑀 , 𝑦 ), L𝑃 = BCE (𝑝 𝑃 , 𝑦 ) ▶ Eq. (9)  
+
+> 18:
+
+Define prediction alignment loss: L𝑎𝑙𝑖𝑔𝑛 = 𝛼 L𝑀 + 𝛽 L𝑃 , 
+
+> 19:
+
+Optimize with joint objective: 
+
+L = L𝐶𝑇 𝑅 + L 𝑎𝑙𝑖𝑔𝑛 ▶ Eq. (10)  
+
+> 20:
+
+end for  
+
+> 21:
+
+Final Prediction: 𝑦 𝑝𝑟𝑒𝑑 = 𝑝 
+
+then updated by jointly minimizing the distillation loss and the CTR loss, enabling it to effectively capture explicit feature interactions in a compact manner. 
+
+Stage II: Capacity Compensation via Dual MLPs (Finetuning). After the initial distillation stage, we finetune the dual-MLP architecture to further enhance the model’s capacity. Hidden states from the dual streams are first normalized with batch normalization to improve stability and mitigate discrepancies. We then compute branch-wise CTR losses to construct a prediction-alignment loss that enforces consistency between the two branches. The overall loss combines the CTR loss of the aggregated prediction with the alignment loss, guiding the network to achieve a balanced modeling of explicit and implicit interactions. Through this finetuning process, the parallel MLP complements the main branch, thereby improving both robustness and generalization. 
+
+Final Prediction. After training, the DS-MLP produces the final prediction by aggregating the outputs of both the main and parallel MLP branches. This approach effectively combines the main branch’s distilled knowledge of explicit feature interactions with the parallel branch’s capacity for capturing implicit ones. Our two-stage training, unified by an alignment objective, ensures these complementary strengths are balanced, yielding a final model that is both lightweight and highly expressive.  
+
+> ACM Trans. Knowl. Discov. Data., Vol. 1, No. 1, Article . Publication date: January 2026. Dual-Stream MLP is All You Need for CTR Prediction 9
+
+3.4 Discussion 
+
+In this part, we summarize the key features of our method DS-MLP. 
+
+• Compatibility . A defining feature of our approach is its teacher-agnostic design. DS-MLP can flexibly incorporate any state-of-the-art CTR model as a teacher, thereby ensuring that the frame-work remains future-proof and continuously adaptable. As more powerful models emerge, they can be seamlessly adopted as new teachers to transfer their enhanced capabilities into the efficient student architecture. In addition, the exclusive reliance on an MLP backbone renders DS-MLP inher-ently deployment-friendly. The simple and homogeneous structure of MLPs is highly optimized in modern deep-learning libraries and benefits from extensive hardware acceleration, which facilitates straightforward implementation and maintenance in low-latency industrial environments. 
+
+• Scalability . The framework exhibits strong scalability as a direct consequence of its MLP-based foundation. MLPs naturally scale to massive datasets owing to their inherent parallelizability and structural simplicity. When larger or more complex data must be handled, the capacity of the student model can be increased simply by widening the hidden layers or deepening the network. This property provides practitioners with a straightforward and predictable means of improving model performance, while avoiding the extensive architectural redesigns typically required for scaling more specialized or complex models. 
+
+• Complexity . Our approach employs several effective strategies to ensure the model efficiency. First, unlike previous dual-stream models, we use MLP to model both explicit and implicit feature interactions. It is more efficient for modeling high-order interactions, and can also avoid the imbal-anced fusion issue caused by the exponentially increased explicit interactions [ 48 , 68 ]. Secondly, our architecture is decoupled, which means the student MLP can be integrated with multiple parallel MLPs. As such, it greatly reduces the difficulty of parameter tuning and enhances the flexibility for adapting to various industrial scenarios. The overall comparison of our approach with existing methods is presented in Table 1. 
+
+> Table 1. Comparison of different two-stream methods. “SE” denotes that the model only uses single embedding table.
+
+Methods Explicit Implicit Alignment SE Structure GDCN " " % " Cross Network + MLP FinalMLP % " % % Selection Gate + MLP Final " % " " Deep Cross Network DS-MLP " " " " MLP Only 
+
+3.5 Theoretical Analysis 
+
+In this section, we theoretically justify that a ReLU-based MLP can recover the explicit feature interactions encoded in a cross network ( e.g., GDCN) via knowledge distillation. Using the notations from Sec. 3.1, the proof proceeds by demonstrating that the student M𝑆 matches the teacher M𝑇 
+
+mapping over inputs 𝒙 ∈ X ⊂ R𝑑 , both in output approximation and underlying interaction mechanics. 
+
+Approximation via Knowledge Distillation. The GDCN teacher M𝑇 : X → [ 0, 1] is a continu-ous mapping on a compact domain X. The student M𝑆 is a ReLU-based MLP. By the Universal Approximation Theorem [ 15 ], the hypothesis space F𝑆 of the student is dense in the space of  
+
+> ACM Trans. Knowl. Discov. Data., Vol. 1, No. 1, Article . Publication date: January 2026. 10 Kesha Ou, Zhen Tian, Wayne Xin Zhao ♠, Long Zhang, Sheng Chen, and Ji-Rong Wen
+
+continuous functions. Hence, for any 𝜀 > 0, there exists M∗ 
+
+> 𝑆
+
+∈ F 𝑆 that approximates M𝑇 ar-bitrarily well in the 𝐿 2 (D) norm. During distillation, minimizing the expected squared error 
+
+LKD = E𝒙 ∼D [(M 𝑇 (𝒙 ) − M 𝑆 (𝒙 )) 2] performs empirical 𝐿 2 regression toward M𝑇 . Assuming stan-dard overparameterized optimization [ 9, 70 ], the learned student ˆM𝑆 converges with bounded excess risk, guaranteeing it tightly approximates the teacher: 
+
+∥ ˆM𝑆 − M 𝑇 ∥2  
+
+> 𝐿 2( D )
+
+≲ inf  
+
+> M𝑆 ∈ F 𝑆
+
+∥M 𝑆 − M 𝑇 ∥2  
+
+> 𝐿 2( D )
+
++ O 
+
+ 1
+
+√𝑛 
+
+
+
+. (11) 
+
+Feature Interaction Recovery and Generalization. To verify that the student internalizes the teacher’s interaction sensitivity rather than merely memorizing outputs, we analyze its second-order behavior. The interaction strength between features 𝑖 and 𝑗 is measured by the expected absolute mixed partial derivative: 
+
+𝐼 𝑖 𝑗 (𝑓 ) = E𝒙 ∼D 
+
+ 𝜕 2 𝑓 𝜕𝑥 𝑖 𝜕𝑥 𝑗 
+
+(𝒙 )
+
+
+
+. (12) Assume that both M𝑇 and the student network ˆM𝑆 are sufficiently smooth ( e.g., can be approx-imated by 𝐶 2 functions). Under such regularity, standard results in approximation theory [ 33 ]guarantee the existence of networks that simultaneously approximate a function and its derivatives. However, to link the 𝐿 2 function approximation obtained from distillation to derivative approxima-tion, we note that if ∥ ˆM𝑆 − M 𝑇 ∥𝐿 2 ( D ) ≤ 𝜀 , then by interpolation inequalities in Sobolev spaces (or by the fact that neural networks with bounded parameters have bounded Lipschitz constants), we can further deduce that the Hessians satisfy ∥∇ 2 ˆM𝑆 − ∇ 2M𝑇 ∥𝐿 2 ( D ) = O( 𝜀 𝛼 ) for some 𝛼 > 0,provided the network architecture and training impose sufficient smoothness ( e.g., via weight decay or implicit regularization). Consequently, the interaction difference is bounded by: 
+
+|𝐼 𝑖 𝑗 ( ˆM𝑆 ) − 𝐼 𝑖 𝑗 (M 𝑇 )| ≲ E 𝒙 
+
+h
+
+∥∇ 2 ˆM𝑆 (𝒙 ) − ∇ 2M𝑇 (𝒙 )∥ 𝐹 
+
+i
+
+≲ ∥∇ 2 ˆM𝑆 − ∇ 2M𝑇 ∥𝐿 2 ( D ) → 0 as 𝜀 → 0.
+
+(13) This alignment of second-order derivatives confirms that the student inherits the explicit high-order feature interactions of the cross network under mild regularity conditions. Furthermore, the 𝐿 2 approximation guarantees downstream task performance. For a loss function 
+
+ℓ that is 𝐿 -Lipschitz in its first argument, the difference in expected risk 𝑅 (𝑓 ) = E𝒙 ,𝑦 [ℓ (𝑓 (𝒙 ), 𝑦 )] is bounded by: 
+
+|𝑅 ( ˆM𝑆 ) − 𝑅 (M 𝑇 )| ≤ 𝐿 ED [| ˆM𝑆 − M 𝑇 |] ≤ 𝐿 ∥ ˆM𝑆 − M 𝑇 ∥𝐿 2 ( D ) . (14) In summary, knowledge distillation drives the MLP to approximate the teacher not only in its output but also at the Hessian level, thereby reconstructing explicit feature interactions. Thus, replacing complex interaction modules with a distilled plain MLP is theoretically justified under appropriate smoothness and optimization assumptions. 
+
+4 Experiments 
+
+In this section, we demonstrate the effectiveness and transferability of the proposed DS-MLP approach. 
+
+4.1 Experimental Setup 
+
+We introduce the experimental settings, including the datasets, baseline approaches, metrics, and hyper-parameter details.  
+
+> ACM Trans. Knowl. Discov. Data., Vol. 1, No. 1, Article . Publication date: January 2026. Dual-Stream MLP is All You Need for CTR Prediction 11
+
+4.1.1 Datasets. We conduct experiments on three public datasets for recommender evaluation, in-cluding: Criteo 1, Avazu 2, Movielens 3. The splitting and pre-processing proceducheng2020adaptiveres follow the AFN [6] work. The statistics of datasets are summarized in Table 2. 
+
+> Table 2. The statistics of datasets.
+
+Dataset # Instances # Fields # Features Criteo 45,840,617 39 2,086,936 Avazu 40,428,967 22 1,544,250 MovieLens 2,006,859 3 90,445 
+
+• Criteo is a widely-used benchmark dataset for CTR prediction, which contains about one week of click-through data for display advertising. It has 13 numerical feature fields and 26 categorical feature fields. 
+
+• Avazu originates from the 2014 Avazu Click-Through Rate Prediction contest and contains about 10 days of mobile advertising records. Each instance indicates whether a user clicked the displayed ad, and the dataset includes 23 categorical features. 
+
+• Movielens contains users’ tagging behaviors on movies. For personalized tag recommendation, each tagging record, consisting of a user ID, a movie ID, and a tag, is converted into a feature vector as input. The target indicates whether a specific tag was assigned by the user to the corresponding movie. 
+
+4.1.2 Compared Methods. We compare the proposed approach with the following baseline meth-ods: 
+
+• FmFM [ 32 ]: it builds upon FwFM by incorporating a field matrix and employing kernel products to model feature interactions. This allows FmFM to capture more flexible and fine-grained relationships between features at the field level. 
+
+• AFM [54 ]: it improves upon FM by applying an attention mechanism to discriminate the importance of different feature interactions. AFM dynamically assigns weights to each interaction, enabling the model to focus on more informative feature pairs. 
+
+• AFN [ 6 ]: it automatically learns the optimal order of feature interactions from data, overcoming the limitations of fixed-order models. Its core innovation lies in a Logarithmic Transformation Layer that adaptively estimates an exponent for each feature, enabling the model to capture arbitrary-order feature crossings more efficiently. AFN+ further integrates a deep neural network to improve model stability and enhance predictive performance. 
+
+• FiBiNet [17 ]: it utilizes a Squeeze-and-Excitation (SENet) module together with bilinear feature interactions to learn both the importance of individual features and their pairwise interactions. This dual mechanism allows FiBiNet to adaptively reweight features and interactions based on their contribution to the prediction task. 
+
+• FiGNN [ 24 ]: it models feature interactions by treating features as nodes in a graph. A Graph Neural Network (GNN) is then used to iteratively aggregate information from neighboring nodes, enabling the capture of high-order, structured relationships. 
+
+• PNN [ 35 ]: it explicitly captures second-order interaction patterns by inserting a dedicated product layer between the embedding and deep network components. This layer computes both  
+
+> 1https://www.kaggle.com/c/criteo-display-ad-challenge/data
+> 2https://www.kaggle.com/c/avazu-ctr-prediction/data
+> 3https://grouplens.org/datasets/movielens ACM Trans. Knowl. Discov. Data., Vol. 1, No. 1, Article . Publication date: January 2026. 12 Kesha Ou, Zhen Tian, Wayne Xin Zhao ♠, Long Zhang, Sheng Chen, and Ji-Rong Wen
+
+inner and outer products of feature embeddings, thereby enriching the signals passed to the subsequent MLP and improving the model’s ability to learn cross-feature patterns. 
+
+• DeepFM [12 ]: it combines the strengths of FM for modeling low-order explicit feature interac-tions with a deep neural network (MLP) for capturing high-order implicit interactions, providing a unified framework that leverages both explicit and implicit information. 
+
+• xDeepFM [26 ]: it employs a Compressed Interaction Network (CIN) to generate explicit high-order feature interactions at the vector level. CIN efficiently captures interactions across multiple layers without the need for parameter-heavy fully connected layers. 
+
+• DCNv2 [52 ]: it extends the Deep & Cross Network framework by stacking multiple deep cross layers to model high-order feature interactions, while integrating an MLP to capture implicit interactions and integrates an MLP for implicit interactions. 
+
+• AutoInt [42 ]: it leverages a multi-head self-attention mechanism to explicitly model feature interactions and assign adaptive importance weights to each pairwise interaction. Its enhanced version, AutoInt+, incorporates a feed-forward network to improve expressiveness and capture more complex non-linear dependencies. 
+
+• GDCN [ 48 ]: it utilizes a Gated Deep Cross Network where a gating mechanism is applied at each cross layer. This allows the network to selectively filter and emphasize important feature interactions at each order, which helps reduce noise from less useful crosses and improves model robustness. 
+
+• FCN [ 23 ]: it employs a Fusing Cross Network that integrates both linear and exponential sub-networks. This is further enhanced with a Self-Mask mechanism, which dynamically sup-presses redundant cross terms, and a tailored Tri-BCE loss, which improves optimization stability. This design allows efficient learning of high-order interactions while controlling overfitting and redundancy. 
+
+• FinalMLP [ 30 ]: it introduces stream-specific feature gating and multi-head bilinear fusion modules to enhance the representation power of MLP-based models. This allows selective fusion of different feature streams, improving the capacity to model diverse interaction patterns. 
+
+• Final [ 68 ]: it introduces a Factorized Interaction Layer that extends the widely used linear layer to explicitly learn second-order feature interactions. Similar to MLPs, multiple FINAL layers can be stacked into a FINAL block, enabling the model to capture exponentially growing degrees of feature interactions. This design offers a lightweight yet powerful way to model complex combinatorial feature patterns without resorting to excessively deep networks. 
+
+• WuKong [ 61 ]: it introduces a scaling-oriented recommendation architecture built upon stacked factorization machines, coupled with a synergistic upscaling strategy. By progressively increasing depth and width, Wukong captures diverse high-order feature interactions while establishing a scaling law in recommendation modeling. 
+
+• SFG [58 ]: it shifts CTR modeling from discriminative feature interaction to supervised feature generation via an encoder–decoder framework. By reconstructing feature embeddings under click supervision, SFG alleviates embedding collapse and information redundancy. 
+
+• ECKD [ 69 ]: it aggregates knowledge from multiple teacher models into a single student network via knowledge distillation. By combining the strengths of various teacher architectures, ECKD maintains a compact yet powerful student model for efficient inference. The methods mentioned above cover various approaches in the field of CTR prediction. Among them, FmFM, and AFM model second-order feature interactions. DeepFM, xDeepFM, DCNv2, GDCN, FiBiNet, and AutoInt jointly model explicit and implicit high-order feature interactions, while FCN does so by linearly and exponentially increasing the interaction order. Other architectures like Final and FinalMLP are characterized by their dual-stream designs, and ECKD represents a KD-based approach. More recently, SFG models cross-feature dependencies implicitly through a supervised  
+
+> ACM Trans. Knowl. Discov. Data., Vol. 1, No. 1, Article . Publication date: January 2026. Dual-Stream MLP is All You Need for CTR Prediction 13
+> Table 3. Hyperparameters for the datasets.
+
+Dataset Teacher Model Main MLP Size 𝜆 𝛼 𝛽 
+
+Criteo GDCN 600 1.0 0.8 1.2 Avazu DCNv2 900 1.0 1.0 0.6 MovieLens FinalMLP 1000 0.5 1.5 0.8 feature generation paradigm, while Wukong captures arbitrary-order interactions via stacked factorization machines with scalable depth and width expansion. In contrast to the above methods, our DS-MLP approach utilizes knowledge distillation to unify different types of feature interactions and ensures equal utilization of the dual-stream MLP outputs. 
+
+4.1.3 Evaluation Metrics. Following previous works [ 17 , 42 , 65 ], we adopt two common ranking metrics in CTR models: AUC and LogLoss. 
+
+• AUC [ 28 ], which represents the probability that a randomly chosen positive example is ranked higher than a randomly chosen negative example. 
+
+• LogLoss [ 2 ], which measures the accuracy of the predicted probabilities against the actual binary outcomes, with lower values indicating better model performance. The RelaImpr metric, as proposed in [ 65 ], measures the relative improvement with respect to the base model and is defined as follows: 
+
+RelaImpr =
+
+ AUC (measure model ) − 0.5
+
+AUC (base model ) − 0.5 − 1
+
+
+
+× 100% (15) 
+
+4.1.4 Implementation Details. We implement our models based on FuxiCTR, a configurable, tunable, and reproducible library for CTR prediction 4. To ensure a fair and consistent comparison, we strictly align the parameter settings of all baseline methods with the BARS benchmark 5. In particular, we fix the embedding dimension to 10, adopt a batch size of 4096, and configure the default MLP architecture as [400, 400, 400]. All models are optimized using the Adam optimizer with its default parameters. For ECKD, we reproduce the best-performing configuration reported in the original paper. Specifically, AutoInt+, DCNv2, and xDeepFM are selected as teacher models, and the “soft label + pre-train” strategy is adopted to transfer knowledge into the student. For DS-MLP, we design the student MLP with a larger hidden size of [600, 600, 600] to ensure sufficient capacity for absorbing knowledge from complex teacher architectures, while keeping the parallel MLP size identical to the teacher MLP module. To examine the trade-off between model expressiveness and efficiency, we progressively scale the hidden size of each layer from 1200 down to 100, thereby obtaining a comprehensive view of how parameterization affects performance. For the distillation loss weight 𝜆 , we explore values in the range [0.1, 0.5, 1, 1.5, 10], while the fine-tuning loss weights 𝛼 and 𝛽 follow a similar trend, gradually varying from 0.5 to 1.5 with a step size of 0.1. The final, best-performing configurations are presented in Table 3, revealing that the optimal student MLP size is highly dependent on the dataset and teacher architecture. A larger student capacity ( e.g., width 1000) is necessary to distill knowledge from complex teachers with implicit interactions like FinalMLP, while a more compact student is sufficient for teachers with structured, explicit patterns like DCNv2. Moreover, on large-scale datasets like Criteo, a more modest MLP size (600) proved optimal, striking a crucial balance between learning from the teacher’s guidance and avoiding over-reliance on its potential biases.  
+
+> 4https://github.com/reczoo/FuxiCTR
+> 5https://github.com/reczoo/BARS ACM Trans. Knowl. Discov. Data., Vol. 1, No. 1, Article . Publication date: January 2026. 14 Kesha Ou, Zhen Tian, Wayne Xin Zhao ♠, Long Zhang, Sheng Chen, and Ji-Rong Wen
+> Table 4. Performance comparisons grouped by dataset. Note that a higher AUC or lower Logloss at 0.001-level is significant for CTR prediction.
+
+Dataset Model AUC Log Loss RelaImpr Latency (ms) 
+
+Criteo FmFM 0.8054 0.4464 - 435.75 AFM 0.8034 0.4477 -0.65% 375.07 AFN+ 0.8141 0.4377 2.85% 38.55 FiBiNet 0.8128 0.4390 2.42% 1018.28 FiGNN 0.8134 0.4384 2.62% 390.47 PNN 0.8133 0.4386 2.59% 84.20 DeepFM 0.8134 0.4380 2.62% 24.58 xDeepFM 0.8136 0.4382 2.69% 182.80 DCNV2 0.8132 0.4389 2.55% 41.38 AutoInt+ 0.8138 0.4380 2.75% 1262.53 GDCN 0.8137 0.4386 2.72% 45.02 FCN 0.8149 0.4368 3.11% 39.26 FinalMLP 0.8147 0.4374 3.05% 56.71 Final 0.8148 0.4369 3.08% 25.56 WuKong 0.8140 0.4388 2.82% 34.35 SFG 0.8144 0.4378 2.95% 32.78 ECKD 0.8139 0.4401 2.78% 43.15 
+
+DS-MLP 0.8152 0.4366 3.21% 59.43 Avazu FmFM 0.7599 0.3688 - 22.07 AFM 0.7557 0.3714 -1.62% 33.75 AFN+ 0.7643 0.3673 1.69% 21.21 FiBiNet 0.7622 0.3680 0.88% 19.60 FiGNN 0.7608 0.3686 0.35% 25.64 PNN 0.7617 0.3679 0.69% 26.30 DeepFM 0.7638 0.3675 1.50% 20.23 xDeepFM 0.7639 0.3677 1.54% 26.31 DCNV2 0.7627 0.3677 1.08% 18.51 AutoInt+ 0.7634 0.3675 1.35% 36.49 GDCN 0.7648 0.3673 1.89% 21.52 FCN 0.7651 0.3666 2.00% 28.73 FinalMLP 0.7659 0.3662 2.31% 21.03 Final 0.7664 0.3659 2.50% 19.26 WuKong 0.7641 0.3683 1.62% 27.49 SFG 0.7650 0.3679 1.96% 20.19 ECKD 0.7646 0.3815 1.81% 21.13 
+
+DS-MLP 0.7670 0.3657 2.73% 25.89 MovieLens FmFM 0.9482 0.2467 - 3.30 AFM 0.9439 0.2733 -0.96% 4.62 AFN+ 0.9641 0.3010 3.55% 3.16 FiBiNet 0.9527 0.2556 1.00% 6.62 FiGNN 0.9516 0.2573 0.76% 5.25 PNN 0.9684 0.2099 4.51% 4.93 DeepFM 0.9689 0.2116 4.62% 5.42 xDeepFM 0.9685 0.2151 4.53% 3.78 DCNV2 0.9690 0.2139 4.64% 3.03 AutoInt+ 0.9688 0.2202 4.60% 3.64 GDCN 0.9685 0.2164 4.53% 3.75 FCN 0.9671 0.2076 4.22% 3.54 FinalMLP 0.9716 0.2119 5.22% 2.31 Final 0.9717 0.1978 5.24% 2.29 WuKong 0.9692 0.2136 4.68% 4.41 SFG 0.9698 0.2118 4.82% 3.02 ECKD 0.9686 0.2182 4.55% 3.31 
+
+DS-MLP 0.9752 0.1971 6.02% 2.65  
+
+> ACM Trans. Knowl. Discov. Data., Vol. 1, No. 1, Article . Publication date: January 2026. Dual-Stream MLP is All You Need for CTR Prediction 15
+
+4.2 Overall Performance 
+
+We evaluate DS-MLP against a comprehensive set of baseline methods on three widely used CTR prediction benchmarks. The results, summarized in Table 4, provide a clear and systematic comparison across models of different architectures and design principles. Several key observations can be drawn from these experiments. 
+
+• Effectiveness of High-Order Modeling. High-order feature interaction models ( e.g., PNN, DeepFM, and Final) consistently outperform second-order approaches ( e.g., FmFM and FwFM), confirming the importance of modeling complex feature interactions for CTR prediction. Among these, explicit high-order methods such as xDeepFM, DCNv2, and WuKong outperform implicit methods like FiBiNet, reflecting the advantage of directly modeling interaction structures rather than relying solely on implicit representations. FCN further extends DCNv2 by explicitly capturing both linear and exponential interactions, thereby reducing the dependence on implicit DNN layers. GDCN strengthens this advantage even more by employing gated mechanisms at each interaction order to dynamically filter and emphasize the most informative feature combinations. Meanwhile, SFG models high-order dependencies through supervised feature generation and reconstruction, offering an alternative generative perspective for capturing complex feature interactions. 
+
+• Strength of MLP-Based Architectures. MLPs are well recognized as universal function approxima-tors. When properly configured, they can substantially improve the performance of both standalone and hybrid architectures. For example, in AutoInt+ and AFN+, an MLP is employed to model implicit feature interactions, while FinalMLP adopts an MLP entirely as its backbone, where feature gating further refines the information flow. These observations demonstrate that, despite their apparent simplicity, MLPs remain a highly competitive and versatile backbone for CTR modeling. 
+
+• Effectiveness of Knowledge Distillation. The strong performance of ECKD validates the knowl-edge distillation paradigm. By ensembling the distilled knowledge from a diverse set of teacher networks, it synthesizes their combined strengths, allowing the student model to ultimately surpass the performance of any single teacher. 
+
+• Ultimately, our proposed DS-MLP effectively acquires explicit high-order feature interactions from the teacher network through the distillation process. By aligning the main and parallel MLPs, it achieves a coherent integration of both explicit and implicit interaction modeling, thereby enhancing its representational capacity. As a result, DS-MLP consistently surpasses the baseline models and achieves state-of-the-art (SOTA) performance across all three benchmark datasets. In addition to accuracy, efficiency is a critical factor for real-world deployment. We therefore measure the inference latency of all CTR models under an identical server environment. As reported in Table 4, explicit CTR models ( i.e., FwFM, FmFM, and AFM) have nearly zero non-embedding parameters, their inference times are considerably long. Parallel architectures such as DeepFM and GDCN demonstrate superior latency–performance trade-offs, achieving improved accuracy at comparatively low latency. In contrast, DS-MLP attains the highest predictive performance while maintaining an inference time comparable to efficient baseline models such as FinalMLP, Final, and DCNv2. This balance between accuracy and efficiency underscores the practicality of DS-MLP for large-scale CTR prediction scenarios. 
+
+4.3 Experimental Analysis 
+
+Furthermore, we conduct a series of experiments to validate the compatibility and scalability of our proposed method. Through these experiments, we can analyze the importance of dual-stream MLP alignment, demonstrate the significance of each component, and examine the effect of hyper-parameter setting.  
+
+> ACM Trans. Knowl. Discov. Data., Vol. 1, No. 1, Article . Publication date: January 2026. 16 Kesha Ou, Zhen Tian, Wayne Xin Zhao ♠, Long Zhang, Sheng Chen, and Ji-Rong Wen
+> Table 5. Compatibility Analysis of DS-MLP.
+
+Model Criteo Avazu MovieLens 
+
+AUC Log Loss AUC Log Loss AUC Log Loss AutoInt 0.8138 0.4380 0.7634 0.3675 0.9688 0.2202 DS-MLP AutoInt 0.8145 0.4376 0.7656 0.3664 0.9734 0.2087 DCNv2 0.8132 0.4389 0.7627 0.3677 0.9690 0.2139 DS-MLP DCNv2 0.8147 0.4371 0.7670 0.3657 0.9728 0.2173 xDeepFM 0.8136 0.4382 0.7639 0.3677 0.9685 0.2151 DS-MLP xDeepFM 0.8149 0.4373 0.7659 0.3664 0.9714 0.2074 GDCN 0.8137 0.4386 0.7648 0.3673 0.9685 0.2164 DS-MLP GDCN 0.8152 0.4366 0.7662 0.3663 0.9737 0.2052 FinalMLP 0.8147 0.4374 0.7659 0.3662 0.9716 0.2119 DS-MLP FinalMLP 0.8148 0.4431 0.7662 0.3675 0.9752 0.1971 
+
+4.3.1 Compatibility Analysis. As previously discussed in Section 3.4, DS-MLP can flexibly adapt to different types of teacher networks in general. To rigorously validate the compatibility of our approach, we conducted experiments with five prominent and architecturally diverse teacher models: AutoInt, DCNv2, xDeepFM, GDCN, and FinalMLP. This selection was intentionally made to span a broad spectrum of contemporary feature interaction methodologies. Specifically, AutoInt exemplifies attention-based interaction modeling, while DCNv2 and xDeepFM capture explicit high-order interactions at the feature-wise and vector-level granularities, respectively. GDCN introduces gated cross-network structures to enhance interaction learning, and FinalMLP represents MLP-based architectures that employ feature gating for multi-stream fusion. By leveraging this comprehensive set of teacher models, we are able to thoroughly assess whether DS-MLP functions as a genuinely versatile and teacher-agnostic student network. The experimental results, summarized in Table 5, clearly demonstrate the effectiveness and robustness of our approach. Across all five distinct teacher architectures, the DS-MLP student model consistently delivers substantial performance improvements over a standard baseline. These findings indicate that the simple yet powerful MLP backbone serves as an effective universal approximator, capable of capturing and internalizing the unique inductive biases inherent in each teacher, such as the selective weighting of attention mechanisms or the structured combinatorial patterns of cross networks. This consistent improvement, achieved without architecture-specific modifications, highlights DS-MLP as a flexible and broadly applicable framework for advancing feature interaction learning. 
+
+4.3.2 Scalability Analysis. Scalability is a critical property for real-world industrial applications, where increasing model capacity often leads to improved performance but may also introduce training instability or overfitting risks. To evaluate the scalability of our approach, we conducted a scaling experiment designed to compare the performance trajectory of our DS-MLP against a representative specialized model, GDCN. For both models, we systematically enlarged their parameter space by progressively increasing the hidden size of their MLP components. The re-sulting performance data points were then fitted using a least squares method to derive smooth, interpretable scaling curves, allowing for a clear comparison of their trends. The results in Figure 2 reveal a telling divergence in scalability between the two architectures. As the parameter count increases, the performance of the GDCN model saturates and eventually begins to decline, suggesting sensitivity to over-parameterization and potential optimization difficulties.          
+
+> ACM Trans. Knowl. Discov. Data., Vol. 1, No. 1, Article . Publication date: January 2026. Dual-Stream MLP is All You Need for CTR Prediction 17 01234567
+> Network Params(B) 1e6
+> 0.8125
+> 0.8130
+> 0.8135
+> 0.8140
+> 0.8145
+> 0.8150
+> 0.8155
+> AUC
+> DS-MLP
+> GDCN
+
+(a) Criteo Scaling 0 1 2 3 4 5 6  
+
+> Network Params(B) 1e6
+> 0.761
+> 0.762
+> 0.763
+> 0.764
+> 0.765
+> 0.766
+> AUC
+> DS-MLP
+> GDCN
+
+(b) Avazu Scaling Fig. 2. The scaling effect for teacher v.s. student. 
+
+In contrast, our dual-stream MLP exhibits a steady and consistent improvement in performance as its capacity grows, demonstrating robustness to scaling. These observations indicate that while highly specialized architectures may encounter stability or overfitting issues under large capacity regimes, the dual-stream MLP benefits from its simple yet powerful backbone, which is inherently easier to optimize and more resilient to overfitting, making it particularly well-suited for scalable industrial deployment. 200 400 600 800 1000 1200 
+
+## Hidden Units per Layer 
+
+0.0 
+
+0.5 
+
+1.0 
+
+1.5 
+
+2.0 
+
+> MSE
+
+Student MLP 
+
+Parallel MLP 
+
+Cross Net 
+
+Fig. 3. Comparison of MSE on each component in learning explicit feature interactions. 
+
+4.3.3 Fidelity Analysis of Distilled Explicit Feature Interactions. In this experiment, we conduct a polynomial fitting study to rigorously evaluate whether the student network is capable of approximating the teacher model’s explicit feature interactions through knowledge distillation. To this end, we first synthesize a dataset comprising three categorical features (𝑥 1, 𝑥 2, 𝑥 3) and generate corresponding ground-truth labels 𝑦 using the teacher model (GDCN), thereby constructing a controlled polynomial fitting dataset. To quantify the fidelity of the distillation process, we compute the Mean Squared Error (MSE) between the ground truth and three model components: (i) the           
+
+> ACM Trans. Knowl. Discov. Data., Vol. 1, No. 1, Article . Publication date: January 2026. 18 Kesha Ou, Zhen Tian, Wayne Xin Zhao ♠, Long Zhang, Sheng Chen, and Ji-Rong Wen 1357911 13 15 17 19
+> Sample Points
+> 0.0
+> 0.2
+> 0.4
+> 0.6
+> 0.8
+> 1.0
+> Model Predictions
+> Negative Teacher Pred
+> Negative Student Pred
+> Negative DS-MLP Pred
+> Positive Teacher Pred
+> Positive Student Pred
+> Positive DS-MLP Pred
+
+Fig. 4. Case study for our approach DS-MLP. 
+
+CrossNet module of GDCN, which explicitly models feature interactions, (ii) the student MLP within DS-MLP, which is trained to approximate these explicit interactions, and (iii) the parallel MLP of DS-MLP, which focuses on learning implicit interactions and serves as an auxiliary learner. The results, illustrated in Figure 3, indicate a clear distinction between the student and parallel MLP modules. Across varying MLP sizes, the student MLP consistently achieves lower MSE values and exhibits a convergence pattern closely aligned with the CrossNet module of the teacher model. In contrast, the parallel MLP exhibits a consistently high MSE, confirming that it does not replicate the teacher’s logic and remains free to learn complementary, implicit patterns as intended. These observations confirm that the student module effectively internalizes complex explicit feature interactions through distillation, capturing patterns that are otherwise difficult to learn via implicit modeling alone. 
+
+4.3.4 Case Study of Dual-Stream Predictions. In this section, we illustrate the effectiveness of our method and the importance of the dual-stream architecture in Figure 4. The 𝑥 -axis represents the sample index, and the 𝑦 -axis represents the prediction score. We observe that for certain challenging instances, specifically negative sample 3 and positive sample 18, the teacher network produces incorrect predictions, outputting values close to 1 and 0, respectively. Following the initial distillation phase, the student MLP faithfully mimics its teacher and consequently inherits these same erroneous predictions. This highlights a critical pitfall of standard knowledge distillation, where a student can learn the teacher’s biases along with its strengths. After applying the dual-stream alignment, the parallel MLP actively mitigates the prediction errors generated by the student MLP. This corrective effect exemplifies the unique strength of our dual-stream design: during the alignment phase, the parallel MLP operates independently of the teacher’s bias, allowing it to capture complementary decision patterns directly from the data. By providing a corrective signal, it compensates for the mistakes introduced by the distillation process, ultimately enabling DS-MLP to generate correct predictions for these difficult samples. This case study highlights the important role of the dual-stream architecture in enhancing model robustness and predictive accuracy. It shows that combining a distilled student with an auxiliary  
+
+> ACM Trans. Knowl. Discov. Data., Vol. 1, No. 1, Article . Publication date: January 2026. Dual-Stream MLP is All You Need for CTR Prediction 19
+> Table 6. The effectiveness of different components in DS-MLP.
+
+Model Avazu Criteo MovieLens 
+
+AUC Log Loss AUC Log Loss AUC Log Loss DS-MLP 0.7670 0.3657 0.8152 0.4366 0.9752 0.1971 
+
+w/o alignment Loss 0.7641 0.3675 0.8145 0.4376 0.9703 0.2143 w/o student MLP 0.7652 0.3664 0.8137 0.4374 0.9669 0.2202 w/o parallel MLP 0.7648 0.3672 0.8140 0.4379 0.9690 0.2191 w/o dual MLP 0.7639 0.3666 0.8138 0.4382 0.9708 0.2005 w/o KD 0.7655 0.3662 0.8135 0.4388 0.9715 0.2059 parallel stream can effectively mitigate teacher biases and improve generalization on challenging prediction tasks. 
+
+4.3.5 Ablation Study. To gain a deeper understanding of the contribution of each proposed com-ponent to the overall performance, we conduct a series of ablation experiments. By systematically removing or replacing individual modules while keeping the remaining parts of the framework unchanged, we are able to isolate their effects on model behaviour. The corresponding results are summarized in Table 6. 
+
+• w/o alignment loss. This variant removes the alignment loss defined in Eq. (9) , optimizing the model solely with the remaining loss terms. The results reveal a clear and consistent performance drop, underscoring the crucial role of an effective alignment mechanism between the dual-stream MLPs in facilitating the transfer of complementary information. Without such alignment, as discussed in Section 3.2.2, the output of one stream tends to dominate, thereby overshadowing the contribution of the other component. Consequently, the two streams fail to cooperate synergistically, leading to a noticeable degradation in the performance of DS-MLP. 
+
+• w/o student MLP. This variant bypasses the distillation process entirely and directly aligns and fuses the original teacher model with the parallel MLP. This observation reveals that simply combining the teacher model with an auxiliary MLP is insufficient for effective knowledge transfer. Even though an alignment loss is applied to enforce output consistency, the substantial architectural discrepancy between the highly specialized teacher architecture and the parallel MLP hinders them from forming a coherent and compact representation space. Eliminating the student MLP also sacrifices structural simplification, leading to an inflated parameter count and degraded computational efficiency. Importantly, as demonstrated in Section 4.3.2, blindly increasing model parameters does not necessarily yield performance gains. Therefore, the objective of distillation in our framework extends far beyond mere model simplification. Fundamentally, it translates the explicit feature interaction paradigm into a homogeneous structure consistent with the implicit pathway. This structural consistency is precisely what enables optimal alignment between the two streams and endows the overall architecture with robust scaling capabilities. 
+
+• w/o parallel MLP. In this variant, only the main MLP is retained for prediction, while the parallel MLP is removed. As a result, the model becomes a single-stream architecture, severely limiting its capacity to capture implicit feature interactions that the teacher-guided main stream might overlook. As demonstrated in Section 4.3.4, the auxiliary parallel stream plays a key role in mitigating teacher-induced biases and improving generalization on challenging samples. Consequently, removing the parallel MLP leads to a marked degradation in performance, further highlighting its importance in enriching the learned representations and enhancing overall prediction quality.  
+
+> ACM Trans. Knowl. Discov. Data., Vol. 1, No. 1, Article . Publication date: January 2026. 20 Kesha Ou, Zhen Tian, Wayne Xin Zhao ♠, Long Zhang, Sheng Chen, and Ji-Rong Wen
+
+• w/o dual MLP. This variant replaces the dual-stream MLP with the CrossNet structure [ 52 ]. The results show that CrossNet fails to effectively absorb and replicate the knowledge of the teacher network through distillation. This phenomenon can be attributed to its highly specialized design, which limits its compatibility with heterogeneous teacher architectures and makes optimization more difficult. By contrast, MLPs are universal function approximators with simple and homoge-neous structures, enabling them to mimic diverse teacher behaviors and generalize across a broad range of interaction patterns. This comparison highlights the necessity of adopting an MLP-based backbone as the foundation of our framework, since its flexibility and ease of optimization make it substantially more suitable for knowledge transfer than other highly customized architectures. 
+
+• w/o KD. In this variant, the knowledge distillation stage is removed, resulting in a substantial drop in performance. Trained entirely from scratch without teacher guidance, the dual-stream MLP can only capture implicit feature interactions and fails to inherit the structured knowledge of explicit interactions from the teacher. This finding clearly demonstrates that KD is the cornerstone of our framework: it provides crucial initial guidance and transfers explicit interaction patterns on which the student model can build. Without this foundation, the model struggles to reach optimal performance, underscoring the necessity of jointly modeling explicit and implicit feature interactions for CTR prediction tasks. Overall, the ablation results offer strong evidence of both the necessity and effectiveness of the proposed components. Each module makes a distinct yet complementary contribution, enabling the model to capture richer feature interactions and to fully leverage teacher guidance. By working in concert, these components allow DS-MLP to consistently achieve superior and more stable performance. 
+
+4.3.6 Hyperparameter Analysis. The performance of our framework is influenced by several key hyperparameters. In this section, we conduct an analysis to understand their impact and provide tuning guidance. We vary these hyperparameters and report the resulting performance changes in Figure 5. 
+
+• Impact of Coefficient 𝜆 . The coefficient 𝜆 in Eq. (6) plays a pivotal role in our framework, as it governs the trade-off between the knowledge distillation loss and the primary CTR prediction loss. To systematically investigate its effect, we vary its value from 0.1 to 10 and report the results in the left panel of Figure 5. We observe that larger values of 𝜆 yield more pronounced gains on feature-rich datasets such as Criteo and Avazu. This improvement arises because a stronger weighting on the distillation loss compels the student network to more faithfully inherit the complex, high-order feature interactions already captured by the teacher model. Nevertheless, overly large values of 𝜆 
+
+can lead the student to over-rely on the teacher’s potentially biased soft labels while underutilizing the ground-truth supervision, which may in turn hinder generalization. These results underscore the necessity of selecting an appropriate balance that maximizes knowledge transfer from the teacher while maintaining fidelity to the true data distribution. 
+
+• Impact of Coefficient 𝛼 . In the fine-tuning stage, the parameter 𝛼 defined in Eq. (10) controls the degree of alignment between the two MLP components. To systematically examine its influence, we vary 𝛼 from 0.5 to 1.5 while keeping the variation trend of 𝛽 consistent (right panel of Figure 5). The resulting performance curve peaks at approximately 𝛼 = 1, exhibiting an initial rise followed by a decline. This pattern suggests that excessively large values of 𝛼 overly constrain the two streams, forcing their outputs to become almost indistinguishable and thereby diminishing their ability to learn complementary interaction information. Conversely, too small values of 𝛼 weaken the alignment effect, preventing the model from effectively reconciling the two representations. The optimal value thus reflects a “sweet spot” where model consistency and representational diversity 
+
+> ACM Trans. Knowl. Discov. Data., Vol. 1, No. 1, Article . Publication date: January 2026.
+
+Dual-Stream MLP is All You Need for CTR Prediction 21 0.1 0.5 1.0 1.5 10.0  
+
+> 0.2100
+> 0.2150
+> 0.2200
+> 0.2250
+> 0.2300
+> LogLoss
+> 0.96980
+> 0.97040
+> 0.97100
+> 0.97160
+> 0.97220
+> AUC
+> LogLoss AUC
+
+(a) Movielens KD Loss 0.5 0.8 1.0 1.2 1.5   
+
+> 0.192
+> 0.196
+> 0.200
+> 0.204
+> 0.208
+> 0.212
+> LogLoss
+> 0.9742
+> 0.9745
+> 0.9748
+> 0.9751
+> 0.9754
+> 0.9757
+> AUC
+> LogLoss AUC
+
+(b) Movielens Align Loss 0.1 0.5 1.0 1.5 10.0  
+
+> 0.3660
+> 0.3670
+> 0.3680
+> 0.3690
+> 0.3700
+> LogLoss
+> 0.75900
+> 0.76100
+> 0.76300
+> 0.76500
+> 0.76700
+> AUC
+> LogLoss AUC
+
+(c) Avazu KD Loss 0.5 0.8 1.0 1.2 1.5   
+
+> 0.3650
+> 0.3655
+> 0.3660
+> 0.3665
+> 0.3670
+> 0.3675
+> 0.3680
+> LogLoss
+> 0.7630
+> 0.7640
+> 0.7650
+> 0.7660
+> 0.7670
+> 0.7680
+> 0.7690
+> AUC
+> LogLoss AUC
+
+(d) Avazu Align Loss 0.1 0.5 1.0 1.5 10.0  
+
+> 0.4370
+> 0.4372
+> 0.4374
+> 0.4376
+> LogLoss
+> 0.81456
+> 0.81466
+> 0.81476
+> 0.81486
+> AUC
+> LogLoss AUC
+
+(e) Criteo KD Loss 0.5 0.8 1.0 1.2 1.5   
+
+> 0.43680
+> 0.43685
+> 0.43690
+> 0.43695
+> 0.43700
+> 0.43705
+> 0.43710
+> LogLoss
+> 0.8148
+> 0.8149
+> 0.8150
+> 0.8151
+> 0.8152
+> AUC
+> LogLoss AUC
+
+(f) Criteo Align Loss Fig. 5. Impact of the coefficients 𝜆 and 𝛼 in KD and Align Loss. 
+
+are well balanced, enabling DS-MLP to leverage both the shared structure and the unique strengths of each stream. Overall, these findings demonstrate that DS-MLP maintains strong and stable performance across a wide range of hyperparameter choices, indicating its inherent robustness. At the same time, balanced settings of key coefficients such as 𝜆 and 𝛼 enhance the integration of teacher guidance and complementary feature interactions, leading to improved performance. 
+
+ACM Trans. Knowl. Discov. Data., Vol. 1, No. 1, Article . Publication date: January 2026. 22 Kesha Ou, Zhen Tian, Wayne Xin Zhao ♠, Long Zhang, Sheng Chen, and Ji-Rong Wen 
+
+5 Related Work 
+
+In this section, we review the related work in the following three aspects, including CTR prediction, two-stream CTR models, and knowledge distillation. 
+
+5.1 CTR Prediction 
+
+The click-through rate (CTR) prediction task, which aims to estimate the probability of a user clicking an item, is a cornerstone of modern personalized services. The field’s progression has been defined by an ongoing effort to more effectively model the complex feature interactions among user attributes ( e.g., age, location), item attributes ( e.g., category, brand), and contextual features ( e.g., time, device). Early industrial-scale approaches, such as Logistic Regression (LR) [ 39 ], were efficient but limited, relying heavily on laborious manual feature engineering. This limitation spurred the development of Factorization Machine (FM)-based methods [ 18 , 32 , 43 , 54 ], which exploit low-rank factorization to explicitly model second-order feature interactions, particularly in sparse and high-dimensional settings. The advent of deep learning marked a significant paradigm shift, ushering in an era of diverse and powerful architectures. Initial efforts focused on adapting successful models from other domains to the specific challenges of CTR. For instance, Recurrent Neural Networks (RNNs), such as DSIN [ 10 ], have been employed to capture sequential dependencies in user behavior, while Convolutional Neural Networks (CNNs), such as FGCNN [ 27 ] and CFM [ 55 ], excel at extracting local patterns from feature embeddings. Subsequently, more sophisticated methods emerged to learn relation-ships between features dynamically. Attention-based networks ( e.g., AutoInt [ 42 ], GraphFM [ 25 ], FRNet [ 49 ]) were introduced to dynamically weight feature importance and better capture global dependencies, while Graph Neural Networks (GNNs), such as FiGNN [ 24 ] and DG_ENN [ 13 ], further extended modeling capabilities to complex, structured entity relationships in user–item graphs. More recent research has pushed towards even greater flexibility and automation. A notable trend is the development of adaptive interaction mechanisms, such as RFM [ 47 ] and EulerNet [ 46 ]. These models apply advanced mathematical transformations, including operations in complex vector spaces, to flexibly learn feature interactions in an order-agnostic manner, effectively mitigating the underfitting and overfitting risks associated with fixed-order designs. As the manual design of these intricate architectures has become a bottleneck, the field has also turned to AutoML-based approaches ( e.g., AIM [ 66 ], Autofeature [ 20 ], Amer [ 63 ]), which automate feature learning and model selection to achieve competitive performance with minimal human intervention. More recently, the field has begun exploring new frontiers beyond architectural diversity, focusing on scalability and paradigm transformation. On one hand, inspired by the success of scaling laws [ 19 ]in large language models, industrial research [ 11 , 16 , 22 ] has increasingly focused on systematic scaling strategies for recommendation systems. For example, WuKong [ 61 ] and RankMixer [ 67 ]show that scaling laws in recommendation can be realized through structured capacity expansion with stacked factorization machines and large-scale mixture-based ranking architectures, allevi-ating the capacity limits of traditional models. On the other hand, the emergence of generative recommendation [ 8 , 37 ] has motivated a paradigm shift from discriminative feature interaction to generative modeling. Rather than directly predicting clicks based on handcrafted interaction functions, recent approaches [ 21 , 62 ] attempt to capture feature dependencies through generative processes. For instance, SFG [ 58 ] reformulates CTR prediction as supervised feature generation via an encoder–decoder framework, while GenCI [ 31 ] employs generative intent modeling to capture dynamic user preferences.  
+
+> ACM Trans. Knowl. Discov. Data., Vol. 1, No. 1, Article . Publication date: January 2026. Dual-Stream MLP is All You Need for CTR Prediction 23
+
+This evolutionary trajectory, progressing from manual engineering to diverse deep architectures, scalable industrial designs, and now paradigm-level innovations, highlights the continuous pursuit of more powerful and intelligent solutions for modeling feature interactions. 
+
+5.2 Two-Stream CTR Models 
+
+To better capture complex feature interactions, modern CTR prediction has increasingly adopted dual-stream architectures [ 12 , 50 , 51 ], which extract complementary information from two per-spectives: implicit and explicit. Implicit interactions refer to cross-feature relationships that are not predefined but instead emerge indirectly through nonlinear transformations. Multi-Layer Percep-trons (MLPs [ 34 ]) are well suited for this purpose. They act as universal function approximators. By stacking nonlinear layers, MLPs automatically combine features and build complex high-order dependencies from data without manual feature engineering. However, the behavior of these implicit mechanisms is inherently opaque: it is difficult to ascertain which specific interactions have actually been learned, or whether the learned cross terms are meaningful at all, thus limiting model interpretability and diagnostics. In contrast to implicit models, the explicit stream is designed to model feature interactions in a structured and interpretable manner. This is typically achieved using well-defined mathematical operations such as the inner product, outer product, or element-wise product to directly simulate feature crosses. Foundational models such as FM [ 38 ], PNN [ 36 ], and CrossNet [ 51 ] pioneered this approach. Extensive research [ 18 , 32 , 43 ] has highlighted the critical role of second-order feature interactions in CTR prediction, showing that modeling pairwise dependencies between features can significantly improve predictive performance. Nevertheless, methods that focus solely on second-order interactions are inherently limited in their ability to capture higher-order dependencies, which has motivated recent studies [ 3, 29 , 46 , 53 , 59 ] to develop more sophisticated architectures capable of explicitly modeling complex, higher-order feature interactions. For instance, DCNv2 [ 52 ] and xDeepFM [ 26 ] stack multiple layers of CrossNet and CIN to model high-order explicit interactions, while AutoInt employs a multi-head self-attention mechanism to adaptively capture higher-order terms. Final [ 68 ] rapidly models high-order feature interactions through its exponentially growing structure, with self-distillation enabling effective fusion across modules. FinalMLP [ 30 ] further combines MLPs with feature gating and interaction aggregation to form a dual-stream architecture capturing both implicit and explicit interactions. Despite these advances, most existing models, although well designed and structurally innovative, suffer from substantial architectural complexity, which raises computational cost and hinders deployment in real-world systems. Furthermore, the implicit and explicit components often exhibit highly heterogeneous structures, and directly aggregating their outputs can lead to inconsistencies and suboptimal predictions. This highlights the necessity of alignment mechanisms to harmonize the two streams. In our approach, both the implicit and explicit branches share the same MLP backbone, which ensures structural compatibility of their outputs and facilitates a more effective and seamless alignment between the streams. 
+
+5.3 Knowledge Distillation 
+
+Knowledge distillation [ 14 ] aims to transfer knowledge from a teacher model to a student network through the teacher model’s outputs as supervisory signals. Beyond the conventional soft label [ 14 ]and hint regression [ 40 ] strategies, subsequent studies have broadened the scope of knowledge trans-fer to include inter-layer flow [ 40 ], cross-sample similarity [ 57 ], attention-based mechanisms [ 60 ], and other advanced techniques. These approaches allow student networks to approximate the performance of their teacher counterparts while substantially reducing computational costs, thereby improving their practicality for real-world deployment. More recently, ensemble distillation has  
+
+> ACM Trans. Knowl. Discov. Data., Vol. 1, No. 1, Article . Publication date: January 2026. 24 Kesha Ou, Zhen Tian, Wayne Xin Zhao ♠, Long Zhang, Sheng Chen, and Ji-Rong Wen
+
+been proposed to aggregate knowledge from multiple teacher models, achieving strong results across diverse tasks such as image classification [ 44 ] and machine translation [ 41 ]. The success of these methods across various domains has also stimulated growing interest within the recommenda-tion systems community. In large-scale recommendation scenarios, where high-dimensional sparse features and intricate feature interactions are common, distillation provides an effective means of balancing predictive performance and computational efficiency. By narrowing the performance gap between large and small models, KD-based approaches [ 45 , 56 , 64 , 69 ] have emerged as a particularly promising direction for recommender systems. Existing knowledge distillation approaches exhibit considerable diversity in the mechanisms by which knowledge is transferred from teacher to student. Some methods concentrate primarily on aligning the teacher’s output logits, whereas others emphasize the matching of intermediate hidden representations to provide richer supervisory signals for the student network. For instance, ECKD [ 69 ] aggregates knowledge from multiple teacher networks to exploit their complementary strengths, yet its effectiveness is highly dependent on the quality and diversity of the teachers, and excessive reliance on teacher signals can impede the student’s independent learning. To alleviate the accuracy loss induced during distillation, DAGFM [ 45 ] introduces a directed acyclic graph factorization machine to better capture complex feature relationships and narrow the gap between teacher and student. Despite these advances, KD-based methods continue to face critical challenges, including teacher–student mismatch, insufficient joint modeling of explicit and implicit interactions, and overfitting to the teacher distribution, all of which collectively undermine the generalization capacity of the student model. This highlights the necessity of designing more effective distillation and post-distillation procedures. In response, we propose an alignment fine-tuning stage that directly addresses teacher–student mismatch and strengthens the unified modeling of explicit and implicit feature interactions, thereby enabling the student model to achieve stronger robustness and enhanced generalization. 
+
+6 Conclusion 
+
+In this paper, we introduced the Dual-Stream MLP (DS-MLP), a framework for CTR prediction that is simple, efficient, and highly capable. By leveraging the universal approximation property of MLPs, our framework effectively distills structured knowledge from high-capacity teacher models that capture complex and high-order explicit feature interactions. This process builds a strong and transferable foundation of generalized knowledge for the student model, while preserving the efficiency of lightweight architectures. To further enhance representational capacity, we incorporate a parallel auxiliary MLP stream dedicated to modeling implicit feature interactions that may be underrepresented in the main stream. Since the two streams are designed to capture complementary explicit and implicit interaction patterns, DS-MLP introduces two alignment strategies operating at both the hidden-state and prediction levels. Batch-wise regularization stabilizes the outputs of both streams and brings them to a comparable numeric range. Meanwhile, direct task supervision ensures that each stream is aware of the target objective, functions as an independent predictor, and thus adjusts its outputs to achieve mutual compatibility. This enhances the task-specific capacity of each stream while preventing the stronger component from overwhelming the weaker one. Through the above optimization scheme, DS-MLP achieves a seamless and structurally consistent integration of explicit and implicit interaction modeling, resulting in more robust and interpretable feature representations. Extensive experiments on multiple public benchmarks show that DS-MLP consistently outper-forms strong baselines and achieves state-of-the-art performance. Importantly, its reliance on a pure MLP backbone ensures remarkable computational efficiency and low inference latency, making it both practical and scalable for real-world recommendation systems. 
+
+> ACM Trans. Knowl. Discov. Data., Vol. 1, No. 1, Article . Publication date: January 2026.
+
+Dual-Stream MLP is All You Need for CTR Prediction 25 
+
+For future work, we identify several promising directions to further enhance the DS-MLP frame-work. First, we aim to extend the dual-stream architecture to a multi-stream design, potentially leveraging a Mixture-of-Experts (MoE) paradigm to capture a broader spectrum of feature in-teraction patterns. Second, we plan to investigate adaptive strategies that jointly determine the optimal depth, width, and parameter-sharing of MLP components while dynamically balancing the contributions of explicit and implicit streams during training. These extensions are expected to enhance representational expressiveness, improve prediction robustness, and allow the model to better manage computational efficiency and hardware constraints. 
+
+Acknowledgments 
+
+This paper was partially supported by the National Natural Science Foundation of China No. 92470205 and Beijing Major Science and Technology Project under Contract no. Z251100008425002. Xin Zhao is the corresponding author. 
+
+References 
+
+[1] Mathieu Blondel, Akinori Fujino, Naonori Ueda, and Masakazu Ishihata. 2016. Higher-order factorization machines. 
+
+Advances in Neural Information Processing Systems 29 (2016). [2] Andreas Buja, Werner Stuetzle, and Yi Shen. 2005. Loss functions for binary class probability estimation and classifica-tion: Structure and applications. Working draft, November 3 (2005), 13. [3] Shaofeng Cai, Kaiping Zheng, Gang Chen, HV Jagadish, Beng Chin Ooi, and Meihui Zhang. 2021. Arm-net: Adaptive relation modeling network for structured data. In Proceedings of the 2021 International Conference on Management of Data . 207–220. [4] Bo Chen, Yichao Wang, Zhirong Liu, Ruiming Tang, Wei Guo, Hongkun Zheng, Weiwei Yao, Muyu Zhang, and Xiuqiang He. 2021. Enhancing explicit and implicit feature interactions via information sharing for parallel deep CTR models. In Proceedings of the 30th ACM international conference on information & knowledge management . 3757–3766. [5] Heng-Tze Cheng, Levent Koc, Jeremiah Harmsen, Tal Shaked, Tushar Chandra, Hrishi Aradhye, Glen Anderson, Greg Corrado, Wei Chai, Mustafa Ispir, et al . 2016. Wide & deep learning for recommender systems. In Proceedings of the 1st workshop on deep learning for recommender systems . 7–10. [6] Weiyu Cheng, Yanyan Shen, and Linpeng Huang. 2020. Adaptive factorization network: Learning adaptive-order feature interactions. In Proceedings of the AAAI Conference on Artificial Intelligence , Vol. 34. 3609–3616. [7] George Cybenko. 1989. Approximation by superpositions of a sigmoidal function. Mathematics of control, signals and systems 2, 4 (1989), 303–314. [8] Jiaxin Deng, Shiyao Wang, Kuo Cai, Lejian Ren, Qigen Hu, Weifeng Ding, Qiang Luo, and Guorui Zhou. 2025. Onerec: Unifying retrieve and rank with generative recommender and iterative preference alignment. arXiv preprint arXiv:2502.18965 (2025). [9] Simon Du, Jason Lee, Haochuan Li, Liwei Wang, and Xiyu Zhai. 2019. Gradient descent finds global minima of deep neural networks. In International conference on machine learning . PMLR, 1675–1685. [10] Yufei Feng, Fuyu Lv, Weichen Shen, Menghan Wang, Fei Sun, Yu Zhu, and Keping Yang. 2019. Deep session interest network for click-through rate prediction. In Proceedings of the 28th International Joint Conference on Artificial Intelligence . 2301–2307. [11] Lin Guan, Jia-Qi Yang, Zhishan Zhao, Beichuan Zhang, Bo Sun, Xuanyuan Luo, Jinan Ni, Xiaowen Li, Yuhang Qi, Zhifang Fan, et al . 2025. Make It Long, Keep It Fast: End-to-End 10k-Sequence Modeling at Billion Scale on Douyin. 
+
+arXiv preprint arXiv:2511.06077 (2025). [12] Huifeng Guo, Ruiming Tang, Yunming Ye, Zhenguo Li, and Xiuqiang He. 2017. DeepFM: a factorization-machine based neural network for CTR prediction. arXiv preprint arXiv:1703.04247 (2017). [13] Wei Guo, Rong Su, Renhao Tan, Huifeng Guo, Yingxue Zhang, Zhirong Liu, Ruiming Tang, and Xiuqiang He. 2021. Dual Graph enhanced Embedding Neural Network for CTR Prediction. In Proceedings of the 27th ACM SIGKDD Conference on Knowledge Discovery & Data Mining . 496–504. [14] Geoffrey Hinton, Oriol Vinyals, and Jeff Dean. 2015. Distilling the knowledge in a neural network. arXiv preprint arXiv:1503.02531 (2015). [15] Kurt Hornik, Maxwell Stinchcombe, and Halbert White. 1989. Multilayer feedforward networks are universal approxi-mators. Neural networks 2, 5 (1989), 359–366. [16] Bojian Hou, Xiaolong Liu, Xiaoyi Liu, Jiaqi Xu, Yasmine Badr, Mengyue Hang, Sudhanshu Chanpuriya, Junqing Zhou, Yuhang Yang, Han Xu, et al . 2026. Kunlun: Establishing Scaling Laws for Massive-Scale Recommendation Systems ACM Trans. Knowl. Discov. Data., Vol. 1, No. 1, Article . Publication date: January 2026. 26 Kesha Ou, Zhen Tian, Wayne Xin Zhao ♠, Long Zhang, Sheng Chen, and Ji-Rong Wen 
+
+through Unified Architecture Design. arXiv preprint arXiv:2602.10016 (2026). [17] Tongwen Huang, Zhiqi Zhang, and Junlin Zhang. 2019. FiBiNET: combining feature importance and bilinear feature interaction for click-through rate prediction. In Proceedings of the 13th ACM Conference on Recommender Systems .169–177. [18] Yuchin Juan, Yong Zhuang, Wei-Sheng Chin, and Chih-Jen Lin. 2016. Field-aware factorization machines for CTR prediction. In Proceedings of the 10th ACM conference on recommender systems . 43–50. [19] Jared Kaplan, Sam McCandlish, Tom Henighan, Tom B Brown, Benjamin Chess, Rewon Child, Scott Gray, Alec Radford, Jeffrey Wu, and Dario Amodei. 2020. Scaling laws for neural language models. arXiv preprint arXiv:2001.08361 (2020). [20] Farhan Khawar, Xu Hang, Ruiming Tang, Bin Liu, Zhenguo Li, and Xiuqiang He. 2020. Autofeature: Searching for feature interactions and their architectures for click-through rate prediction. In Proceedings of the 29th ACM International Conference on Information & Knowledge Management . 625–634. [21] Lingwei Kong, Lu Wang, Changping Peng, Zhangang Lin, Ching Law, and Jingping Shao. 2025. Generative Click-through Rate Prediction with Applications to Search Advertising. arXiv preprint arXiv:2507.11246 (2025). [22] Weijiang Lai, Beihong Jin, Jiongyan Zhang, Yiyuan Zheng, Jian Dong, Jia Cheng, Jun Lei, and Xingxing Wang. 2025. Exploring Scaling Laws of CTR Model for Online Performance Improvement. In Proceedings of the Nineteenth ACM Conference on Recommender Systems . 114–123. [23] Honghao Li, Yiwen Zhang, Yi Zhang, Hanwei Li, Lei Sang, and Jieming Zhu. 2024. FCN: Fusing Exponential and Linear Cross Network for Click-Through Rate Prediction. arXiv preprint arXiv:2407.13349 (2024). [24] Zekun Li, Zeyu Cui, Shu Wu, Xiaoyu Zhang, and Liang Wang. 2019. Fi-gnn: Modeling feature interactions via graph neural networks for ctr prediction. In Proceedings of the 28th ACM International Conference on Information and Knowledge Management . 539–548. [25] Zekun Li, Shu Wu, Zeyu Cui, and Xiaoyu Zhang. 2021. GraphFM: Graph factorization machines for feature interaction modeling. arXiv e-prints (2021), arXiv–2105. [26] Jianxun Lian, Xiaohuan Zhou, Fuzheng Zhang, Zhongxia Chen, Xing Xie, and Guangzhong Sun. 2018. xdeepfm: Combining explicit and implicit feature interactions for recommender systems. In Proceedings of the 24th ACM SIGKDD international conference on knowledge discovery & data mining . 1754–1763. [27] Bin Liu, Ruiming Tang, Yingzhi Chen, Jinkai Yu, Huifeng Guo, and Yuzhou Zhang. 2019. Feature generation by convolutional neural network for click-through rate prediction. In The World Wide Web Conference . 1119–1129. [28] Jorge M Lobo, Alberto Jiménez-Valverde, and Raimundo Real. 2008. AUC: a misleading measure of the performance of predictive distribution models. Global ecology and Biogeography 17, 2 (2008), 145–151. [29] Wantong Lu, Yantao Yu, Yongzhe Chang, Zhen Wang, Chenhui Li, and Bo Yuan. 2021. A dual input-aware factoriza-tion machine for CTR prediction. In Proceedings of the Twenty-Ninth International Conference on International Joint Conferences on Artificial Intelligence . 3139–3145. [30] Kelong Mao, Jieming Zhu, Liangcai Su, Guohao Cai, Yuru Li, and Zhenhua Dong. 2023. FinalMLP: an enhanced two-stream MLP model for CTR prediction. In Proceedings of the AAAI Conference on Artificial Intelligence , Vol. 37. 4552–4560. [31] Kesha Ou, Zhen Tian, Wayne Xin Zhao, Hongyu Lu, and Ji-Rong Wen. 2026. GenCI: Generative Modeling of User Interest Shift via Cohort-based Intent Learning for CTR Prediction. arXiv preprint arXiv:2601.18251 (2026). [32] Junwei Pan, Jian Xu, Alfonso Lobos Ruiz, Wenliang Zhao, Shengjun Pan, Yu Sun, and Quan Lu. 2018. Field-weighted factorization machines for click-through rate prediction in display advertising. In Proceedings of the 2018 World Wide Web Conference . 1349–1357. [33] Allan Pinkus. 1999. Approximation theory of the MLP model in neural networks. Acta numerica 8 (1999), 143–195. [34] Marius-Constantin Popescu, Valentina E Balas, Liliana Perescu-Popescu, and Nikos Mastorakis. 2009. Multilayer perceptron and neural networks. WSEAS Transactions on Circuits and Systems 8, 7 (2009), 579–588. [35] Y Qu, H Cai, W Zhang, Y Wen, and J Wang. 2017. Product-Based Neural Networks for User Response Prediction. In 
+
+The IEEE International Conference on Data Mining . IEEE, 1149–1154. [36] Yanru Qu, Bohui Fang, Weinan Zhang, Ruiming Tang, Minzhe Niu, Huifeng Guo, Yong Yu, and Xiuqiang He. 2018. Product-based neural networks for user response prediction over multi-field categorical data. ACM Transactions on Information Systems (TOIS) 37, 1 (2018), 1–35. [37] Shashank Rajput, Nikhil Mehta, Anima Singh, Raghunandan Hulikal Keshavan, Trung Vu, Lukasz Heldt, Lichan Hong, Yi Tay, Vinh Tran, Jonah Samost, et al . 2023. Recommender systems with generative retrieval. Advances in Neural Information Processing Systems 36 (2023), 10299–10315. [38] Steffen Rendle. 2010. Factorization machines. In 2010 IEEE International conference on data mining . IEEE, 995–1000. [39] Matthew Richardson, Ewa Dominowska, and Robert Ragno. 2007. Predicting clicks: estimating the click-through rate for new ads. In Proceedings of the 16th international conference on World Wide Web . 521–530. [40] Adriana Romero, Nicolas Ballas, Samira Ebrahimi Kahou, Antoine Chassang, Carlo Gatta, and Yoshua Bengio. 2015. FitNets: Hints for Thin Deep Nets. In Proceedings of International Conference on Learning Representations, (ICLR) .ACM Trans. Knowl. Discov. Data., Vol. 1, No. 1, Article . Publication date: January 2026. Dual-Stream MLP is All You Need for CTR Prediction 27 
+
+[41] Zhiqiang Shen, Zhankui He, and Xiangyang Xue. 2019. MEAL: Multi-Model Ensemble via Adversarial Learning. In 
+
+The Thirty-Third AAAI Conference on Artificial Intelligence (AAAI) . 4886–4893. [42] Weiping Song, Chence Shi, Zhiping Xiao, Zhijian Duan, Yewen Xu, Ming Zhang, and Jian Tang. 2019. Autoint: Automatic feature interaction learning via self-attentive neural networks. In Proceedings of the 28th ACM International Conference on Information and Knowledge Management . 1161–1170. [43] Yang Sun, Junwei Pan, Alex Zhang, and Aaron Flores. 2021. Fm2: Field-matrixed factorization machines for recom-mender systems. In Proceedings of the Web Conference 2021 . 2828–2837. [44] Xu Tan, Yi Ren, Di He, Tao Qin, Zhou Zhao, and Tie-Yan Liu. 2019. Multilingual Neural Machine Translation with Knowledge Distillation. In 7th International Conference on Learning Representations (ICLR) .[45] Zhen Tian, Ting Bai, Zibin Zhang, Zhiyuan Xu, Kangyi Lin, Ji-Rong Wen, and Wayne Xin Zhao. 2023. Directed acyclic graph factorization machines for CTR prediction via knowledge distillation. In Proceedings of the Sixteenth ACM International Conference on Web Search and Data Mining . 715–723. [46] Zhen Tian, Ting Bai, Wayne Xin Zhao, Ji-Rong Wen, and Zhao Cao. 2023. EulerNet: Adaptive Feature Interaction Learning via Euler’s Formula for CTR Prediction. In Proceedings of the 46th International ACM SIGIR Conference on Research and Development in Information Retrieval . 1376–1385. [47] Zhen Tian, Yuhong Shi, Xiangkun Wu, Wayne Xin Zhao, and Ji-Rong Wen. 2024. Rotative Factorization Machines. In 
+
+Proceedings of the 30th ACM SIGKDD Conference on Knowledge Discovery and Data Mining . 2912–2923. [48] Fangye Wang, Hansu Gu, Dongsheng Li, Tun Lu, Peng Zhang, and Ning Gu. 2023. Towards deeper, lighter and interpretable cross network for ctr prediction. In Proceedings of the 32nd ACM International Conference on Information and Knowledge Management . 2523–2533. [49] Fangye Wang, Yingxu Wang, Dongsheng Li, Hansu Gu, Tun Lu, Peng Zhang, and Ning Gu. 2022. Enhancing CTR prediction with context-aware feature representation learning. In Proceedings of the 45th International ACM SIGIR Conference on Research and Development in Information Retrieval . 343–352. [50] Kefan Wang, Hao Wang, Wei Guo, Yong Liu, Jianghao Lin, Defu Lian, and Enhong Chen. 2025. DLF: Enhancing Explicit-Implicit Interaction via Dynamic Low-Order-Aware Fusion for CTR Prediction. In Proceedings of the 48th International ACM SIGIR Conference on Research and Development in Information Retrieval . 2213–2223. [51] Ruoxi Wang, Bin Fu, Gang Fu, and Mingliang Wang. 2017. Deep & cross network for ad click predictions. In Proceedings of the ADKDD’17 . 1–7. [52] Ruoxi Wang, Rakesh Shivanna, Derek Cheng, Sagar Jain, Dong Lin, Lichan Hong, and Ed Chi. 2021. DCN V2: Improved deep & cross network and practical lessons for web-scale learning to rank systems. In Proceedings of the Web Conference 2021 . 1785–1797. [53] Zhiqiang Wang, Qingyun She, and Junlin Zhang. 2021. Masknet: Introducing feature-wise multiplication to CTR ranking models by instance-guided mask. arXiv preprint arXiv:2102.07619 (2021). [54] Jun Xiao, Hao Ye, Xiangnan He, Hanwang Zhang, Fei Wu, and Tat-Seng Chua. 2017. Attentional factorization machines: learning the weight of feature interactions via attention networks. In Proceedings of the 26th International Joint Conference on Artificial Intelligence . 3119–3125. [55] Xin Xin, Bo Chen, Xiangnan He, Dong Wang, Yue Ding, and Joemon M Jose. 2019. CFM: Convolutional factorization machines for context-aware recommendation.. In IJCAI , Vol. 19. 3926–3932. [56] Chen Xu, Quan Li, Junfeng Ge, Jinyang Gao, Xiaoyong Yang, Changhua Pei, Fei Sun, Jian Wu, Hanxiao Sun, and Wenwu Ou. 2020. Privileged features distillation at Taobao recommendations. In Proceedings of the 26th ACM SIGKDD International Conference on Knowledge Discovery & Data Mining . 2590–2598. [57] Junho Yim, Donggyu Joo, Jihoon Bae, and Junmo Kim. 2017. A Gift from Knowledge Distillation: Fast Optimization, Network Minimization and Transfer Learning. In IEEE Conference on Computer Vision and Pattern Recognition (CVPR) .[58] Mingjia Yin, Junwei Pan, Hao Wang, Ximei Wang, Shangyu Zhang, Jie Jiang, Defu Lian, and Enhong Chen. 2025. From Feature Interaction to Feature Generation: A Generative Paradigm of CTR Prediction Models. 267 (2025). [59] Feng Yu, Zhaocheng Liu, Qiang Liu, Haoli Zhang, Shu Wu, and Liang Wang. 2020. Deep interaction machine: A simple but effective model for high-order feature interactions. In Proceedings of the 29th ACM International Conference on Information & Knowledge Management . 2285–2288. [60] Sergey Zagoruyko and Nikos Komodakis. 2017. Paying More Attention to Attention: Improving the Performance of Convolutional Neural Networks via Attention Transfer. In International Conference on Learning Representations, (ICLR) 2017 .[61] Buyun Zhang, Liang Luo, Yuxin Chen, Jade Nie, Xi Liu, Daifeng Guo, Yanli Zhao, Shen Li, Yuchen Hao, Yantao Yao, et al. 2024. Wukong: Towards a scaling law for large-scale recommendation. arXiv preprint arXiv:2403.02545 (2024). [62] Moyu Zhang, Yun Chen, Yujun Jin, Jinxin Hu, and Yu Zhang. 2025. DGenCTR: Towards a Universal Generative Paradigm for Click-Through Rate Prediction via Discrete Diffusion. arXiv preprint arXiv:2508.14500 (2025). [63] Pengyu Zhao, Kecheng Xiao, Yuanxing Zhang, Kaigui Bian, and Wei Yan. 2020. Amer: Automatic behavior modeling and interaction exploration in recommender system. arXiv preprint arXiv:2006.05933 (2020). ACM Trans. Knowl. Discov. Data., Vol. 1, No. 1, Article . Publication date: January 2026. 28 Kesha Ou, Zhen Tian, Wayne Xin Zhao ♠, Long Zhang, Sheng Chen, and Ji-Rong Wen 
+
+[64] Guorui Zhou, Ying Fan, Runpeng Cui, Weijie Bian, Xiaoqiang Zhu, and Kun Gai. 2018. Rocket launching: A universal and efficient framework for training well-performing light net. In Proceedings of the AAAI Conference on Artificial Intelligence , Vol. 32. [65] Guorui Zhou, Na Mou, Ying Fan, Qi Pi, Weijie Bian, Chang Zhou, Xiaoqiang Zhu, and Kun Gai. 2019. Deep interest evolution network for click-through rate prediction. In Proceedings of the AAAI conference on artificial intelligence ,Vol. 33. 5941–5948. [66] Chenxu Zhu, Bo Chen, Weinan Zhang, Jincai Lai, Ruiming Tang, Xiuqiang He, Zhenguo Li, and Yong Yu. 2021. AIM: Automatic Interaction Machine for Click-Through Rate Prediction. IEEE Transactions on Knowledge and Data Engineering (2021). [67] Jie Zhu, Zhifang Fan, Xiaoxie Zhu, Yuchen Jiang, Hangyu Wang, Xintian Han, Haoran Ding, Xinmin Wang, Wenlin Zhao, Zhen Gong, et al . 2025. Rankmixer: Scaling up ranking models in industrial recommenders. In Proceedings of the 34th ACM International Conference on Information and Knowledge Management . 6309–6316. [68] Jieming Zhu, Qinglin Jia, Guohao Cai, Quanyu Dai, Jingjie Li, Zhenhua Dong, Ruiming Tang, and Rui Zhang. 2023. Final: Factorized interaction layer for ctr prediction. In Proceedings of the 46th International ACM SIGIR Conference on Research and Development in Information Retrieval . 2006–2010. [69] Jieming Zhu, Jinyang Liu, Weiqi Li, Jincai Lai, Xiuqiang He, Liang Chen, and Zibin Zheng. 2020. Ensembled CTR prediction via knowledge distillation. In Proceedings of the 29th ACM International Conference on Information & Knowledge Management . 2941–2958. [70] Difan Zou, Yuan Cao, Dongruo Zhou, and Quanquan Gu. 2018. Stochastic gradient descent optimizes over-parameterized deep ReLU networks. arXiv preprint arXiv:1811.08888 (2018). ACM Trans. Knowl. Discov. Data., Vol. 1, No. 1, Article . Publication date: January 2026.

@@ -1,0 +1,318 @@
+Title: Contextual Scalarisation Thompson Sampling for multi-objective decisions in public media
+
+URL Source: https://arxiv.org/pdf/2605.31291v1
+
+Published Time: Mon, 01 Jun 2026 01:15:16 GMT
+
+Number of Pages: 15
+
+Markdown Content:
+# Contextual Scalarisation Thompson Sampling for multi-objective decisions in public media 
+
+Théo Maëtz 1, Luc Guillet 1, Andrea Cavallaro 2 
+
+> 1
+
+Radio Télévision Suisse, Geneva, Switzerland 
+
+theo.maetz@rts.ch luc.guillet@rts.ch  
+
+> 2
+
+EPFL, Lausanne, Switzerland 
+
+andrea.cavallaro@epfl.ch 
+
+Abstract. Recommender systems may operate under multiple, com-peting objectives. For example, audience reach, cultural values, public service mandate, and operational constraints must be balanced in edi-torial decisions of public service media. Existing approaches relying on fixed combinations of objectives or Pareto-based optimisation do not adapt to changing priorities across situations. In this paper, we propose Contextual Scalarisation Thompson Sampler (CSTS), a multi-objective contextual bandit method that learns to weight objectives as a function of the observed context. We evaluate CSTS on real programming data from Radio Télévision Suisse, the Swiss national broadcaster, showing improved contextual relevance and better alignment with expert cura-tion practices compared to fixed weight and standard contextual bandit approaches. 
+
+Keywords: Contextual Multi-Armed Bandits · Recommender Systems 
+
+## 1 Introduction 
+
+Recommender systems that optimise solely for short-term engagement can nar-row exposure to a small set of highly popular items, amplify popularity biases and reduce diversity in what audiences see [15, 16]. Rather than optimising a commercial objective such as engagement, public service media organisations are mandated to act in the public interest. Hence, their programming decisions must balance multiple, sometimes conflicting, criteria [23]. Examples of such criteria include reaching a broad audience while promoting cultural values with local relevance, representing all voices including minorities, supporting local pro-ductions, respecting legal and significant budgetary constraints, and maintaining long-term viewer trust. The corresponding decisions, which need to be transpar-ent, can be posed as a multi-objective recommendation problem, where each criterion is modelled through a corresponding value signal. Public service media scheduling has traditionally been driven by expert cura-tors using manual workflows. For each programming decision, curators visually inspect catalogues of films and shows, relying on their expertise to weigh several  
+
+> arXiv:2605.31291v1 [cs.IR] 29 May 2026 2Théo Maëtz, Luc Guillet, Andrea Cavallaro
+
+factors at once, depending on the situation. In practice, much of the broadcast-ing grid is constrained by ingrained viewing habits and recurring formats (e.g. news, magazines), so the room for manoeuvre is limited in many time slots. By contrast, scheduled film slots are where curators typically have the most flexi-bility and where the editorial stakes are highest, which is why in this work we focus on movie recommendations . For each time slot curators identify a small set of plausible candidates and then make a final choice within this shortlist. Therefore, a recommender system should help at the slate level (i.e., the candi-date list for a time slot) by surfacing a ranked list of films that largely overlaps with those an expert would consider for that specific context. The overall pro-gramming grid (i.e., the full schedule across time slots) is still mostly curated by hand, with limited algorithmic support beyond basic filtering and search by genre, keywords, production year, award nominations, or synopsis. While these tools help narrow down thousands of titles to a manageable shortlist, they do not account for editorial tradeoffs nor adapt to different programming contexts. Scheduling systems such as the Mediagenix Platform [7] are widely used across European public service media for catalogue management and grid scheduling, and include automation modules for secondary events or promotional content. However, in the premium editorial slots we focus on, the final programme selec-tion and tradeoffs remain largely driven by curators: current systems are mostly used to manually apply basic searches and filters, a process that does not scale well to large catalogues. To address this challenge, we designed a decision support system for curators to navigate the catalogue more easily by surfacing a shortlist of plausible options for the curator to make the final decision. To this end, we propose Contextual Scalarisation Thompson Sampler (CSTS), a multi-objective recommender for-mulated as a contextual multi-armed bandit. CSTS models utility as a learned, context-dependent scalarisation of a vector of value signals. Unlike prior work that relies on fixed weights [9, 17, 18, 20] or static Pareto frontiers [10, 19], CSTS decomposes recommendation quality into multiple bounded value signals and learns a context-dependent weight vector to explore tradeoffs between objec-tives, while retaining the interpretability and data efficiency of scalar reward bandits. The exploration happens via Thompson sampling [3, 21]. 
+
+## 2 Related Works 
+
+A bandit problem is a sequential decision-making game between a learner and an environment [12]. At each round the learner chooses an action from a fixed set, observes only the reward for that action, and uses this feedback to improve future choices. A bandit algorithm specifies how the learner selects actions based on past interactions. Thompson sampling is a bandit algorithm that maintains a distribution over reward models and, at each decision step, samples model parameters from this distribution and implements the optimal action under the sample [21]. Thompson sampling was adopted in recommender systems for online matrix-factorisation to drive exploration in large catalogues [11]. Contextual Scalarisation Thompson Sampling 3User Input  System-side Input       
+
+> Audience Novelty Rights Diversity Competition
+> Compute value signals for each candidate: Candidate set:
+> Context Feature
+> Encoder
+> CSTS Policy
+> Sample weights Score and rank
+> Top-5 ranked recommendations
+> For each item in slate:
+> contributions (per signal i):
+> Model
+> Parameters
+> Sample:
+> User Feedback:
+> Binary Selection
+> Signal Flags
+> Update
+> parameters
+> ✓
+> ✓
+> Outputs
+> Date & hour, day of
+> week, season
+> Genres, actors,
+> keywords
+> Past showings in recent
+> memory
+> Catalogue metadata Historical programming
+> Past showings and
+> following weeks
+> Competition schedules
+> Licensing contracts;
+> dates and showings
+> Rights database
+> Audience
+> Rights Novelty
+> Diversity
+> Competition
+> Time-slot context
+
+Fig. 1. Decision-support with the Contextual Scalarisation Thompson Sampler (CSTS). Given a time-slot context xc,t (constructed from broadcast slot descriptors), system-side data such as catalogue metadata, historical programming, competition schedules, and the rights database, CSTS determines the available candidate set At
+
+and computes five value signals ϕ(at, xc,t ), namely audience, novelty, diversity, com-petition, and rights, for each candidate title at ∈ A t. CSTS samples model parameters 
+
+˜θt = ( ˜Ut, ˜bt) to produce context-dependent weights ˜wt(xc,t ) = σ( ˜Utxc,t +˜bt) and scores each candidate by ˜ut(at) = ˜w⊤ 
+
+> t
+
+ϕ(at, xc,t ). The Top-5 scored items form the ranked slate. Each recommendation is accompanied by per-signal contributions ˜wt,i ϕi(a, xc,t ).The curator feedback consisting of the binary selection and optional value signal flag-ging yt, is used to update θt.
+
+Contextual bandits let the learner observe a context describing the current situation (e.g. user or time features) before choosing an action [13]. In this re-gard the quality of a recommendation is not fixed but modelled as context-dependent, because the same item may be relevant for a situation (or user) and irrelevant in another [2]. Linear contextual bandits with a scalar reward im-prove per-user article choice (click-through rates) [13]. Change detection can be combined with disjoint and hybrid payoff models, where each arm has its own piecewise-stationary preference vector, so different items can change at differ-ent times [25]. The reward depends both on an arm-specific preference vector and on a global coefficient vector shared by all arms, so part of user preference can drift jointly across items while part changes separately for each arm. A hy-pernetwork may map contextual features to the parameters of the contextual bandit model, still targeting a single scalar measure of user engagement [22]. Explanations layered on top of an underlying single-objective bandit inside the reward can augment contextual bandits for music playlist recommendations [14]. Context-specific importance weights can be combined with context-independent 4 Théo Maëtz, Luc Guillet, Andrea Cavallaro 
+
+user preferences over reviews to produce a single rating for each item in a given context [6]. Thompson sampling can be extended to contextual bandits with linear payoffs [3]. A scalable neural contextual bandit with an epistemic neural network architecture that represents uncertainty in a compact way implements Thompson sampling with few neural forward passes [27]. However, this work still optimises a single scalar behavioural reward, such as clicks or user ratings. 
+
+Multi-objective recommender systems go beyond accuracy and may consider also diversity, novelty and coverage [9]. Fixed scalarisation with predefined weights collapses all metrics into a single utility score [9, 18, 20], for example by linearly combining accuracy and business metrics [20]. Pareto-based methods, typically designed as offline systems, treat recommendations as genuine multi-objective optimisation and provide a list of optimal solutions to choose from (or assume a static policy choice about where to operate on the Pareto frontier). A Pareto-efficient strategy can generate recommendation lists that are non-dominated with respect to accuracy, diversity, and novelty [19]. Approximate Pareto fron-tiers can be manually adjusted to tradeoff competing objectives for the user to select their preferred point [10]. Closer to our setting, Qassimi and Rakrak [17] study multi-objective contextual bandits for smart tourism recommendation, where each arm is associated with several utility components (e.g. user satis-faction, provider revenue), and the algorithm balances them with prespecified scalarisation of objectives. The tradeoff between objectives is usually fixed at an a priori belief or tuned at a global level, rather than adapted to each decision context. Table 1 summarises the main features of bandit and multi-objective recom-menders. In our work, we assume a contextual bandit framework but consider multiple value signals for each action. Rather than optimising several objectives separately or approximating a Pareto frontier, we introduce a contextual scalar-isation mechanism that combines these signals into a single reward based on the current context. This preserves the algorithmic simplicity and data efficiency of scalar reward contextual bandits while allowing the adaptation of the relative importance of objectives across situations. 
+
+## 3 Proposed approach 
+
+Let At be the set of possible actions, namely choices of available titles, which vary over t due to contractual constraints. Let c be the context index and xc,t ∈ X 
+
+the context vector that represents features describing the slot, channel, season-ality/time of year at time t in the context space, X ⊆ Rp, where p ∈ N is the context dimension. Let a vector of objectives, ϕ(at, xc,t ), encode how well action at performs along each of the N underlying objectives: 
+
+ϕ(at, xc,t ) = ( ϕ1(at, xc,t ), . . . , ϕ N (at, xc,t )) , (1) where ϕi(at, xc,t ) ∈ [0 , 1] represents a specific objective, the i-th value signal for action at in context xc,t . In our programming instantiation, we define N = 5 Contextual Scalarisation Thompson Sampling 5
+
+Table 1. Comparison of bandit and multi-objective recommenders. Key – Ref. : refer-ence, B: indicates whether it is formulated as a Bandit algorithm, M: specifies whether Multiple objectives (value signals) are modelled, C: indicates whether the method learns Context-dependent weightings over objectives, P: marks methods that perform Pareto-based selection or optimisation, and E: marks methods that are Explainable. 
+
+Ref. Method B M C P E Dataset(s) 
+
+[3] Linear TS bandit # # # # –[11] Particle TS # # # # –[27] ENR # # # # News, Social Media [25] Dynamic ctx. bandit # # # # News, Music [22] HyperBandit # # # # News, Map POI [13] LinUCB # # # News [14] Bart # # # Music [6] Ctx. opinions Rec. # # # # Reviews [18] Utility-based scheduler # # # # # Energy consumption [20] Global weighted sum # # # # LinkedIn [19] Pareto-efficient hybrid. # # # Movies, Music [10] PMORS # # # Short videos [17] MOC-MAB # # Tourism, TripAdvisor ours CSTS # TV programming 
+
+objectives measuring (i) audience potential, (ii) diversity, (iii) novelty, (iv) com-petition with concurrently airing programmes, and (v) rights/contracts manage-ment. The relative contribution of the value signals may vary with xc,t .After selecting an action at ∈ A t in context xc,t , the agent observes a binary reward rt ∈ { 0, 1}. Let π be a policy that selects an action 
+
+at = π(xc,t , At) (2) for each context, xc,t , and candidate set, At. We aim to learn π that, on average over the different possible contexts, selects actions with maximal expected reward according to the contextual weighting of the value signals: 
+
+μπ (xc,t , At) = E[rt | xc,t , At, a t = π(xc,t , At)] . (3) This problem can be formalised as a multi-objective contextual multi-armed bandit problem. The idea is to exploit ϕ(at, xc,t ) while learning from single ban-dit reward rt observed for the chosen action. For each (at, xc,t ) the bounded and normalised value signal vector ϕ(at, xc,t ) ∈ [0 , 1] N summarises how at performs on the N underlying objectives. In our specific use case, we adopt external contextual information such as the broadcast schedules of competing channels over the same period, the cata-logue of all films that were available, additional movie metadata from TMDb [1] (e.g. genres, production year), and the proximity of rights expiry in the cata-logue, to compute the value signal vector ϕ(at, xc,t ) for each candidate film at.For every programming decision, we reconstruct the complete context at time 6 Théo Maëtz, Luc Guillet, Andrea Cavallaro 
+
+Algorithm 1 Contextual Scalarisation Thompson Sampling (CSTS) decision 
+
+Require: xc,t , At, θ = ( U , b)
+
+1: Sample ˜θt = ( ˜U t, ˜bt)
+
+2: ˜wt ← w˜θt (xc,t ) ▷ Eq. (5) 3: for each at ∈ A t do 
+
+4: Compute ϕ(at, xc,t )
+
+5: ˜ut(at) ← ˜w⊤ 
+
+> t
+
+ϕ(at, xc,t )
+
+6: end for 
+
+7: a∗ 
+
+> t
+
+← arg max at∈A t ˜ut(at) ▷ or select the top-K actions 8: Observe reward rt for a∗
+
+> t
+
+9: ut(a∗ 
+
+> t
+
+) ← wθ (xc,t )⊤ϕ(a∗ 
+
+> t
+
+, xc,t )
+
+10: ˆpt ← σ ut(a∗ 
+
+> t
+
+)
+
+11: θt+1 ← UpdateParameters (θt, xc,t , r t, ˆpt)
+
+t as a feature vector xc,t (time of day, day of the week, public holidays, chan-nel and competition schedule), the set of available movies At given rights and contractual constraints, the associated value signal vector ϕ(at, xc,t ) for each 
+
+at ∈ A t, and the item a⋆t actually selected by the curator. These components reflect the environment of the curator responsible for the programming decisions. Rather than fixing a global weighting of these objectives as in [9, 17, 18, 20], we let their relative importance depend on the context through a learned weighting function w : X → ∆N −1, with ∆N −1 being the probability simplex where all entries are non-negative and summing to one. We define a scalar utility, 
+
+u(at, xc,t ) ∈ [0 , 1] , as 
+
+u(at, xc,t ) = w(xc,t )⊤ϕ(at, xc,t ). (4) Given u(at, xc,t ) and ϕ(at, xc,t ), we learn a context-dependent weight func-tion w(xc,t ) to tradeoff different objectives in each situation. Analogous to apply-ing a multinomial logistic layer over objectives [4], we parametrise this weighting function with a linear gating model over the context features: 
+
+wθ (xc,t ) = softmax( U x c,t + b) , (5) where θ = ( U , b) are the model parameters: U ∈ RN ×p maps the context vector xc,t to one logit per value signal and b ∈ RN adds a baseline logit per signal, independent of context. To ensure that all entries are non-negative and sum to one, the summed logits are then passed through the softmax function 
+
+RN → [0 , 1] N . This keeps each objective visible through ϕ(., . ), while expressing the tradeoff between them with a probability vector over objectives. To balance exploration and exploitation when generating w(xc,t ), we use the contextual Thompson sampling framework [3] on θ = ( U , b). Because the randomness enters at the level of θ, the algorithm explores different plausible tradeoffs between objectives rather than injecting arbitrary noise in item scores. In parts of the context space where we have only few observed decisions and re-wards for similar contexts, the model remains uncertain about the right weights. Contextual Scalarisation Thompson Sampling 7
+
+This uncertainty leads to larger variations (i.e. more exploration) in the sam-pled weights ˜wt. As we gather more feedback in well-covered regions, the sampled weights stabilise and the policy exploits what it has learned. These components define the contextual bandit policy through Thompson sampling over θ. At each step t, we draw ˜θt from the current parameter distribution, compute the sampled weights ˜wt = w˜θt (xc,t ), and select 
+
+πCSTS (xc,t , At) = arg max 
+
+> at∈A t
+
+˜w⊤ 
+
+> t
+
+ϕ(at, xc,t ). (6) When recommending a ranked shortlist (slate) of size K, we return the Top-
+
+K actions in At according to the same sampled utility. After the curator selects an item, we observe the binary reward rt and update the parameters θ by comparing this outcome to the scalar utility assigned to the chosen action under the current weights: 
+
+u(at, xc,t ) = wθ (xc,t )⊤ϕ(at, xc,t ). (7) We convert this scalar utility to a predicted acceptance probability with a sigmoid function, ˆpt = σ u(at, xc,t ), and update θ by minimising a logistic loss: 
+
+Lt(θ) = −
+
+h
+
+rt log ˆ pt + (1 − rt) log  1 − ˆpt
+
+i
+
+, (8) using standard gradient descent [5]. We maintain a simple parametric distribution over the parameters, which we use to draw ˜θt in Algorithm 1. This distribution is centred at the current pa-rameters θt, and its scale encodes the uncertainty about each parameter. We use a diagonal approximation, maintaining uncertainty per parameter via an RMS-type (Root Mean Square) accumulator of past gradients, as in RMSProp [24]. After each decision, the same gradient information used to update θt is also used to update these uncertainty terms. Because the model scores actions through value signals ϕ(at, xc,t ) and context-dependent weights wθ (xc,t ), for each objective we can explicitly see the strength of the signal and the value of its weight in a given context. This allows the cu-rator to optionally input through a guiding vector yt ∈ RN which objectives are most relevant for a given decision, beyond just observing rt ∈ { 0, 1} for the chosen action. We then use yt to steer the learned weights wθ (xc,t ) for that specific situation through an auxiliary signal matching loss: 
+
+Lsignal  
+
+> t
+
+(θ) = 12 wθ (xc,t ) − yt
+
+> 22
+
+. (9) We add this loss to the bandit reward logistic loss for updating θ to turn curator feedback into an explicit signal about editorial priorities in a given con-text. In the next section, we assess the performance of the proposed contextual multi-objective bandit, CSTS, in reproducing expert programming decisions and in terms of tradeoffs between value signals across different contexts. 8 Théo Maëtz, Luc Guillet, Andrea Cavallaro 
+
+## 4 Evaluation 
+
+4.1 Experimental setup 
+
+We compare CSTS with (i) static global weights, (ii) audience potential max-imisation using a supervised audience rating regressor trained offline on past broadcasts, (iii) vanilla Thompson sampling [21] and (iv) LinUCB contextual bandit [13]. The static global weights approach has a fixed global weight vector 
+
+w0 ∈ ∆N −1. This is a non-contextual multi-objective baseline defined through curator discussions and scores candidates by u(at, xc,t ) = w⊤ 
+
+> 0
+
+ϕ(at, xc,t ). This baseline tests how far one can go with a single, context-independent trade-off between value signals. The static weights account for domain knowledge about typical tradeoffs across the grid. The audience potential maximisation 
+
+approach mimics a standard recommender driven by engagement metrics. This baseline uses only the audience potential value signal. The vanilla Thompson sampling is a non-contextual multi-armed bandit baseline that uses the value signals ϕ(at, xc,t ) but assigns them global, context-independent weights. We apply Thompson sampling directly on these weights, so that each value sig-nal has a single posterior weight vector shared across all contexts. Finally, the LinUCB contextual bandit approach is a linear contextual bandit based on LinUCB [13]. For each candidate at ∈ A t in context xc,t , we build a feature vector ψ(at, xc,t ) by concatenating the slot context and the value signals, i.e. 
+
+ψ(at, xc,t ) = [ xc,t ; ϕ(at, xc,t ) ] . The expected bandit reward rt ∈ { 0, 1} is mod-elled as a linear function E[rt | at, xc,t ] ≈ θ⊤ψ(at, xc,t ). LinUCB selects actions using this prediction and an upper confidence bonus that favours candidates with more uncertain rewards. In contrast to our contextual Thompson bandit, which first maps context to weights over value signals and samples these weights with uncertainty, LinUCB treats context and signals as a flat feature vector, op-timises a single scalar reward, and explores through an explicit confidence bonus rather than parameter sampling. We use two years of historical programming logs, where each record corre-sponds to a curator choosing a film for a specific RTS time slot. We evaluate all recommenders under comparable conditions by adopting an offline replay protocol on the historical logs. We iterate over the reconstructed programming decisions in chronological order and, at each time t, let each policy rank the cor-responding candidate set At given its context. We then take the policy’s top-K
+
+recommendations for comparison with the logged choice a⋆t .
+
+4.2 Metrics 
+
+Slate-ranking metrics quantify how many relevant options the system retrieves for a slot and how prominently it presents them. In our setting, relevance is defined from RTS editorial practice; derived from slot-specific relevance rules provided by RTS TV curators (e.g. genre, tone, audience targeting). We use two standard slate-based ranking metrics, Hit@K and NDCG@K, for Top-K
+
+recommendation and slate evaluation [8, 26]. Let TopK t denote the top-K slate Contextual Scalarisation Thompson Sampling 9
+
+returned by a policy at time t, let Rt ⊆ A t be the set of items deemed relevant for that slot, and let T denote the number of programming decisions in the evaluation set. Hit@K measures how often at least one relevant item appears in the top-K:
+
+Hit@K = 1
+
+T
+
+> T
+
+X
+
+> t=1
+
+1{Rt ∩ TopK t̸ = ∅} , (10) where 1{.} is the indicator function, equal to 1 if its condition holds and 0
+
+otherwise. The normalised discounted cumulative gain at cutoff K, NDCG@K, accounts for the positions of relevant items within the slate. Let rel t(at) ∈ { 0, 1} indicate whether item at ∈ A t is relevant at time t, and define 
+
+DCG t@K =
+
+> K
+
+X
+
+> i=1
+
+rel t(at,i )log 2(1 + i) , (11) and 
+
+NDCG@K = 1
+
+T
+
+> T
+
+X
+
+> t=1
+
+DCG t@K
+
+IDCG t@K , (12) where IDCG t@K is the DCG of an ideal slate at time t, obtained by placing all items with rel t(at) = 1 in the top positions (up to K). We report both strict and relaxed relevance. In strict relevance, Rt = {a⋆t }
+
+where a⋆t is the historically scheduled film for slot t. In relaxed relevance, Rt
+
+contains all films in At that satisfy the curator-provided slot criteria for time t
+
+(e.g. Saturday family, Wednesday "classics", Friday youth-oriented). This cap-tures both alignment with the logged choice and the ability to retrieve a slate coherent with the editorial intent of the context. 
+
+4.3 Ranking Performance and Tradeoff Analysis 
+
+We first assess contextual appropriateness through ranking metrics and then how policies balance the underlying value signals. Table 2 compares 75 test decisions across four key time slots. CSTS achieves very high contextual relevance through its adaptive scalarisation. On strict match-ing, fixed weights achieve the highest Hit@10 (20.0%). This is not entirely sur-prising as we cannot fully observe all the considerations the curator had at decision time which led to that exact selection, and many programming choices are inherently punctual (e.g. reacting to competing events or last-minute con-straints) and thus only partially captured in our context features. A fixed global weighting defined by the curators can therefore align more closely with the exact historical picks. CSTS takes a different approach by looking for films that best satisfy the situation at hand. The goal is not to mimic historical choices (which may be suboptimal or inconsistent), but to identify films that satisfy context-dependent criteria. Across both strict and relaxed metrics, CSTS consistently 10 Théo Maëtz, Luc Guillet, Andrea Cavallaro                                 
+
+> Table 2. Ranking performance on contextual relevance at K= 10 (expressed as Hit@10 and NDCG@10) for N= 75 programming decisions. CSTS achieves the highest relaxed contextual relevance, while remaining competitive under strict matching.
+> Strict Relaxed Policy Hit@10 NDCG@10 Hit@10 NDCG@10 LinUCB 0.187 0.101 0.947 0.367 Static weights 0.200 0.108 0.920 0.336 Audience max. 0.027 0.017 0.813 0.258 Vanilla TS 0.013 0.004 0.800 0.309 CSTS 0.187 0.101 0.987 0.376
+
+outperforms LinUCB [13], indicating that context-dependent scalarisation brings benefits beyond linear contextual scoring alone. To isolate the effect of contextual weights , we compare the Contextual Thomp-son sampling with the context-independent weights from the vanilla Thompson sampling and the fixed global weights of the static recommender in Table 2. CSTS achieves 98.7% contextual relevance, substantially outperforming vanilla Thomp-son (80.0%, +18.7 percentage points (pp)) and Static (92.0%, +6.7pp). The gap between CSTS and vanilla Thompson isolates the effect of context-adaptation: both use Thompson sampling and learn from the same data, but only CSTS adapts weights by context. CSTS’s learned context-adaptive weights outperform hand-crafted global weights by 6.7pp. Interestingly, Static (92.0%) outperforms vanilla Thompson (80.0%) despite not learning, suggesting that domain exper-tise initialisation provides a strong baseline that global weight learning struggles to surpass without adaptation to context. This can be understood with vanilla Thompson having to learn a single set of global weights from sparse, noisy bandit feedback, under the assumption that the same tradeoff holds in every context. When the algorithm is forced to fit one global compromise, it averages over these conflicting patterns and washes out useful structure. Figure 2 shows mean value signals for the top-1 recommendations across the four key time slots, comparing CSTS to fixed scalarisation. We can notice that CSTS and Static make different choices about what to prioritise. CSTS recom-mendations tend to have higher diversity (in 3 out of 4 contexts) and better address rights urgency (also 3 out of 4 contexts). CSTS learns from past curator decisions, leaning towards catalogue efficiency: making sure we use our available content well and manage rights effectively. On the other hand, static recom-mendations consistently favour novelty across all contexts. Static uses weights defined by domain experts, which emphasises audience engagement through nov-elty and competitive positioning. Importantly, neither policy dominates across all objectives. The choice between them reflects organisational priorities. 
+
+4.4 Ablation Study Effect of Exploration . Thompson sampling explores by sampling noisy param-eters ˜θt = ( ˜Ut, ˜bt). The noise level is controlled by κ, the exploration scale: by Contextual Scalarisation Thompson Sampling 11  
+
+> Fig. 2. Value signal profiles of top-1 recommendations for CSTS and Static across four programming contexts. CSTS aligns more frequently with Diversity and Rights urgency objectives (3 out of 4 contexts each), while Static maintains higher Novelty in every context. Across contexts, the profiles differ by objective and neither method is uniformly higher across all value signals.
+
+varying from κ = 0 (i.e. greedy exploitation, no sampling) to larger values (strong exploration), we quantify the effect of exploration (Figure 3). Greedy exploration achieves NDCG @10 = 0 .343 , which is below optimal. With a higher learning rate (α = 0 .1), greedy could be overfitting to training data; κ ∈ [0 .1, 0.2] (optimal exploration) achieves the best accuracy (NDCG @10 = 0 .367 , +7.0% vs greedy) by regularising learning; κ > 1.0 degrades performance by adding excessive noise (over-exploration). Coverage stays around 97–99%, but dips slightly at the scales that give the best accuracy, highlighting an accuracy–coverage tradeoff. This con-trasts with the conservative setting ( α = 0 .01 ), where greedy attains the highest accuracy but suffers from lower coverage. Conservative learning prevents over-fitting, making greedy exploitation effective at ranking accuracy within familiar contexts: with α = 0 .01 , exploration mainly enables generalisation (trading ac-curacy for coverage), whereas with α = 0 .1, exploration prevents overfitting and thus improves accuracy, showing the need for calibrated exploration rather than purely greedy policies. 
+
+Effect of value signals . In order to assess the importance of our multi-objective optimisation, we systematically remove each value signal and retrain CSTS. Ta-12 Théo Maëtz, Luc Guillet, Andrea Cavallaro 
+
+Fig. 3. Effect of exploration scale κ on CSTS ranking performance under conservative (α = 0 .01 ) and aggressive ( α = 0 .1) learning. Reporting relaxed contextual relevance metrics for CSTS, averaged over 75 test key time slots. Small κ yields near-greedy exploitation of the learned utility, while large κ encourages exploration through more diverse weight samples. Conservative learning yields stable performance where greedy already performs well, while more aggressive learning ( α = 0 .1) benefits from moderate exploration (e.g. κ = 0 .2) before performance degrades at very high κ.
+
+Table 3. Ablation study of value signals in CSTS under relaxed contextual relevance. We report relaxed Hit@10 and NDCG@10 when using all five value signals and when removing each signal in turn. Results are averaged over the 75 test programming de-cisions. Removing either Competition or Audience causes the largest degradation in contextual relevance, while removing Diversity, Novelty, or Rights still harms perfor-mance to a lesser extent. Configuration Hit@10 NDCG@10 ∆Hit@10 ∆NDCG@10 Full (5 signals) 0.987 0.376 – –w/o Competition 0.880 0.336 -0.107 -0.040 w/o Audience 0.893 0.310 -0.093 -0.066 w/o Diversity 0.920 0.372 -0.067 -0.004 w/o Novelty 0.973 0.373 -0.013 -0.004 w/o Rights 0.987 0.338 -0.000 -0.039 
+
+ble 3 shows ablation results. The performance drop in ranking metrics when removing each signal supports their contribution to contextual relevance. Com-paring to a single objective such as audience maximisation (81.3% Hit@10, Ta-ble 2), even the weakest multi-objective configuration (w/o Competition: 88.0%) outperforms pure audience maximisation (+6.7pp). 
+
+4.5 Limitations 
+
+CSTS in its current form has two limitations. First, the value signals are hand-designed, scaled, and bounded. Their relative scales influence how differences on each dimension translate into changes in the scalar utility and learned weights. Second, the quality of these signals depends on external metadata and scheduling data (e.g. catalogue, third-party metadata, competitor schedules), which are Contextual Scalarisation Thompson Sampling 13 
+
+incomplete or noisy. Missing or incorrectly matched metadata can cause relevant titles to be misused or excluded from candidate sets, which is problematic in a public service media setting where unjustified exclusion risks being perceived as a form of bias or censorship. 
+
+## 5 Conclusion 
+
+We proposed CSTS (Contextual Scalarisation Thompson Sampler), a decision support model based on a multi-objective contextual bandit framework with adaptive scalarisation for public service media programme scheduling. The frame-work is designed to support media curators in navigating large catalogues under multiple editorial objectives covering audience, diversity, novelty, competition, and contracts management. CSTS learns to weight these objectives based on the current broadcasting context using a Thompson-style randomised exploration strategy. Unlike fixed weight or Pareto-based approaches, CSTS dynamically adjusts tradeoffs, which leads to higher contextual relevance and better align-ment with expert curation practices. Experiments on two years of real programming data show a tradeoff across evaluation settings in terms of contextual relevance and editorial alignment. Un-der strict matching to historical choices, fixed scalarisation achieves the highest hit rate, reflecting that carefully tuned global editorial weights remain a strong reference point. However, CSTS improves relaxed contextual relevance, reach-ing near complete coverage of relevant sets across key time slots defined by the curators. As future work, we will move from hand-crafted value signals to a more sys-tematic design process with simple rules and diagnostics to check that signals are on comparable scales and do not dominate the utility solely due to their own variance across the candidate set. Furthermore, we will investigate the integra-tion of digital audience measurements alongside linear ratings. 
+
+Acknowledgments This work was supported by Radio Télévision Suisse. We thank Adèle Cserpes and Barbara Karkin for their continued feedback through-out this project. 
+
+## References                 
+
+> 1. The Movie Database (TMDB), https://www.themoviedb.org/, Last accessed: Jan 2026 2. Adomavicius, G., Mobasher, B., Ricci, F., Tuzhilin, A.: Context-aware recommender systems. AI Magazine 32 ,67–80 (Sep 2011). https://doi.org/10.1609/aimag.v32i3.2364 3. Agrawal, S., Goyal, N.: Thompson sampling for contextual bandits with linear pay-offs (Feb 2014). https://doi.org/10.48550/arXiv.1209.3352, arXiv:1209.3352 [cs] 4. Bishop, C.M.: Pattern recognition and machine learning. Information science and statistics, Springer, New York (2006)
+
+14 Théo Maëtz, Luc Guillet, Andrea Cavallaro 5. Bottou, L.: Large-scale machine learning with stochastic gradient descent. Chap-man and Hall/CRC (Dec 2011). https://doi.org/10.1201/b11429-6 6. Chen, G., Chen, L.: Recommendation based on contextual opinions (Jul 2015). https://doi.org/10.1007/978-3-319-08786-3_6 7. Corrigan, M.: Mediagenix powers business integration across France Télévisions’ portfolio, https://www.tvbeurope.com/media-management/mediagenix-powers-business-integration-across-france-televisions-portfolio, Last accessed: May 2026 8. He, X., Liao, L., Zhang, H., Nie, L., Hu, X., Chua, T.S.: Neural collaborative fil-tering (arXiv:1708.05031) (Aug 2017). https://doi.org/10.48550/arXiv.1708.05031, arXiv:1708.05031 [cs] 9. Jannach, D., Abdollahpouri, H.: A survey on multi-objective recommender systems. Frontiers in Big Data 6 (Mar 2023). https://doi.org/10.3389/fdata.2023.1157899 10. Jin, J., Zhang, Z., Li, Z., Gao, X., Yang, X., Xiao, L., Jiang, J.: Pareto-based multi-objective recommender system with forgetting curve (Feb 2024). https://doi.org/10.48550/arXiv.2312.16868, arXiv:2312.16868 [cs] 11. Kawale, J., Bui, H.H., Kveton, B., Tran-Thanh, L., Chawla, S.: Efficient Thompson sampling for online matrix-factorization recommendation. In: Advances in Neural Information Processing Systems. vol. 28. Curran Associates, Inc. (2015) 12. Lattimore, T., Szepesvári, C.: Bandit Algorithms. Cambridge University Press, 1 edn. (Jul 2020). https://doi.org/10.1017/9781108571401 13. Li, L., Chu, W., Langford, J., Schapire, R.E.: A Contextual-bandit ap-proach to personalized news article recommendation. In: Proceedings of the 19th international conference on World Wide Web. pp. 661–670 (Apr 2010). https://doi.org/10.1145/1772690.1772758 14. McInerney, J., Lacker, B., Hansen, S., Higley, K., Bouchard, H., Gruson, A., Mehro-tra, R.: Explore, exploit, and explain: personalizing explainable recommendations with bandits. In: Proceedings of the 12th ACM Conference on Recommender Sys-tems. pp. 31–39. ACM (Sep 2018). https://doi.org/10.1145/3240323.3240354 15. Nguyen, T.T., Hui, P.M., Harper, F.M., Terveen, L., Konstan, J.A.: Exploring the filter bubble: the effect of using recommender systems on content diversity. WWW 2014 - Proceedings of the 23rd International Conference on World Wide Web p. 677–686 (Apr 2014). https://doi.org/10.1145/2566486.2568012 16. Pariser, E.: The Filter Bubble: What the Internet is Hiding from You. Penguin Books, London (2012) 17. Qassimi, S., Rakrak, S.: Multi-objective contextual bandits in recommenda-tion systems for smart tourism. Scientific Reports 15 (1), 13669 (Apr 2025). https://doi.org/10.1038/s41598-025-89920-2 18. Riabchuk, V., Hagel, L., Germaine, F., Zharova, A.: Utility-based context-aware multi-agent recommendation system for energy efficiency in residential buildings. Information Fusion 112 , 102559 (Dec 2024). https://doi.org/10.1016/j.inffus.2024.102559 19. Ribeiro, M.T., Lacerda, A., Veloso, A., Ziviani, N.: Pareto-efficient hybridization for multi-objective recommender systems. In: Proceedings of the sixth ACM con-ference on Recommender systems. pp. 19–26. ACM, Dublin Ireland (Sep 2012). https://doi.org/10.1145/2365952.2365962 20. Rodriguez, M., Posse, C., Zhang, E.: Multiple objective optimization in recom-mender systems. ACM (Sep 2012). https://doi.org/10.1145/2365952.2365961 21. Russo, D., Roy, B.V., Kazerouni, A., Osband, I., Wen, Z.: A tutorial on Thompson Sampling (arXiv:1707.02038) (Jul 2020), arXiv:1707.02038 [cs] Contextual Scalarisation Thompson Sampling 15 22. Shen, C., Zhang, X., Wei, W., Xu, J.: HyperBandit: Contextual bandit with hy-pernetwork for time-varying user preferences in streaming recommendation (Aug 2023). https://doi.org/10.48550/arXiv.2308.08497, arXiv:2308.08497 [cs] 23. SRG SSR: https://www.srgssr.ch/en/what-we-do/quality/journalism-charter, Last accessed: Dec 2025 24. Tieleman, T., Hinton, G.: Lecture 6.5—RMSProp: Divide the gradient by a running average of its recent magnitude. Neural Networks for Machine Learning (Coursera), University of Toronto (2012), Last accessed: Jan 2026 25. Xu, X., Dong, F., Li, Y., He, S., Li, X.: Contextual-Bandit based personalized recommendation with time-varying user interests (Feb 2020). https://doi.org/10.48550/arXiv.2003.00359, arXiv:2003.00359 [cs] 26. Zhou, J., Shen, D., Guo, Y., Wu, Y., Ma, J.: Recommendation of deep reinforce-ment learning based on value function considering error reduction. Scientific Re-ports 15 (1), 35002 (Oct 2025). https://doi.org/10.1038/s41598-025-18926-7 27. Zhu, Z., Roy, B.V.: Scalable neural contextual bandit for recommender systems (Aug 2023). https://doi.org/10.48550/arXiv.2306.14834, arXiv:2306.14834 [cs]

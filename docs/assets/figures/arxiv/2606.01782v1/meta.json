@@ -1,0 +1,54 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2606.01782v1/fig-001.webp",
+      "caption": "Figure 1: WP-Setwise-DualEnd fills the ranking from both ends as the live pool shrinks. Most (blue) and least (orange) relevant documents are removed jointly per LLM call; head/tail of R are filled inward.",
+      "page": 2,
+      "index": 1,
+      "width": 458,
+      "height": 290
+    },
+    {
+      "url": "assets/figures/arxiv/2606.01782v1/fig-002.webp",
+      "caption": "Table 3: Prompt templates used by WP-Setwise variants. The placeholder {passages} is formatted as Passage 1: \"{doc_1_text}\", ..., Passage N: \"{doc_N_text}\".",
+      "page": 10,
+      "index": 2,
+      "width": 933,
+      "height": 368
+    },
+    {
+      "url": "assets/figures/arxiv/2606.01782v1/fig-003.webp",
+      "caption": "Figure 2: Cost-effectiveness view of the pool-100 results. Each point is one re-ranking method, with x-axis position given by serial LLM calls per query and y-axis position given by DL19/20 mean nDCG@10. Method names are labeled directly next to their markers: red stars indicate WP methods, and black squares indicate SW methods. The x-axis is broken once after 500 calls to keep both the practical low-call region and the high-call SW-BB baseline visible. BM25 is omitted because it uses zero LLM calls.",
+      "page": 3,
+      "index": 3,
+      "width": 950,
+      "height": 281
+    },
+    {
+      "url": "assets/figures/arxiv/2606.01782v1/fig-004.webp",
+      "caption": "Table 2: Nomenclature for the symbols, method abbreviations, model abbreviations, metrics, and diagnostic terms used in Sections 2–4.",
+      "page": 8,
+      "index": 4,
+      "width": 950,
+      "height": 1203
+    },
+    {
+      "url": "assets/figures/arxiv/2606.01782v1/fig-005.webp",
+      "caption": "Table 1: TREC DL re-ranking results at pool size 100. Model columns show DL19/20 mean nDCG@10. Calls/q @100 is the mean number of serial LLM calls per query; Rel. Calls is normalized to WP-DE. Bold indicates the highest nDCG@10 per model column, and Avg. averages across models. Superscripts ↑/↓ denote values significantly above/below WP-DE for the same model using paired t-tests with Bonferroni correction (α = 0.05, 100,000 samples).",
+      "page": 4,
+      "index": 5,
+      "width": 950,
+      "height": 245
+    },
+    {
+      "url": "assets/figures/arxiv/2606.01782v1/fig-006.webp",
+      "caption": "Table 17: DL19 pool-100 position-bias controls for the three whole-pool methods. Forward reports the canonical BM25-order run, Reverse reports the reversed-pool condition, and Shuffle reports the fixed-seed shuffled-pool condition. ∆ Rev. and ∆ Shuf. are condition nDCG@10 minus the corresponding Forward nDCG@10. ∗ marks a significant forward-control difference under a two-sided paired significant test over query-level nDCG@10 values, with Bonferroni correction across the 18 comparisons in this table (α = 0.05).",
+      "page": 16,
+      "index": 6,
+      "width": 950,
+      "height": 318
+    }
+  ]
+}

@@ -1,0 +1,30 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2606.02883v1/fig-001.webp",
+      "caption": "FIG. 2: Comparison of topical relevance and ideological scores for YT, emb+YT, bLLM+YT, and rLLM+YT across two right-leaning trajectories: right and right-right. Marker colors represent average ideological scores across recommendation ranks; error bars indicate the standard error of the mean topical match across sessions within each trajectory.",
+      "page": 6,
+      "index": 1,
+      "width": 504,
+      "height": 358
+    },
+    {
+      "url": "assets/figures/arxiv/2606.02883v1/fig-002.webp",
+      "caption": "FIG. 3: Comparison of ideological scores for YT, emb+YT, bLLM+YT, and rLLM+YT. The average partisanship scores for two ideological trajectories—right and right-right—based on users’ historical ideological scores from their ten most recently watched videos are shown for each time step in the seven most recently viewed videos and for the recommended videos at ranks 1 to 30. Error bars indicate the standard error of the mean across sessions within each ideological trajectory.",
+      "page": 6,
+      "index": 2,
+      "width": 400,
+      "height": 631
+    },
+    {
+      "url": "assets/figures/arxiv/2606.02883v1/fig-003.webp",
+      "caption": "FIG. 4: Two synthetic-session designs for distinguishing whether algorithms prioritize topic relevance or partisan alignment. (A) Histories cover a single topic with extreme partisanship (right-right or left-left); candidates include same-topic videos from the opposing extreme and other-topic videos sharing the history’s partisan stance. (B) Histories cover a single topic with consistent partisan content (leftleft, left, right, or right-right); candidates include same-topic videos spanning the full partisan spectrum.",
+      "page": 7,
+      "index": 3,
+      "width": 458,
+      "height": 287
+    }
+  ]
+}

@@ -1,0 +1,78 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2606.01062v1/fig-001.webp",
+      "caption": "Figure 8. Mean edge-weight heatmaps across layers (rows) and DAG iterations (columns) of DAG-MoE-s. Each cell shows the mean of ∥x̂l (i,j)∥2 over a held-out batch, with rows of each heatmap indexing target experts and columns indexing source experts.",
+      "page": 21,
+      "index": 1,
+      "width": 667,
+      "height": 1192
+    },
+    {
+      "url": "assets/figures/arxiv/2606.01062v1/fig-002.webp",
+      "caption": "Figure 4. Perplexity reduction of DAG-MoE (with dg = 64) over the no-shared-expert MoE baseline as a function of the number of DAG iterations L. Higher is better.",
+      "page": 7,
+      "index": 2,
+      "width": 486,
+      "height": 298
+    },
+    {
+      "url": "assets/figures/arxiv/2606.01062v1/fig-003.webp",
+      "caption": "Figure 3. Perplexity of standard MoE and DAG-MoE on the Pile evaluation subset. The x-axis denotes the parameters added beyond the standard MoE block: for the baseline, the size of the added shared expert; for DAG-MoE, the product of the number of iterations L and the per-iteration parameter count of the DAG learning module.",
+      "page": 7,
+      "index": 3,
+      "width": 981,
+      "height": 339
+    },
+    {
+      "url": "assets/figures/arxiv/2606.01062v1/fig-004.webp",
+      "caption": "Figure 1. Comparison of different mixing structures in MoE.",
+      "page": 3,
+      "index": 4,
+      "width": 1006,
+      "height": 267
+    },
+    {
+      "url": "assets/figures/arxiv/2606.01062v1/fig-005.webp",
+      "caption": "Table 6. The model configuration and hyper-parameter setting for DAG-MoE and baseline",
+      "page": 18,
+      "index": 5,
+      "width": 773,
+      "height": 441
+    },
+    {
+      "url": "assets/figures/arxiv/2606.01062v1/fig-006.webp",
+      "caption": "Figure 6. Pretraining loss curves of DAG-MoE-l and MoE-l.",
+      "page": 19,
+      "index": 6,
+      "width": 589,
+      "height": 588
+    },
+    {
+      "url": "assets/figures/arxiv/2606.01062v1/fig-007.webp",
+      "caption": "Figure 7. t-SNE projection of the flattened K ×K edge-weight vector for each token, colored by the (layer, iteration) pair.",
+      "page": 20,
+      "index": 7,
+      "width": 563,
+      "height": 464
+    },
+    {
+      "url": "assets/figures/arxiv/2606.01062v1/fig-008.webp",
+      "caption": "Figure 2. Left: the DAG learning module automatically learns an optimal DAG structure over the selected experts and executes the DAG-style computation. Right: the complete MoE block in DAG-MoE.",
+      "page": 5,
+      "index": 8,
+      "width": 928,
+      "height": 510
+    },
+    {
+      "url": "assets/figures/arxiv/2606.01062v1/fig-009.webp",
+      "caption": "Figure 5. An example of the LIS problem and the corresponding DAG structure.",
+      "page": 16,
+      "index": 9,
+      "width": 1012,
+      "height": 478
+    }
+  ]
+}

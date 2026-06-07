@@ -1,0 +1,786 @@
+Title: LLM-Assisted Reranking to Operationalize Nuanced Objectives in Recommender Systems
+
+URL Source: https://arxiv.org/pdf/2606.02883v1
+
+Published Time: Wed, 03 Jun 2026 00:19:53 GMT
+
+Number of Pages: 30
+
+Markdown Content:
+# LLM-Assisted Reranking to Operationalize Nuanced Objectives in Recommender Systems 
+
+Amir Ghasemian, 1, 2, ∗ Homa Hosseinmardi, 1 Upasana Dutta, 2 and Duncan J. Watts 2, 3, 4 
+
+> 1
+
+Department of Communication, University of California, Los Angeles, CA 90095 
+
+> 2
+
+Department of Computer and Information Science, University of Pennsylvania, Philadelphia, PA 19104 
+
+> 3
+
+Annenberg School of Communication, University of Pennsylvania, Philadelphia, PA 19104 
+
+> 4
+
+Operations, Information, and Decisions Department, University of Pennsylvania, Philadelphia, PA 19104 
+
+Recommender systems have grown from basic content-organization tools into sophisticated systems that sub-tly shape our daily behavior. By controlling what information we see, they can influence the world we per-ceive, raising concerns about filter bubbles, radicalization, polarization, and social inequality. The rise of large language models (LLMs) enables more powerful personalization, potentially intensifying these exposure dy-namics. Yet most recommenders are tuned for engagement or limited accuracy metrics, with little attention to their broader social implications, e.g., how personalization reshapes content exposure in socially consequential domains. We investigate whether LLM-assisted reranking, while improving personalization, inadvertently am-plifies exposure to ideologically extreme or conspiratorial political content—a risk theorized but not empirically characterized in news recommendation. Using real news-consumption histories, we rerank YouTube’s sidebar candidates through zero-shot, instruction-based prompting. We compare a baseline personalization prompt with an instructionally constrained variant intended to preserve topical relevance and broaden ideological exposure, while reducing the prominence of conspiratorial or extreme political content. Without constraints, LLM-assisted reranking strengthened personalization but increased exposure to conspiratorial and extremist material for users whose histories contained such content. Adding lightweight prompt-level regularization reduced the likelihood of promoting extreme content and increased ideological diversity, with only modest loss in relevance. Syn-thetic experiments further suggest that LLMs rerank via statistical regularities in language rather than semantic understanding of ideology, clarifying both why naive prompts amplify these patterns and why prompt-level reg-ularization can reshape them. Together, our results highlight the power of LLMs to operationalize contextual nuance in high-stakes news recommendation. They also underscore the need to evaluate LLM-assisted person-alization beyond accuracy alone and to recognize prompt design as a value-laden choice rather than a neutral default. 
+
+I. INTRODUCTION 
+
+Recommender systems (RecSys) are deeply intertwined with daily life, influencing decisions across domains from en-tertainment to employment and healthcare [1–4]. They also play a central role in content selection on social media, shap-ing what information reaches users. By enabling powerful per-sonalization, RecSys can improve user experience but also lead to unintended consequences such as filter bubbles [5], radicalization [6], and diminished viewpoint diversity [7]. At the societal level, these effects may contribute to polarization, echo chambers, and social inequality [8]. These concerns have brought renewed attention to RecSys design. A growing literature argues that engagement-driven recommenders neglect the broader range of stakeholders and societal impacts they create [9–12], and calls for explicit so-cial considerations in ranking logic [13, 14]. The dominant operational mechanism for incorporating such objectives is reranking [15–17], but existing methods are not designed to capture context-dependent harms in political content, such as framing and ideological positioning [7, 18]. At the same time, advances in large language models (LLMs) introduce capabilities that directly address several of these design limitations, expanding beyond accuracy as the sole utility [19]. Unlike traditional recommender mod- 
+
+> ∗amirgh@ucla.edu
+
+viewing history intervention 
+
+tT videos YouTube SIDEBAR Reranking 
+
+> recommended ranking
+
+t-1 t-T 
+
+> Video 1
+> Video 2 Video 3 Video 4
+
+FIG. 1: Framework for evaluating LLM-assisted reranking of YouTube recommendations under social-value constraints. First, YouTube generates personalized recommendations from a user’s viewing history. The candidate videos are then reranked using a zero-shot, in-context LLM, guided by one of two prompts: (1) a base-line non-regularized prompt that optimizes for personalization alone, and (2) a regularized socially-guided prompt that aims to preserve personalization while diversifying recommendations and demoting problematic (conspiratorial or extreme) content. 
+
+els, which rely on behavioral similarity signals or embedding-space proximity, LLMs can interpret the semantic, narrative, and ideological context of content. This enables a form of context-aware decision-making that is difficult to achieve with standard ranking pipelines. These capabilities raise important questions about how LLM RecSys reshapes recommendation outcomes and how they can be used to address vulnerabilities that arise when recommendation systems operate in politically 
+
+> arXiv:2606.02883v1 [cs.HC] 1 Jun 2026
+
+2sensitive or high-risk informational settings. Here, we use “LLM-based RecSys” to refer to recommendation pipelines in which an LLM is integrated as a post-hoc reranking layer, al-lowing us to study how LLM-driven contextual reasoning re-shapes outcomes without modifying the underlying candidate-generation model. We address the following research ques-tions: • RQ1: How does LLM-assisted personalization reshape exposure to political content? • RQ2: Can LLM-assisted ranking incorporate socially-aware constraints without sacrificing personalization? • RQ3 : Do LLMs identify partisan content through se-mantic understanding of ideology, or through language patterns? To answer these questions, we adopt an instruction-following framework in which an LLM receives a user’s view-ing history together with a candidate set of items and pro-duces a reranked list based on specific constraints (see Fig. 1). Our zero-shot approach, with no fine-tuning [20–22], pre-serves flexibility, lowers computational cost, and keeps focus on the reranking pipeline rather than optimizing the underly-ing language model. Our goal is to show how LLMs’ con-textual reasoning can be used to implement value-constrained reranking: maintaining topical relevance while avoiding over-fitting to ideological cues, suppressing conspiratorial or ex-treme content, and broadening exposure when personalization alone would otherwise narrow the informational landscape. Our study makes the following contributions: • We introduce a zero-shot, in-context reranking pipeline that overlays an LLM on top of existing YouTube rec-ommendations, enabling evaluation of LLM-powered personalization in a real-world context. • We empirically characterize how naive personaliza-tion in a baseline LLM-assisted YouTube recommender strengthens ideological alignment with user histories and increases exposure to conspiratorial and extremist content for viewers of such content. • We examine an instruction-level regularization strategy that leverages LLMs’ contextual understanding to re-shape exposure patterns along ideological and topical dimensions, illustrating how lightweight constraints al-ter the trade-offs of language-based personalization. • Through synthetic experiments, we show that LLM-assisted rerankers operate via statistical regularities in language rather than semantic understanding of ideol-ogy, clarifying both why naive personalization ampli-fies problematic patterns and why prompt-level regular-ization can reshape them. • We release a benchmark dataset for political news rec-ommendation, enabling reproducible evaluation of rec-ommendation pipelines in partisan contexts. Our findings illustrate that LLM-based reranking with ex-plicit social-value constraints can produce safer, more bal-anced outcomes in existing recommendation pipelines. With-out such instruction-level safeguards, language-based per-sonalization can reproduce and even amplify social biases in high-stakes contexts like news and political content. This work contributes to the emerging literature on LLM-driven recommendation and provides a reproducible frame-work to empirically characterize exposure trade-offs in next-generation web ecosystems.  
+
+> II. RELATED WORK
+
+Fairness and diversity in RecSys. Work on beyond-accuracy objectives has explored diversity and fairness. Early studies focused on increasing item or topic diversity to counter the tendency of RecSys to over-concentrate on popular items [23]. More recent work has introduced fairness frameworks that consider how exposure is distributed across users, con-tent providers, and demographic groups, including two-sided approaches that balance consumer and producer interests [24, 25]. In practice, these objectives are usually implemented through reranking, where the output of a base model is ad-justed to satisfy additional constraints [15, 16, 26]. Despite this progress, two aspects of the literature limit its relevance for political settings. First, most evaluations rely on standard benchmarks such as MovieLens, Amazon, Yelp, or Last.fm, where errors primarily affect user satisfaction or revenue rather than public discourse. Second, fairness and diversity are typically defined over fixed attributes like genre or producer identity, which risks treating fairness as a property of the al-gorithm itself, rather than of the broader social system [18]. This assumption becomes especially problematic for politi-cal content, where harm often arises through framing, nar-rative emphasis, or ideological positioning—factors not cap-tured by coarse metadata categories. As a result, a system can satisfy standard diversity constraints and still consistently sur-face conspiratorial or misleading content. 
+
+Recommendation in news and political information ecosystems. Studies of recommendation dynamics in news and public information settings point to clear structural vul-nerabilities but offer few empirically tested design interven-tions. Prior work documents that a small but engaged mi-nority of YouTube users disproportionately consumes far-right content [27], and engagement-driven ranking reinforces such asymmetric partisan exposure [28]. While there have been calls for socially-aware recommendations, these remain largely conceptual [12]. More broadly, studies of filter bubbles and algorithmic amplification document how engagement-optimized systems can narrow informational exposure over time [7, 8]. Intervention work has emerged more recently: computational nudges modifying user watch histories increase ideological diversity on YouTube [29], and framework-level proposals reframe ranking itself as value alignment [30, 31]. What remains underexplored is how to jointly balance topical personalization, ideological diversity, and the suppression of conspiratorial or extremist content in political news over real 3news-consumption histories, a gap we aim to fill. 
+
+LLM-assisted reranking. LLMs are effective zero-shot rerankers over user histories and candidate content without task-specific fine-tuning [32]. Recent systems have moved to-ward greater controllability through chain-of-thought reason-ing and natural-language constraints [17, 33, 34]. Yet the same sensitivity to context that enables this controllability also car-ries risks.Traditional recommenders amplify harmful content through feedback and preference drift [9, 35], and LLM-based systems may intensify this dynamic by attending to linguistic patterns, framing, and stylistic cues in user histories, poten-tially overfitting to latent ideological signals [36, 37]. Criti-cally, these risks have been primarily theorized rather than em-pirically evaluated in the domain of political news, where the consequences of amplification extend to collective informa-tion exposure and public discourse [31]. Closest to our objec-tives, field experiments show feed reranking measurably alters affective polarization [38], and RecPrompt automates prompt refinement for news recommendation but evaluates only click prediction [39]. Our study bridges these efforts by evaluating how LLM-assisted reranking reshapes ideological composi-tion and the concentration of problematic content in recom-mendations, not solely its ability to predict user clicks. 
+
+Prompt-level safeguards: from conversation to recom-mendation. Conversational AI research has shown that model behavior can be steered at the prompt level, for example, through instruction hierarchies that prioritize safety over user requests [40] and red-teaming methods that probe and miti-gate vulnerabilities [41]. We argue that a similar paradigm can be applied to RecSys but has largely been overlooked. When LLMs are used in recommendation pipelines, the primary risk is not a single harmful output, but the repeated promotion of problematic content through ranked lists. This shift from generation to ranking introduces different failure modes, yet existing safeguard frameworks have mostly been developed for dialogue settings. In principle, instruction-level constraints could be used during reranking to influence which items are promoted or suppressed. We test this idea through lightweight prompt regularization, where social-value constraints are en-coded alongside task instructions. In the context of news rec-ommendation, this allows us to operationalize properties such as conspiratorial framing, extremist rhetoric, and ideologi-cal tone—signals difficult to capture with standard metadata-based reranking approaches.  
+
+> III. DATA AND METHODOLOGY
+
+a. Data source. To study how LLM-based reranking interacts with real recommendation pipelines, we focus on YouTube sidebar recommendations. YouTube is one of the most widely used video platforms, where prior research has shown that a small subset of users are heavy consumers of problematic content [27, 42]. This ecosystem, prone to ampli-fying such material, provides a critical context for assessing both the benefits and risks of LLM-assisted personalization. We use the YouTube desktop browsing trajectories of 97 U.S. adults, collected passively by Nielsen, a media monitor-ing company, between October 2021 and December 2022, in-troduced in [43]. Since the Nielsen data only records visited URLs, it does not include the recommendations shown along-side each video. To reconstruct these, the authors replayed observed viewing trajectories, each containing 30–120 con-secutive videos, using automated logged-in accounts, record-ing the top 30 sidebar recommendations after each watch. This procedure yields a recommendation dataset linking each watched video to its sidebar candidates, while preserving user privacy and ensuring external validity. 
+
+b. Benchmark construction. To evaluate how different reranking strategies behave across comparable viewing con-texts, we transform each reconstructed viewing trajectory into a set of overlapping evaluation sessions. Each session cap-tures a short, contiguous segment of a user’s watch history, along with recommendations shown at each step, enabling session-level comparisons across reranking methods. We col-lect metadata (title, topic, category ID, and closed captions) for all watched and recommended videos. To construct evalu-ation instances, we split each trajectory into overlapping 10-video sessions using a sliding window with stride 1. In each session, the first nine watched videos define the viewing con-text, and the tenth corresponds to the subsequent watch used as the prediction target. We retain only sessions in which at least six of the 10 watched videos and at least five of the 30 recommended videos are categorized under “Politics” and/or “Society” (based on YouTube API metadata [44]) with captions avail-able. These thresholds were set a priori; stricter cutoffs reduce variance and increase bias but shrink the number of usable sessions, limiting statistical power; looser ones add noise. In both cases, qualitative patterns remain consistent. Since direct click data is not available in our panel, we approximate the clicked item: for each session, we identify the recommended video most similar to the subsequently watched video using OpenAI’s text-embedding-3-large model and cosine similarity. We designate this as the proxy-clicked video . The resulting set of 9,848 sessions and associated recommenda-tion lists serves as our evaluation benchmark (Appendix A). We further infer political ideology and topic for all videos. For ideology, we use a validated prompt (Appendix Table S2) that scores videos from 0 (strongly liberal) to 100 (strongly conservative), with r = 0 .92 correlation to human annota-tions [45]. For topic, we use a prompt from [46], shown in Appendix Table S1, that achieves 72% precision and 72.5% recall across topics. For problematic content, defined as con-spiratorial or extreme material, we annotated a random set of 300 videos with three research assistants (Appendix Table S4). The results show a precision of 65% and a recall of 63%. 
+
+c. Session categorization. We assign each session an ideological score equal to the average political leaning of the watched videos, then categorize sessions into five ideological groups using thresholds— left-left : [0 , 20) , left : [20 , 40) , cen-ter : (40 , 60) , right : (60 , 80] , and right-right : (80 , 100] . Here, 
+
+[ ] denotes inclusion and ( ) denotes exclusion of the endpoint. We observe 483 left-left , 1,220 left , 2,159 center , 4,811 right ,and 1,154 right-right sessions (Table S9). 4 
+
+> A. Reranking methods.
+
+Our methodology for studying LLM-assisted reranking of YouTube recommendations (YT) is depicted in Fig. 1. Given a user’s watch history and YouTube’s candidate recommen-dations, we use LLMs as zero-shot learners [47] to rerank the candidates [4, 32, 48] via in-context instructions. Due to token constraints, both history and candidate videos are represented as transcript summaries (each no longer than 150 words; Ap-pendix Table S3). Layering the LLM on top of YouTube’s pipeline allows us to generate alternative rankings and sys-tematically compare the benefits and risks of LLM-assisted recommendation against YouTube’s deployed recommender system, which we treat as the platform baseline. 
+
+Baseline LLM reranking (bLLM+YT). Our rerank-ing baseline prompt represents a naive, non-regularized LLM-assisted YouTube recommender focused solely on personalization—how well rankings match the user’s recent watch history (bLLM+YT; Appendix Table S5). 
+
+Regularized LLM reranking (rLLM+YT). We propose a regularized variant (rLLM+YT; Appendix Table S6) that bal-ances personalization with responsibility through instruction-based constraints: (a) broaden topical and ideological diver-sity while preserving relevance, and (b) identify and demote conspiratorial or extreme political content. This tests whether prompt-level regularization—analogous to conversational AI safeguards [40, 41]—can serve as a lightweight intervention for more responsible personalization. 
+
+Embedding-based reranking (emb+YT). As another baseline for personalization without LLM assistance, we introduce a content-aware, embedding-based ranking tech-nique (emb+YT). Each candidate video’s embedding is com-pared to a weighted average of the user’s watch-history embeddings, with more recent videos weighted higher via exponential decay. Candidates are then ranked by co-sine similarity to this aggregated representation. Embed-dings are computed using OpenAI’s state-of-the-art model, 
+
+text-embedding-3-large . Because emb+YT is also content-aware, this baseline lets us isolate the added effects of instruction-following and contextual reasoning beyond con-tent similarity alone. While more advanced algorithms exist—such as multi-modal approaches [49], attention-based models for long user histories [50], or methods integrating embeddings via fine-tuning or prompt tuning [39, 51]—they are beyond the scope of this study, as we aim to assess how contextual LLM RecSys models impact news exposure beyond personalization met-rics. We present results for one such advanced technique on a limited sample (restricted due to computational cost), find-ing qualitatively consistent results (see Appendix D).  
+
+> B. Evaluation metrics.
+
+Personalization accuracy. A common metric to evaluate the performance of recommendation algorithms is their abil-ity to rank higher the items that users would select. Formally, let a recommendation list contain N items indexed by rank 
+
+r = 1 , . . . , N , where lower values of r correspond to higher-ranked items. Let yi ∈ { 0, 1} indicate whether the item at rank i is clicked, and ri denote its rank position. The AUC is given by AUC = Pr( ri < r j | yi = 1 , y j = 0) .At the session level, AUC measures the probability that the proxy-clicked video is ranked higher than a randomly chosen non-proxy-clicked item among the recommendations. However, user-choice prediction alone provides an incomplete view of recommender behavior. Our analysis must also con-sider the broader recommendation space—its potential to im-prove personalization along content-level dimensions such as topic and ideology, as well as its vulnerabilities in amplify-ing problematic content and reinforcing homogeneous ideo-logical patterns that can contribute to filter bubbles and echo chambers. We therefore complement AUC with content-level metrics for topical relevance, ideological alignment, and the prominence of problematic content. 
+
+Topical relevance. Topical relevance is assessed by first identifying the dominant topics in a user’s recent viewing his-tory. Let a viewing history consist of T videos indexed from least recent t = −T to most recent t = −1. The video vis-ited at time t is annotated with a set of at most four topics 
+
+Zt ⊆ Z , where Z denotes the universe of possible topics (see Appendix, Table S1). We compute a weight for each topic 
+
+z ∈ Z using a recency-weighted average with exponential de-cay: 
+
+wz =
+
+> −1
+
+X
+
+> t=−T
+
+d−(t+1) 1(z ∈ Z t) ,
+
+where d ∈ (0 , 1) controls the rate of temporal decay and as-signs greater importance to more recently watched videos. We set d = 0 .9 in all weighted averages. Within a single video, all annotated topics receive the same recency weight. The set of dominant topics for a session is defined as 
+
+Z∗ =
+
+
+
+{ z ∈ Z : wz ≥ τ · max z′ wz′ } if max z wz
+
+P 
+
+> z
+
+wz
+
+≥ θ, 
+
+∅ otherwise, with dominance threshold θ = 0 .2 and tolerance τ = 0 .9. The dominance threshold requires that the top topic account for at least 20% of the total topic mass, ensuring that sessions with diffuse viewing interests are excluded from analysis. The tol-erance retains any topic scoring within 10% of the maximum, so near-ties are not arbitrarily broken. Sessions with Z∗ = ∅
+
+(labeled NA) are excluded from the topical-relevance analy-sis. For a recommendation list of N candidate videos indexed by rank r = 1 , . . . , N , each candidate r is assigned a bi-nary topical relevance label (also termed topical match ) ℓr =
+
+1(Zr ∩ Z ∗̸ = ∅), where Zr denotes the set of topics for the video at rank r. Topical relevance at each rank position is the average of ℓr across all sessions with Z∗̸ = ∅. A recom-mender aligned with a user’s recent topical interests should show higher average topical relevance at top ranks. 
+
+Ideological alignment. To evaluate personalization along the ideological dimension, we compare each session’s ideo-logical score (defined in Session categorization above) with 5the partisanship of its ranked recommendations. We use the same five ideological strata. Within each stratum, we compare the partisanship trajecto-ries of YT, emb+YT, bLLM+YT, and rLLM+YT against the corresponding history baseline. For each method, we compute the mean partisanship at each rank position r = 1 , . . . , N 
+
+across sessions in the stratum, and similarly compute the mean partisanship at each position in the recent history window. Re-sults are reported with 90% confidence intervals based on the standard error across sessions. Since all methods rerank the same YouTube candidate pool, we measure ideological per-sonalization by how strongly each method aligns top-ranked content with the user’s recent ideology, relative to YouTube’s baseline. While ideological alignment is not inherently problematic, strong alignment can narrow the range of political perspec-tives presented to users by disproportionately reinforcing ide-ologically congenial content, even when that content is not extreme. Further, highly polarized content can often correlate with conspiratorial or extremist material [52, 53], motivating the problematic-content analysis we develop next. 
+
+Problematic content exposure. To quantify the concentra-tion of problematic content among higher-ranked recommen-dations, we compute a rank-weighted average using exponen-tial decay. For a recommendation list of length N , indexed by rank r = 1 , . . . , N (where smaller values of r correspond to higher-ranked items), let hr ∈ { 0, 1} indicate whether the item at rank r is labeled as problematic. 
+
+ψrec =
+
+PNr=1 dr−1 hr
+
+PNr=1 dr−1 ,
+
+where d ∈ (0 , 1) controls the rate at which weight decays with rank, assigning greater weight to higher-ranked items. Similarly, for a user’s watch history of length T indexed from t = −T (least recent) to t = −1 (most recent), let ht ∈{0, 1} indicate whether the t-th watched video is problematic: 
+
+ψhist =
+
+P−1 
+
+> t=−T
+
+d−(t+1) ht
+
+P−1 
+
+> t=−T
+
+d−(t+1) ,
+
+where d ∈ (0 , 1) controls the rate of temporal decay, as-signing greater weight to more recently watched videos. We compute the correlation between ψhist and ψrec across sessions to examine the relationship between problematic con-tent in viewing history and its promotion in recommendations. We also compute the AUC for problematic content—the prob-ability that a problematic item is ranked higher than a non-problematic one in a recommendation list.  
+
+> IV. RESULTS
+
+We examine how LLM-assisted reranking reshapes recom-mendation exposure beyond accuracy-based metrics. While recent work has shown that LLM-based reranking can im-prove alignment with users’ recent viewing histories, we                                                         
+
+> TABLE I: Predictive AUC is reported across all sessions, while problematic AUC is reported across right-leaning sessions. Diver-sity entropy is reported separately for right and right-right sessions at top-k=10 (values separated by |; see Figs. S4 and S5). ↑higher is better, ↓lower is better.
+> Predictive performance Diversity Problematic Model AUC ↑Median Entropy ↑AUC-↓
+> (mean ±SD) AUC ↑(top-k=10 )Prob. YT 0.49 ±0.30 0.48 2.22 |2.17 0.48 bLLM+YT 0.59 ±0.31 0.65 2.20 |2.05 0.59 rLLM+YT 0.51 ±0.30 0.52 2.23 |2.19 0.42
+> emb+YT 0.75 ±0.27 0.86 2.18 |1.98 0.64
+
+ask how such alignment interacts with ideological narrow-ing and exposure to problematic content. To assess this trade-off, we compare four ranking strategies: YT, emb+YT, bLLM+YT, and rLLM+YT, focusing on personalization out-comes and the prominence of problematic content. All LLM-based reranking and labeling tasks (topic identification, ideol-ogy scoring, problematic-content classification) use OpenAI’s 
+
+gpt-4o-mini .Given the smaller number of left-leaning sessions and the limited presence of problematic content from a left ideological perspective in our data (see Appendix Fig. S1), we focus our primary analysis on right and right-right sessions; results for left-leaning sessions are provided in the Appendix. 
+
+a. RQ1. How does LLM-assisted personalization reshape exposure to political content? We first evaluate whether LLM-assisted reranking improves standard measures of per-sonalization. Table I reports session-level AUC scores for ranking the proxy-clicked video among recommended items. The embedding-based method (emb+YT) achieves the highest performance ( 0.75 ± 0.27 ), followed by bLLM+YT ( 0.59 ±
+
+0.31 ), while YouTube’s default ranking performs compara-tively worse ( 0.49 ± 0.30 ). These results indicate that both embedding-based and LLM-assisted reranking more effec-tively align recommendations with users’ recent viewing be-havior than the platform’s baseline. We obtain a compara-ble AUC for bLLM+YT on the Microsoft News Dataset (MIND) [54], supporting robustness beyond our curated dataset (Appendix E). Moving beyond prediction, we examine relevance along two content-level dimensions: topical relevance and ideologi-cal alignment. An effective recommender should show higher topical relevance at top ranks, prioritizing content that reflects the user’s recent topical interests. For the two right-leaning trajectories, right and right-right , bLLM+YT and emb+YT achieve greater topical relevance than YT, indicating stronger topical personalization (Fig. 2). We next examine the second dimension of relevance, ide-ological alignment. Although ideological stance may not al-ways be explicitly expressed in video content, prior work has shown a strong association between language use and po-litical partisanship [55]. Consistent with this, Fig. 2 shows that emb+YT and bLLM+YT more closely align the ideolog-ical scores of top-ranked recommendations with users’ recent viewing histories than YT. This effect is most pronounced at higher ranks, indicating that language- and embedding-6              
+
+> FIG. 2: Comparison of topical relevance and ideological scores for YT, emb+YT, bLLM+YT, and rLLM+YT across two right-leaning trajectories: right and right-right . Marker colors represent average ideological scores across recommendation ranks; error bars indicate the standard error of the mean topical match across sessions within each trajectory.
+> FIG. 3: Comparison of ideological scores for YT, emb+YT, bLLM+YT, and rLLM+YT. The average partisanship scores for two ideological trajectories— right and right-right —based on users’ his-torical ideological scores from their ten most recently watched videos are shown for each time step in the seven most recently viewed videos and for the recommended videos at ranks 1 to 30. Error bars indicate the standard error of the mean across sessions within each ideological trajectory.
+
+based reranking can identify similarities in this dimension and strengthen ideological alignment. The average partisanship scores of users’ watch history, compared to those of the top-ranked recommended videos, highlight the superior alignment achieved by language-and embedding-based methods in the ideological dimension (Fig. 3). At early ranks, the political ideology scores for both bLLM+YT and emb+YT are significantly higher than those for YT recommendations. While ideological alignment is not inherently problematic, stronger alignment can narrow the range of political perspectives presented to users by dispro-portionately reinforcing ideologically congenial content, even when that content is not extreme. Strongly partisan material frequently overlaps with con-spiratorial or extremist content [52, 53], raising the ques-tion of whether LLM-based personalization (bLLM+YT; see Appendix Table S5) may unintentionally increase exposure to such content for users with relevant history. Across right 
+
+and right-right sessions, the AUC for problematic content is 0.59 for bLLM+YT and 0.64 for emb+YT, compared to approximately 0.48 for YT, suggesting that language- and embedding-based methods are more likely to surface prob-lematic content at top ranks than YouTube’s baseline. We also analyzed whether more problematic content ap-pears in higher-ranked recommendations when users have re-cently watched more problematic videos. The results show a positive correlation between the weighted average of problem-atic labels in users’ watch histories and in their top-ranked recommendations. For bLLM+YT, this correlation is stronger than for YT ( r = 0 .34 vs. r = 0 .31 , both p ≈ 0; Appendix Fig. S10), suggesting that personalization-focused language-based recommenders may be particularly prone to amplify-ing exposure to problematic content due to their sensitivity to linguistic patterns and framing similarities between previ-ously watched and candidate videos. A paired t-test on within-session differences further confirms that the rank-weighted problematic weights are significantly higher for bLLM+YT than for YT ( t = 46 .8, p ≈ 0), with a moderate effect size (d = 0 .47 ). This pattern holds across all top-k recommenda-tions (Table II). Together, these findings demonstrate that gains in top-ical and ideological alignment can coincide with in-creased concentration of problematic content among highly ranked recommendations, highlighting a key vulnerability of personalization-driven reranking in political contexts. 
+
+b. RQ2. Can LLM-assisted ranking incorporate socially-aware constraints without sacrificing personalization? The results above show that stronger contextual alignment, en-abled by content-aware reranking, can amplify signals present in users’ recent viewing histories, including problematic con-tent. Because LLMs operate over language and contextual cues, they offer a natural mechanism for steering the same model toward safer exposure outcomes through instruction-level constraints in the reranking prompt. Adding such constraints does not come at the cost of per-sonalization: the session-level AUC of rLLM+YT on proxy-clicked videos ( 0.51 ± 0.30 ) is on par with YT ( 0.49 ± 0.30 ). At the same time, regularization meaningfully reduces expo-7                                               
+
+> TABLE II: Rank-weighted average of problematic content across top-krecommendations. Cohen’s don within-session differences in problematic content (method −YT): positive for Amplification
+> (bLLM+YT), negative for Mitigation (rLLM+YT). *** p < 0.001 .
+> Amplification Mitigation Top-kbLLM+YT drLLM+YT dYT 50.31 0.48 *** 0.09 −0.44 *** 0.18 10 0.28 0.50 *** 0.13 −0.39 *** 0.19 15 0.25 0.46 *** 0.15 −0.36 *** 0.19 20 0.24 0.46 *** 0.16 −0.37 *** 0.19 25 0.24 0.47 *** 0.16 −0.38 *** 0.19 30 0.24 0.47 *** 0.16 −0.38 *** 0.19
+
+sure to problematic content. The AUC for problematic con-tent drops from 0.48 under YT to 0.42 under rLLM+YT, and the correlation between problematic labels in watch history and recommendations is weaker under rLLM+YT ( r = 0 .30 ,
+
+p ≈ 0; Appendix Fig. S10). A paired t-test on within-session differences confirms significantly lower rank-weighted prob-lematic weights under rLLM+YT than YT ( t = −38 .1, p ≈ 0,
+
+d = −0.38 ), and the same pattern holds across top-k recom-mendations (Table II). Topical relevance is only slightly re-duced relative to YT and bLLM+YT (Fig. 2), indicating no substantial relevance cost. These results suggest that it is not language-based models per se that promote problematic content, but the absence of explicit regularization; the improvement of rLLM+YT over emb+YT further highlights the flexibility of language models in incorporating constraints through instruction-based mecha-nisms. Prompting the reranker to include ideologically diverse viewpoints also increased the diversity of ideological content in top-ranked positions compared to non-regularized methods (Table I; Appendix Figs. S4 and S5). 
+
+c. RQ3. Do LLMs identify partisan content through se-mantic understanding of ideology, or through language pat-terns? Our findings suggest that, for non-regularized meth-ods such as bLLM+YT and emb+YT, the partisan content of top-ranked recommendations tends to align more closely with the average partisanship scores of users’ viewing histories (Fig. 3). To determine whether this alignment stems from gen-uine semantic understanding or from statistical correlations in language patterns, we designed two synthetic experiments that probe which dimensions of similarity LLM-based rerankers prioritize under different objectives. 
+
+Experiment 1: Topic versus partisanship trade-offs. 
+
+This design tests whether bLLM+YT’s promotion of partisan content reflects contextual understanding of language-based models (Fig. 4A). We construct sessions whose histories cover topics associated with extreme partisanship, exclusively on the right or exclusively on the left. Candidate items include same-topic videos from the opposing ideological extreme and other-topic videos aligned with the history’s partisan perspec-tive, testing whether the algorithm promotes partisan content even outside closely related topics and whether it ranks such content above opposing views on the same topic. To this end, we summarized only the portions of YouTube videos in the dataset covering abortion, immigration, or elec-tions (Appendix Table S7), and built fully synthetic sessions history videos            
+
+> recommended videos
+> 020 40 60 80 100
+> AB
+> topic 1 topic 2 topic 3 topic 1 history videos
+> FIG. 4: Two synthetic-session designs for distinguishing whether al-gorithms prioritize topic relevance or partisan alignment. (A) His-tories cover a single topic with extreme partisanship ( right-right or
+> left-left ); candidates include same-topic videos from the opposing ex-treme and other-topic videos sharing the history’s partisan stance. (B) Histories cover a single topic with consistent partisan content ( left-left ,left ,right , or right-right ); candidates include same-topic videos spanning the full partisan spectrum.
+
+by randomly ordering videos drawn from this corpus, with watch histories reflecting extreme left- or right-leaning par-tisanship on a single topic. Candidate sets included opposing extreme views on the same topic alongside videos on the other two topics aligned with the history’s partisan leaning. The results provide limited support for the hypothesis that the algorithm promotes partisan content outside closely re-lated topics (Fig. 5; Appendix Fig. S7). For focused topics such as abortion and immigration, bLLM+YT tends to se-lect videos on the topic regardless of partisanship—somewhat surprisingly prioritizing opposing views—because these are statistically more relevant among the candidates. The pattern mirrors emb+YT: although same-leaning candidates on other topics are closer in partisanship to the history, their embed-dings are farther from the abortion or immigration videos in the watch history. This pattern does not extend to all topics. Elections con-tent is often intertwined with other issues such as the econ-omy, abortion, and immigration, so the summaries may not fully capture its distinctiveness, and due to this diversity in discussions and arguments, bLLM+YT may prioritize parti-sanship over the topic itself (Fig. 5C; Appendix Fig. S7). No-tably, the bLLM+YT prompt contained no explicit instruction to favor partisanship over topic when no same-topic videos matching the user’s partisan preference were available. This mixed behavior—prioritizing topic over partisanship for some issues (abortion, immigration) but partisanship over topic for others (elections)—suggests that these algorithms operate not on high-level semantic understanding but on statistical regu-larities, weighted differently in response to detailed instruc-tions, and their use should therefore be approached with cau-tion. By contrast, emb+YT recommender consistently priori-tizes topic relevance over partisan similarity across all three topics—consistent with general-purpose embeddings captur-ing topical similarity more strongly than ideological framing. An adapted LLM-assisted YouTube recommender (bLLM+YT with explicit partisan emphasis; hereafter 8AB   
+
+> C
+> FIG. 5: Comparison of topical relevance and ideological scores for bLLM+YT and emb+YT, using synthetic sessions designed to test whether algorithms prioritize topic relevance or partisan alignment (Experiment 1; Fig. 4A). Sessions were constructed with extreme-leaning histories ( left-left and right-right ) on abortion, immigration, and elections. Marker colors represent average ideological scores across recommendation ranks; error bars show the standard error of topical match across sessions within each trajectory.
+
+bLLM-partisan+YT; see Appendix Table S8) can enhance personalization by prioritizing partisan content alongside topical relevance. This variant also shows a mixed pattern (Appendix Figs. S7 and S8), but places greater emphasis on partisan content than the baseline—for example, prioritizing partisan alignment over topical alignment for immigration, but not for abortion, where the discussions and arguments appear narrower in scope. 
+
+Experiment 2: Partisan detection capability. Although the bLLM+YT prompt does not explicitly instruct the model to prioritize partisan content, the personalization goal could still lead it to use partisan signals. The second design tests whether bLLM+YT can identify partisan content in a user’s watch history and prioritize partisan alignment with that his-tory over other partisan options when all candidate videos ad-dress similar topics (Fig. 4B). We construct fully synthetic sessions in which the watch history covers a single topic with consistent partisan content ( left-left , left , right , or right-right ), and candidate videos span the full partisan spectrum on that same topic. Results indicate that bLLM+YT can effectively identify partisan content (Appendix Fig. S9), particularly when top-ics are relevant, tending to rank content ideologically aligned with the user’s watch history higher. This mirrors its behav-ior in real user sessions, where most sidebar recommendations are drawn from topics similar to the watch history—unlike the irrelevant-topic candidates in the first synthetic design. The bLLM-partisan+YT variant further enhances personalization, though only modestly (Appendix Fig. S9). 
+
+> DISCUSSION AND CONCLUSIONS
+
+Recommendation algorithms have long been scrutinized for their potential negative societal impacts, ranging from pro-moting problematic content [6] to amplifying polarization by reinforcing exposure to like-minded material [28]. These con-cerns stem in part from such systems being designed to max-imize engagement or revenue rather than broader measures of welfare [10], and from the narrow focus of their evalua-tions on metrics such as click alignment or predictive accu-racy [11]. Although the societal impact of content curation models remains contested, LLMs have emerged as the next wave of powerful—yet opaque—models, attracting consider-able attention for their claimed ability to enhance RecSys, ca-pabilities that may themselves raise new concerns. In this study, we examine how LLM integration shapes the behavior of RecSys in political news by comparing YouTube recommendations with variants that incorporate LLM-based reranking. We assess not only predictive accuracy of subse-quent clicks and topical relevance, but also alignment in polit-ical ideology, which can introduce harms by reinforcing con-genial content and promoting problematic material. We fur-ther ask whether the resulting societal risks stem mainly from the personalization power of LLMs or from the metric opti-mizations underlying recommender systems. We find that using LLMs naively as recommender algorithms—by reranking based on a user’s watch history— can enhance personalization, as reflected in closer alignment with subsequent clicks and higher topical similarity with the viewing history. However, when examined through the lens of political partisanship, this improvement increases exposure to ideologically congenial content by placing politically aligned items higher in the ranking. Moreover, for users who have pre-viously consumed problematic content (extremist or conspir-atorial), LLM-based reranking amplifies exposure by ranking such videos higher. 9
+
+d. Implications. This pattern resonates with recent find-ings that LLMs encode linear representations of political per-spectives [37]. While such representations can be leveraged to trace and shift the ideological orientation of model outputs, our results suggest that similar mechanisms may influence how RecSys personalize to users’ historical news diets and po-tentially amplify or reduce partisan—or even problematic— content. Our findings can be understood within broader platform dy-namics, where user experiences are shaped less by their true preferences and more by engagement signals such as time spent on content [11]. Individuals’ momentary choices of-ten diverge from their underlying preferences, yet platforms interpret these behavioral signals as indicators of desire and optimize accordingly. This mistaken assumption has negative consequences: it distorts the content landscape by rewarding manipulative strategies like clickbait over substantive qual-ity [56], and also amplifies users’ emotional biases, reinforc-ing filter bubbles and undermining well-being [7, 57, 58]. Our comparative reranking analysis demonstrates that careless de-ployment of LLM-assisted RecSys—when designed to maxi-mize alignment with user clicks—risks reproducing and even intensifying these dynamics. By contrast, our regularized variant (rLLM+YT) shows that instruction-level regularization mitigates this tendency with only minor trade-offs in topical relevance, indicating that the issue lies not in using language models but in using them with-out socially aware safeguards. As platforms increasingly in-corporate LLMs across their systems, these models can mag-nify whichever signal they are asked to follow most closely— for example, following topical interests in a user’s history may amplify exposure to problematic ideology, since language and framing are correlated. Instruction-level regularization is al-ready applied to LLMs in conversational settings (e.g., chat-bots), where researchers probe vulnerabilities through jail-breaks and red-teaming [40, 41]; we argue that a similar ap-proach is needed for recommender systems, where safeguards should be stress-tested not only for model misuse but also for vulnerabilities that produce socially problematic outcomes. 
+
+e. Limitations and future Work. This study has several limitations. First, while we know that users watched each video in a session in the order it appears in our data, we do not claim that these constructed sessions precisely reflect a real user’s experience. In particular, (i) we cannot confirm that each video was actually selected from YouTube’s side-bar recommendations, and (ii) there is a time delay between user behavior and the collection of recommended videos. Nonetheless, because the data is based on real YouTube rec-ommendations collected by a digital twin that mimics a user’s watch history, it remains sufficiently reliable for studying the LLM-based YouTube recommendation algorithm and offers stronger external validity than entirely synthetic trajectories. Second, the limited number of left and left-left ideological sessions leads to high variation in topics and trends, prevent-ing the identification of stable patterns. We therefore focus our main analysis on the right-right and right sessions, which pro-vide more reliable trends due to the larger sample size. Results for the center sessions are included in the Appendix, as they are not central to our goal of analyzing how LLMs enhance personalization while potentially amplifying societal polariza-tion in partisan video content. The results for the left and left-left sessions are also provided in the Appendix, included only for completeness. Third, our experiments showed that LLM-based rerankers rely on statistical regularities rather than semantic understand-ing of ideology, with mixed results even under explicit par-tisan emphasis (bLLM-partisan+YT). Although task-specific fine-tuning is a hopeful direction, it remains unclear whether current language models can achieve genuine semantic un-derstanding rather than statistical pattern matching [36], since they lack causal or grounded representations. Future causally grounded language models may be needed to move beyond stochastic pattern completion toward genuine semantic under-standing [59]. Lastly, beyond their effects on filter bubbles and exposure to radical or problematic material, RecSys can also contribute to prolonged engagement, leading to heightened time spent on-line and potential cognitive challenges. Research has shown that constant mobile internet access adversely affects atten-tion and mental health [58], and algorithmic recommendations may further intensify these concerns [35, 60]. A Gallup sur-vey indicates that over 50% of U.S. teenagers spend at least four hours per day on social media [61], underscoring the im-portance of examining RecSys within digital environments. While this lies beyond the scope of our study, it represents a promising direction for future research.  
+
+> V. ACKNOWLEDGMENTS
+
+We are grateful to the Nielsen Company for access to their desktop panel data. We thank Ziying Chen for her initial assistance with this research. In addition, we gratefully ac-knowledge the research assistance of Olivia Nguyen, Sean Rosskopf, and Xiaotong Xi.      
+
+> [1] Y. Deldjoo, F. Nazary, A. Ramisa, J. Mcauley, G. Pellegrini, A. Bellogin, and T. D. Noia, A review of modern fashion rec-ommender systems, ACM Comput. Surv. 56 , 1 (2023). [2] J. Liu, P. Dolan, and E. R. Pedersen, Personalized news rec-ommendation based on click behavior, in Proc. IUI (2010) pp. 31–40. [3] J. Bobadilla, F. Ortega, A. Hernando, and A. Guti´ errez, Recom-mender systems survey, Knowl.-Based Syst. 46 , 109 (2013). [4] D. Carraro and D. Bridge, Enhancing recommendation diver-sity by re-ranking with large language models, ACM Trans. Recomm. Syst. 4, 1 (2025). [5] C. Gao, S. Wang, S. Li, J. Chen, X. He, W. Lei, B. Li, Y. Zhang, and P. Jiang, CIRS: Bursting filter bubbles by counterfactual
+
+10 
+
+interactive recommender system, ACM Trans. Inf. Syst. 42 , 1 (2023). [6] D. O’Callaghan, D. Greene, M. Conway, J. Carthy, and P. Cun-ningham, Down the (white) rabbit hole: The extreme right and online recommender systems, Soc. Sci. Comput. Rev. 33 , 459 (2015). [7] T. T. Nguyen, P.-M. Hui, F. M. Harper, L. Terveen, and J. A. Konstan, Exploring the filter bubble: the effect of using recom-mender systems on content diversity, in Proc. WWW (2014) pp. 677–686. [8] F. Cinus, M. Minici, C. Monti, and F. Bonchi, The effect of people recommenders on echo chambers and polarization, in 
+
+Proc. ICWSM , Vol. 16 (2022) pp. 90–101. [9] K. Krauth, Y. Wang, and M. Jordan, Breaking feedback loops in recommender systems with causal inference, ACM Trans. Recomm. Syst. 4, 1 (2025). [10] G. Aridor, R. Jim´ enez-Dur´ an, R. Levy, and L. Song, The eco-nomics of social media, J. Econ. Lit. 62 , 1422–74 (2024). [11] J. Kleinberg, S. Mullainathan, and M. Raghavan, The challenge of understanding what users want: Inconsistent preferences and engagement optimization, Manag. Sci. 70 , 6336 (2024). [12] M. D. Ekstrand, A. Razi, A. Sarcevic, M. S. Pera, R. Burke, and K. L. Wright, Recommending with, not for: Co-designing recommender systems for social good, ACM Trans. Recomm. Syst. (2025). [13] C. Jia, M. S. Lam, M. C. Mai, J. T. Hancock, and M. S. Bern-stein, Embedding democratic values into social media ais via societal objective functions, Proc. ACM Hum.-Comput. Inter-act. 8, 1 (2024). [14] M. Bernstein, A. Christin, J. Hancock, T. Hashimoto, C. Jia, M. Lam, N. Meister, N. Persily, T. Piccardi, M. Saveski, et al. ,Embedding societal values into social media algorithms, J. On-line Trust Saf. 2 (2023). [15] C. Pei, Y. Zhang, Y. Zhang, F. Sun, X. Lin, H. Sun, J. Wu, P. Jiang, J. Ge, W. Ou, et al. , Personalized re-ranking for rec-ommendation, in Proc. RecSys (2019) pp. 3–11. [16] N. Sonboli, F. Eskandanian, R. Burke, W. Liu, and B. Mobasher, Opportunistic multi-aspect fairness through per-sonalized re-ranking, in Proc. UMAP (2020) pp. 239–247. [17] J. Gao, B. Chen, X. Zhao, W. Liu, X. Li, Y. Wang, W. Wang, H. Guo, and R. Tang, LLM4Rerank: LLM-based auto-reranking framework for recommendations, in Proc. WWW 
+
+(2025) pp. 228–239. [18] A. Narayanan, What if algorithmic fairness is a category error?, Contemporary Debates in the Ethics of Artificial Intelligence , 77 (2026). [19] Z. Hong, Y. Wu, Z. Zhao, S. Feng, J. Ma, J. Liu, and T. Wei, Multi-objective recommendation in the era of gener-ative AI: A survey of recent progress and future prospects, arXiv:2506.16893 (2025). [20] J. Zhang, R. Xie, Y. Hou, W. X. Zhao, L. Lin, and J.-R. Wen, Recommendation as instruction following: A large language model empowered recommendation approach, ACM Trans. Inf. Syst. 43 , 1 (2025). [21] S. Geng, S. Liu, Z. Fu, Y. Ge, and Y. Zhang, Recommendation as language processing (RLP): A unified pretrain, personalized prompt & predict paradigm (P5), in Proc. RecSys (2022) pp. 299–315. [22] F. Yang, Z. Chen, Z. Jiang, E. Cho, X. Huang, and Y. Lu, PALR: Personalization aware LLMs for recommendation, arXiv:2305.07622 (2023). [23] C.-N. Ziegler, S. M. McNee, J. A. Konstan, and G. Lausen, Im-proving recommendation lists through topic diversification, in 
+
+Proc. WWW (ACM, 2005) pp. 22–32. [24] G. K. Patro, A. Biswas, N. Ganguly, K. P. Gummadi, and A. Chakraborty, FairRec: Two-sided fairness for personal-ized recommendations in two-sided platforms, in Proc. WWW 
+
+(ACM, 2020) pp. 1194–1204. [25] V. Do, S. Corbett-Davies, J. Atif, and N. Usunier, Two-sided fairness in rankings via lorenz dominance, Adv. Neural Inf. Pro-cess. Syst. 34 , 8596 (2021). [26] C. Xu, S. Chen, J. Xu, W. Shen, X. Zhang, G. Wang, and Z. Dong, P-MMF: Provider max-min fairness re-ranking in rec-ommender systems, in Proc. WWW (2023) pp. 3701–3711. [27] H. Hosseinmardi, A. Ghasemian, A. Clauset, M. Mobius, D. M. Rothschild, and D. J. Watts, Examining the consumption of rad-ical content on YouTube, PNAS 118 , e2101967118 (2021). [28] M. Haroon, M. Wojcieszak, A. Chhabra, X. Liu, P. Mohapatra, and Z. Shafiq, Auditing YouTube’s recommendation system for ideologically congenial, extreme, and problematic recommen-dations, PNAS 120 , e2213020120 (2023). [29] X. Yu, M. Haroon, E. Menchen-Trevino, and M. Wojcieszak, Nudging recommendation algorithms increases news consump-tion and diversity on YouTube, PNAS nexus 3, pgae518 (2024). [30] F. Jahanbakhsh, D. Zhao, T. Piccardi, Z. Robertson, Z. Epstein, S. Koyejo, and M. S. Bernstein, Value alignment of social media ranking algorithms, in Proc. CHI (2026) pp. 1–26. [31] J. Stray, Designing recommender systems to depolarize, arXiv:2107.04953 (2021). [32] Y. Hou, J. Zhang, Z. Lin, H. Lu, R. Xie, J. McAuley, and W. X. Zhao, Large language models are zero-shot rankers for recom-mender systems, in Proc. ECIR (Springer, 2024) pp. 364–381. [33] O. El Malki, M. Aubin Le Qu´ er´ e, A. Monroy-Hern´ andez, and M. Horta Ribeiro, Bonsai: Intentional and personalized social media feeds, in Proc. CHI (2026) pp. 1–24. [34] M. Carroll, A. Foote, K. Feng, M. Williams, A. Dragan, W. B. Knox, and S. Milli, CTRL-Rec: Controlling recommender sys-tems with natural language, arXiv:2510.12742 (2025). [35] S. Milli, M. Carroll, Y. Wang, S. Pandey, S. Zhao, and A. D. Dragan, Engagement, user satisfaction, and the amplification of divisive content on social media, PNAS nexus 4, pgaf062 (2025). [36] E. Loru, J. Nudo, N. Di Marco, A. Santirocchi, R. Atzeni, M. Cinelli, V. Cestari, C. Rossi-Arnaud, and W. Quattrociocchi, The simulation of judgment in LLMs, PNAS 122 , e2518443122 (2025). [37] J. Kim, J. Evans, and A. Schein, Linear representations of political perspective emerge in large language models, arXiv:2503.02080 (2025). [38] T. Piccardi, M. Saveski, C. Jia, J. Hancock, J. L. Tsai, and M. S. Bernstein, Reranking partisan animosity in algorithmic social media feeds alters affective polarization, Science 390 ,10.1126/science.adu5584 (2025). [39] D. Liu, B. Yang, H. Du, D. Greene, N. Hurley, A. Lawlor, R. Dong, and I. Li, RecPrompt: A self-tuning prompting frame-work for news recommendation using large language models, in Proc. CIKM (2024) pp. 3902–3906. [40] T. Wu, S. Zhang, K. Song, S. Xu, S. Zhao, R. Agrawal, S. R. In-durthi, C. Xiang, P. Mittal, and W. Zhou, Instructional segment embedding: Improving LLM safety with instruction hierarchy, arXiv:2410.09102 (2024). [41] T. Raheja, N. Pochhi, and F. Curie, Recent advancements in LLM red-teaming: Techniques, defenses, and ethical consider-ations, arXiv:2410.09097 (2024). [42] A. Y. Chen, B. Nyhan, J. Reifler, R. E. Robertson, and C. Wil-son, Subscriptions and external links help drive resentful users to alternative and extremist YouTube channels, Sci. Adv. 9,eadd8080 (2023). 11 
+
+[43] H. Hosseinmardi, A. Ghasemian, M. Rivera-Lanas, M. Horta Ribeiro, R. West, and D. J. Watts, Causally es-timating the effect of youtube’s recommender system using counterfactual bots, PNAS 121 , e2313377121 (2024). [44] Google, Youtube data api (v3) – videos (2026), https://developers.google.com/youtube/v3/docs/videos (Ac-cessed: 2025-03-05). [45] U. Dutta, H. Hosseinmardi, A. Ghasemian, A. Clauset, and D. J. Watts, Asymmetric rhetorical strategies drive partisanship in television news (2026), under review. [46] A. Ghasemian, H. Hosseinmardi, U. Dutta, J. Allen, D. M. Rothschild, and D. J. Watts, News-like information ecosystem on youtube (2026), under preparation. [47] T. Brown, B. Mann, N. Ryder, M. Subbiah, J. D. Kaplan, P. Dhariwal, A. Neelakantan, P. Shyam, G. Sastry, A. Askell, 
+
+et al. , Language models are few-shot learners, Adv. Neural Inf. Process. Syst. 33 , 1877 (2020). [48] K. G. Vaidyanathan, M. Varun, and B. Das, Llm re-ranker as a tool for enhancing sequential recommendations, in Intell. Comput.-Proc. Comput. Conf. (Springer, 2025) pp. 20–31. [49] Y. Luo, Q. Qin, H. Zhang, M. Cheng, R. Yan, K. Wang, and J. Ouyang, Molar: Multimodal LLMs with collaborative filtering alignment for enhanced sequential recommendation, arXiv:2412.18176 (2024). [50] C. Zhang, Y. Sun, J. Chen, J. Lei, M. Abdul-Mageed, S. Wang, R. Jin, S. Park, N. Yao, and B. Long, SPAR: Personalized content-based recommendation via long engagement attention, arXiv:2402.10555 (2024). [51] Y. He, X. Liu, A. Zhang, Y. Ma, and T.-S. Chua, LLM2Rec: Large language models are powerful embedding models for se-quential recommendation, in Proc. KDD (2025) pp. 896–907. [52] Y. Jiang, The impact of political ideology, knowledge and par-ticipation on electoral conspiracy endorsement, Front. Polit. Sci. 5, 1069468 (2023). [53] A. Rao, F. Morstatter, and K. Lerman, Partisan asymmetries in exposure to misinformation, Sci. Rep. 12 , 15671 (2022). [54] F. Wu, Y. Qiao, J.-H. Chen, C. Wu, T. Qi, J. Lian, D. Liu, X. Xie, J. Gao, W. Wu, et al. , MIND: A large-scale dataset for news recommendation, in Proc. ACL (2020) pp. 3597–3606. [55] A. R. KhudaBukhsh, R. Sarkar, M. S. Kamlet, and T. Mitchell, We don’t speak the same language: Interpreting polarization through machine translation, in Proc. AAAI , Vol. 35 (2021) pp. 14893–14901. [56] N. Immorlica, M. Jagadeesan, and B. Lucier, Clickbait vs. qual-ity: How engagement-based optimization shapes the content landscape in online platforms, in Proc. WWW (2024) pp. 36– 45. [57] H. Habib and R. Nithyanand, YouTube recommendations re-inforce negative emotions: Auditing algorithmic bias with emotionally-agentic sock puppets, arXiv:2501.15048 (2025). [58] N. Castelo, K. Kushlev, A. F. Ward, M. Esterman, and P. B. Reiner, Blocking mobile internet on smartphones improves sustained attention, mental health, and subjective well-being, PNAS nexus 4, pgaf017 (2025). [59] W. Quattrociocchi, V. Capraro, and M. Perc, Epistemolog-ical fault lines between human and artificial intelligence, arXiv:2512.19466 (2025). [60] G. Adomavicius, J. Bockstedt, S. P. Curley, J. Zhang, and S. Ransbotham, The hidden side effects of recommendation systems, MIT Sloan Manag. Rev. 60 , 1 (2019). [61] J. Rothwell, Teens spend an average of 4.8 hours on social me-dia per day (2023), accessed: 2026-05-10. 12 
+
+> Appendix A: Data
+
+The data for this study comes from prior work that used Nielsen’s nationally representative desktop web panel, which records individual-level URL visits from October 2021 to De-cember 2022 [43]. Nielsen provides information only about the videos users have viewed on YouTube, not the recommen-dations. To obtain data on recommended videos, we used data from two experiments described in [43], which estimated (1) bias and (2) forgetting time of the YouTube recommender sys-tem. The dataset includes 128 participants from this panel, each of whom has watched at least 140 videos on YouTube during their lifetime with the Nielsen panel. In [43], auto-mated users viewed 30, 60, or 120 of these videos (maintain-ing the original order), depending on the experiment, with up to 30 recommended videos collected from the sidebar after each viewed video. For our analysis, we split each user’s chronological viewing history into overlapping sessions of 10 consecutive videos us-ing a sliding-window approach. This data augmentation tech-nique increases the number of subsequences of user activity, generating multiple overlapping sequences per user and al-lowing us to examine recommendation dynamics at different points in the viewing trajectory. We have a total of 165,675 sessions, in each of which the user watched 10 videos and the top 30 recommendations from the sidebar were recorded. We gathered metadata for these videos using the topic categories provided by the YouTube API [44], focusing on those classified under “Politics” and/or “Society.” By conditioning the analysis on sessions that in-clude at least six videos from these categories with available captions in the watch history and at least five such videos in the recommended set, as well as a proxy-clicked video with an available caption from the same categories, we are left with 9,848 sessions from 97 participants. In our efforts to collect captions, we successfully obtained them for approximately 83% of the videos, totaling 61,633. However, we faced challenges with the remaining 12,517 videos. Some of these videos do not have captions available, which may be due to various reasons, such as the removal of captions, their being disabled, or the absence of captions in the English language. The videos in our curated dataset vary in length from 4 sec-onds to 25 hours, with an average duration of approximately 31 minutes. We divided these videos into segments of 2000 tokens, which corresponds to about 10 to 12 minutes, and fo-cused our analysis solely on the first segment of each video. 
+
+> Appendix B: Prompts
+
+All prompts used in the analyses are provided below, in-cluding those for topic identification from video transcripts (Table S1), political ideology scoring (Table S2), summariza-tion (Tables S3 and S7), and problematic content classification (Table S4). For LLM-assisted reranking of YouTube recom-mendations, three prompt variants are used: a personalization-focused baseline (bLLM+YT; Table S5), the same base-line with explicit partisan emphasis (bLLM-partisan+YT; Ta-ble S8), and a regularized variant designed to mitigate par-tisan amplification (rLLM+YT; Table S6). These GPT-based prompts are grounded in the use of LLMs as zero- or few-shot learners [47], a paradigm shown to enable strong performance across diverse NLP tasks with minimal supervision. 
+
+> Appendix C: Supplementary Results
+
+The comparison of the baseline variant of LLM-assisted YouTube recommender (bLLM+YT) with an embedding-based variant (emb+YT) and the standard YouTube (YT) rec-ommendation algorithm, based on ideological scores for all groups, has been shown in Fig. S2. In this figure, the av-erage partisanship scores across five categorical ideological trajectories— left-left , left , center , right , and right-right (Ta-ble S9)—based on users’ historical ideological scores from their ten most recently watched videos, are presented for each time step in the recent seven videos viewed by users, as well as for the recommended videos at various ranking positions (ranks 1 to 30). The political ideology scores for the first rank positions for both bLLM+YT and the emb+YT in right and 
+
+right-right groups are significantly higher compared to YT recommendations. Therefore, the integration of LLM prompt-ing focused on personalization strategies (Table S5) may unin-tentionally increase exposure to problematic (i.e., extreme or conspiratorial) content. The average partisan scores for the left 
+
+and left-left sessions are sometimes significantly lower than YouTube’s baseline. However, because we have far fewer left-leaning sessions, our estimates for those groups are less robust than for right-leaning ones. 
+
+> Appendix D: Validation with RecPrompt
+
+To verify that our findings in the main text generalize beyond the zero-shot prompting strategy we use, we con-ducted a preliminary analysis using RecPrompt [39], a re-cent LLM-assisted news recommendation framework that em-ploys self-tuning prompt refinement. This analysis was per-formed on a sample of 533 right-leaning sessions rather than the full benchmark used in the main analysis. Within this sam-ple, RecPrompt’s personalization is associated with promot-ing content with higher partisanship scores (Fig. S11), consis-tent with the bLLM+YT pattern reported in the main analysis. This suggests that the tendency for LLM-assisted personal-ization to amplify partisan content extends to more advanced prompt-tuning methods. 
+
+> Appendix E: Evaluation on MIND
+
+To assess the robustness of our LLM-assisted reranking ap-proach beyond our curated YouTube-based benchmark, we conducted an additional evaluation on the Microsoft News Dataset (MIND) [54], a widely used benchmark for news 13 conspiratorial extremist        
+
+> content
+> 0.0
+> 0.1
+> 0.2
+> 0.3
+> 0.4
+> 0.5
+> 0.6
+> 0.7
+> distribution
+> partisan score
+> left-left
+> left
+> center
+> right
+> right-right
+> unknown
+> FIG. S1: Distribution of political ideology scores for videos labeled as conspiratorial or extremist. Both categories are predominantly right-leaning, particularly extremist content, which is concentrated in the right-right category. This scarcity of left-leaning problematic content motivates our primary focus on right and right-right sessions in the main analysis.
+
+recommendation. MIND consists of anonymized user behav-ior logs from the Microsoft News platform, including users’ click histories, impression logs, and metadata for news arti-cles (e.g., title, abstract, and category such as news, sports, or finance). The news click behaviors of users have been format-ted into impression logs. Each row in the dataset corresponds to a single impression and contains (i) the user’s click history prior to the impression and (ii) a set of candidate articles dis-played during the impression, along with binary click labels (1 for click, 0 for non-click). The order of candidate articles within each impression is randomized. 
+
+a. MIND processing and filtering. We applied several preprocessing and filtering steps to align the dataset with the objectives of our study. First, we limited the length of each user’s click history in an impression to the most recent 10 articles. For impressions with histories longer than 10 items, we retained only the 10 most recent interactions. Impressions with fewer than 5 his-torical articles were removed. Second, we conditioned on ses-sions where at least 50% of the historical articles belonged to the hard news category, ensuring topical consistency with our focus on political news exposure. We additionally excluded impressions in which the number of clicked articles exceeded 5, thereby removing sessions with unusually high click ac-tivity. Third, we standardized the size of the candidate set. If an impression contained more than 30 candidate articles, we retained all clicked items and randomly sampled from the non-clicked items to obtain a total of 30 candidates, ensur-ing that no positive instances were discarded. If the candidate set contained fewer than 30 items, we retained all available candidates. Impressions with fewer than 10 candidate articles were excluded. After these steps, 325,816 impressions from 108,291 unique users remained, each consisting of a history, a candidate set, and corresponding click labels. Because our study’s results are primarily reported on right-leaning news consumption, we further filtered sessions based on the ideological composition of users’ histories. Using the same LLM-based scoring prompt described in Table S2, we assigned ideology scores to all historical articles and com-puted the average ideology score per session. We retained only those sessions with an average ideology score greater than or equal to 60 (on a 0–100 scale). This final filtering step re-sulted in 1,447 impressions across 708 unique users, which constituted our evaluation set. 
+
+b. LLM reranking on MIND. Our goal is to evaluate whether our LLM-based reranking approach can prioritize ar-ticles that users ultimately clicked. For each session, the LLM ranked the candidate articles using the user’s click history as input. The prompts used the titles and abstracts of both his-torical and candidate articles, since MIND’s licensing restric-tions release only titles and abstracts rather than full content. We used the same baseline prompt from our main experiments (bLLM+YT; see Table S5), replacing references to video titles and summaries with article titles and abstracts but otherwise keeping the prompt structure unchanged. 
+
+c. Reranking performance on MIND. We evaluate per-formance using session-level AUC, computed independently for each impression and then summarized across sessions. Our LLM-based reranking approach achieves a mean session-level AUC of 0.58 ± 0.30 . For comparison, a random shuffle base-line yields a session-level AUC of 0.50 ± 0.28 , as expected under near-random ordering. Thus, our method demonstrates meaningful ranking ability in a zero-shot, instruction-based setting. Notably, the performance on MIND ( 0.58 ± 0.30 ) is qualitatively comparable to that of our bLLM+YT baseline on our primary benchmark dataset used in our main analyses (0.59 ± 0.31 ). Overall, these results provide additional evidence that LLM-assisted reranking can meaningfully capture user pref-erences in standard news recommendation benchmarks, rein-forcing the robustness of our approach beyond our curated dataset. 14 
+
+TABLE S1: Prompt for topic identification from video transcripts. You are tasked with identifying up to four main topics that each video is categorized under. Below is a list of topics of interest. Determine whether a transcript addresses any of these topics, based only on the limited list of topics provided below. In doing so, you must also identify the relevant subtopics. Rely primarily on the video transcript to make your determinations. Use the title only as secondary context, and only when the transcript is ambiguous, incomplete, or lacks sufficient detail. For each identified topic, assign a relevance score between 0 and 1 that reflects how central the topic is to the video. These scores should be calibrated consistently across examples to support comparability in downstream analysis. 
+
+########## List of Topics ########## 
+
+1. Elections and Candidates, 2. Economics, 3. Healthcare, 4. Climate and Environment, 5. Inequality and Discrimination, 6. Public Health and Safety, 7. Technology, Governance, and Public Policy, 8. Immigration, 9. Reproductive Rights, 10. Foreign Policy, 11. Firearms Policy, 12. Education, 13. Crime and Criminal Justice, 14. War and Conflict, 15. Political Conduct and Interpersonal Conflicts, 16. Religion. 
+
+########## OUTPUT FORMAT ########## Return in JSON format exactly: {"topic_1": {"name": "One topic from list or NA", "subtopics": ["Subtopic1", "Subtopic2"] Or ["NA"], "reason": "[Brief explanation]", "relevance score": [A number between 0 and 1, e.g., 0.91] }, ... }
+
+Important Rules: 
+
+• Read the Full Text: • Always read the entire video transcript carefully before providing an answer. • Be aware that the transcript may contain typos or automatic transcription errors (e.g., “laney” instead of “leaning”). Use contextual clues to infer intended phrases and correct errors before identifying topics. • Identify Main Topics and Subtopics: • Focus on the central themes that are explicitly discussed and contribute most to the video’s core message. Focus on themes that provide structure to the overall discussion rather than isolated mentions. • Determine the main topics only from the provided list and all relevant subtopics that are central to the discussion. • Interpret topics from the provided list and infer subtopics broadly, considering all perspectives across the partisan spectrum. When interpreting topics from the provided list and inferring subtopics, consider different perspectives or instances that show the range of discourse on the issue (e.g., both advocacy and opposition). • Return “NA” When No Relevant Topics Are Covered: If none of the defined topics are directly discussed in a structured or public-facing way, respond with “NA”. • Exclude Peripheral or Personal Mentions: • Disregard any secondary, casual, or personal mentions that do not align with the primary focus. • Ignore off-topic or entertainment-driven content not tied to the main topics of discussion. • Do not include advertisers or promotional content unless they are central to the political or public issue being discussed. • Avoid prioritizing topics solely due to associations or indirect mentions (e.g., public figures or events mentioned without meaningful discussion). • Prioritize Topics by Relevance and Emphasis: • Order topics based on direct relevance, detail, and emphasis in the video. • Maintain the order of importance, ensuring that Topic 1 reflects the primary focus, followed by secondary themes. • Provide Justification: • For each identified topic and subtopic, provide a concise explanation of its relevance and how it frames the video. • Justify topic ordering based on explicit cues in the text, such as the level of emphasis, framing, and intent. • Avoid overly specific explanations; instead, focus on relevance to public discourse. • Limit the Number of Topics: • The transcript may contain many subtopics, but identify no more than four main topics that reflect the central themes. • Ensure these topics are clearly emphasized in the transcript and are ordered by importance. • When Uncertain or Ambiguous, Default to NA: • If the transcript lacks a clearly defined theme aligned with any of the listed topics, return “NA”. • If the topic is mentioned only briefly, indirectly, or in a way that lacks public or institutional framing, treat it as insufficient and return “NA”. • Do not infer a topic based on speculation, vague mentions, emotional tone, or identity references unless they are central to the structured discussion. • Use “NA” instead of including a topic if its relevance score would fall near zero. • Overclassification Warning (Read Before You Answer): • Do not assign a topic based on: ◦ Mentions of identity (e.g., race, gender, class) unless tied to the main topics of discussion. ◦ Emotional tone, patriotic expression, or cultural grievance alone. ◦ Metaphorical comparisons, symbolic framing, or non-literal analogies. • Always prioritize institutional framing and depth of argument over surface cues. • Assign a Relevance Score: • For each identified topic, assign a numeric score between 0 and 1 that reflects how central that topic is to the overall video. • A score close to 1 means the topic is a dominant theme, discussed in depth or throughout the video. • Only include topics that are meaningfully discussed. If a topic’s relevance would be near zero, do not assign it—instead, omit it from the top four and consider returning “NA” if no other topics apply. • Use your best judgment based on emphasis, recurrence, and framing. These scores will be used in downstream metrics for evaluating topical diversity. Here is the YouTube video transcript: • Video Title: {video title } • Transcript: {transcript }15 
+
+TABLE S2: Prompt for political ideology scoring. You are a well-informed expert in identifying the political ideology score of YouTube video transcripts. You must justify the score by providing an accurate, detailed, and well-reasoned explanation based primarily on the transcript. You will also receive the video title. Use the video title only as secondary context when the transcript is ambiguous or incomplete. Assign a Political Ideology Score based on the content of the transcript. Assign a score on a 0–100 scale, where: • 0 = strong liberal viewpoints • 50 = ideologically neutral or balanced • 100 = strong conservative viewpoints You must rely primarily on the transcript. Use the video title only as secondary context when the transcript is ambiguous or incomplete. Score only when there is clear political or ideological content. If the transcript does not contain meaningful ideological material, return “score”: “NA”. Provide a concise, one-sentence explanation for the score, referencing specific ideological positions, framing, or language that informed your judgment. 
+
+########## OUTPUT FORMAT ########## Return in JSON format exactly: {"score": "[a number from 0 to 100 or NA]", "reason": "[One-sentence explanation for the score]" }
+
+Important Rules: 
+
+• Read the Full Transcript Carefully: • Always read the entire video transcript before scoring. • Be aware that the transcript may contain typos or automatic transcription errors (e.g., “Laney” instead of “leaning”). Use contextual clues to infer intended phrases and correct errors before scoring. • When Not Political or Unclear, Default to NA: • Return “score”: “NA” if the transcript contains no clear political or ideological content, or if it is too ambiguous or error-prone to assess reliably. Here is the YouTube video transcript: • Video Title: {video title } • Transcript: {transcript }
+
+TABLE S3: Prompt for summarization of video transcripts. You are an expert summarizer. Your job is to produce a clear, concise summary of up to 150 words of a YouTube transcript. The summary should preserve the tone, sentiment, viewpoint, and linguistic style of the original content, while accurately capturing its key topics and ideas. Summarize only what is clearly expressed in the transcript—including the speaker’s tone, framing, and rhetorical style. Do not interpret beyond the speaker’s intent, add new information, or filter out sentiment or viewpoint. Do not include vague, generic, or filler content. Only include meaningful, specific details directly supported by the transcript. 
+
+########## OUTPUT FORMAT ########## Return in JSON format exactly: {"summary": "[up to 150-word summary]" }
+
+Important Rules: 
+
+• Read the Full Transcript Carefully: • Always read the entire transcript carefully before generating the summary. • Be aware that the transcript may contain typos or automatic transcription errors (e.g., “Laney” instead of “leaning”). Use contextual clues to infer intended phrases and correct errors in meaning before summarization. • The summary must reflect only what is actually said in the transcript—no interpretation, editorializing, or assumptions. • Do not insert opinions, reframe the message, or filter out tone, sentiment, or viewpoint. • Avoid vague, generic, or filler content. Use specific, meaningful details directly supported by the transcript. • Preserve the speaker’s tone, style, and intent as expressed in the original language. • The summary should be concise and informative, ideally up to 150 words. Here is the YouTube video transcript: • Transcript: {transcript }16 
+
+TABLE S4: Prompt for problematic content classification (conspiratorial or extremist). You are an expert in analyzing and classifying online content for signs of conspiratorial or extremist narratives. Assign one label based on the transcript’s content, and briefly justify your choice in one sentence. Select only one of the following categories: • “conspiratorial” — if the transcript promotes or strongly suggests conspiracy theories (e.g., secret government plots, false flag operations, suppressed truth). • “extremist” — if the transcript advocates or supports radical ideological positions (far-left or far-right), often rejecting democratic norms, promoting violence, or extreme polarization. • “NA” — only if you are confident the content contains neither conspiratorial nor extremist material. 
+
+########## OUTPUT FORMAT ########## Return in JSON format exactly: {"category": "[conspiratorial / extremist / NA]", "reason": "[One-sentence justification]" }
+
+Important Rules: 
+
+• Be aware that the transcript may contain typos or automatic transcription errors (e.g., “Laney” instead of “leaning”). Use contextual clues to infer intended phrases and correct errors in meaning. Here is the YouTube video transcript: • Video Title: {video title } • Transcript: {transcript }17 
+
+TABLE S5: Prompt for bLLM+YT, a naive, non-regularized LLM-assisted YouTube recommender focused on personalization. You are a YouTube recommender system. Your job is to rank candidate videos for a given user based on how well each video’s content aligns with the user’s recent watch history. Prioritize the user’s interests and provide accurate, personalized recommendations. 
+
+########## USER HISTORY ########## 
+
+Below are summaries of up to 10 videos that a user recently watched, shown in reverse chronological order: the most recently watched video is at the top (VIDEO 1), followed by the second most recent (VIDEO 2), and so on. 
+
+--- VIDEO 1 ---
+
+Title: ... Summary: ... ... 
+
+########## CANDIDATE VIDEOS ########## 
+
+You are given 30 candidate videos (labeled CID1 to CID30) to consider. Your task is to rank them based on relevance to the user’s recent history. 
+
+Mapping Reference: 
+
+CID1 → VID: ... ... 
+
+--- CANDIDATE VIDEO CID1 ---
+
+VID: ... Title: ... Summary: ... ... 
+
+########## OUTPUT FORMAT ########## Return in JSON format exactly: {"CIDxxx": {"vid": "vid_xxx", "title": "Title of video xxx" }, ... }
+
+Important Rules: 
+
+• Each key must be a candidate video identifier in the format “CID#” (e.g., “CID1” to “CID30”), corresponding to the input candidate videos. • Each value must include: • “vid”: the exact video ID from the candidate section • “title”: the exact title corresponding to that video ID • Do NOT invent or alter any video IDs (VIDs) or titles. • All candidate videos must be included exactly once, even if they are not closely related to the user’s history. • Rank the videos based on relevance, from most to least recommended. • Videos that are closely aligned with the user’s history—especially those matching more recently watched items—should appear near the top. • Less relevant videos should appear toward the end. • You MUST only include videos that were explicitly listed in the CANDIDATE VIDEOS section (CID1 to CID30). • Even if a video from the user’s watch history shares the same title, you may only use it if it was also listed as a candidate. • Do not copy or reuse any videos that appeared only in the USER HISTORY section. • Do not include any additional explanation, notes, or formatting—only return the JSON object. 18 
+
+TABLE S6: Prompt for rLLM+YT, a regularized LLM-assisted YouTube recommender that balances personalization with ideological diversity and demotes problematic content. You are a YouTube recommender system. Your job is to rank candidate videos for a given user based on how well each video’s content aligns with the user’s recent watch history. Prioritize the user’s interests and provide accurate, personalized recommendations. Whenever possible, incorporate ideologically diverse viewpoints in the ranking—recommend content that helps users understand different perspectives across the ideological spectrum (e.g., liberal, centrist, conservative). However, do not promote content that is conspiratorial, extremist, or widely known to contain misinformation. Only diversify across legitimate and fact-based viewpoints. 
+
+########## USER HISTORY ########## 
+
+Below are summaries of up to 10 videos that a user recently watched, shown in reverse chronological order: the most recently watched video is at the top (VIDEO 1), followed by the second most recent (VIDEO 2), and so on. 
+
+--- VIDEO 1 ---
+
+Title: ... Summary: ... ... 
+
+########## CANDIDATE VIDEOS ########## 
+
+You are given 30 candidate videos (labeled CID1 to CID30) to consider. Your task is to rank them based on relevance to the user’s recent history. 
+
+Mapping Reference: 
+
+CID1 → VID: ... ... 
+
+--- CANDIDATE VIDEO CID1 ---
+
+VID: ... Title: ... Summary: ... ... 
+
+########## OUTPUT FORMAT ########## Return in JSON format exactly: {"CIDxxx": {"vid": "vid_xxx", "title": "Title of video xxx" }, ... }
+
+Important Rules: 
+
+• Each key must be a candidate video identifier in the format “CID#” (e.g., “CID1” to “CID30”), corresponding to the input candidate videos. • Each value must include: • “vid”: the exact video ID from the candidate section • “title”: the exact title corresponding to that video ID • Do NOT invent or alter any video IDs (VIDs) or titles. • All candidate videos must be included exactly once, even if they are not closely related to the user’s history. • Rank the videos based on relevance, from most to least recommended. • Videos that are closely aligned with the user’s history—especially those matching more recently watched items—should appear near the top. • Among similarly relevant videos, prioritize rankings that expose the user to a diversity of legitimate ideological perspectives. • Less relevant or potentially harmful or conspiratorial content should be ranked lower (i.e., placed toward the end of the list), even if it seems superficially related. • You MUST only include videos that were explicitly listed in the CANDIDATE VIDEOS section (CID1 to CID30). • Even if a video from the user’s watch history shares the same title, you may only use it if it was also listed as a candidate. • Do not copy or reuse any videos that appeared only in the USER HISTORY section. • Do not include any additional explanation, notes, or formatting—only return the JSON object. 19 
+
+TABLE S7: Prompt for topic-exclusive summarization on abortion, immigration, and elections. The placeholder {topic } is one of {“abortion”, “immigration”, “elections” }, and {excluded topics } denotes the two remaining topics. You are an expert summarizer. Identify and extract ONLY the portion(s) of a transcript that relate specifically to the topic of {topic }.Completely ignore all other topics, including but not limited to {excluded topics }.Your task is to produce a clear, concise summary (up to 150 words) of the {topic }-related content from a YouTube transcript. The summary should preserve the speaker’s tone, sentiment, viewpoint, and linguistic style while focusing strictly on the topic of {topic }.Summarize only what is explicitly stated — including tone, framing, and rhetorical style. Do not interpret, add new information, or filter out sentiment or viewpoint. Avoid vague, generic, or filler content. Include only meaningful, specific details directly supported by the transcript. 
+
+########## Instructions ########## 
+
+• Read the entire transcript carefully before summarizing. • Be aware the transcript may contain typos or auto-transcription errors (e.g., “Laney” instead of “leaning”). Use contextual clues to infer intended phrases and make necessary corrections where transcription errors affect meaning. • Extract ONLY content related to {topic }.• Write a concise summary (up to 150 words) of the {topic }-specific content. • Completely ignore non-{topic } topics, including {excluded topics }—even if mentioned in the same sentence. • Summarize only what is clearly stated. Do not interpret, editorialize, or infer beyond the speaker’s words. • Do not insert opinions, reframe the message, or alter tone, sentiment, or viewpoint. • Exclude vague or filler content. Use specific, transcript-supported details. • Preserve the speaker’s tone, style, and intent. • If the transcript contains no clear {topic }-related content or is too vague for a meaningful summary, return “NA”. 
+
+########## OUTPUT FORMAT ########## Use the following JSON output format exactly: {"summary": "[150-word max summary of {topic}-related content or NA]" }
+
+Here is the YouTube video transcript: • Transcript: {transcript }20 
+
+TABLE S8: Prompt for bLLM-partisan+YT, a non-regularized LLM-assisted YouTube recommender with explicit partisan emphasis. You are a YouTube recommender system. Your job is to rank candidate videos for a given user based on how well each video’s content aligns with the user’s recent watch history. Prioritize both: • The topic relevance of the video. • The partisan alignment of the video (inferred from the partisan leaning evident in the user’s watch history). Ranking logic must follow this priority order: • First, recommend videos on the same topic that also match the user’s partisan alignment. • Next, recommend videos on different topics but still consistent with the user’s partisan alignment. • After that, recommend videos on the same topic but with a different partisan alignment (not aligned with the user’s watch history). • Finally, recommend videos on different topics with a different partisan alignment. Your goal is to maximize personalization by respecting both the topic and the partisan interests observed in the user’s history. 
+
+########## USER HISTORY ########## 
+
+Below are summaries of up to 10 videos that a user recently watched, shown in reverse chronological order: the most recently watched video is at the top (VIDEO 1), followed by the second most recent (VIDEO 2), and so on. 
+
+--- VIDEO 1 ---
+
+Title: ... Summary: ... ... 
+
+########## CANDIDATE VIDEOS ########## 
+
+You are given 30 candidate videos (labeled CID1 to CID30) to consider. Your task is to rank them based on relevance to the user’s recent history. 
+
+Mapping Reference: 
+
+CID1 → VID: ... ... 
+
+--- CANDIDATE VIDEO CID1 ---
+
+VID: ... Title: ... Summary: ... ... 
+
+########## OUTPUT FORMAT ########## Return in JSON format exactly: {"CIDxxx": {"vid": "vid_xxx", "title": "Title of video xxx" }, ... }
+
+Important Rules: 
+
+• Each key must be a candidate video identifier in the format “CID#” (e.g., “CID1” to “CID30”), corresponding to the input candidate videos. • Each value must include: • “vid”: the exact video ID from the candidate section • “title”: the exact title corresponding to that video ID • Do NOT invent or alter any video IDs (VIDs) or titles. • All candidate videos must be included exactly once, even if they are not closely related to the user’s history. • Rank the videos according to the following hierarchy: • 1. Same topic + same partisan alignment. • 2. Other topics + same partisan alignment. • 3. Same topic + different partisan alignment. • 4. Other topics + different partisan alignment. • More recently watched items in the history should weigh more heavily when considering alignment. • You MUST only include videos that were explicitly listed in the CANDIDATE VIDEOS section (CID1 to CID30). • Even if a video from the user’s watch history shares the same title, you may only use it if it was also listed as a candidate. • Do not copy or reuse any videos that appeared only in the USER HISTORY section. • Do not include any additional explanation, notes, or formatting—only return the JSON object. 21 
+
+TABLE S9: Distribution of sessions across the five ideological categories. Ideological category Frequency 
+
+right-right 1,154 
+
+right 4,811 
+
+center 2,159 
+
+left 1,220 
+
+left-left 483 unknown 21 Total 9,848 22 
+
+FIG. S2: Comparison of ideological scores for YT, emb+YT, and bLLM+YT across five ideological trajectories— left-left , left , center , right ,and right-right . The average partisanship scores, based on users’ historical ideological scores from their ten most recently watched videos, are shown for each time step in the seven most recently viewed videos and for recommended videos at ranks 1 to 30. Error bars represent 90% confidence intervals. Compared with YT, language- and embedding-based reranking (bLLM+YT and emb+YT) more strongly aligns top-ranked recommendations with users’ historical partisanship, particularly for right-leaning trajectories. 23 
+
+FIG. S3: Comparison of ideological scores for YT, emb+YT, and rLLM+YT across five ideological trajectories— left-left , left , center , right ,and right-right . The average partisanship scores, based on users’ historical ideological scores from their ten most recently watched videos, are shown for each time step in the seven most recently viewed videos and for recommended videos at ranks 1 to 30. Error bars represent 90% confidence intervals. LLM prompting that encourages ideological diversity and demotes extreme or conspiratorial content (rLLM+YT; Table S6) reduces the partisanship of top-ranked recommendations, particularly for right-leaning trajectories. 24 LL L C R RR 
+
+> 0.0
+> 0.1
+> 0.2
+> 0.3
+> 0.4
+> 0.5
+> 0.6
+> k=1
+> density
+
+entropy = 2.21 bits 
+
+YT 
+
+LL L C R RR 
+
+entropy = 2.17 bits 
+
+bLLM+YT 
+
+LL L C R RR 
+
+entropy = 2.09 bits 
+
+rLLM+YT 
+
+LL L C R RR 
+
+entropy = 2.11 bits 
+
+emb+YT 
+
+LL L C R RR 
+
+> 0.0
+> 0.1
+> 0.2
+> 0.3
+> 0.4
+> 0.5
+> 0.6
+> k=5
+> density
+
+entropy = 2.22 bits 
+
+LL L C R RR 
+
+entropy = 2.18 bits 
+
+LL L C R RR 
+
+entropy = 2.22 bits 
+
+LL L C R RR 
+
+entropy = 2.15 bits 
+
+LL L C R RR 
+
+> 0.0
+> 0.1
+> 0.2
+> 0.3
+> 0.4
+> 0.5
+> 0.6
+> k=10
+> density
+
+entropy = 2.22 bits 
+
+LL L C R RR 
+
+entropy = 2.20 bits 
+
+LL L C R RR 
+
+entropy = 2.23 bits 
+
+LL L C R RR 
+
+entropy = 2.18 bits 
+
+LL L C R RR 
+
+> 0.0
+> 0.1
+> 0.2
+> 0.3
+> 0.4
+> 0.5
+> 0.6
+> k=15
+> density
+
+entropy = 2.21 bits 
+
+LL L C R RR 
+
+entropy = 2.21 bits 
+
+LL L C R RR 
+
+entropy = 2.22 bits 
+
+LL L C R RR 
+
+entropy = 2.20 bits 
+
+LL L C R RR 
+
+> 0.0
+> 0.1
+> 0.2
+> 0.3
+> 0.4
+> 0.5
+> 0.6
+> k=20
+> density
+
+entropy = 2.21 bits 
+
+LL L C R RR 
+
+entropy = 2.21 bits 
+
+LL L C R RR 
+
+entropy = 2.21 bits 
+
+LL L C R RR 
+
+entropy = 2.21 bits 
+
+LL L C R RR 
+
+ideology category 
+
+> 0.0
+> 0.1
+> 0.2
+> 0.3
+> 0.4
+> 0.5
+> 0.6
+> k=30
+> density
+
+entropy = 2.21 bits 
+
+LL L C R RR 
+
+ideology category 
+
+entropy = 2.21 bits 
+
+LL L C R RR 
+
+ideology category 
+
+entropy = 2.21 bits 
+
+LL L C R RR 
+
+ideology category 
+
+entropy = 2.21 bits 
+
+FIG. S4: Distribution of top-k recommended videos across ideological categories for sessions in the right category, comparing four ranking methods: YT, bLLM+YT, rLLM+YT, and emb+YT. Entropy (in bits) quantifies the diversity of each distribution. At small k, bLLM+YT and emb+YT show modestly reduced diversity compared with YT and rLLM+YT. 25 LL L C R RR 
+
+> 0.0
+> 0.2
+> 0.4
+> 0.6
+> k=1
+> density
+
+entropy = 2.15 bits 
+
+YT 
+
+LL L C R RR 
+
+entropy = 1.88 bits 
+
+bLLM+YT 
+
+LL L C R RR 
+
+entropy = 2.21 bits 
+
+rLLM+YT 
+
+LL L C R RR 
+
+entropy = 1.66 bits 
+
+emb+YT 
+
+LL L C R RR 
+
+> 0.0
+> 0.2
+> 0.4
+> 0.6
+> k=5
+> density
+
+entropy = 2.16 bits 
+
+LL L C R RR 
+
+entropy = 1.94 bits 
+
+LL L C R RR 
+
+entropy = 2.23 bits 
+
+LL L C R RR 
+
+entropy = 1.86 bits 
+
+LL L C R RR 
+
+> 0.0
+> 0.2
+> 0.4
+> 0.6
+> k=10
+> density
+
+entropy = 2.17 bits 
+
+LL L C R RR 
+
+entropy = 2.05 bits 
+
+LL L C R RR 
+
+entropy = 2.19 bits 
+
+LL L C R RR 
+
+entropy = 1.98 bits 
+
+LL L C R RR 
+
+> 0.0
+> 0.2
+> 0.4
+> 0.6
+> k=15
+> density
+
+entropy = 2.16 bits 
+
+LL L C R RR 
+
+entropy = 2.12 bits 
+
+LL L C R RR 
+
+entropy = 2.17 bits 
+
+LL L C R RR 
+
+entropy = 2.06 bits 
+
+LL L C R RR 
+
+> 0.0
+> 0.2
+> 0.4
+> 0.6
+> k=20
+> density
+
+entropy = 2.16 bits 
+
+LL L C R RR 
+
+entropy = 2.15 bits 
+
+LL L C R RR 
+
+entropy = 2.16 bits 
+
+LL L C R RR 
+
+entropy = 2.12 bits 
+
+LL L C R RR 
+
+ideology category 
+
+> 0.0
+> 0.2
+> 0.4
+> 0.6
+> k=30
+> density
+
+entropy = 2.16 bits 
+
+LL L C R RR 
+
+ideology category 
+
+entropy = 2.16 bits 
+
+LL L C R RR 
+
+ideology category 
+
+entropy = 2.15 bits 
+
+LL L C R RR 
+
+ideology category 
+
+entropy = 2.16 bits 
+
+FIG. S5: Distribution of top-k recommended videos across ideological categories for sessions in the right-right category, comparing four rank-ing methods: YT, bLLM+YT, rLLM+YT, and emb+YT. Entropy (in bits) quantifies the diversity of each distribution. At small k, bLLM+YT and emb+YT show reduced diversity compared with YT and rLLM+YT. 26 
+
+FIG. S6: Comparison of topical relevance and ideological scores for YT, emb+YT, bLLM+YT, and rLLM+YT across three ideological trajectories: center , left , and left-left . Marker colors represent average ideological scores across recommendation ranks; error bars indicate the standard error of the mean topical match across sessions within each trajectory. 27 
+
+FIG. S7: Comparison of bLLM+YT, bLLM-partisan+YT, and emb+YT in synthetic sessions from Experiment 1 (Fig. 4A). From a pool of 30 candidates balanced across abortion, immigration, and elections, the boxplots show the fraction of recommended videos on each topic appearing in the top, middle, or bottom third of the ranked list. Each row corresponds to a single watch-history topic. By design, same-topic candidates take the opposing partisan position relative to the history, while other-topic candidates align with the history’s partisanship. emb+YT consistently prioritizes topic relevance across all three topics. bLLM+YT shows the same prioritization for abortion and immigration but shifts toward partisan alignment for the more diverse topic of elections. bLLM-partisan+YT places greater emphasis on partisan content than bLLM+YT, prioritizing partisanship over topic for immigration but not for abortion, where the discussion scope appears narrower. 28 AB
+
+> C
+
+FIG. S8: Comparison of topical relevance and ideological scores for bLLM-partisan+YT and emb+YT, using synthetic sessions designed to test whether algorithms prioritize topic relevance or partisan alignment (Experiment 1; Fig. 4A). Sessions were constructed with extreme-leaning histories ( left-left and right-right ) on abortion, immigration, and elections. Compared with bLLM+YT (Fig. 5), bLLM-partisan+YT places greater emphasis on partisan content, prioritizing partisanship for immigration and elections but not for abortion, where the discussion scope appears narrower. emb+YT consistently prioritizes topical relevance. Marker colors represent average ideological scores across recom-mendation ranks; error bars show the standard error of topical match across sessions within each trajectory. 29 ABC
+
+FIG. S9: Average partisanship scores across recommendation ranks for bLLM+YT, bLLM-partisan+YT, and emb+YT, using synthetic sessions (Experiment 2; Fig. 4B). Watch histories cover a single topic with consistent partisan content ( left-left , left , right , or right-right ; columns), while candidate videos span the full partisan spectrum on the same topic. Rows correspond to abortion (top), immigration (middle), and elections (bottom). Recommendation scores track the partisanship of the watch history: extreme histories yield averages closer to the extremes, while less extreme histories track their partisan position. bLLM+YT effectively identifies and prioritizes partisan alignment, with bLLM-partisan+YT modestly amplifying this effect. 
+
+FIG. S10: Rank-weighted average of problematic labels in recommendations ( ψrec ) versus recency-weighted average of problematic labels in users’ watch history ( ψhist ), for YT, bLLM+YT, and rLLM+YT. Each point represents one session; lines show linear fits per method. The posi-tive correlation indicates that more problematic content in the watch history is associated with more problematic content in recommendations. The effect is most pronounced under bLLM+YT and weakest under rLLM+YT. 30 
+
+FIG. S11: Average partisanship scores in users’ viewing histories and recommended items, comparing YouTube (YT) with LLM-assisted reranking using RecPrompt, computed across 533 right-leaning sessions. Histories are indexed from −7 (oldest) to 0 (most recent); recom-mendations are shown at ranks 1 to 19. LLM-assisted reranking is associated with higher partisanship at top ranks. Partisanship scores are used only for evaluation, not in the prompt.

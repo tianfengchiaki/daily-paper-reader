@@ -1,0 +1,22 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2606.00819v1/fig-001.webp",
+      "caption": "Fig. 1: (a) Overall Structure of DeLask: We first adopt an early-exit strategy that projects the hidden states from each decoder layer onto the final linear layer, producing a probability distribution over the vocabulary for every layer. Next, we compute the difference of the distributions between adjacent layers. From each pairwise difference, we derive a driftance value, defined as the cosine similarity between successive distribution differences. A strongly negative driftance value suggests that the corresponding layer is more susceptible to hallucinations. Once such layers are identified, we partially skip them to mitigate their adverse effect on overall model performance. (b) Effects of Partial Layer Skipping on TruthfulQA Dataset: It demonstrates the influence of layer skipping on model performance, clearly indicating that skipping certain decoder layers enhances the accuracy.",
+      "page": 2,
+      "index": 1,
+      "width": 1006,
+      "height": 316
+    },
+    {
+      "url": "assets/figures/arxiv/2606.00819v1/fig-002.webp",
+      "caption": "Table 1: Experimental results of two LLaMA variants across different decoding methods on (i) factual hallucination benchmarks (TruthfulQA and FACTOR), (ii) multiple-choice tasks (MMLU and ARC-C), and (iii) open-ended generation tasks (TriviaQA, GSM8K, and CoQA).",
+      "page": 4,
+      "index": 2,
+      "width": 1052,
+      "height": 293
+    }
+  ]
+}

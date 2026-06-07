@@ -1,0 +1,54 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2606.00919v1/fig-001.webp",
+      "caption": "Fig. 1. Two-phase RCSP workflow. Phase 1 (offline) trains soft prompts using a composite loss function, then evaluates the learned soft prompts using a judge LLM to identify the best-performing one. Phase 2 (deployment) prepends the soft prompt selected in phase 1 with the user question and feeds it to the base LLM to generate the final answer. Phase 1 is performed once prior to deployment while Phase 2 executes for each user query.",
+      "page": 6,
+      "index": 1,
+      "width": 725,
+      "height": 308
+    },
+    {
+      "url": "assets/figures/arxiv/2606.00919v1/fig-002.webp",
+      "caption": "Table 4. Ablation results for Gemma-3-12b-pt on TruthfulQA. “HALL”, “ABS”, and “FACT” denote percentages of judge-assigned hallucinated responses, abstentions, and factual responses (%). Best results for HALL (lowest) and F-score (highest) are bolded.",
+      "page": 14,
+      "index": 2,
+      "width": 718,
+      "height": 240
+    },
+    {
+      "url": "assets/figures/arxiv/2606.00919v1/fig-003.webp",
+      "caption": "Fig. 2. Sensitivity of RCSP to soft prompt capacity using Gemma-3-12b-pt on TruthfulQA. Left: performance as a function of number of prompt tokens. Right: performance across different embedding dimensions.",
+      "page": 14,
+      "index": 3,
+      "width": 725,
+      "height": 291
+    },
+    {
+      "url": "assets/figures/arxiv/2606.00919v1/fig-004.webp",
+      "caption": "Table 3. Generative QA evaluations for Llama 3.1-8b. “HALL”, “ABS”, and “FACT” denote percentages (%) of hallucinated responses, abstentions, and factual responses as determined by the judge. Best F-score (highest) within each dataset is bolded.",
+      "page": 13,
+      "index": 4,
+      "width": 737,
+      "height": 658
+    },
+    {
+      "url": "assets/figures/arxiv/2606.00919v1/fig-005.webp",
+      "caption": "Table 5. Hyperparameter configuration for the soft prompts reported for Gemma-312b-pt and Llama-3.1-8B. Notation follows Equations (2) and (4) in the methodology section.",
+      "page": 17,
+      "index": 5,
+      "width": 492,
+      "height": 341
+    },
+    {
+      "url": "assets/figures/arxiv/2606.00919v1/fig-006.webp",
+      "caption": "Table 2. Generative QA evaluations for Gemma-3-12b-pt. “HALL”, “ABS”, and “FACT” denote percentages (%) of hallucinated responses, abstentions, and factual responses as determined by the judge. Best F-score (highest) within each dataset is bolded.",
+      "page": 12,
+      "index": 6,
+      "width": 737,
+      "height": 659
+    }
+  ]
+}

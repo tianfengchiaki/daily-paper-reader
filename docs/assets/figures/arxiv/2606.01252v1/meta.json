@@ -1,0 +1,158 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2606.01252v1/fig-001.webp",
+      "caption": "Figure 2: Layer-wise MTXLS analysis results. Translation and summarization behaviors emerge around similar later layers, suggesting that MTXLS does not follow clearly separated translation and summarization stages.",
+      "page": 6,
+      "index": 1,
+      "width": 943,
+      "height": 406
+    },
+    {
+      "url": "assets/figures/arxiv/2606.01252v1/fig-002.webp",
+      "caption": "Figure 5: Prompts used for reference-summary quality review and correction.",
+      "page": 15,
+      "index": 2,
+      "width": 855,
+      "height": 930
+    },
+    {
+      "url": "assets/figures/arxiv/2606.01252v1/fig-003.webp",
+      "caption": "Table 10: gpt-oss-20b Multilingual evaluation results sorted by language resource level",
+      "page": 21,
+      "index": 3,
+      "width": 717,
+      "height": 1257
+    },
+    {
+      "url": "assets/figures/arxiv/2606.01252v1/fig-004.webp",
+      "caption": "Figure 3: Layer-wise error entity probability. Hallucinated entities become more probable in later layers where translation and summarization behaviors emerge, whereas omitted entities remain negligible across layers.",
+      "page": 7,
+      "index": 4,
+      "width": 942,
+      "height": 388
+    },
+    {
+      "url": "assets/figures/arxiv/2606.01252v1/fig-005.webp",
+      "caption": "Figure 4: Prompts used for translation, summarization, and cross-lingual summarization.",
+      "page": 14,
+      "index": 5,
+      "width": 404,
+      "height": 896
+    },
+    {
+      "url": "assets/figures/arxiv/2606.01252v1/fig-006.webp",
+      "caption": "Table 1: MTXLS performance across models, resource levels, and methods. S-T, T-S, and E2E denote summarizethen-translate, translate-then-summarize, and end-to-end cross-lingual summarization, respectively. E2E generally achieves stronger performance for larger or multilingual-oriented models. Bold indicates the best scores within each model and resource group.",
+      "page": 3,
+      "index": 6,
+      "width": 939,
+      "height": 361
+    },
+    {
+      "url": "assets/figures/arxiv/2606.01252v1/fig-007.webp",
+      "caption": "Table 7: Qwen3.5-2B Multilingual evaluation results sorted by language resource level",
+      "page": 18,
+      "index": 7,
+      "width": 717,
+      "height": 1257
+    },
+    {
+      "url": "assets/figures/arxiv/2606.01252v1/fig-008.webp",
+      "caption": "Table 5: Error statistics across languages.",
+      "page": 13,
+      "index": 8,
+      "width": 410,
+      "height": 442
+    },
+    {
+      "url": "assets/figures/arxiv/2606.01252v1/fig-009.webp",
+      "caption": "Table 6: Languages grouped by resource level",
+      "page": 13,
+      "index": 9,
+      "width": 446,
+      "height": 279
+    },
+    {
+      "url": "assets/figures/arxiv/2606.01252v1/fig-010.webp",
+      "caption": "Table 4: E2E-AT denotes the activation-steered variant of E2E. Bold indicates the higher score within E2E.",
+      "page": 8,
+      "index": 10,
+      "width": 425,
+      "height": 477
+    },
+    {
+      "url": "assets/figures/arxiv/2606.01252v1/fig-011.webp",
+      "caption": "Table 3: Example of cross-lingual factual inconsistency in generated summaries. German correctly refers to the Scottish Cup semifinal, while Hungarian and Turkish generate hallucinated event entities.",
+      "page": 4,
+      "index": 11,
+      "width": 431,
+      "height": 377
+    },
+    {
+      "url": "assets/figures/arxiv/2606.01252v1/fig-012.webp",
+      "caption": "Table 2: Qualitative analysis showing semantic divergence across MTXLS methods. Despite using the same backbone model, different methods vary in factual certainty and narrative framing, such as whether the event is described as an allegation or as an asserted fact.",
+      "page": 4,
+      "index": 12,
+      "width": 407,
+      "height": 427
+    },
+    {
+      "url": "assets/figures/arxiv/2606.01252v1/fig-013.webp",
+      "caption": "Table 8: Tiny-Aya-Global, Multilingual evaluation results sorted by language resource level",
+      "page": 19,
+      "index": 13,
+      "width": 717,
+      "height": 1257
+    },
+    {
+      "url": "assets/figures/arxiv/2606.01252v1/fig-014.webp",
+      "caption": "Figure 8: Layer-wise MTXLS analysis results across all languages for Qwen3.5-9B.",
+      "page": 17,
+      "index": 14,
+      "width": 948,
+      "height": 495
+    },
+    {
+      "url": "assets/figures/arxiv/2606.01252v1/fig-015.webp",
+      "caption": "Figure 9: Layer-wise MTXLS analysis results across all languages for gpt-oss-20b.",
+      "page": 17,
+      "index": 15,
+      "width": 948,
+      "height": 494
+    },
+    {
+      "url": "assets/figures/arxiv/2606.01252v1/fig-016.webp",
+      "caption": "Table 9: Qwen3.5-9B Multilingual evaluation results sorted by language resource level",
+      "page": 20,
+      "index": 16,
+      "width": 717,
+      "height": 1257
+    },
+    {
+      "url": "assets/figures/arxiv/2606.01252v1/fig-017.webp",
+      "caption": "Figure 1: Illustration of our layer-wise MTXLS analysis framework. We compute translation and summarization scores from intermediate hidden states to examine how these behaviors emerge across layers.",
+      "page": 5,
+      "index": 17,
+      "width": 940,
+      "height": 379
+    },
+    {
+      "url": "assets/figures/arxiv/2606.01252v1/fig-018.webp",
+      "caption": "Figure 6: Layer-wise MTXLS analysis results across all languages for Qwen3.5-2B.",
+      "page": 16,
+      "index": 18,
+      "width": 948,
+      "height": 494
+    },
+    {
+      "url": "assets/figures/arxiv/2606.01252v1/fig-019.webp",
+      "caption": "Figure 7: Layer-wise MTXLS analysis results across all languages for Tiny-Aya-Global.",
+      "page": 16,
+      "index": 19,
+      "width": 948,
+      "height": 494
+    }
+  ]
+}

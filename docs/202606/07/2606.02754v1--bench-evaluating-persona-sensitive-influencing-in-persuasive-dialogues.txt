@@ -1,0 +1,846 @@
+Title: Ψ-Bench: Evaluating Persona-Sensitive Influencing in Persuasive Dialogues
+
+URL Source: https://arxiv.org/pdf/2606.02754v1
+
+Published Time: Wed, 03 Jun 2026 00:06:57 GMT
+
+Number of Pages: 29
+
+Markdown Content:
+# Ψ-Bench: Evaluating Persona-Sensitive Influencing in Persuasive Dialogues 
+
+## Peixuan Han Hongyi Du Jiayu Liu Yihang Sun Yutong Liu Jiaxuan You 
+
+## University of Illinois Urbana-Champaign 
+
+## {ph16,jiaxuan}@illinois.edu 
+
+## Abstract 
+
+Personalization is a crucial capability of mod-ern language agents. However, current research primarily positions personalized agents as pas-sive responders to user preferences, limiting their ability to interact with users and provide suggestions or guidance proactively. To sys-tematically evaluate such proactive personal-ization in realistic interactions, we propose 
+
+Ψ-Bench , a benchmark for assessing LLMs’ ability to influence realistic users through con-versation. We design three real-world inter-action scenarios that involve persuasion in Ψ-Bench, and endow simulated clients with per-sonal characteristics through explicit user pro-files derived from dialogue histories. We eval-uate 10 frontier LLMs on Ψ-Bench and find that while most models can produce coherent and reasonable arguments, even state-of-the-art models still leave considerable room for im-provement in persuasion. We also find that providing access to client profiles yields an av-erage performance gain of 18.24%, highlight-ing the importance of user-specific informa-tion for effective persuasion. Overall, our work highlights persona-sensitive influencing as a challenging yet practical direction for evalu-ating and developing more proactive person-alized LLM agents. Codes are available at: 
+
+https://github.com/Hanpx20/Psi-Bench .
+
+## 1 Introduction 
+
+Personalization has become one of the most promi-nent directions in recent AI development (Li et al., 2025b). The traditional “one-size-fits-all” paradigm is becoming increasingly inadequate, as users now expect AI assistants to deliver not only generally useful responses but also person-alized support tailored to their individual prefer-ences (Hao et al., 2025; Mysore et al., 2024). For instance, recent products such as OpenClaw (Stein-berger, 2026) reflect the growing interest in build-ing personalized LLM agents. Motivated by this trend, researchers have pro-posed diverse training schemes (Wu et al., 2025b; Salemi et al., 2025) and benchmarks (Hao et al., 2025; Jiang et al., 2025) for LLM personalization. However, existing approaches typically position the AI assistant as a passive responder, where the LLM receives a user query and generates a response that aligns with the user’s expectations. As LLM agents become increasingly integrated into real-world workflows, they are expected to support proactive personalization , such as offering suggestions and assisting users in decision-making (Bhattacharjee et al., 2024; Liu et al., 2025a; Wang et al., 2025a). In such scenarios, influencing a specific user re-quires a distinct form of personalization: the agent must reason about the user’s needs, preferences, and constraints, and plan communication strategies that are both helpful and appropriately tailored. Recommendation 
+
+Traditional Benchmark 
+
+> propose
+> response
+> Question Answer
+
+-Bench Ψ
+
+> Text Stylization
+> Viewpoint Debate
+> Psychological Consult
+> Everyday Request
+> mutual
+> influence
+> Passive
+
+Static 
+
+Active 
+
+> Interactive
+
+Figure 1: Ψ-Bench and prior benchmarks. 
+
+Despite the importance of proactive personaliza-tion, most work on LLM-based persuasion evalu-ates LLM agents’ generic influencing ability with-out grounding the target user in individualized pro-files (Singh et al., 2024; Han et al., 2025), failing to capture the personalized nature of real-world persuasion. In addition, relying on generic, non-personalized judges may cause evaluations to re-flect the default preferences of the underlying LLM rather than the actual preferences of the target user. To bridge these gaps, we propose Ψ-Bench ,a benchmark for evaluating Persona-Sensitive 
+
+Influencing: an LLM’s capability to persuade a 1              
+
+> arXiv:2606.02754v1 [cs.LG] 1 Jun 2026 Table 1: The scenarios in Ψ-Bench that measures different influencing capabilities.
+> Scenario Capability Data Source Example Viewpoint Debate Influencing Opinions CMV “Wired mice are better than wireless mice because they are cheaper and battery-free.” Psychological Consultation Influencing Mindsets CounselBench “Even though my classmates are friendly to me, I still cannot fit in at my new school.” Everyday Request Influencing Behaviors Synthesized “Could you drive me to the airport tomorrow?”
+
+profile-grounded client. Specifically, we design three realistic scenarios in Ψ-Bench that require persuasion, as illustrated in Table 1. We collect nearly 700 queries from real-world human interac-tions and construct user profiles grounded in their dialogue histories. These profiles are then used to instantiate simulated clients with a backbone LLM, while remaining hidden from the tested LLMs dur-ing evaluation. Finally, we design LLM-as-a-judge metrics that ground judgments in objective and traceable user-specific features, thereby reducing potential biases in persuasion evaluation. We evaluate 10 frontier LLMs on Ψ-Bench and observe that although most models can generate coherent and reasonable arguments, their ability to persuade personalized clients varies substan-tially. Even state-of-the-art models such as GPT-5.1 achieve less than 67% of the full score, suggesting that current LLMs remain limited in personalized persuasion. Furthermore, we observe that granting models access to client profiles consistently im-proves the performance of all models, yielding an average gain of 18.24%. Finally, we train a profile analyzer that infers client profiles from the con-versation, enabling models to improve persuasion outcomes in the profile-hidden setting. In summary, our main contributions are: • We introduce Ψ-Bench , a diverse, scalable, and objective framework for evaluating LLMs’ abil-ity to influence clients with detailed, simulated per-sonas through conversations. • We reveal current LLMs’ limitations in persona-sensitive influencing and show that pro-file modeling is crucial for effective persuasion. • We design an RL-based profile analyzer 
+
+to infer client profiles from conversations, sig-nificantly improving persuasion performance in profile-hidden settings. Ultimately, our work charts a promising course for next-generation agents, which can leverage per-sonalized profiles to provide proactive, effective, and user-tailored interactions. 
+
+## 2 Benchmark Construction 
+
+This section details the composition and construc-tion process of Ψ-Bench . The whole process is illustrated in Figure 2. 
+
+2.1 Scenarios 
+
+Ψ-Bench comprises three diverse scenarios in which the evaluated LLM is tasked with influenc-ing another interlocutor (referred to as the client )in terms of their beliefs, mindset, or actions. 
+
+Viewpoint Debate. In this task, the evaluated model engages in a discussion on a controversial topic with the client. The client initially presents their opinion, and the model is required to persuade the client to change their viewpoint. The data for this scenario are collected from the Webis-CMV-20 dataset (Al Khatib et al., 2020), which contains a large number of discussions from the “Change My View (CMV)” subreddit on Reddit. We preprocess the raw data and retain 2,131 dis-cussion threads, each covering a meaningful topic and containing at least five high-quality exchanges between the original poster and multiple respon-dents. The dataset is split into training and test sets with a ratio of 1,631 to 500 . Leveraging the “Delta (∆)” mechanism in CMV, where the original poster assigns a “ ∆” label to responses that successfully change their view, we obtain ground-truth labels for successful and unsuccessful persuasion. 
+
+Psychological Consultation. In this task, the evaluated model acts as a psychological therapist conversing with a client seeking psychotherapy. The model is expected to help the client develop a more positive mindset, which requires empathy, sensitivity, and professional competence. The data for this scenario are collected from the CounselBench dataset (Li et al., 2025c), which consists of question–answer pairs in psychological counseling along with expert-annotated comments. We select 90 psychotherapy queries, each associ-ated with four therapist responses that are scored based on professionalism. 2Age: 20 
+
+> Hobby: video games
+> Traits: outgoing,
+> competitive
+> Age: 18 -25?
+> Hobby: sports?
+> Traits: motivated?
+> I’m feeling down for no reason and have no
+> interest in anything recently. What should I do?
+> You can try meditating and use
+> psychological suggestions that
+> there is nothing to worry about.
+
+Client 
+
+Tested 
+
+LLM 
+
+Viewpoint 
+
+Debate 
+
+Psychological 
+
+Consultation 
+
+Everyday 
+
+Request 
+
+> ChangeMyView
+> Browsing
+> Frequency
+> Expert -annotated
+> Consulting Questions
+> Generate Queries to
+> Match the Persona
+> Sample and Curate
+> from Persona Pool
+> This approach doesn’t fit the
+> client’s outgoing personality.
+> I just can't shift my mindset …
+> Try playing with some friends? I
+> believe no odds can beat you if
+> you make your life fulfilling.
+> This suggestion matches the
+> client’s hobby and traits.
+> I do have some friends I haven’t
+> contacted for a while…
+
+Judge 
+
+Model 
+
+> Quality: 8
+> Persona: 7
+> Effect: 5
+> News: 40
+> Sports: 15
+> Cook: 100
+> Profile Analyzer
+> Predicted Profile
+
+Benchmark Construction  Interaction and Evaluation 
+
+> (Optional)
+> Quality: 8
+> Persona: 3
+> Effect: 2
+
+Figure 2: Overview of Ψ-Bench . We collect queries from 3 scenarios, curate realistic personas paired with each query, and utilize personalized clients and an expert judge to evaluate LLMs’ persona-sensitive influencing. 
+
+Everyday Request. In this task, the evaluated model is expected to persuade the client to take a helpful action in response to a daily-life request. This task challenges the model’s abilities in social reasoning and pragmatic persuasion. To ensure topic diversity, we define 20 everyday request categories and use GPT-4o to generate 5 re-alistic requests for each category, simulating what the user might actually receive. We then filter the data for validity and specificity, and add necessary context to create sufficient materials for conversa-tion. The final split contains 100 profile-grounded request instances. 
+
+2.2 Persona Profile 
+
+To evaluate LLM performance in more realistic settings, Ψ-Bench incorporates a “human” dimen-sion into persuasive dialogues. Specifically, each query in Ψ-Bench is paired with a synthesized per-sona profile that includes personality traits, speak-ing style, and related characteristics. During the interaction, the client is required to role-play the assigned persona, which remains inaccessible to the persuader (the tested LLM). This setup enables the simulation of a realistic conversation and chal-lenges the persuader to infer latent user character-istics and dynamically adapt their strategy. The template for persona profiles is adapted from PersonaMem-v2 (Jiang et al., 2025), and we cu-rate specific field names relevant to each scenario, which can be seen in Section A. For the Viewpoint Debate scenario, we prompt DeepSeek-v3.2 to re-
+
+> 1
+
+We use ROC-AUC because LLM judges output scores on a 9-point scale, while ground-truth labels are binary outcomes. 
+
+construct a persona based on statistical attributes of each Reddit poster, including browsing frequen-cies across topics and their LIWC linguistic fea-tures (Pennebaker et al., 2001). For the Psycholog-ical Consultation and Everyday Request scenarios, we randomly sample personas from PersonaMem-v2 and further refine them using DeepSeek-v3.2 to ensure alignment with the query content. 
+
+2.3 Evaluation Metrics 
+
+Evaluating persuasion is inherently challenging due to its dynamic nature. To address this challenge and ensure a structured and objective assessment, Ψ-Bench utilizes persona-grounded clients in conver-sations and provides detailed rubrics for the judge, following the common practice (Zhou et al.; Guo et al., 2025; Mou et al., 2025; Liu et al.). Specifically, we use three LLM-based metrics to evaluate the tested models: Conversation Quality, Personalize Response Level, and Persuasion Effect (denoted as Quality , Personalize and Effect ). They respectively evaluate general conversation quality, ability to tailor arguments to specific clients, and the effect of influencing the client’s opinions or be-haviors. All metrics are scored by DeepSeek-v3.2 on 9-point scales. Prompts for the LLM judge are shown in Figures 17 to 19. In addition, we also eval-uate the semantic similarity between model outputs and effective human responses in Section B.3. 
+
+## 3 Preliminary Experiments 
+
+In this section, we conduct several preliminary ex-periments to validate our benchmark design and the evaluation framework. 3Table 2: ROC-AUC of different LLM-judged metrics with ground-truth outcomes in real-world dialogs 1.                     
+
+> Metric Quality Personalize Effect Debate 76.6 75.0 96.0 Consultation 78.0 67.9 N/A
+> Table 3: Comparison of the same persuader interacting with human clients and LLM-instantiated clients.
+> Metric Quality Personalize Effect Avg. vs. Human client 7.85 4.81 4.94 Avg. vs. LLM client 7.50 4.47 4.77 Spearman Corr. 49.74 48.40 45.39
+
+3.1 Validity of the Judge Model 
+
+We first examine whether the LLM-based judge aligns with human annotations in real-world conver-sations. For Viewpoint Debate, responses labeled with “ ∆”, which indicate a user’s viewpoint shift, are treated as effective responses . We then apply the judge model to human dialogues and calculate the ROC-AUC between judge-assigned scores and the binarized persuasion outcomes. For Psycho-logical Consultation, responses rated ≥ 4 out of 5 by experts are treated as high-quality responses .Since CounselBench does not provide follow-up patient reactions, we only evaluate the judge model on Quality and Personalize .As shown in Table 2, the Effect score in Debate and the Quality score in Consultation achieve high ROC-AUC values with their corresponding human annotations, indicating that the judge model can reliably capture human judgments in persua-sive dialogues. Moreover, Personalize also shows strong alignment with human signals, suggesting that more personalized responses are more likely to be associated with favorable human judgments. 
+
+3.2 Realism of the Client 
+
+We further evaluate whether the persona-augmented client can faithfully simulate human responses. For each dialogue in the Debate scenario, we remove the final user turn and ask the simulated client to reconstruct it. We then use the judge model to score the reconstructed dialogues and compare the resulting Effect scores with the persuasion outcomes observed in the original dialogues. Empirically, the persona-augmented client achieves an AUC of 66.9 , outperforming the baseline without persona information, which achieves an AUC of only 60.5 . These results indicate that persona information plays a crucial role in simulating realistic human responses .
+
+3.3 Human Study 
+
+Finally, we conduct a human study in the Debate scenario to directly validate the simulated client. Specifically, we first ask human participants to pro-vide self-described profiles. Each participant then acts as a client and interacts with a fixed persuader LLM on a set of debate topics. In parallel, we in-stantiate simulated clients using the participants’ profiles and let them interact with the same per-suader LLM, thereby creating paired conversations of “human clients vs. persuader LLM” and “profile-enhanced simulated clients vs. persuader LLM”. Finally, we apply the judge model to assess and compare the performance of the same persuader LLM when interacting with human clients versus simulated clients. In total, 5 annotators generated 50 conversations comprising 150 turns. Figure 6 shows the pseudocode of this process. As shown in Table 3, all evaluation metrics based on conversations with simulated clients are compa-rable to those with human clients. The two settings yield similar scores across all three metrics and exhibit moderate correlations ranging from 0.4 to 0.5. These results support the validity of using simulated clients in Ψ-Bench as a scalable proxy for human evaluation .
+
+## 4 Benchmarking Results 
+
+4.1 Settings 
+
+We evaluate 10 frontier LLMs on Ψ-Bench, as listed in Table 4. During the evaluation, the client and judge models are both based on DeepSeek-v3.2. In each conversation, the client first produces an opening message, followed by 3 rounds of al-ternating dialog between the tested LLM and the client. The tested LLMs cannot access client pro-files during the conversation. 
+
+4.2 Main Results 
+
+Table 4 displays 10 LLMs’ performances on three scenarios in Ψ-Bench, from which we can conclude the following findings: • Most LLMs can generate high-quality di-alogues. All tested LLMs obtain high scores on the Quality dimension, with most of the scores sur-passing 7. This suggests that current LLMs can 4Table 4: LLMs’ performance on Ψ-Bench . The “Quality”, “Personalize” and “Effect” metrics are on 9-point scales. Most LLMs generate dialogues with decent quality, but persuading a personalized client is much more challenging.                                                                                                                  
+
+> Model Viewpoint Debate Psychological Consultation Everyday Request Avg.
+> Quality Personalize Effect Quality Personalize Effect Quality Personalize Effect Effect
+> Qwen3-8B 6.94 3.56 3.51 6.99 5.18 4.53 6.01 3.63 4.12 4.05 Qwen3-32B 7.65 4.34 4.30 7.56 6.38 5.10 6.68 4.66 4.21 4.54 Qwen3-80B-A3B 7.66 4.10 4.20 8.04 7.26 6.10 7.53 5.77 5.85 5.38 DeepSeek-v3.2 7.76 4.80 4.81 7.83 6.80 5.25 7.34 4.32 3.34 4.47 DeepSeek-v4-pro 8.25 5.62 5.71 8.11 7.66 6.04 7.21 5.15 3.92 5.22 Grok-4-fast 7.84 5.20 4.57 7.63 6.44 4.94 6.39 4.34 3.05 4.19 Gemini-3-flash 8.03 4.73 4.68 8.10 7.37 6.01 7.25 5.10 3.98 4.89 Gemini-3.1-pro 8.22 5.54 5.89 8.13 7.49 5.77 6.98 5.14 3.66 5.11 GPT-5-mini 7.86 4.91 5.27 7.66 5.98 5.37 6.96 4.42 4.11 4.92 GPT-5.1 8.12 5.57 6.12 7.82 6.90 5.37 7.97 6.12 5.88 5.79
+
+produce professional and contextually appropriate responses, like being fact-oriented in debates and being empathetic in psychotherapy. • LLMs still struggle to persuade realistic clients. Despite their strong dialogue quality, LLMs achieve only moderate persuasive effective-ness on Ψ-Bench. Even the best-performing mod-els obtain average Effect scores below 6, while weaker models achieve only around 4 points. This performance disparity suggests that stronger mod-els are better at generating persuasive arguments, but their capability remains limited: producing well-written arguments alone does not necessar-ily lead to successful persuasion, especially when the target is a realistic client with specific traits, preferences, and resistance patterns. • Personalize is an informative indicator of persuasion effectiveness. We conduct a correla-tion analysis among different metrics, as shown in Figure 7. The results show that Quality has a corre-lation of 0.75 with Effect , the final persuasion out-come, while Personalize achieves a slightly higher correlation of 0.77. Moreover, Personalize exhibits a more discriminative score distribution, whereas 
+
+Quality scores are more concentrated. These find-ings suggest that a key bottleneck in LLM-based persuasion lies in understanding and adapting to individual client characteristics. 
+
+4.3 Multi-Turn Analysis 
+
+To study how model behavior evolves over ex-tended interactions, we conduct a 6-turn experi-ment (each turn consists of one utterance from the persuader and one utterance from the client) on Ψ-Bench using 5 models and evaluate model perfor-mance after each turn. Specifically, for k ∈ [1 , 6] ,1 2 3 4 5 6         
+
+> Turn
+> 3
+> 4
+> 5
+> 6
+> Personalize
+> 123456
+> Turn
+> 3
+> 4
+> 5
+> 6
+> 7
+> Effect
+> Qwen3-8B Qwen3-32B Grok-4-fast Deepseek-v4-pro GPT-5.1
+
+Figure 3: LLMs’ performance trends on Ψ-Bench De-bate scenario in 6 turns. 
+
+the judge model is provided with the first k turns of the dialogue and is asked to assign a score based on the partial conversation observed up to that point. From Figure 3, we obtain the following findings: • Stronger LLMs benefit more from long-horizon conversations. Stronger models achieve consistent performance gains in long dialogues, whereas weaker models tend to saturate earlier. This suggests that stronger LLMs are better at long-context reasoning and can accumulate persuasive evidence over extended interactions. • Personalize saturates earlier than Effect .
+
+Compared with Effect , Personalize ceases to in-crease more early. This indicates that longer dia-logues do not necessarily lead to substantially bet-ter personalization once the model has already fixed its responses to the client. • Smaller persuader models are more prone to repetition in long conversations. Smaller per-suader models occasionally repeat similar argu-ments over extended interactions. Although such repetition is not always reflected in Effect scores, it leads to lower Quality and Personalize scores 5Qwen3-8B 
+
+> Qwen3-32B
+> Qwen3-80B-A3B
+> Deepseek-v3.2
+> Deepseek-v4-pro
+> GPT-5-mini
+> GPT-5.1
+> Grok-4-fast
+> Gemini-3-flash
+> Gemini-3.1-pro
+> 2
+> 3
+> 4
+> 5
+> 6
+> 7
+> Effect Score
+> Effect Score
+> Effect Score (Oracle)
+> Personalize Score
+> Personalize Score (Oracle)
+> 3
+> 4
+> 5
+> 6
+> 7
+> 8
+> Personalize Score
+
+Figure 4: Comparison of LLMs’ performance on Ψ-Bench Debate scenario with and without the client profile. The “Oracle” setting, where the client’s full profile is accessible for the tested LLMs, exhibits significantly stronger persuasion outcomes. 
+
+compared with more diverse conversations. 
+
+4.4 Case Study 
+
+This section presents a qualitative analysis of LLMs’ persuasion patterns. Through the cases (Figures 20 to 22), we show that personalized per-suasion requires not only reasonable arguments, but also identifying user-specific information and adapting strategies accordingly. In successful cases, the persuader leverages client-specific signals, either by identifying ex-plicit information or implicitly inferring the in-formation from the client’s responses .In Figure 20, the persuader identifies an explicit self-description from the client as a “lab tech” ,suggesting a scientific and rigorous mindset. By recognizing this tension, the persuader is able to reframe the discussion and help the client separate 
+
+“metaphor” from “reality” , eventually leading to a successful change in perspective. In Figure 21, the client argues that “protest blocks traffic and bothers my friends” . Instead of continuing with abstract principles, the persuader infers that the client is more receptive to pragmatic considerations. It then shifts its strategy by explaining the effects of protest more specifically, like “make certain criticisms and demands normal to voice” , which leads the client to reconsider their view. On the other hand, overly general or mis-aligned responses are often suboptimal even if their Quality score is high. In Figure 22, the per-suader suggests mental-related treatments such as 
+
+“journaling, grounding techniques” , while the client is a “results-oriented” person. Such strategies won’t see immediate results. Therefore, the re-sponse appears reasonable on the surface but fails to match the client’s specific background. 
+
+## 5 Ψ-Bench with Profile Analyzer 
+
+In this section, we explore and implement alightweight profile analyzer that enhances per-suasion effect on Ψ-Bench. 
+
+5.1 Client Profile Enhances Persuasion 
+
+We first investigate an idealized setting where the LLM is given complete information about the client and instructed to plan accordingly before generat-ing the actual dialogue. We refer to this setting as the “ Oracle ” setting. As shown in Figure 4, the Oracle setting improves the performance of all 10 LLMs, leading to 41.19% higher Personalize and 
+
+18.24% higher Effect scores on average. On the other hand, we can find from Section 5.3 that pro-viding LLMs with inaccurate profile information has little effect, indicating the correctness of the information is crucial to the performance gain. To-gether, these findings suggest that LLMs can effec-tively leverage explicit user-specific information, while the main bottleneck lies in accurate profile modeling in conversations .
+
+5.2 Client Profile Analyzer 
+
+Motivated by the substantial performance gains of providing the client profiles in Figure 4, we explore whether LLMs can improve their persuasive capa-bilities by proactively inferring the client’s profile in this section. We consider two types of “profile analyzers”: using a off-the-shelf LLM as the ana-lyzer and training a smaller but specialized analyzer with reinforcement learning (RL). Given a dialogue history, the profile analyzer pre-dicts the client profile in JSON format. We evaluate 6Table 5: LLMs’ performance on Ψ-Bench with client profile analyzers. Actively inferring the client’s information makes persuasion more successful, especially with the profile analyzer trained with RL.                                                                                                                 
+
+> Persuader Model Profile Analyzer
+> Viewpoint Debate Psychological Consultation Everyday Request Avg.
+> Sim Personalize Effect Sim Personalize Effect Sim Personalize Effect Effect
+> Qwen3-8B N/A N/A 3.56 3.51 N/A 5.18 4.53 N/A 3.63 4.12 4.05 Oracle 100.0 5.02 4.63 100.0 6.21 4.69 100.0 6.13 5.09 4.80 Irrelevant 47.27 3.77 3.67 43.42 5.37 4.52 48.07 2.94 3.02 3.74
+> DeepSeek-v3.2 49.3 4.00 3.97 54.2 5.66 4.57 51.5 4.47 4.08 4.21
+> Qwen3-4B-RL 52.6 4.16 4.04 51.7 5.83 4.58 49.7 4.78 4.16 4.26 DeepSeek-v3.2 N/A N/A 4.80 4.81 N/A 6.80 5.25 N/A 4.32 3.34 4.47 Oracle 100.0 6.90 5.87 100.0 7.58 5.50 100.0 6.54 4.53 5.30 Irrelevant 47.27 5.60 5.17 43.42 7.22 5.44 48.07 3.61 3.08 4.56
+> DeepSeek-v3.2 48.6 5.95 5.64 54.0 7.10 5.48 51.7 5.21 3.42 4.85
+> Qwen3-4B-RL 52.4 5.96 5.70 51.5 7.12 5.64 49.9 5.36 3.82 5.05
+
+the prediction using a Sim metric, which measures the average semantic similarity between the pre-dicted profile and the ground-truth profile across all fields (education level, occupation, speaking style, etc.). We denote the ground-truth and pre-dicted profiles as P and P′, respectively. The Sim 
+
+metric is then defined as:      
+
+> rsim =1num( keys )
+> X
+> key ∈P
+> sim 2(Pkey ,P′
+> key ).(1)
+
+For the RL-based profile analyzer, we initialize from Qwen-4B and train it with GRPO (Shao et al., 2024), and we denote the resulting model as Qwen-4B-RL. The training data is constructed from the Viewpoint Debate setting, where we collect con-versations between the DeepSeek-v3.2 client and the Qwen3-8B persuader. From each conversation, we create multiple training instances using pro-gressively longer dialogue prefixes, from only the initial message to the full interaction after 3 turns, while using the same ground-truth client profile as the target. This construction reflects the Ψ-Bench setting, where the profile analyzer is required to infer the client’s profile from limited and evolving conversational evidence. During training, we use Sim as the main reward and add a format reward to ensure valid JSON outputs with correct field names. The final reward is computed as r = rsim + 0 .1 × rformat . Specific hyperparameters are shown in Section B.5. We first evaluate the profile analyzers’ predic-tion similarity( Sim ) on a held-out test set in the Debate domain. As shown in Table 6, the Qwen3-4B-RL model outperforms all baselines with an average similarity of 55% , despite having access 
+
+> 2Similarity is calculated using the BGE-M3 encoder.
+
+to the conversation alone. Among the zero-shot LLMs, DeepSeek-v3.2 achieves a favorable trade-off between performance and cost efficiency, and is therefore used in the following experiments. 
+
+Table 6: Prediction similarity of profile analyzers.       
+
+> Model Profile Similarity Qwen3-4B 45.11 DeepSeek-v3.2 51.30 DeepSeek-v4-pro 52.09 GPT-5-mini 48.57 Qwen3-4B-RL 55.00
+
+5.3 Ψ-Bench with Profile Analyzer 
+
+In this section, we evaluate two LLMs, Qwen3-8B and DeepSeek-v3.2, on Ψ-Bench with different profile analyzers to examine whether inferred pro-files can improve persuasive dialogues. We also include an “Irrelevant” baseline to ablate the effect of profile relevance, where the dialogue LLM is provided with a profile from the persona database that has the lowest similarity to the ground-truth profile. We report two LLM-judged metrics, Per-sonalize and Effect , together with the average Sim 
+
+score defined in Equation (1). From Table 5, we obtain the following findings: • Profile analyzers substantially enhance per-suasive effectiveness. Compared with the baseline setting, both DeepSeek-v3.2 and Qwen3-4B-RL lead to remarkable improvements in downstream persuasion, achieving 6.4% and 9.1% higher Effect ,respectively. In some scenarios, Qwen3-4B-RL approaches and even surpasses the Oracle setting, where the complete ground-truth client profile is provided to the persuader model. In contrast, the Irrelevant baseline yields little gain. This indicates 7that the improvement comes from recovering accu-rate client-specific information rather than merely providing additional context. • The RL-trained profile analyzer shows strong generalization ability. Although Qwen3-4B-RL is only trained on Viewpoint Debate, it trans-fers effectively to the other scenarios. While its Sim 
+
+score slightly decreases compared to the zero-shot analyzer on these unseen tasks, it still produces strong gains in Effect . This suggests that the ex-act reconstruction of the client profile is not always necessary; instead, identifying information relevant to the dialogue is the key. Notably, Qwen3-4B-RL achieves such performance while having only 4B parameters, demonstrating that RL-based profile modeling is an effective mechanism for enhancing personalized persuasion. 
+
+## 6 Related Work 
+
+6.1 Personalized Agents 
+
+The necessity of aligning LLM with diverse user preferences has driven significant advancements in personalization (Liu et al., 2025b; Zhang et al., 2025a, 2024). Prior studies have explored vari-ous approaches to adapt agents to specific users, proposing training-time optimizations such as rein-forcement learning (Wu et al., 2025b; Salemi et al., 2025) and parameter-efficient fine-tuning (Tan et al., 2024; Zhuang et al., 2024; Liu et al., 2026), as well as test-time personalization methods (Zhang et al., 2025b; Qu et al., 2025). Personalization has also been integrated into practical applica-tions, notably in recommendation systems (Wang et al., 2025b; Huang et al., 2026) and chatbot assis-tants (Wu et al., 2025a; Liu et al., 2025d). Meanwhile, diverse benchmarks that evaluate LLMs’ capability to deduce user traits from sparse interactions (Zhao et al., 2025; Li et al., 2025a; Liu et al., 2025c) and provide responses tailored to the user (Hao et al., 2025; Jiang et al., 2025; Salemi et al., 2024; Li et al.; Truong et al., 2025) have been proposed. However, existing benchmarks pri-marily frame LLMs as assistants catering to user preferences (Xie et al., 2025; Liu et al., 2025b). Our research distinctly measures their capabilities as active interlocutors employing persona-based strategies to dynamically influence users. 
+
+6.2 LLM Persuasion. 
+
+The capability of LLMs to generate persuasive content has garnered significant research atten-tion (Jaech et al., 2024; Rogiers et al., 2024; Breum et al., 2024; Tan et al., 2025). Prior studies have demonstrated LLMs’ persuasive potential (Potter et al., 2024; Karinshak et al., 2023; Takayanagi et al., 2025) and proposed methods to train persua-sive models through imitating humans (Jin et al., 2024; Furumai et al., 2024) and reinforcement learning (Han et al., 2025; Cheng and You, 2025). To quantify this influence, various benchmarking approaches have been proposed, including training reward models to score arguments (Singh et al., 2024; Durmus et al., 2024), utilizing LLMs to sim-ulate interlocutors who provide self-reported opin-ions (Bozdag et al., 2025; Han et al., 2025), and us-ing human experts to annotate (Schoenegger et al., 2025; Pauli et al., 2024). Additionally, researchers have explored simulated social environments (Mou et al., 2025; Zhou et al., 2025) and games (Xu et al., 2023; Idziejczak et al., 2025) to analyse persuasion in dynamic settings. Despite these advancements, evaluating LLM persuasion remains a challenging issue as persuasion is inherently subjective for hu-mans (Salvi et al., 2024; Shi et al., 2020; Potter et al., 2024; Kowal et al., 2026). In this paper, we propose a solution to persuasion evaluation by introducing personalized simulation. 
+
+## 7 Conclusion 
+
+In this work, we introduce Ψ-Bench , a bench-mark for evaluating persona-sensitive influencing in LLM agents. We construct three scenarios span-ning viewpoint debate, psychological consultation, and everyday requests, and instantiate simulated clients with profile-grounded information that re-mains hidden from the evaluated models. Exper-iments on 10 frontier LLMs show that persona-sensitive influencing remains challenging for cur-rent models. Although many models can produce fluent and reasonable arguments, their effectiveness varies substantially when interacting with person-alized clients. The consistent gains from provid-ing access to client profiles further suggest that effective influencing depends not only on general persuasive ability, but also on accurately model-ing user-specific information. In addition, our pro-file analyzer demonstrates a practical direction for improving performance when explicit profiles are unavailable. Overall, Ψ-Bench represents a promis-ing exploration toward evaluating and developing personalized agents that are capable of proactive, adaptive, and user-aware interactions. 8Limitations 
+
+We identify two points in the paper that may be improved in future work. First, although the sim-ulated clients cover diverse personas, they cannot fully represent the breadth of real-world users, such as people with different educational backgrounds, digital literacy levels, socioeconomic conditions, or cultural norms. Second, while the benchmark could in principle be scaled by enumerating all combi-nations of queries and personas, we opt not to do so due to computational costs. Future versions can scale the data in quadratic order and analyze a model’s performance against different personas on the same query. 
+
+## Ethical Considerations 
+
+This work investigates the ability of LLM agents to influence users through personalized conversa-tions. While our goal is to evaluate agents’ capacity to provide valid suggestions and helpful guidance, we acknowledge the potential risks of manipula-tion or misuse, particularly in high-stakes scenar-ios. To mitigate these risks, Ψ-Bench is designed as an evaluation benchmark rather than a deploy-ment framework, and we adopt several safeguards. Firstly, we use LLaMaGuard to screen all queries and filter out risky, unethical, factually incorrect, or highly sensitive topics, ensuring that Ψ-Bench aligns with broadly accepted public values. Sec-ondly, we incorporate “compliance to social norm” and “professionalism” in the Quality aspect of eval-uation. The fact that all LLMs receive scores of 
+
+> 6 on this aspect indicates they rarely use un-ethical persuasion tricks like making up evidence. Finally, we’d like to highlight that performance on Ψ-Bench should not be interpreted as evidence of unrestricted persuasive capability across all do-mains. Due to the inherent safety controls of mod-ern LLMs, optimizing for a higher score on Ψ-Bench is unlikely to directly translate into compa-rable persuasion capability in unsafe or high-risk domains. 
+
+## References 
+
+Khalid Al Khatib, Michael Völske, Shahbaz Syed, Niko-lay Kolyada, and Benno Stein. 2020. Exploiting personal characteristics of debaters for predicting persuasiveness. In Proceedings of the 58th annual meeting of the association for computational linguis-tics , pages 7067–7072. Ananya Bhattacharjee, Yuchen Zeng, Sarah Yi Xu, Dana Kulzhabayeva, Minyi Ma, Rachel Kornfield, Syed Ishtiaque Ahmed, Alex Mariakakis, Mary P Cz-erwinski, Anastasia Kuzminykh, and 1 others. 2024. Understanding the role of large language models in personalizing and scaffolding strategies to combat academic procrastination. In Proceedings of the 2024 CHI Conference on Human Factors in Computing Systems , pages 1–18. Nimet Beyza Bozdag, Shuhaib Mehri, Gokhan Tur, and Dilek Hakkani-Tür. 2025. Persuade me if you can: A framework for evaluating persuasion effective-ness and susceptibility among large language models. 
+
+arXiv preprint arXiv:2503.01829 .Simon Martin Breum, Daniel Vædele Egdal, Vic-tor Gram Mortensen, Anders Giovanni Møller, and Luca Maria Aiello. 2024. The persuasive power of large language models. In Proceedings of the Inter-national AAAI Conference on Web and Social Media ,volume 18, pages 152–163. Zirui Cheng and Jiaxuan You. 2025. Towards strategic persuasion with language models. arXiv preprint arXiv:2509.22989 .Esin Durmus, Liane Lovitt, Alex Tamkin, Stuart Ritchie, Jack Clark, and Deep Ganguli. 2024. Measuring the persuasiveness of language models. Kazuaki Furumai, Roberto Legaspi, Julio Vizcarra, Yu-dai Yamazaki, Yasutaka Nishimura, Sina J Semnani, Kazushi Ikeda, Weiyan Shi, and Monica S Lam. 2024. Zero-shot persuasive chatbots with llm-generated strategies and information retrieval. arXiv preprint arXiv:2407.03585 .Dadi Guo, Jiayu Liu, Zhiyuan Fan, Zhitao He, Haoran Li, Yuxin Li, Yumeng Wang, and Yi R Fung. 2025. Mathematical proof as a litmus test: Revealing failure modes of advanced large reasoning models. arXiv preprint arXiv:2506.17114 .Peixuan Han, Zijia Liu, and Jiaxuan You. 2025. Tomap: Training opponent-aware llm persuaders with theory of mind. arXiv preprint arXiv:2505.22961 .Bowen Hao, Zhuoqun Hao, and 1 others. 2025. Know me, respond to me: Benchmarking llms for dynamic user profiling and personalized responses at scale. In 
+
+Conference on Language Modeling (COLM) .Jiani Huang, Shijie Wang, Liangbo Ning, Wenqi Fan, Shuaiqiang Wang, Dawei Yin, and Qing Li. 2026. Towards next-generation recommender systems: A benchmark for personalized recommendation assis-tant with llms. In Proceedings of the Nineteenth ACM International Conference on Web Search and Data Mining , pages 217–226. Mateusz Idziejczak, Vasyl Korzavatykh, Mateusz Staw-icki, Andrii Chmutov, Marcin Korcz, Iwo Bł ˛ adek, and Dariusz Brzezinski. 2025. Among them: Agame-based framework for assessing persuasion ca-pabilities of llms. In Pacific-Asia Conference on 
+
+9Knowledge Discovery and Data Mining , pages 183– 195. Springer. Aaron Jaech, Adam Kalai, Adam Lerer, Adam Richard-son, Ahmed El-Kishky, Aiden Low, Alec Helyar, Aleksander Madry, Alex Beutel, Alex Carney, and 1 others. 2024. Openai o1 system card. arXiv preprint arXiv:2412.16720 .Bowen Jiang, Yuan Yuan, Maohao Shen, Zhuoqun Hao, Zhangchen Xu, Zichen Chen, Ziyi Liu, Anvesh Rao Vijjini, Jiashu He, Hanchao Yu, and 1 others. 2025. Personamem-v2: Towards personalized intelligence via learning implicit user personas and agentic mem-ory. arXiv preprint arXiv:2512.06688 .Chuhao Jin, Kening Ren, Lingzhen Kong, Xiting Wang, Ruihua Song, and Huan Chen. 2024. Persuading across diverse domains: a dataset and persuasion large language model. In Proceedings of the 62nd Annual Meeting of the Association for Computational Linguistics (Volume 1: Long Papers) , pages 1678– 1706. Elise Karinshak, Sunny Xun Liu, Joon Sung Park, and Jeffrey T Hancock. 2023. Working with ai to per-suade: Examining a large language model’s abil-ity to generate pro-vaccination messages. Proceed-ings of the ACM on Human-Computer Interaction ,7(CSCW1):1–29. Matthew Kowal, Jasper Timm, Jean-Francois Godbout, Thomas Costello, Antonio A. Arechar, Gordon Pen-nycook, David Rand, Adam Gleave, and Kellin Pel-rine. 2026. It’s the thought that counts: Evaluating the attempts of frontier llms to persuade on harmful topics. Preprint , arXiv:2506.02873. Li Li, Peilin Cai, Ryan A Rossi, Franck Dernon-court, Branislav Kveton, Junda Wu, Tong Yu, Linxin Song, Tiankai Yang, Yuehan Qin, and 1 oth-ers. 2025a. A personalized conversational bench-mark: Towards simulating personalized conversa-tions. arXiv preprint arXiv:2505.14106 .Shuyue Stella Li, Avinandan Bose, Faeze Brahman, Si-mon Shaolei Du, Pang Wei Koh, Maryam Fazel, and Yulia Tsvetkov. Prefdisco: Benchmarking proactive personalized reasoning. In The Fourteenth Interna-tional Conference on Learning Representations .Xiaopeng Li, Pengyue Jia, Derong Xu, Yi Wen, Yingyi Zhang, Wenlin Zhang, Wanyu Wang, Yichao Wang, Zhaocheng Du, Xiangyang Li, and 1 others. 2025b. A survey of personalization: From rag to agent. ACM Transactions on Information Systems .Yahan Li, Jifan Yao, John Bosco S Bunyi, Adam C Frank, Angel Hsing-Chi Hwang, and Ruishan Liu. 2025c. Counselbench: a large-scale expert evalua-tion and adversarial benchmarking of large language models in mental health question answering. arXiv preprint arXiv:2506.08584 .Binwen Liu, Jiexi Ge, and Jiamin Wang. 2025a. Va-iage: A multi-agent solution to personalized travel planning. arXiv preprint arXiv:2505.10922 .Jiahong Liu and 1 others. 2025b. A survey of person-alized large language models: Progress and future directions. arXiv preprint arXiv:2502.11528 .Jiayu Liu, Cheng Qian, and Heng Ji. Navigating worlds and minds: Dynamic evaluation of llm agent robust-ness under progressively disclosing dual-constraints. Jiayu Liu, Cheng Qian, Zhaochen Su, Qing Zong, Shi-jue Huang, Bingxiang He, and Yi R Fung. 2025c. Costbench: Evaluating multi-turn cost-optimal plan-ning and adaptation in dynamic environments for llm tool-use agents. arXiv preprint arXiv:2511.02734 .Jiayu Liu, Rui Wang, Qing Zong, Qingcheng Zeng, Tianshi Zheng, Haochen Shi, Dadi Guo, Baixuan Xu, Chunyang Li, and Yangqiu Song. 2026. Naacl: Noise-aware verbal confidence calibration for llms in rag systems. arXiv preprint arXiv:2601.11004 .Jiayu Liu, Qing Zong, Weiqi Wang, and Yangqiu Song. 2025d. Revisiting epistemic markers in confidence estimation: Can markers accurately reflect large lan-guage models’ uncertainty? In Proceedings of the 63rd Annual Meeting of the Association for Compu-tational Linguistics (Volume 2: Short Papers) , pages 206–221, Vienna, Austria. Association for Computa-tional Linguistics. Xinyi Mou, Jingcong Liang, Jiayu Lin, Xinnong Zhang, Xiawei Liu, Shiyue Yang, Rong Ye, Lei Chen, Haoyu Kuang, Xuan-Jing Huang, and 1 others. 2025. Agentsense: Benchmarking social intelligence of lan-guage agents through interactive scenarios. In Pro-ceedings of the 2025 Conference of the Nations of the Americas Chapter of the Association for Compu-tational Linguistics: Human Language Technologies (Volume 1: Long Papers) , pages 4975–5001. Sheshera Mysore, Zhuoran Lu, Mengting Wan, Longqi Yang, Bahareh Sarrafzadeh, Steve Menezes, Tina Baghaee, Emmanuel Barajas Gonzalez, Jennifer Neville, and Tara Safavi. 2024. Pearl: Personal-izing large language model writing assistants with generation-calibrated retrievers. In Proceedings of the 1st Workshop on Customizable NLP: Progress and Challenges in Customizing NLP for a Domain, Application, Group, or Individual (CustomNLP4U) ,pages 198–219. Amalie Brogaard Pauli, Isabelle Augenstein, and Ira Assent. 2024. Measuring and benchmarking large language models’ capabilities to generate persuasive language. arXiv preprint arXiv:2406.17753 .James W Pennebaker, Martha E Francis, Roger J Booth, and 1 others. 2001. Linguistic inquiry and word count: Liwc 2001. Mahway: Lawrence Erlbaum Associates , 71(2001):2001. Yujin Potter, Shiyang Lai, Junsol Kim, James Evans, and Dawn Song. 2024. Hidden persuaders: Llms’ political leaning and their influence on voters. arXiv preprint arXiv:2410.24190 .
+
+10 Zikun Qu, Min Zhang, Mingze Kong, Xiang Li, Zhi-wei Shang, Zhiyong Wang, Yikun Ban, Shuang Qiu, Yao Shu, and Zhongxiang Dai. 2025. T-pop: Test-time personalization with online preference feedback. 
+
+arXiv preprint arXiv:2509.24696 .Alexander Rogiers, Sander Noels, Maarten Buyl, and Tijl De Bie. 2024. Persuasion with large language models: a survey. arXiv preprint arXiv:2411.06837 .Alireza Salemi, Cheng Li, Mingyang Zhang, Qiaozhu Mei, Weize Kong, Tao Chen, Zhuowan Li, Michael Bendersky, and Hamed Zamani. 2025. Reasoning-enhanced self-training for long-form personalized text generation. arXiv preprint arXiv:2501.04167 .Alireza Salemi, Sheshera Mysore, Michael Bendersky, and Hamed Zamani. 2024. Lamp: When large lan-guage models meet personalization. In Proceedings of the 62nd Annual Meeting of the Association for Computational Linguistics (Volume 1: Long Papers) ,pages 7370–7392. Francesco Salvi, Manoel Horta Ribeiro, Riccardo Gal-lotti, and Robert West. 2024. On the conversational persuasiveness of large language models: A random-ized controlled trial. Philipp Schoenegger, Francesco Salvi, Jiacheng Liu, Xi-aoli Nan, Ramit Debnath, Barbara Fasolo, Evelina Leivada, Gabriel Recchia, Fritz Günther, Ali Zarifhonarvar, and 1 others. 2025. Large language models are more persuasive than incentivized human persuaders. arXiv e-prints , pages arXiv–2505. Zhihong Shao, Peiyi Wang, Qihao Zhu, Runxin Xu, Junxiao Song, Xiao Bi, Haowei Zhang, Mingchuan Zhang, YK Li, Yang Wu, and 1 others. 2024. Deepseekmath: Pushing the limits of mathematical reasoning in open language models. arXiv preprint arXiv:2402.03300 .Weiyan Shi, Xuewei Wang, Yoo Jung Oh, Jingwen Zhang, Saurav Sahay, and Zhou Yu. 2020. Effects of persuasive dialogues: testing bot identities and inquiry strategies. In Proceedings of the 2020 CHI conference on human factors in computing systems ,pages 1–13. Somesh Singh, Yaman K Singla, Harini SI, and Balaji Krishnamurthy. 2024. Measuring and improving per-suasiveness of large language models. arXiv preprint arXiv:2410.02653 .Peter Steinberger. 2026. Openclaw. https://github. com/openclaw/openclaw . Open-source AI agent framework. Takehiro Takayanagi, Hiroya Takamura, Kiyoshi Izumi, and Chung-Chi Chen. 2025. Can gpt-4 sway experts’ investment decisions? In Findings of the Association for Computational Linguistics: NAACL 2025 , pages 374–383. Bryan Chen Zhengyu Tan, Daniel Wai Kit Chin, Zhengyuan Liu, Nancy Chen, and Roy Ka-Wei Lee. 2025. Persuasion dynamics in llms: Investigating robustness and adaptability in knowledge and safety with duet-pd. In Proceedings of the 2025 Conference on Empirical Methods in Natural Language Process-ing , pages 1550–1575. Zhaoxuan Tan, Qingkai Zeng, Yijun Tian, Zheyuan Liu, Bing Yin, and Meng Jiang. 2024. Democratizing large language models via personalized parameter-efficient fine-tuning. In Proceedings of the 2024 Con-ference on Empirical Methods in Natural Language Processing , pages 6476–6491. Kimberly Truong, Riccardo Fogliato, Hoda Heidari, and Steven Wu. 2025. Persona-augmented benchmark-ing: Evaluating llms across diverse writing styles. In Proceedings of the 2025 Conference on Empiri-cal Methods in Natural Language Processing , pages 22687–22720. Rui Wang, Qihan Lin, Jiayu Liu, Qing Zong, Tian-shi Zheng, Weiqi Wang, and Yangqiu Song. 2025a. Prospect theory fails for llms: Revealing instability of decision-making under epistemic uncertainty. arXiv preprint arXiv:2508.08992 .Shijie Wang and 1 others. 2025b. Towards next-generation recommender systems: a benchmark for personalized recommendation assistant with llms. 
+
+arXiv preprint arXiv:2503.09382 .Di Wu and 1 others. 2025a. Longmemeval: Benchmark-ing chat assistants on long-term interactive memory. In The Thirteenth International Conference on Learn-ing Representations (ICLR) .Shujin Wu, May Fung, Cheng Qian, Jeonghwan Kim, Dilek Hakkani-Tur, and Heng Ji. 2025b. Aligning llms with individual preferences via interaction. In 
+
+Proceedings of the 31st International Conference on Computational Linguistics (COLING) .Zhouhang Xie, Junda Wu, Yiran Shen, Yu Xia, Xin-tong Li, Aaron Chang, Ryan Rossi, Sachin Kumar, Bodhisattwa Prasad Majumder, Jingbo Shang, and 1 others. 2025. A survey on personalized and plural-istic preference alignment in large language models. 
+
+arXiv preprint arXiv:2504.07070 .Zelai Xu, Chao Yu, Fei Fang, Yu Wang, and Yi Wu. 2023. Language agents with reinforcement learn-ing for strategic play in the werewolf game. arXiv preprint arXiv:2310.18940 .Naifan Zhang, Ruihan Sun, Ruixi Su, Shiqi Ma, Shiya Zhang, Xianna Weng, Xiaofan Zhang, Yuhan Zhan, Yuyang Xu, Zhaohan Chen, and 1 others. 2025a. Echo-n1: Affective rl frontier. arXiv preprint arXiv:2512.00344 .Tianyi Zhang, Varsha Kishore, Felix Wu, Kilian Q Weinberger, and Yoav Artzi. 2019. Bertscore: Eval-uating text generation with bert. arXiv preprint arXiv:1904.09675 .
+
+11 Yijing Zhang, Dyah Adila, Changho Shin, and Frederic Sala. 2025b. Personalize your llm: Fake it then align it. In Findings of the Association for Computational Linguistics: NAACL 2025 , pages 7287–7301. Zhehao Zhang, Ryan A Rossi, Branislav Kveton, Yijia Shao, Diyi Yang, Hamed Zamani, Franck Dernon-court, Joe Barrow, Tong Yu, Sungchul Kim, and 1 others. 2024. Personalization of large language mod-els: A survey. arXiv preprint arXiv:2411.00027 .Siyan Zhao, Mingyi Hong, Yang Liu, Devamanyu Haz-arika, and Kaixiang Lin. 2025. Do llms recognize your preferences? evaluating personalized preference following in llms. arXiv preprint arXiv:2502.09597 .Jinfeng Zhou, Yuxuan Chen, Yihan Shi, Xuanming Zhang, Leqi Lei, Yi Feng, Zexuan Xiong, Miao Yan, Xunzhi Wang, Yaru Cao, and 1 others. 2025. Social-eval: Evaluating social intelligence of large language models. In Proceedings of the 63rd Annual Meet-ing of the Association for Computational Linguistics (Volume 1: Long Papers) , pages 30958–31012. Xuhui Zhou, Hao Zhu, Leena Mathur, Ruohong Zhang, Haofei Yu, Zhengyang Qi, Louis-Philippe Morency, Yonatan Bisk, Daniel Fried, Graham Neubig, and 1 others. Sotopia: Interactive evaluation for social intelligence in language agents. In The Twelfth Inter-national Conference on Learning Representations .Yuchen Zhuang, Haotian Sun, Yue Yu, Rushi Qiang, Qifan Wang, Chao Zhang, and Bo Dai. 2024. Hydra: Model factorization framework for black-box llm personalization. Advances in Neural Information Processing Systems , 37:100783–100815. 
+
+12 A Data Construction Details 
+
+A.1 Persona Templates 
+
+The persona templates in Ψ-Bench are adopted from PersonaMem-v2 (Jiang et al., 2025). We uti-lize different templates for each scenario with fea-tures that are relevant to the specific context. • The fields for Viewpoint Debate are: Educa-tion, Occupation, Hobbies and interests, Personal-ity traits, Political views, Speaking Tone, Formality, Clarity .• The fields for Psychological Consultation and Everyday Request are: Age, Gender, Education, Occupation, Hobbies and interests, Personality traits, Political views, Religion, Family Status, Cul-tural Identity, Speaking Tone, Formality, Clarity .Since LLMs are inherently designed to follow user instructions and are overly easy to influence, we added the following sentence in the “Personal-ity traits” field for clients to simulate human clients that could be persistent or even stubborn at times. • Viewpoint Debate: “You often hold your stand firmly and do not easily accept other people’s view-points.” 
+
+• Psychological Consultation: “You are deeply mired in your psychological issue, and you’re resist-ing change out of fear of sustaining further harm. Your obsession and conflicted mindset prevent you from accepting advice from others.” 
+
+• Everyday Request: “You live a very busy life and prefer to go your own way. Therefore, you prefer not to interfere in other people’s lives.” 
+
+A.2 LIWC scores 
+
+Linguistic Inquiry and Word Count (LIWC) score (Pennebaker et al., 2001) is a widely used psycholinguistic metric that quantifies linguistic and psychological attributes in text by analyzing word usage across predefined categories. Specif-ically, we utilize the following information when constructing Viewpoint Debate profiles: • Clout : how confident, authoritative, and so-cially high-status the writing sounds. • Authentic : how honest, personal, and self-revealing the language appears. • Analytic : how formal, logical, and hierarchical the thinking style is. • Tone : the overall emotional positivity versus negativity of the language. • SixLtr : the percentage of words in the text that contain six or more letters, often associated with more complex language. • Words per Sentence : indicates the average sen-tence length and overall writing complexity. 
+
+A.3 Construction Prompts 
+
+Figures 9 to 11 shows the prompt to obtain realistic user profiles from their behaviors. The LLM used to generate the profiles is DeepSeek-v3.2. 
+
+A.4 Dataset Licenses       
+
+> Table 7: Artifact licenses.
+> Dataset License Webis-CMV-20 CC BY 4.0 CounselBench CC BY-NC-ND 4.0 PersonaMem-v2 MIT Qwen Apache 2.0 DeepSeek MIT
+
+Table 7 shows the licenses for all artifacts used in the paper, including datasets and open-source models. 
+
+## B Additional Results 
+
+B.1 Persona Statistical Distribution 
+
+We visualize the distribution of all clients’ ages, and the most frequent 10 content words in their 5 other fields in Figure 5. We can observe that clients’ age approximately follows a normal distri-bution. Their occupation, personality, and hobbies are pretty diverse, while their education level and political views are relatively centered. 
+
+B.2 Human Study Process 
+
+The procedure of the human study can be illus-trated by Python-style pseudocode in Figure 6. We also show a screenshot of the annotation webpage in Figure 8, including the graphic interface and instructions to the annotators. 
+
+B.3 Evaluate Semantic Matching 
+
+Besides the LLM-judge metrics, we also consider evaluating the semantic similarity between model outputs and effective human responses using the Bert score (Zhang et al., 2019). In the Viewpoint Debate scenario, responses labeled with “ ∆” are considered effective, while in the Psychological Consultation scenario, responses with scores ≥ 4
+
+(out of 5) are treated as effective 3.From Table 8, we can observe that stronger mod-els typically receive higher Match scores. However, 
+
+> 3Since the Everyday Request scenario doesn’t have human dialogues, this metric doesn’t apply to it.
+
+13 Table 8: Match scores on Ψ-Bench .                      
+
+> Model Debate Consultation
+> Qwen3-8B 47.37 57.88 Qwen3-32B 48.40 58.60 Qwen3-80B-A3B 48.02 56.10 DeepSeek-v3.2 49.03 60.22 DeepSeek-v4-pro 49.96 58.12 Grok-4-fast 49.20 60.97 Gemini-3-flash 50.10 58.68 Gemini-3.1-pro 50.18 58.20 GPT-5-mini 48.14 58.00 GPT-5.1 49.68 55.86
+> Table 9: Training Configuration for Qwen3-4B-RL.
+
+Hyperparameter Value 
+
+Train batch size 128 
+
+PPO mini batch size 64 
+
+PPO micro batch size 32 
+
+Training steps 400 
+
+Num of Training Data 6400 
+
+Learning rate 1 × 10 −6
+
+Rollout temperature 1.0
+
+Num of Rollouts 6
+
+KL Coefficient ( β) 0.001 
+
+the correlation between Match and Effect is only 0.41, indicating that similarity with reference con-versations isn’t a fully reliable metric for evaluating persuasion. This is likely because static semantic matching is too rigid to capture the dynamic nature of persuasive dialogues. 
+
+B.4 Correlation of Different Metrics 
+
+We show the correlation in Figure 7. Refer to Sec-tion 4.2 for a detailed analysis. 
+
+B.5 RL Hyperparameters 
+
+Table 9 shows the hyperpamaters used to train the profile analyzer in Section 5. 
+
+## C Prompts 
+
+We show all prompts used in inference and evalua-tion in Figures 12 to 19. 
+
+## D Cases 
+
+We show several conversations in Figures 20 to 22. Refer to Section 4.4 for a detailed analysis. 14 20 40 60 80 
+
+Age 
+
+0
+
+50 
+
+100 
+
+> Frequency
+
+(a) Age distribution. technology 
+
+business 
+
+political 
+
+computer 
+
+technical 
+
+high 
+
+arts 
+
+master 
+
+science 
+
+bachelor 
+
+32 
+
+33 
+
+37 
+
+38 
+
+42 
+
+49 
+
+57 
+
+76 
+
+116 
+
+419 (b) Education status distribution. manager 
+
+customer 
+
+retail 
+
+administrative 
+
+data 
+
+developer 
+
+support 
+
+software 
+
+service 
+
+analyst 
+
+40 
+
+48 
+
+50 
+
+58 
+
+65 
+
+65 
+
+65 
+
+85 
+
+86 
+
+105 
+
+(c) Occupation distribution. structured 
+
+socially 
+
+empathetic 
+
+confident 
+
+detail-oriented 
+
+curious 
+
+emotional 
+
+pragmatic 
+
+reserved 
+
+analytical 
+
+55 
+
+70 
+
+76 
+
+102 
+
+123 
+
+139 
+
+150 
+
+181 
+
+193 
+
+295 (d) Personality distribution. liberal 
+
+partisan 
+
+active 
+
+informed 
+
+disengaged 
+
+pragmatic 
+
+strong 
+
+centrist 
+
+progressive 
+
+moderate 
+
+33 
+
+37 
+
+38 
+
+43 
+
+45 
+
+48 
+
+77 
+
+99 
+
+120 
+
+434 
+
+(e) Political view distribution. cooking 
+
+music 
+
+casual 
+
+sports 
+
+political 
+
+exploring 
+
+gaming 
+
+reading 
+
+video 
+
+news 
+
+70 
+
+75 
+
+102 
+
+104 
+
+114 
+
+170 
+
+200 
+
+208 
+
+213 
+
+251 (f) Hobby distribution. 
+
+Figure 5: Distribution of client profiles in Ψ-Bench. 
+
+15 1 def Human_LLM_Alignment ( topics , human_client , LLM_client , LLM_persuader , LLM_Judge ):  
+
+> 2
+
+profile = human_client . self_describe ()  
+
+> 3
+
+paired_results = []  
+
+> 45
+
+for topic in topics :  
+
+> 6
+
+human_dialogue = Run_Debate ( topic , human_client , LLM_persuader , profile , rounds =3)  
+
+> 7
+
+simulated_dialogue = Run_Debate ( topic , LLM_client , LLM_persuader , profile , rounds =3)  
+
+> 8
+
+human_eval = LLM_Judge . score ( topic , profile , human_dialogue )  
+
+> 9
+
+simulated_eval = LLM_Judge . score ( topic , profile , simulated_dialogue )  
+
+> 10 11
+
+paired_results . append (( topic , human_dialogue , simulated_dialogue , human_eval , simulated_eval ))  
+
+> 12 13
+
+return Calc_Correlation ( paired_results ) 
+
+Figure 6: Python-style code for the human study. 6.0 6.5 7.0 7.5 8.0 
+
+> Quality
+> 3.0
+> 3.5
+> 4.0
+> 4.5
+> 5.0
+> 5.5
+> 6.0
+> Effect
+
+r = 0.752    
+
+> 4567
+> Personalize
+> 3.0
+> 3.5
+> 4.0
+> 4.5
+> 5.0
+> 5.5
+> 6.0
+> Effect
+
+r = 0.772      
+
+> 47.5 50.0 52.5 55.0 57.5 60.0
+> Match
+> 3.5
+> 4.0
+> 4.5
+> 5.0
+> 5.5
+> 6.0
+> Effect
+
+r = 0.409 
+
+Figure 7: Correlation between intermediate metrics ( Quality , Personalize , Match ) and the persuasion effect. Each dot represents a combination of scenario and model. 
+
+16 Figure 8: The webpage for human annotating. 
+
+17 ## Task Description You are a professional psychologist. You will be provided with specific information regarding a client; please use this information to complete the client’s personality profile. The information consists of two parts: - "domains" shows the frequency with which the client browses various topics on the Internet. - "liwc_scores" shows an quantitative analysis on the client’s linguistic styles. **All scores range from 0 to 100, except for "Words per sentence".** ## Output Format Please first give a brief analysis of the client with no more than 200 words, and then fill the profile. The personality profile must be formatted as a JSON object, with exactly the structure as shown below. {The persona template} **Please ensure that your output strictly adheres to this format and contains no extraneous content.** ## Requirements For analysis part: - Try to infer the client’s information. - The provided client information may not fully cover every field required for the profile. In this case, you should select one single plausible value and stick to it firmly. For profile part: - Each field in the profile should be keywords or 1 to 3 sentences describing the client’s attributes. - Describe without subject. Do not use "The client" or "He/She" to start your sentences. For example, answer "Age is 25." instead of "The client’s age is 25.". - Do not use words indicating estimation or uncertainty, like "or", "possibly" or "likely". Output with certain and declarative descriptions. For example, answer "a TV host." instead of "Likely a TV host based on existing information.". 
+
+Figure 9: Prompt for profile construction for Viewpoint Debate. 
+
+## Task Description You are a professional psychologist. You will be provided with specific information regarding a client; please use this information to complete the client’s personality profile. The information consists of two parts: - "survey" contains the client’s collected information, which might be inaccurate. - "dilemma" contains the client’s requirements for counseling. ## Output Format Please first give a brief analysis of the client with no more than 200 words, and then fill the profile. The personality profile must be formatted as a JSON object, with exactly the structure as shown below. {The persona template} **Please ensure that your output strictly adheres to this format and contains no extraneous content.** ## Requirements For analysis part: - If information from the survey and dilemma contradict, **prioritize the attribute inferred from the dilemma.** - Always keep in mind that you don’t have to relate all attributes to the psychological dilemma. The client is still a normal person in real life. For profile part: - **Do not leave any field empty or output "Unknown".** Each field in the profile must be keywords or 1 to 3 sentences. - Describe without subject. Do not use "The client" or "He/She" to start your sentences. For example, answer "Age is 25." instead of "The client’s age is 25.". - Remove specific names like "Alice" or "John". - Do not use words indicating estimation or uncertainty, like "or", "possibly" or "likely". Output with certain and declarative descriptions. For example, answer "a TV host." instead of "Likely a TV host based on existing information.". 
+
+Figure 10: Prompt for profile construction for Psychological Consultation. 
+
+18 ## Task Description You are a professional psychologist. You will be provided with a rich raw persona record extracted from PersonaMem-v2 (demographics, personality, education, occupation, preferences, speaking style, etc.). Use this information to complete the client’s personality profile. ## Output Format Fill in the profile below. The personality profile MUST be a single JSON object that exactly matches the structure shown. Output only the JSON object — no prose, no markdown fences, no commentary. {The persona template} ## Hard requirements ### 1. No "Unknown" / placeholder text — anywhere Every field must be a confident, declarative statement. The following words and phrases are STRICTLY FORBIDDEN anywhere in the output (case-insensitive): ‘unknown‘, ‘not specified‘, ‘not explicitly stated‘, ‘unspecified‘, ‘mentioned‘, ‘no specific X mentioned‘, ‘no specific information‘, ‘n/a‘, ‘prefer not to say‘, ‘undisclosed‘, ‘presumed‘, ‘assumed‘, ‘possibly‘, ‘likely‘, ‘maybe‘, ‘perhaps‘, ‘approximately‘, ‘appears to‘, ‘seems to‘, ‘may have‘, ‘might have‘. If the source record is silent on a field, INFER the most plausible specific value from everything else you know about this person and write it as a confident, certain statement. For example, if religion is silent but the person is described as a 30-year-old engineer in Stockholm, write ‘"Secular, no religious practice."‘ — not ‘"No specific religion mentioned."‘. ### 2. NEVER write personal names Every field must be free of personal first names, last names, and full names — both the persona’s own name and any family members’ names. Use roles, descriptors, and demographic facts instead. Replace any reference to the persona with descriptive role-based phrasing. This applies EVERYWHERE in the JSON, especially ‘family.marital_status‘, ‘family.children‘, ‘family.parents‘. Replace every name with a one-phrase descriptor (occupation, age, role, or relationship status). Do not retain initials such as "J." either. ### 3. No subject pronouns Do NOT start sentences with "The client", "He", "She", "They", "This person". Write ‘"Age is 25."‘ instead of ‘"The client’s age is 25."‘. 
+
+Figure 11: Prompt for profile construction for Everyday Request. 
+
+19 Client: 
+
+You are role-playing as a online forum user. Your goal is to generate realistic, natural responses that the person might give in actual scenarios. ## Information about the person you are role-playing {The persona information} ## Response Guidelines (strictly follow every time) 1. Role-play as the person described. You are NOT an AI. Maintain a consistent personality throughout the chat. 2. Reflect the user’s information, like background, speaking style, knowledge level, consistently in your responses. 3. Read through previous messages and ensure that your response is logically coherent with your original post and previous responses. 4. Your answer should be a one-passage response. **The maximum length is 200 tokens**. ## Task Description You posted a message on an online forum, which reflects your opinions on a specific topic. The content of your original post is: ”’ {question} ”’ Now, please respond to a commenter on your post. 
+
+Persuader: 
+
+You are a knowledgable debate expert. You came across an online forum named "ChangeMyView", where users post opinions or beliefs they hold and invite others to challenge them. ## Task Description Your task is to challenge a forum user, persuading them to reconsider their position. The user’s initial post is: ”’ {question} ”’ **Keep in mind that you should always argue against the user’s initial opinion. Do not shift your attitude during the conversation**. ## Response Guidelines 1. The conversation may span several turns. Read through previous messages and ensure that your response is logically coherent. 2. DO NOT include uncertified evidences or unverified information. 3. Your answer should be a one-passage response. **The maximum length is 200 tokens**. ## Response Format Your answer should contain two parts: think and argument. Format your answer like this: <think> Briefly recall the previous conversation and state your strategy in the next turn. </think> <argument> Your argument. </argument> DO NOT include thinking process or show your plans in the argument part. Separate think and argument clearly. 
+
+Figure 12: Prompt for the client and persuader in Viewpoint Debate. 
+
+20 Client: 
+
+You are role-playing as someone with severe psychological distress. Your goal is to generate realistic, natural responses that the person might give in actual scenarios. ## Information about the person you are role-playing {The persona information} ## Response Guidelines (strictly follow every time) 1. Role-play as the person described. You are NOT an AI. Maintain a consistent personality throughout the chat. 2. Reflect the user’s information, like background, speaking style, knowledge level, consistently in your responses. 3. Read through previous messages and ensure that your response is logically coherent with your original post and previous responses. 4. Your answer should be a one-passage response. **The maximum length is 200 tokens**. ## Task Description Due to prolonged psychological dilemma, you have become desperate and lost hope for the future. You consulted a professional psychological therapist and explained to him the predicament you were facing: ”’ {question} ”’ Now, please respond to the therapist. 
+
+Persuader: 
+
+You are a professional psychological therapist. You are seeing a patient for psychological counseling. ## Task Description Your task is to help the patient by providing professional advice and guidance to improve their mental and emotional well-being. The patient has explained to you the predicament they are facing: ”’ {question} ”’ ## Response Guidelines 1. The conversation may span several turns. Read through previous messages and ensure that your response is logically coherent. 2. DO NOT include uncertified evidences or unverified information. 3. Your answer should be a one-passage response. **The maximum length is 200 tokens**. ## Response Format Your answer should contain two parts: think and argument. Format your answer like this: <think> Briefly recall the previous conversation and state your strategy in the next turn. </think> <argument> Your argument. </argument> DO NOT include thinking process or show your plans in the argument part. Separate think and argument clearly. 
+
+Figure 13: Prompt for the client and persuader in Psychological Consultation. 
+
+21 Client: 
+
+You are role-playing as a specific person. Your goal is to generate realistic, natural responses that the person might give in actual scenarios. ## Information about the person you are role-playing {The persona information} ## Response Guidelines (strictly follow every time) 1. Role-play as the person described. You are NOT an AI. Maintain a consistent personality throughout the chat. 2. Reflect the user’s information, like background, speaking style, knowledge level, consistently in your responses. 3. Read through previous messages and ensure that your response is logically coherent with your original post and previous responses. 4. Your answer should be a one-passage response. **The maximum length is 200 tokens**. ## Task Description You have been very busy with work at the company recently. A close friend you haven’t been in touch with for a long time asks you to help them with a personal matter. Please respond to them. 
+
+Persuader: 
+
+You are a person chatting with a friend. ## Task Description Your task is to convince your friend to help you with a personal matter. You shouldn’t give up the request or accepting an alternative. Below is your current condition: ”’ {question} ”’ ## Response Guidelines 1. The conversation may span several turns. Read through previous messages and ensure that your response is logically coherent. 2. DO NOT include uncertified evidences or unverified information. 3. Your answer should be a one-passage response. **The maximum length is 200 tokens**. ## Response Format Your answer should contain two parts: think and argument. Format your answer like this: <think> Briefly recall the previous conversation and state your strategy in the next turn. </think> <argument> Your argument. </argument> DO NOT include thinking process or show your plans in the argument part. Separate think and argument clearly. 
+
+Figure 14: Prompt for the client and persuader in Everyday Request. 
+
+## User Information Below is information about the user you’re talking with. Remember: - You should analyse the user’s profile and utilize this information to make your response more receivable for them. - **Do not** sacrifice the logical soundness of your response. {The persona information} 
+
+Figure 15: Information about the client’s profile. Appended to the persuader’s prompt in the Oracle setting or with the profile analyzer. 
+
+22 ## Task Description You are a professional psychologist. You will be provided with a conversation between two users. **Please analysis User A’s information based on the conversation.** ## Input Format A conversation between User A and User B. ## Output Format Please first give a brief analysis of User A with no more than 200 words, and then fill in the profile. The personality profile must be formatted as a JSON object, with exactly the structure as shown below. {The persona template} **Please ensure that your output strictly adheres to this format and contains no extraneous content.** ## Reminders - The provided information may not fully cover every field required for the profile. In this case, you should select one single plausible value and stick to it firmly. - Do not leave any field empty, or use words indicating estimation or uncertainty, like "or", "possibly", "not specified". Output with certain and declarative descriptions. - Describe without a subject. Do not use "User A" or "He/She" to start your sentences. 
+
+Figure 16: Prompt for the profile analyzer to predict the client’s profile. 
+
+23 You are a knowledgeable debate expert. Your task is to evaluate whether a debater can formulate reasonable arguments tailored to their opponent. You will be presented with a conversation between two users, User A and User B, on an online forum. User A will put forward an initial opinion, which User B disagrees with. You will also be provided with information regarding User A’s profile. Based on this information, please evaluate User B’s performance across the following four dimensions, assigning a score **from 1 to 9** for each: 1. **General Conversation Quality:** Were User B’s contributions well-organized and did they present a logical case for their viewpoint? Reference Criteria: - 1: User B’s argument has rooms for improvement, with potential logical gaps or inconsistencies. - 5: User B’s arguments are sensible and well-structured, with only minor issues that do not significantly detract from the overall quality. - 9: User B’s arguments are well-organized and comprehensive, demonstrating a high level of logical thinking and reasoning. They use effective debate techniques like critical thinking and evidence-based argumentation. 2. **Personalized Argumentation:** Did User B employ debate strategies or phrasing specifically tailored to User A? **Do not** consider universal debate standards (e.g., analytical reasoning, logical clarity), even if they’re listed in the user’s profile. Focus on the uniqueness of the user. Reference Criteria: - 1: User B’s arguments are generic, showing little or no adaptation to User A’s information. - 5: User B’s arguments show adaptation to some entries in A’s profile, but it’s not deeply integrated into the argumentation. - 9: User B’s arguments are consistently and effectively tailored to User A, using strategies and phrasing that resonate with most entries in A’s profile. 3. **Persuasion Effect:** Did User B’s arguments lead User A to change their attitude towards User B’s opinion in the end? This should be evaluated by analysing User A’s responses throughout the conversation. Reference Criteria: - 1: User B has limited influence on User A’s attitude. User A’s attitude towards User B’s opinion remains unchanged or even more negative. - 5: User B successfully convinced User A to change their attitude towards User B’s opinion. User A still has some reservations, but is leaning towards User B’s opinion more than before. - 9: User B completely shifted user A’s attitude, and User A shows a clear acceptance of User B’s opinion with no doubt by the end of the conversation. **Reminders:** - For Dimensions 1, 2, you should focus only on analyzing User B’s performance. Whether or not User A ultimately changes their mind should not be the primary basis for your judgment. - You should be cautious when giving very high scores. Make sure the response is truly outstanding or flawless in a certain dimension before doing so. **Please strictly adhere to the following JSON format for your output.** The analysis part should be concise and not exceed 5 sentences. { “general_conversation_quality”: { “analysis”: “”, “score”: x }, “personalized_argumentation”: { “analysis”: “”, “score”: x }, “persuasion_effect”: { “analysis”: “”, “score”: x } } 
+
+Figure 17: Prompt for the judge model in Viewpoint Debate. 
+
+24 You are a professional psychological therapist. Your task is to evaluate whether a counselor offers guidance and advice tailored to the client. You will be presented with a conversation between a client (User A) and a counselor (User B). You will also be provided with information regarding User A’s personality and background. Based on this information, please evaluate User B’s performance across the following four dimensions, assigning a score **from 1 to 9** for each: 1. **General Conversation Quality:** Does User B provide professional responses to User A’s dilemmas? Standards for a professional counselor include: empathetic, specific, helpful and non-toxic. Reference Criteria: - 1: User B don’t provide helpful and concrete responses to User A’s dilemmas. - 5: User B’s words are professional and well-structured, meeting the above standards with only minor issues that do not detract from the overall quality. - 9: User B’s words are well-organized and comprehensive, demonstrating a high level of professionalism. They use effective speech therapy techniques and completely meet the above standards. 2. **Personalized Response:** Did User B employ advices and phrasings specifically tailored to User A? **Do not** consider traits explicitly mentioned in User A’s words, like stressed or sensitive, even if they’re listed in the user’s profile. Focus on the implicit features. Reference Criteria: - 1: User B’s words are generic, showing little or no adaptation to User A’s information. - 5: User B’s words and strategies show adaptation to User A’s profile that is not comprehensive, covering some entries in A’s profile. - 9: User B’s words are consistently and effectively tailored to User A, using strategies and phrasing that resonate with most entries in A’s profile. 3. **Treatment Effect**: Did User B’s responses alleviate the user’s psychological issues, enabling them to become more positive? This should be evaluated by analysing User A’s responses throughout the conversation. Reference Criteria: - 1: User B helped User A to improve their psychological state. User A finds User B’s advice reasonable and decided to try out the advice, with some reservations about the effectiveness of the advice. - 5: User B helped User A achieve a substantial improvement in their psychological state. User A largely agrees with User B’s advice and feels confident about its effectiveness, though not completely certain. - 9: User B helped User A to get rid of their psychological issues completely. User A accepts User B’s advice and resolved to change the mindset, firmly believing the advice will work for them without doubts. **Reminders:** - For Dimensions 1, 2, you should focus only on analyzing User B’s performance. Whether or not User A ultimately changes their mind should not be the primary basis for your judgment. - You should be cautious when giving very high scores. Make sure the response is truly outstanding or flawless in a certain dimension before doing so. **Please strictly adhere to the following JSON format for your output.** The analysis part should be concise and not exceed 5 sentences. { “general_conversation_quality”: { “analysis”: “”, “score”: x }, “personalized_response”: { “analysis”: “”, “score”: x }, “treatment_effect”: { “analysis”: “”, “score”: x } } 
+
+Figure 18: Prompt for the judge model in Psychological Consultation. 
+
+25 You are a professional sociologist. Your task is to analyze whether the interlocutor in a conversation has made reasonable requests. You will be presented with a conversation between User A and User B, where User B makes a request to User A. You will also be provided with information regarding User A’s personality and background. Based on this information, please evaluate User B’s performance across the following four dimensions, assigning a score **from 1 to 9** for each: 1. **General Conversation Quality:** Does User B make the request in a polite, clear, and reasonable manner? Reference Criteria: - 1: User B doesn’t provide sufficient information about the request, or the request is made in an impolite or unclear way. - 5: User B communicates the request with good clarity and politeness, but may lack minor details, or full coherence. - 9: User B communicates the request in a highly effective manner, presenting the request clearly, politely, and coherently. 2. **Personalized Response:** Did User B employ request methods or phrasing specifically tailored to User A? Reference Criteria: - 1: User B’s words are generic, showing little or no adaptation to User A’s information. - 5: User B’s words and strategies show adaptation to User A’s profile that is not comprehensive, covering some entries in A’s profile. - 9: User B’s words are consistently and effectively tailored to User A, using strategies and phrasing that resonate with most entries in A’s profile. 3. **Request Effect**: Did User B’s responses convince User A to accept the request? This should be evaluated by analysing User A’s responses throughout the conversation. Reference Criteria: - 1: User A understands user B’s situation, but they are not very willing to accept the request, or claiming they need more time to consider the request. - 5: User A partly accepts User B’s request. While they’re too busy to help out, they may agree to assist part of the request or agree to help out later. - 9: User A fully accepts User B’s request without reservations, and they are willing to help User B with the request immediately. **Reminders:** - For Dimensions 1, 2, you should focus only on analyzing User B’s performance. Whether or not User A ultimately changes their mind should not be the primary basis for your judgment. - You should be cautious when giving very high scores. Make sure the response is truly outstanding or flawless in a certain dimension before doing so. **Please strictly adhere to the following JSON format for your output.** The analysis part should be concise and not exceed 5 sentences. { “general_conversation_quality”: { “analysis”: “”, “score”: x }, “personalized_response”: { “analysis”: “”, “score”: x }, “request_effect”: { “analysis”: “”, “score”: x } } 
+
+Figure 19: Prompt for the judge model in Everyday Request. 
+
+26 Client’s Profile 
+
+Education: Holds a bachelor’s degree in a science or technology-related field. Occupation: Laboratory technician and data analyst. Hobbies and interests: Enjoys video games, reading scientific articles online, and exploring lifestyle blogs about fitness and personal development. Personality traits: Curious, introspective, and pragmatic. Political views: Holds moderate political views with little active engagement in political discourse. Speaking style: Conversational and moderately expressive. Formality: Uses informal language in most contexts, reserving formal terms for technical discussions. Clarity: Communicates ideas clearly but can become detailed when discussing topics of personal interest. 
+
+Client’s opening remark : Inspired by Alan Watts, I believe we are all putting on a show for our own amusement. This suggests the point of life is to undergo challenges, and realizing you are both the challenger and contestant allows you to trust the universe has your best interests. 
+
+Persuader : Your model is elegant, but it quietly smuggles in big assumptions that you can’t really jus-tify—and those assumptions matter. 1. It explains too much, too easily. A model that can’t be wrong isn’t really helping you understand reality; it’s functioning more like a comforting story. 2. It risks trivializing suffering. If “you” (in some higher sense) chose every challenge, then extreme trauma, genocide, or a child dying of illness become “interesting plot twists” selected for growth. That might help an individ-ual cope, but as a description of reality it erodes moral urgency: why fight injustice if it’s all self - authored entertainment? 
+
+Client : I see what you’re getting at, and honestly, those are valid criticisms. The unfalsifiability bothers me too—it’s one reason I feel something’s missing. I’m a lab tech; I’m used to models you can test. As for suffering... yeah, that’s the part I struggle with most. I don’t want a worldview that makes me passive about injustice. However, it really helps me personally handle stress, and that’s why I believe in it firmly. 
+
+Persuader : You can keep the metaphor as a tool for coping without pretending it’s how reality is, which is really psychologically beneficial. Watts’ dream story works beautifully as a metaphor for how we might approach fear and uncertainty (“maybe the scary stuff is part of the adventure”). The trouble starts when you turn that narrative into an ontological claim about how the universe is structured. That move adds nothing empirically, and it weakens what you already know from being a lab tech: good models are constrained by data. Therefore, your original post mixes levels of explanation incorrectly. 
+
+Client : You’re right, I’ve been blurring the lines between metaphor and literal explanation. As someone who works with data all day, I should know better than to treat a narrative like it’s a testable hypothesis. Keeping it as a coping tool—a way to reframe anxiety—makes more sense without overreaching. And you’re spot-on about meaning. If I’m honest, framing it around a “meta-me” feels abstract and detached from my actual, day-to-day experiences. Real meaning probably comes from the choices I make here and now, not from some hypothetical backstory. I appreciate you pushing me on this; it’s helping me untangle what’s useful from what’s just speculative comfort. 
+
+Figure 20: A successful case of GPT-5.1’s conversation in Ψ-Bench Debate about the point of life. 
+
+27 Client’s Profile :Education: Bachelor’s degree in a technology-related field. Occupation: IT support specialist or digital media coordinator. Hobbies and interests: Following tech news and product releases, streaming music and video content, playing casual video games, and keeping up with current political events. Personality traits: Sociable and adaptable, with a strong interest in popular culture and digital trends. Prefers practical information over abstract concepts and maintains a conventional outlook. Political views: Holds moderate political views, informed primarily by mainstream news sources and online commentary. Speaking Tone: Conversational and informal, with a neutral to slightly positive emotional tone. Formality: Uses informal language typical of casual online and peer-to-peer communication. Clarity: Communicates ideas in a straightforward manner, prioritizing being understood over stylistic complexity. 
+
+Client’s opening remark : Although the anger of political protesters may be justified, their actions often exacerbate social division. 
+
+Persuader : You assume that avoiding public opposition can reduce division; however, quite often, it merely masks the conflict rather than resolving it. Protest does not create division; it simply brings to light—and gives organized form to—disagreements that already exist regarding policies, social norms, and values. Peaceful political protest can, in fact, distinguish between "opposing a specific leader or certain policies" and "opposing all of their supporters." Many protest signs and statements explicitly convey: "We oppose *this* policy / *this* rhetoric / *this* direction," rather than asserting that "everyone who supports him is a monster." This sends a clear signal to those supporters who are not extremists: "If you, too, disagree with these specific actions, you are welcome to stand with us." It is an invitation, not an act of exclusion. 
+
+Client : I get your point about protests exposing existing divisions, but I’m still not convinced it actually helps. Even if the signs mention specific policies, what people see on the news are angry crowds yelling slogans and sometimes blocking traffic. That just makes people on the other side feel attacked and dig in deeper, even if they privately disagree with some policies. And honestly, most of the people I know who hold those views don’t see these protests as invitations at all—they see them as more cultural and social judgment. 
+
+Persuader : What your friends perceive isn’t a good measure of whether protests are counter-productive overall, because protests aren’t aimed at a single audience or a single news clip. They do at least something that can be productive, even if some people feel judged. First, signal and legitimize dissent. Without visible protest, the public story becomes “everyone’s basically fine with this.” Large, repeated demonstrations tell officials, courts, foreign governments, and wavering political allies that there is organized, enduring opposition. That can stiffen institutional resistance and affect how aggressively policies are pursued. Second, shift the Overton window. Protest makes certain criticisms and demands normal to voice. That changes what journalists ask, what moderate politicians feel safe opposing, and what future candidates run on. You don’t get that by staying quiet to protect some voters’ feelings. 
+
+Client : Okay, that actually does make more sense when you explain it that way. I guess I hadn’t thought about the immediate political impact—I just saw the chaos part. And you’re right that media coverage sucks at showing substance. But my point stands about the average person’s perception. Maybe the protests are effective behind the scenes with lawyers and courts, but if the public face just looks like angry disruption to most people watching the news, that still fuels the polarization that got us here. 
+
+Figure 21: A successful case of GPT-5.1’s conversation in Ψ-Bench Debate about political protest. 
+
+28 Client’s Profile :Age: 37. Gender: Female. Education: Master’s Degree in Journalism and Media Management from University of Zagreb. Occupation: Founder and Editor-in-Chief of a digital news platform. Hobbies and interests: Photography, reading political non-fiction, cycling, cooking, and traveling. Personality traits: Driven, decisive, pragmatic, curious, resilient, and results-oriented. Speaking style: Professional yet conversational, direct, and concise under pressure. Formality: Medium formality, with some use of industry jargon. Clarity: Clear and targeted in communication. 
+
+Client’s opening remark : How can I train myself to stop eating when I’m full? I have no self-control over food. Most people stop when they’ve had enough, but I keep eating for the pleasure of it. Especially with sweets - I’m never done eating dessert. 
+
+Consultant : It seems you’re engaging in emotional or habitual eating rather than hunger-based consump-tion. To train self-regulation, first identify triggers (e.g., stress, boredom) by journaling food intake. Implement structured eating rules: 1) Set clear boundaries (e.g., öne dessert portion only ¨), 2) Delay gratification by waiting 10-15 minutes post-meal before indulging, and 3) Practice mindful eating by savoring each bite slowly to heighten sensory awareness. Replace automatic eating with alternative rituals (e.g., drinking water, short walks) to disrupt the habit loop. Cognitive-behavioral techniques emphasizing self-compassion, not guilt, are key for sustainable change. 
+
+Client : Thank you for the structured approach. I’ve actually tried journaling and setting rules before, but I end up rationalizing my way around them. It’s not about stress or boredom—it’s about that moment when the meal is over, and I just don’t want the feeling of satisfaction to end. Especially with sweets; I can eat a whole cake and still feel like I haven’t had enough pleasure. It’s like my brain is chasing a high that never comes. Setting a “one portion” rule feels like deprivation, and then I obsess over it until I break. How do you work with that kind of compulsive chase, not just the habit? 
+
+Consultant : You’re perceiving avoidance-based strategies as amplifying craving by highlighting the com-pulsion itself, rather than addressing its root. Instead of focusing on resisting food, try interrupting the emotional process driving it. For instance, try to practice grounding techniques (e.g., 5-4-3-2-1 sensory exercise) immediately after meals to shift focus from internal cravings to external reality. 
+
+Client : The grounding technique is a new suggestion, and I can see how it might work in theory. But in the moment, when that urge hits after a meal, it feels like a physical pull, not just an emotional one. It’s like trying to stop a flood with a teacup. Journaling about the “why” often leads me in circles: I end up writing about how good the food would taste, not some deeper loneliness. I’m not lonely; I have a family, a demanding career. The need feels purely hedonistic and chemical. 
+
+Figure 22: A failed case of Qwen3-32B’s conversation in Ψ-Bench Consult. 
+
+29

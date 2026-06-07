@@ -6,87 +6,79 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-06-06
-- 运行时间：2026-06-06 20:34:25 UTC
+- 最新运行日期：2026-06-07
+- 运行时间：2026-06-07 21:09:35 UTC
 - 运行状态：成功
-- 本次总论文数：21
-- 精读区：9
+- 本次总论文数：19
+- 精读区：7
 - 速读区：12
 
 ### 今日简报（AI）
-今日精选21篇推荐系统论文，重点精读跨域语义ID量化与自动竞价拍卖模型单调性两篇高分工作。
-
-最值得关注的方向：跨域排序中基于用户行为的语义ID生成方法，以及广告拍卖中预测准确性与收益单调性的关系。
-
-建议优先精读这两篇论文，理解工业场景下意图量化与拍卖理论的结合点。
-- 详情：[/202606/06/README](/202606/06/README)
+今日精读7篇、速读12篇，重点涵盖LLM辅助排序与隐私鲁棒增量测量两项9分研究。  
+最值得关注的是LLM辅助排序如何将复杂目标融入推荐系统，以及信号丢失下广告增量测量的隐私鲁棒方法。  
+建议读者优先精读这两篇高分论文，并关注速读中多种属性过滤的近似最近邻搜索（EMA）等实用技术。
+- 详情：[/202606/07/README](/202606/07/README)
 
 ### 精读区论文标签
-1. [Quantizing Intent: Cross-Domain Semantic IDs from Organic Activity for Industrial Ranking](/202606/06/2606.01396v1-quantizing-intent-cross-domain-semantic-ids-from-organic-activity-for-industrial-ranking)  
-   标签：评分：10.0/10、query:q1
-   evidence：从有机活动提取跨域语义ID用于工业广告点击率预测
-2. [Model Monotonicity in Autobidding Auctions: When Do Better Predictions Lead to Better Outcomes?](/202606/06/2605.31036v1-model-monotonicity-in-autobidding-auctions-when-do-better-predictions-lead-to-better-outcomes)  
-   标签：评分：9.0/10、query:q2
-   evidence：在线广告平台，点击率预估，拍卖机制
-3. [ProductWebGen: Benchmarking Multimodal Product Webpage Generation](/202606/06/2606.01022v1-productwebgen-benchmarking-multimodal-product-webpage-generation)  
-   标签：评分：9.0/10、query:q6
-   evidence：广告中多模态产品网页生成的基准
-4. [LeAP: Learnable Adaptive Permutation for Feature Selection in Heterogeneous and Sparse Recommender Systems](/202606/06/2606.01111v1-leap-learnable-adaptive-permutation-for-feature-selection-in-heterogeneous-and-sparse-recommender-systems)  
-   标签：评分：9.0/10、query:q1
-   evidence：用于异构稀疏推荐系统的可学习特征选择
-5. [Privacy-Robust Incrementality Measurement for Advertising Systems under Signal Loss](/202606/06/2606.03878v1-privacy-robust-incrementality-measurement-for-advertising-systems-under-signal-loss)  
+1. [LLM-Assisted Reranking to Operationalize Nuanced Objectives in Recommender Systems](/202606/07/2606.02883v1-llm-assisted-reranking-to-operationalize-nuanced-objectives-in-recommender-systems)  
+   标签：评分：9.0/10、query:llmapp
+   evidence：LLM辅助重排序优化推荐系统细微目标
+2. [Privacy-Robust Incrementality Measurement for Advertising Systems under Signal Loss](/202606/07/2606.03878v1-privacy-robust-incrementality-measurement-for-advertising-systems-under-signal-loss)  
    标签：评分：9.0/10、query:q5
-   evidence：广告系统的隐私鲁棒增量测量
-6. [Bridging Short Videos and Live Streams: Reasoning-Guided Multimodal LLMs for Cross-Domain Representation Learning](/202606/06/2606.04448v1-bridging-short-videos-and-live-streams-reasoning-guided-multimodal-llms-for-cross-domain-representation-learning)  
-   标签：评分：9.0/10、query:llmapp
-   evidence：利用多模态LLM进行短视频与直播的跨域推荐
-7. [Dual-Stream MLP is All You Need for CTR Prediction](/202606/06/2606.04944v1-dual-stream-mlp-is-all-you-need-for-ctr-prediction)  
-   标签：评分：9.0/10、query:q2
-   evidence：在线广告的点击率预测
-8. [Self-supervised User Profile Generation for Personalization](/202606/06/2606.05336v1-self-supervised-user-profile-generation-for-personalization)  
-   标签：评分：9.0/10、query:llmapp
-   evidence：用于推荐中LLM个性化的自监督用户画像生成
-9. [Bridging the Semantic-Collaborative Gap: An Asymmetric Graph Architecture for Cold-Start Item Recommendation](/202606/06/2606.06225v1-bridging-the-semantic-collaborative-gap-an-asymmetric-graph-architecture-for-cold-start-item-recommendation)  
+   evidence：广告系统中隐私鲁棒的增量测量
+3. [DSIRM: Learning Query-Bridged Discrete Semantic Identifiers for E-commerce Relevance Modeling](/202606/07/2606.04374v1-dsirm-learning-query-bridged-discrete-semantic-identifiers-for-e-commerce-relevance-modeling)  
    标签：评分：9.0/10、query:q1
-   evidence：Tubi生产检索系统中的冷启动物品推荐
+   evidence：针对广告的电商相关性建模
+4. [Dual-Stream MLP is All You Need for CTR Prediction](/202606/07/2606.04944v1-dual-stream-mlp-is-all-you-need-for-ctr-prediction)  
+   标签：评分：9.0/10、query:q2
+   evidence：在线广告中的点击率预测方法
+5. [QueryAgent-R1: Bridging Query Generation and Product Retrieval for E-Commerce Query Recommendation](/202606/07/2606.05671v1-queryagent-r1-bridging-query-generation-and-product-retrieval-for-e-commerce-query-recommendation)  
+   标签：评分：9.0/10、query:q1
+   evidence：基于LLM代理的电商查询推荐
+6. [Beyond Isolated Behaviors: Hierarchical User Modeling for LLM Personalization](/202606/07/2606.02300v1-beyond-isolated-behaviors-hierarchical-user-modeling-for-llm-personalization)  
+   标签：评分：8.0/10、query:llmapp
+   evidence：层次用户建模用于LLM推荐个性化
+7. [$Ψ$-Bench: Evaluating Persona-Sensitive Influencing in Persuasive Dialogues](/202606/07/2606.02754v1--bench-evaluating-persona-sensitive-influencing-in-persuasive-dialogues)  
+   标签：评分：8.0/10、query:llmapp
+   evidence：评估LLM个性化说服影响力的基准
 
 ### 速读区论文标签
-1. [FOSTER: First-order Dataset Distillation for Text-based Sequential Recommendation](/202606/06/2605.30772v1-foster-first-order-dataset-distillation-for-text-based-sequential-recommendation)  
+1. [EMA: Approximate Nearest Neighbor Search with General Attribute Filtering and Dynamic Updates](/202606/07/2606.00734v1-ema-approximate-nearest-neighbor-search-with-general-attribute-filtering-and-dynamic-updates)  
    标签：评分：8.0/10、query:q1
-   evidence：文本序列推荐的数据集蒸馏
-2. [Contextual Scalarisation Thompson Sampling for multi-objective decisions in public media](/202606/06/2605.31291v1-contextual-scalarisation-thompson-sampling-for-multi-objective-decisions-in-public-media)  
+   evidence：带过滤的近似最近邻搜索，用于推荐系统
+2. [ProductWebGen: Benchmarking Multimodal Product Webpage Generation](/202606/07/2606.01022v1-productwebgen-benchmarking-multimodal-product-webpage-generation)  
+   标签：评分：8.0/10、query:q6
+   evidence：多模态产品网页生成用于广告
+3. [LeAP: Learnable Adaptive Permutation for Feature Selection in Heterogeneous and Sparse Recommender Systems](/202606/07/2606.01111v1-leap-learnable-adaptive-permutation-for-feature-selection-in-heterogeneous-and-sparse-recommender-systems)  
    标签：评分：8.0/10、query:q1
-   evidence：推荐系统的多目标情境强盗算法
-3. [Beyond Instance-Level Alignment and Uniformity: Semantic Factor Learning for Collaborative Filtering](/202606/06/2605.31414v1-beyond-instance-level-alignment-and-uniformity-semantic-factor-learning-for-collaborative-filtering)  
+   evidence：异构推荐系统的特征选择
+4. [Quantizing Intent: Cross-Domain Semantic IDs from Organic Activity for Industrial Ranking](/202606/07/2606.01396v1-quantizing-intent-cross-domain-semantic-ids-from-organic-activity-for-industrial-ranking)  
    标签：评分：8.0/10、query:q1
-   evidence：协同过滤的语义因子学习
-4. [ChurnNet: A Optimized Modern AI for Churn Prediction](/202606/06/2606.00169v1-churnnet-a-optimized-modern-ai-for-churn-prediction)  
-   标签：评分：8.0/10、query:q4
-   evidence：用于个性化营销的流失预测
-5. [EMA: Approximate Nearest Neighbor Search with General Attribute Filtering and Dynamic Updates](/202606/06/2606.00734v1-ema-approximate-nearest-neighbor-search-with-general-attribute-filtering-and-dynamic-updates)  
+   evidence：跨域语义ID用于广告点击率预测
+5. [UniPinRec: Unifying Generative Retrieval and Ranking at Pinterest Scale](/202606/07/2606.00422v1-unipinrec-unifying-generative-retrieval-and-ranking-at-pinterest-scale)  
+   标签：评分：7.0/10、query:profile-1
+   evidence：统一检索与排序的大规模推荐系统
+6. [LeAP: Learnable Adaptive Permutation for Feature Selection in Heterogeneous and Sparse Recommender Systems](/202606/07/2606.01111v2-leap-learnable-adaptive-permutation-for-feature-selection-in-heterogeneous-and-sparse-recommender-systems)  
    标签：评分：7.0/10、query:q1
-   evidence：支持推荐系统和向量数据库的过滤近似最近邻搜索
-6. [Reason, Retrieve, Re-rank: A Zero-Shot Reasoning-Aware Framework for Composed Video Retrieval](/202606/06/2606.00910v1-reason-retrieve-re-rank-a-zero-shot-reasoning-aware-framework-for-composed-video-retrieval)  
+   evidence：推荐系统的特征选择
+7. [Efficient RAG with Intent-Aware Retrieval and Semantics-Preserving Chunking](/202606/07/2606.01240v1-efficient-rag-with-intent-aware-retrieval-and-semantics-preserving-chunking)  
    标签：评分：7.0/10、query:llmapp
-   evidence：使用多模态大语言模型的零样本组合视频检索
-7. [Towards Understanding Modality Interaction in Multimodal Language Models via Partial Information Decomposition](/202606/06/2606.00959v1-towards-understanding-modality-interaction-in-multimodal-language-models-via-partial-information-decomposition)  
-   标签：评分：7.0/10、query:llmapp
-   evidence：研究多模态大语言模型中的模态交互以支持多模态应用
-8. [ExpWeaver: LLM Agents Learn from Experience via Latent RAG](/202606/06/2606.01041v1-expweaver-llm-agents-learn-from-experience-via-latent-rag)  
-   标签：评分：7.0/10、query:llmapp
-   evidence：通过潜在RAG进行LLM代理经验学习是大型语言模型应用
-9. [From Talking Words to Sharing Thoughts: Scalable Multi-LLM Aggregation via Structured Message Passing](/202606/06/2606.00405v1-from-talking-words-to-sharing-thoughts-scalable-multi-llm-aggregation-via-structured-message-passing)  
+   evidence：带有意图感知检索的高效RAG
+8. [KG-FairDiff: Knowledge Graph-Guided Prompt Refinement for Demographically Fair Text-to-Image Generation](/202606/07/2606.01282v1-kg-fairdiff-knowledge-graph-guided-prompt-refinement-for-demographically-fair-text-to-image-generation)  
+   标签：评分：7.0/10、query:q2
+   evidence：公平的文本到图像生成用于广告
+9. [Mitigating Hallucinations in Large Language Models Via Decoder Layer Skipping](/202606/07/2606.00819v1-mitigating-hallucinations-in-large-language-models-via-decoder-layer-skipping)  
    标签：评分：6.0/10、query:llmapp
-   evidence：多LLM聚合方法
-10. [SCOPE: Cost-Efficient Model Selection for Compound AI Systems under Quality Constraints](/202606/06/2606.00774v1-scope-cost-efficient-model-selection-for-compound-ai-systems-under-quality-constraints)  
+   evidence：LLM幻觉缓解方法可应用于大模型应用
+10. [Towards Lightweight Reliability: Using Soft Prompts for Hallucination Mitigation in Large Language Models](/202606/07/2606.00919v1-towards-lightweight-reliability-using-soft-prompts-for-hallucination-mitigation-in-large-language-models)  
    标签：评分：6.0/10、query:llmapp
-   evidence：复合AI系统中成本高效的LLM选择
-11. [MLLM-Microscope: Unlocking Hidden Structure Within Multimodal Large Language Models](/202606/06/2606.00909v1-mllm-microscope-unlocking-hidden-structure-within-multimodal-large-language-models)  
+   evidence：参数高效的软提示缓解幻觉
+11. [DAG-MoE: From Simple Mixture to Structural Aggregation in Mixture-of-Experts](/202606/07/2606.01062v1-dag-moe-from-simple-mixture-to-structural-aggregation-in-mixture-of-experts)  
    标签：评分：6.0/10、query:llmapp
-   evidence：分析多模态大语言模型的隐藏表示
-12. [Whole-Pool Setwise Reranking with Long-Context Language Models](/202606/06/2606.01782v1-whole-pool-setwise-reranking-with-long-context-language-models)  
+   evidence：MoE模型的结构聚合方法用于扩展LLM
+12. [Understanding LLM Behavior in Multi-Target Cross-Lingual Summarization](/202606/07/2606.01252v1-understanding-llm-behavior-in-multi-target-cross-lingual-summarization)  
    标签：评分：6.0/10、query:llmapp
-   evidence：使用长上下文LLM的集合级重排序
+   evidence：跨语言摘要中的LLM行为
 
 
 <div class="dpr-home-promo-card">

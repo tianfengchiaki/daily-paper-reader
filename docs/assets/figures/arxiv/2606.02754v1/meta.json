@@ -1,0 +1,190 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2606.02754v1/fig-001.webp",
+      "caption": "Figure 4: Comparison of LLMs’ performance on Ψ-Bench Debate scenario with and without the client profile. The “Oracle” setting, where the client’s full profile is accessible for the tested LLMs, exhibits significantly stronger persuasion outcomes.",
+      "page": 6,
+      "index": 1,
+      "width": 931,
+      "height": 319
+    },
+    {
+      "url": "assets/figures/arxiv/2606.02754v1/fig-002.webp",
+      "caption": "Figure 18: Prompt for the judge model in Psychological Consultation.",
+      "page": 25,
+      "index": 2,
+      "width": 950,
+      "height": 979
+    },
+    {
+      "url": "assets/figures/arxiv/2606.02754v1/fig-003.webp",
+      "caption": "Figure 19: Prompt for the judge model in Everyday Request.",
+      "page": 26,
+      "index": 3,
+      "width": 950,
+      "height": 875
+    },
+    {
+      "url": "assets/figures/arxiv/2606.02754v1/fig-004.webp",
+      "caption": "Figure 5: Distribution of client profiles in Ψ-Bench.",
+      "page": 15,
+      "index": 4,
+      "width": 939,
+      "height": 1018
+    },
+    {
+      "url": "assets/figures/arxiv/2606.02754v1/fig-005.webp",
+      "caption": "Figure 13: Prompt for the client and persuader in Psychological Consultation.",
+      "page": 21,
+      "index": 5,
+      "width": 950,
+      "height": 1021
+    },
+    {
+      "url": "assets/figures/arxiv/2606.02754v1/fig-006.webp",
+      "caption": "Table 5: LLMs’ performance on Ψ-Bench with client profile analyzers. Actively inferring the client’s information makes persuasion more successful, especially with the profile analyzer trained with RL.",
+      "page": 7,
+      "index": 6,
+      "width": 941,
+      "height": 311
+    },
+    {
+      "url": "assets/figures/arxiv/2606.02754v1/fig-007.webp",
+      "caption": "Table 6: Prediction similarity of profile analyzers.",
+      "page": 7,
+      "index": 7,
+      "width": 462,
+      "height": 866
+    },
+    {
+      "url": "assets/figures/arxiv/2606.02754v1/fig-008.webp",
+      "caption": "Figure 22: A failed case of Qwen3-32B’s conversation in Ψ-Bench Consult.",
+      "page": 29,
+      "index": 8,
+      "width": 950,
+      "height": 887
+    },
+    {
+      "url": "assets/figures/arxiv/2606.02754v1/fig-009.webp",
+      "caption": "Figure 14: Prompt for the client and persuader in Everyday Request.",
+      "page": 22,
+      "index": 9,
+      "width": 950,
+      "height": 979
+    },
+    {
+      "url": "assets/figures/arxiv/2606.02754v1/fig-010.webp",
+      "caption": "Table 8: Match scores on Ψ-Bench.",
+      "page": 14,
+      "index": 10,
+      "width": 408,
+      "height": 342
+    },
+    {
+      "url": "assets/figures/arxiv/2606.02754v1/fig-011.webp",
+      "caption": "Figure 2: Overview of Ψ-Bench. We collect queries from 3 scenarios, curate realistic personas paired with each query, and utilize personalized clients and an expert judge to evaluate LLMs’ persona-sensitive influencing.",
+      "page": 3,
+      "index": 11,
+      "width": 944,
+      "height": 377
+    },
+    {
+      "url": "assets/figures/arxiv/2606.02754v1/fig-012.webp",
+      "caption": "Figure 9: Prompt for profile construction for Viewpoint Debate.",
+      "page": 18,
+      "index": 12,
+      "width": 950,
+      "height": 565
+    },
+    {
+      "url": "assets/figures/arxiv/2606.02754v1/fig-013.webp",
+      "caption": "Figure 10: Prompt for profile construction for Psychological Consultation.",
+      "page": 18,
+      "index": 13,
+      "width": 950,
+      "height": 564
+    },
+    {
+      "url": "assets/figures/arxiv/2606.02754v1/fig-014.webp",
+      "caption": "Figure 16: Prompt for the profile analyzer to predict the client’s profile.",
+      "page": 23,
+      "index": 14,
+      "width": 950,
+      "height": 437
+    },
+    {
+      "url": "assets/figures/arxiv/2606.02754v1/fig-015.webp",
+      "caption": "Figure 21: A successful case of GPT-5.1’s conversation in Ψ-Bench Debate about political protest.",
+      "page": 28,
+      "index": 15,
+      "width": 950,
+      "height": 1012
+    },
+    {
+      "url": "assets/figures/arxiv/2606.02754v1/fig-016.webp",
+      "caption": "Table 3: Comparison of the same persuader interacting with human clients and LLM-instantiated clients.",
+      "page": 4,
+      "index": 16,
+      "width": 462,
+      "height": 803
+    },
+    {
+      "url": "assets/figures/arxiv/2606.02754v1/fig-017.webp",
+      "caption": "Figure 11: Prompt for profile construction for Everyday Request.",
+      "page": 19,
+      "index": 17,
+      "width": 950,
+      "height": 687
+    },
+    {
+      "url": "assets/figures/arxiv/2606.02754v1/fig-018.webp",
+      "caption": "Figure 8: The webpage for human annotating.",
+      "page": 17,
+      "index": 18,
+      "width": 1041,
+      "height": 981
+    },
+    {
+      "url": "assets/figures/arxiv/2606.02754v1/fig-019.webp",
+      "caption": "Figure 20: A successful case of GPT-5.1’s conversation in Ψ-Bench Debate about the point of life.",
+      "page": 27,
+      "index": 19,
+      "width": 950,
+      "height": 929
+    },
+    {
+      "url": "assets/figures/arxiv/2606.02754v1/fig-020.webp",
+      "caption": "Figure 17: Prompt for the judge model in Viewpoint Debate.",
+      "page": 24,
+      "index": 20,
+      "width": 950,
+      "height": 1000
+    },
+    {
+      "url": "assets/figures/arxiv/2606.02754v1/fig-021.webp",
+      "caption": "Figure 12: Prompt for the client and persuader in Viewpoint Debate.",
+      "page": 20,
+      "index": 21,
+      "width": 950,
+      "height": 1083
+    },
+    {
+      "url": "assets/figures/arxiv/2606.02754v1/fig-022.webp",
+      "caption": "Figure 6: Python-style code for the human study.",
+      "page": 16,
+      "index": 22,
+      "width": 983,
+      "height": 350
+    },
+    {
+      "url": "assets/figures/arxiv/2606.02754v1/fig-023.webp",
+      "caption": "Figure 7: Correlation between intermediate metrics (Quality, Personalize, Match) and the persuasion effect. Each dot represents a combination of scenario and model.",
+      "page": 16,
+      "index": 23,
+      "width": 935,
+      "height": 305
+    }
+  ]
+}

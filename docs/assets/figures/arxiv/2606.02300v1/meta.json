@@ -1,0 +1,38 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2606.02300v1/fig-001.webp",
+      "caption": "Figure 1: Comparison of personalization paradigms. (a) Existing methods adopt a flat behavioral paradigm, retrieving or encoding user behaviors without explicit structural modeling. (b) Habitus captures the temporal accumulation of repeated behaviors into stable dispositions. (c) Field captures shared behavioral regularities among users with similar dispositions. (d) PHF integrates practice, habitus, and field into a unified hierarchical framework for LLM personalization.",
+      "page": 1,
+      "index": 1,
+      "width": 452,
+      "height": 283
+    },
+    {
+      "url": "assets/figures/arxiv/2606.02300v1/fig-002.webp",
+      "caption": "Table 1: Performance of all methods on the LaMP benchmark. Existing personalization methods are organized under the flat paradigm, while PHF Implements validate each level of the proposed hierarchy. The best results are shown in bold, and the second-best are underlined. ↑ indicates that higher values are better. “–” denotes that the method is not applicable. All metrics are the average of 3 independent reruns with different random seeds.",
+      "page": 6,
+      "index": 2,
+      "width": 946,
+      "height": 220
+    },
+    {
+      "url": "assets/figures/arxiv/2606.02300v1/fig-003.webp",
+      "caption": "Figure 2: Overview of the PHF framework and PHFCompass implement. (1) Raw behaviors are abstracted into denoised practice essence via semantic ID extraction. (2) Practices are temporally aggregated into stable habitus representations. (3) Users are organized into latent fields through group router. (4) Habitus and field embeddings are combined as well as the query embedding to condition the LLM for personalized generation.",
+      "page": 3,
+      "index": 3,
+      "width": 900,
+      "height": 468
+    },
+    {
+      "url": "assets/figures/arxiv/2606.02300v1/fig-004.webp",
+      "caption": "Table 4: Dataset statistics and input–output formats for different tasks in the LaMP benchmark. “#” denotes the number of instances, “Cls” indicates classification tasks, and placeholders in braces {} are replaced with dataset-specific values.",
+      "page": 12,
+      "index": 4,
+      "width": 946,
+      "height": 218
+    }
+  ]
+}

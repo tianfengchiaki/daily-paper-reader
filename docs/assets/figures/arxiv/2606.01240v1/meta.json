@@ -1,0 +1,38 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2606.01240v1/fig-001.webp",
+      "caption": "Figure 1: Limitations on the conventional RAG system that relies on a fixed retrieval channel and ignores semantically fragmented evidence chunks. We address these limitations in InSemRAG.",
+      "page": 2,
+      "index": 1,
+      "width": 802,
+      "height": 421
+    },
+    {
+      "url": "assets/figures/arxiv/2606.01240v1/fig-002.webp",
+      "caption": "Table 1: RAG evaluation on question-answering benchmark dataset.",
+      "page": 7,
+      "index": 2,
+      "width": 925,
+      "height": 676
+    },
+    {
+      "url": "assets/figures/arxiv/2606.01240v1/fig-003.webp",
+      "caption": "Table 2: RAG evaluation on long-form generation and fact verification benchmarks. Our method yields competitive performance over strong reasoning-centric baselines.",
+      "page": 8,
+      "index": 3,
+      "width": 821,
+      "height": 677
+    },
+    {
+      "url": "assets/figures/arxiv/2606.01240v1/fig-004.webp",
+      "caption": "Figure 2: Illustration of InSemRAG framework. In a high-level view, we first enrich the input query from multiple views, from which we retrieve the evidence through weighted multi-channel retrieval. After reranking, we perform detection on damaged evidence chunks and repair via semantic stitching. We implement our method iteratively using SLM (yellow module in the figure) for efficient computation.",
+      "page": 5,
+      "index": 4,
+      "width": 950,
+      "height": 388
+    }
+  ]
+}

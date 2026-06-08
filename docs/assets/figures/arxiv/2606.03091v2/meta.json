@@ -1,0 +1,86 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2606.03091v2/fig-001.webp",
+      "caption": "Fig. 3: The framework of BAHSD. A multi-scale view generator probes the teacher API without internal access, while three loss modules regulate gradient flow: Lalign transfers multi-scale knowledge, Linv filters noise via temporal consistency, and Lcont enhances latent discriminability.",
+      "page": 6,
+      "index": 1,
+      "width": 616,
+      "height": 402
+    },
+    {
+      "url": "assets/figures/arxiv/2606.03091v2/fig-002.webp",
+      "caption": "Table 4: Tier-wise performance comparison on Amazon Beauty, with bold and underlined entries denoting optimal and suboptimal performance, respectively.",
+      "page": 11,
+      "index": 2,
+      "width": 710,
+      "height": 436
+    },
+    {
+      "url": "assets/figures/arxiv/2606.03091v2/fig-003.webp",
+      "caption": "Fig. 4: Distribution shift analysis between teacher and student models.",
+      "page": 10,
+      "index": 3,
+      "width": 712,
+      "height": 464
+    },
+    {
+      "url": "assets/figures/arxiv/2606.03091v2/fig-004.webp",
+      "caption": "Fig. 6: Impact of distillation temperature τkd on distillation performance.",
+      "page": 14,
+      "index": 4,
+      "width": 725,
+      "height": 263
+    },
+    {
+      "url": "assets/figures/arxiv/2606.03091v2/fig-005.webp",
+      "caption": "Table 6: Ablation study of BAHSD components across datasets and backbones. Bold and underlined entries indicate optimal and suboptimal performance.",
+      "page": 13,
+      "index": 5,
+      "width": 714,
+      "height": 207
+    },
+    {
+      "url": "assets/figures/arxiv/2606.03091v2/fig-006.webp",
+      "caption": "Fig. 5: Impact of truncation ratios on distillation performance.",
+      "page": 13,
+      "index": 6,
+      "width": 725,
+      "height": 290
+    },
+    {
+      "url": "assets/figures/arxiv/2606.03091v2/fig-007.webp",
+      "caption": "Table 1: Predictive reliability of teacher models across user tiers, with bold entries denoting optimal performance.",
+      "page": 4,
+      "index": 7,
+      "width": 573,
+      "height": 265
+    },
+    {
+      "url": "assets/figures/arxiv/2606.03091v2/fig-008.webp",
+      "caption": "Table 5: Tier-wise performance comparison on MovieLens-1M, with bold and underlined entries denoting optimal and suboptimal performance, respectively.",
+      "page": 12,
+      "index": 8,
+      "width": 658,
+      "height": 340
+    },
+    {
+      "url": "assets/figures/arxiv/2606.03091v2/fig-009.webp",
+      "caption": "Table 3: Overall distillation performance in different metricsl, with bold and underlined entries denoting optimal and suboptimal performance, respectively. ABKD-1: α = 1.2, β = 1.2; ABKD-2: α = 0.5, β = 1.5; ABKD-3: α = 1.5, β = 0.5.",
+      "page": 9,
+      "index": 9,
+      "width": 756,
+      "height": 542
+    },
+    {
+      "url": "assets/figures/arxiv/2606.03091v2/fig-010.webp",
+      "caption": "Fig. 2: Logits distribution analysis on teacher models across user tiers.",
+      "page": 5,
+      "index": 10,
+      "width": 712,
+      "height": 465
+    }
+  ]
+}

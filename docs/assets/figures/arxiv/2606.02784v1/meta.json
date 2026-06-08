@@ -1,0 +1,62 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2606.02784v1/fig-001.webp",
+      "caption": "Figure 1: Latency breakdown on SIFT100M under a memory budget of 0.4× dataset size with 𝑇 ∈ {2, 4, 8} threads. (a) Latency decomposed into I/O only, CPU-I/O overlap, and CPU only components. (b) Breakdown of total query latency into CPU meaningful work and CPU idle time at 𝑇 = 8 threads.",
+      "page": 1,
+      "index": 1,
+      "width": 496,
+      "height": 366
+    },
+    {
+      "url": "assets/figures/arxiv/2606.02784v1/fig-002.webp",
+      "caption": "Figure 7: Look-ahead search with𝑊 = 2. Green nodes are cached in memory; white nodes are on-disk; blue nodes have been explored. Yellow dashed boxes mark the top-𝑊 unvisited vectors inspected by the persistence check. Red circles indicate persistent nodes.",
+      "page": 6,
+      "index": 2,
+      "width": 482,
+      "height": 284
+    },
+    {
+      "url": "assets/figures/arxiv/2606.02784v1/fig-003.webp",
+      "caption": "Figure 13: Recall@10 vs. latency (top row) and recall@10 vs. throughput (bottom row) on SIFT1B and SpaceV1B under a memory budget of 0.3× the dataset size.",
+      "page": 11,
+      "index": 3,
+      "width": 475,
+      "height": 513
+    },
+    {
+      "url": "assets/figures/arxiv/2606.02784v1/fig-004.webp",
+      "caption": "Figure 12: Recall@10 vs. latency (top row) and recall@10 vs. throughput (bottom row) on three 100M-scale datasets under a memory budget of 0.5× the dataset size. Lower latency and higher throughput are better.",
+      "page": 10,
+      "index": 4,
+      "width": 1031,
+      "height": 376
+    },
+    {
+      "url": "assets/figures/arxiv/2606.02784v1/fig-005.webp",
+      "caption": "Figure 2: Illustration of greedy search on a proximity graph with candidate pool size 𝐿 = 3. The search traverses from the entry point toward the query, updating the candidate pool at each step until convergence.",
+      "page": 3,
+      "index": 5,
+      "width": 406,
+      "height": 325
+    },
+    {
+      "url": "assets/figures/arxiv/2606.02784v1/fig-006.webp",
+      "caption": "Figure 3: Illustration of processing vectors cached inmemory before issuing I/O on a proximity graph with candidate pool size 𝐿 = 3. Blue arrows indicate expansions that require I/O; red arrows indicate expansions of vectors cached in memory requiring no I/O. Red-circled nodes are cached in memory.",
+      "page": 3,
+      "index": 6,
+      "width": 456,
+      "height": 323
+    },
+    {
+      "url": "assets/figures/arxiv/2606.02784v1/fig-007.webp",
+      "caption": "Figure 5: System overview of LAANN. The DRAM region holds three purpose-built structures; the SSD stores the page-level disk graph. Numbers indicate the search flow.",
+      "page": 5,
+      "index": 7,
+      "width": 1052,
+      "height": 232
+    }
+  ]
+}

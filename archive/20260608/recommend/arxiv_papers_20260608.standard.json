@@ -1,0 +1,856 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-06-08T21:51:10.654021+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 2,
+    "deep_divecandidates": 23,
+    "deep_cap": 7,
+    "deep_selected": 8,
+    "quick_candidates": 48,
+    "quick_skim_target": 12,
+    "quick_selected": 12
+  },
+  "deep_dive": [
+    {
+      "id": "2606.01022v1",
+      "source": "arxiv",
+      "title": "ProductWebGen: Benchmarking Multimodal Product Webpage Generation",
+      "abstract": "Crafting a product display webpage from a source product image, along with layout and visual content instructions, holds significant practical value for domains such as marketing, advertising, and E-commerce. Intuitively, this task demands strict visual consistency across product displays and high-fidelity instruction following to jointly generate renderable HTML code. These requirements on controllability and instruction-following are closely aligned with the core features of advanced multimodal generative models, such as image editing models and unified models. To this end, this paper introduces ProductWebGen to systematically benchmark the product webpage generation capacities of these models. We organize ProductWebGen with 500 test samples covering 13 product categories; each sample consists of a source image, a visual content instruction, and a webpage instruction. The task is to generate a product showcase webpage including multiple consistent images in accordance with the source image and instructions. Given the mixed-modality input-output nature of the task, we design and systematically compare two workflows for evaluation -- one uses large language models and image editing models to separately generate HTML code and images (editing-based), while the other relies on a single UM to generate both, with image generation conditioned on the preceding multimodal context (UM-based). Empirical results show that editing-based approaches achieve leading results in webpage instruction following and content appeal, while UM-based ones may display more advantages in fulfilling visual content instructions. We also construct a supervised fine-tuning dataset, ProductWebGen-1k, with 1,000 groups of real product images and LLM-generated HTML code. We verify its effectiveness on the open-source UM BAGEL. The data and code are available at https://github.com/SJTU-DENG-Lab/ProductWebGen.",
+      "authors": [
+        "Zhihong Liu",
+        "Siqi Kou",
+        "Zheng Li",
+        "Ye Ma",
+        "Quan Chen",
+        "Peng Jiang",
+        "Kai Yu",
+        "Zhijie Deng"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV",
+        "cs.AI"
+      ],
+      "published": "2026-05-31T05:25:14+00:00",
+      "link": "https://arxiv.org/pdf/2606.01022v1",
+      "tags": [
+        "keyword:LLMApp",
+        "keyword:广告",
+        "query:LLMApp",
+        "query:广告"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "Multimodal product webpage generation for advertising",
+      "llm_evidence_cn": "多模态产品网页生成用于广告",
+      "llm_evidence": "多模态产品网页生成用于广告",
+      "canonical_evidence": "多模态产品网页生成用于广告",
+      "llm_tldr_en": "Benchmarks multimodal generative models for product webpage generation in advertising and e-commerce.",
+      "llm_tldr_cn": "为广告和电子商务中的产品网页生成提供多模态生成模型基准。",
+      "llm_tldr": "为广告和电子商务中的产品网页生成提供多模态生成模型基准。",
+      "llm_tags": [
+        "query:q6"
+      ],
+      "matched_query_tag": "query:q6",
+      "matched_query_text": "multimodal learning for advertising",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2606.01111v1",
+      "source": "arxiv",
+      "title": "LeAP: Learnable Adaptive Permutation for Feature Selection in Heterogeneous and Sparse Recommender Systems",
+      "abstract": "Modern industrial recommender systems rely on thousands of heterogeneous features -- ranging from low-dimensional scalars (e.g., statistical value) to high-dimensional embeddings (e.g., user-id embeddings, MLP representations) -- to achieve high-precision predictions. Given the immense computational costs associated with training, efficient feature selection is critical. However, existing methods encounter three primary bottlenecks: (1) they typically assume uniform feature dimensions or require costly mapping to a fixed size; (2) they struggle with extreme sparsity, where the majority of features (e.g., 99%+) remain at default values; and (3) traditional permutation-based approaches are computationally prohibitive in large-scale settings.   To address these challenges, we propose LeAP (Learnable Adaptive Permutation), a novel, model-agnostic plug-in module for feature selection. LeAP transforms the inefficient random permutation process into a learnable mechanism, significantly accelerating the evaluation of feature importance. In addition, we introduce an adaptive regularization strategy tailored for heterogeneous dimensions and extreme sparsity, enabling superior feature importance ranking results across asymmetric input spaces. Experiments on four public recommendation datasets demonstrate that LeAP achieves state-of-the-art performance. Furthermore, LeAP has been deployed in a large-scale industrial search ranking model with over a billion daily requests and a 2TB model parameter scale. In this real-world scenario involving 12,000+ total feature dimensions, LeAP successfully identified and removed over 3,600 redundant dimensions without performance degradation, which is 2 to 10 times the ability of compared baseline methods.",
+      "authors": [
+        "Yihong Huang",
+        "Chen Chu",
+        "Fei Chen",
+        "Yu Lin",
+        "Ruiduan Li",
+        "Zhihao Li"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG"
+      ],
+      "published": "2026-05-31T09:12:55+00:00",
+      "link": "https://arxiv.org/pdf/2606.01111v1",
+      "tags": [
+        "keyword:LLMApp",
+        "keyword:广告",
+        "query:LLMApp",
+        "query:广告"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "feature selection for recommender systems, directly applicable to advertising recommendation",
+      "llm_evidence_cn": "推荐系统特征选择，可直接用于广告推荐",
+      "llm_evidence": "推荐系统特征选择，可直接用于广告推荐",
+      "canonical_evidence": "推荐系统特征选择，可直接用于广告推荐",
+      "llm_tldr_en": "Introduces LeAP for learnable adaptive permutation in feature selection, improving efficiency in sparse recommender systems.",
+      "llm_tldr_cn": "提出LeAP用于可学习自适应置换特征选择，提升稀疏推荐系统效率。",
+      "llm_tldr": "提出LeAP用于可学习自适应置换特征选择，提升稀疏推荐系统效率。",
+      "llm_tags": [
+        "query:q1"
+      ],
+      "matched_query_tag": "query:q1",
+      "matched_query_text": "recommendation system for advertising",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2606.01111v2",
+      "source": "arxiv",
+      "title": "LeAP: Learnable Adaptive Permutation for Feature Selection in Heterogeneous and Sparse Recommender Systems",
+      "abstract": "Modern industrial recommender systems rely on thousands of heterogeneous features -- ranging from low-dimensional scalars (e.g., statistical value) to high-dimensional embeddings (e.g., user-id embeddings, MLP representations) -- to achieve high-precision predictions. Given the immense computational costs associated with training, efficient feature selection is critical. However, existing methods encounter three primary bottlenecks: (1) they typically assume uniform feature dimensions or require costly mapping to a fixed size; (2) they struggle with extreme sparsity, where the majority of features (e.g., 99%+) remain at default values; and (3) traditional permutation-based approaches are computationally prohibitive in large-scale settings.   To address these challenges, we propose LeAP (Learnable Adaptive Permutation), a novel, model-agnostic plug-in module for feature selection. LeAP transforms the inefficient random permutation process into a learnable mechanism, significantly accelerating the evaluation of feature importance. In addition, we introduce an adaptive regularization strategy tailored for heterogeneous dimensions and extreme sparsity, enabling superior feature importance ranking results across asymmetric input spaces. Experiments on four public recommendation datasets demonstrate that LeAP achieves state-of-the-art performance. Furthermore, LeAP has been deployed in a large-scale industrial search ranking model with over a billion daily requests and a 2TB model parameter scale. In this real-world scenario involving 12,000+ total feature dimensions, LeAP successfully identified and removed over 3,600 redundant dimensions without performance degradation, which is 2 to 10 times the ability of compared baseline methods.",
+      "authors": [
+        "Yihong Huang",
+        "Chen Chu",
+        "Fei Chen",
+        "Yu Lin",
+        "Ruiduan Li",
+        "Zhihao Li"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG"
+      ],
+      "published": "2026-05-31T09:12:55+00:00",
+      "link": "https://arxiv.org/pdf/2606.01111v2",
+      "tags": [
+        "keyword:LLMApp",
+        "keyword:广告",
+        "query:LLMApp",
+        "query:广告"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "Learnable feature selection for heterogeneous sparse recommender systems",
+      "llm_evidence_cn": "异构稀疏推荐系统的可学习特征选择",
+      "llm_evidence": "异构稀疏推荐系统的可学习特征选择",
+      "canonical_evidence": "异构稀疏推荐系统的可学习特征选择",
+      "llm_tldr_en": "Introduces a learnable adaptive permutation method for efficient feature selection in recommender systems",
+      "llm_tldr_cn": "提出用于推荐系统中高效特征选择的可学习自适应排列方法",
+      "llm_tldr": "提出用于推荐系统中高效特征选择的可学习自适应排列方法",
+      "llm_tags": [
+        "query:q1"
+      ],
+      "matched_query_tag": "query:q1",
+      "matched_query_text": "recommendation system for advertising",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2606.01396v1",
+      "source": "arxiv",
+      "title": "Quantizing Intent: Cross-Domain Semantic IDs from Organic Activity for Industrial Ranking",
+      "abstract": "Ads click-through rate (CTR) prediction is constrained by sparse user supervision: most users engage with ads infrequently while generating dense behavioral evidence in organic surfaces such as feed. Transferring these cross-domain signals into ads ranking is difficult due to domain mismatch, serving cost, and production complexity. We introduce cross-domain user Semantic IDs (SIDs) derived from organic feed activity and show that behavioral activity richness governs cross-domain transfer quality: SIDs from user profile text yield +0.036% AUC, SIDs from an activity-tuned LLaMA-based user embedding model yield +0.107%, and SIDs from direct feed activity behavioral embeddings yield +0.213%. We further propose RQ-FSQ, a residual finite scalar quantization method that discretizes pre-trained embeddings while matching dense-embedding AUC at substantially smaller storage. Across two heterogeneous sources, RQ-FSQ matches or slightly exceeds dense source embeddings, achieving +0.351% AUC for Feed Activity at about 30x smaller storage and +0.265% AUC for Activity-Tuned LLaMA at about 280x smaller storage. We also introduce a Hierarchical Discrete Embedding module that encodes multi-level SIDs through prefix n-gram sparse embedding tables trained end-to-end under the CTR objective. In a large-scale industrial ads ranking system, cold-start segment analysis shows gains up to +1.522% for users with near-zero ad interaction history, validating cross-domain behavioral transfer as an effective bridge for sparse-history ranking.",
+      "authors": [
+        "Julie Choi",
+        "Haoran Ye",
+        "Zhiwei Ding",
+        "Bo Long",
+        "Benjamin Zelditch",
+        "Arpita Vats"
+      ],
+      "primary_category": "cs.IR",
+      "categories": [
+        "cs.IR"
+      ],
+      "published": "2026-05-31T18:40:41+00:00",
+      "link": "https://arxiv.org/pdf/2606.01396v1",
+      "tags": [
+        "keyword:LLMApp",
+        "keyword:广告",
+        "query:LLMApp",
+        "query:广告"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "cross-domain semantic IDs from organic activity for industrial ads ranking",
+      "llm_evidence_cn": "来自有机活动的跨域语义ID用于工业广告排序",
+      "llm_evidence": "来自有机活动的跨域语义ID用于工业广告排序",
+      "canonical_evidence": "来自有机活动的跨域语义ID用于工业广告排序",
+      "llm_tldr_en": "Uses organic feed activity to generate semantic IDs improving ads CTR prediction.",
+      "llm_tldr_cn": "利用有机feed活动生成语义ID，提升广告点击率预测。",
+      "llm_tldr": "利用有机feed活动生成语义ID，提升广告点击率预测。",
+      "llm_tags": [
+        "query:q2"
+      ],
+      "matched_query_tag": "query:q2",
+      "matched_query_text": "advertising technology",
+      "matched_requirement_id": "req-2",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2606.03527v1",
+      "source": "arxiv",
+      "title": "Competitive Information Design in Sequential Search",
+      "abstract": "Advertisements often strategically disclose information to consumers who make decisions on further information acquisition and eventual purchase. Anderson and Renault (2006) model this problem using an information design framework, where the advertiser acts as a sender and the consumer as a receiver. We extend this model to a competitive setting with horizontally differentiated senders competing for a unit-demand receiver. Under costly inspection, the receiver's optimal sequential search action is given by Weitzman's Index Algorithm.   We give a method, based on duality arguments, to verify whether a sender's given information strategy constitutes a best response against his competitors (other senders). We establish the existence of an equilibrium in the game among senders when the prior distributions have no mass; we also illustrate that such equilibria may exhibit intricate behaviors. Finally, we meticulously characterize symmetric equilibria played by the senders for cases when the prior distributions have monotone increasing densities, while offering economic intuitions behind the insightful equilibrium structure.",
+      "authors": [
+        "Zhicheng Du",
+        "Hu Fu",
+        "Ying Qin",
+        "Zihe Wang"
+      ],
+      "primary_category": "cs.GT",
+      "categories": [
+        "cs.GT",
+        "econ.TH"
+      ],
+      "published": "2026-06-02T11:50:09+00:00",
+      "link": "https://arxiv.org/pdf/2606.03527v1",
+      "tags": [
+        "keyword:广告",
+        "query:LLMApp",
+        "query:广告"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "Models competitive advertising information disclosure",
+      "llm_evidence_cn": "建模竞争性广告信息披露",
+      "llm_evidence": "建模竞争性广告信息披露",
+      "canonical_evidence": "建模竞争性广告信息披露",
+      "llm_tldr_en": "Information design in sequential search with ads",
+      "llm_tldr_cn": "带广告的顺序搜索信息设计",
+      "llm_tldr": "带广告的顺序搜索信息设计",
+      "llm_tags": [
+        "query:q2"
+      ],
+      "matched_query_tag": "query:q2",
+      "matched_query_text": "advertising technology",
+      "matched_requirement_id": "req-2",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2606.03878v1",
+      "source": "arxiv",
+      "title": "Privacy-Robust Incrementality Measurement for Advertising Systems under Signal Loss",
+      "abstract": "Advertising platforms use randomized lift tests to measure incrementality, but privacy-preserving reporting systems degrade the observed signal through match-rate loss, linkability loss, attribution-window loss, aggregation-threshold suppression, randomized reporting noise, and segment-heterogeneous signal loss. This paper formulates privacy-constrained advertising measurement as a robust causal decision problem under the mentioned signal losses. Given a randomized experiment and an ambiguity set for privacy-induced degradation, the framework projects the observation-compatible fiber of clean/unfiltered experimental worlds onto the incrementality functional and returns certified, rejected, and unresolved decisions. The main result gives a sharp decision frontier. Reports outside the frontier support uniformly valid certification or rejection, whereas reports inside it contain too little information for any method to uniformly distinguish above-threshold incrementality from non-incrementality. Supporting results give finite-sample certification, sample-complexity guarantees, a minimax lower bound showing that signal loss reduces effective information, and a reporting-granularity tradeoff. On 2.0M Criteo Uplift rows and the 64K-row Hillstrom email experiment, clean conversion lift is positive in both datasets, with lifts 0.00112 and 0.00495, respectively. Population certification survives mild degradation in Criteo and severe degradation in Hillstrom, while all considered finite-sample stress settings in both datasets remain unresolved after simultaneous uncertainty and reporting noise are included. Overall, the research contributes a decision-theoretic layer for privacy-aware incrementality measurement whose output is the strongest causal-claim justified by degraded ads signals.",
+      "authors": [
+        "Prashant Shekhar",
+        "Caroline Howard"
+      ],
+      "primary_category": "stat.ML",
+      "categories": [
+        "stat.ML",
+        "cs.LG"
+      ],
+      "published": "2026-06-02T16:46:38+00:00",
+      "link": "https://arxiv.org/pdf/2606.03878v1",
+      "tags": [
+        "keyword:广告",
+        "query:LLMApp",
+        "query:广告"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "Privacy-robust incrementality measurement for ads",
+      "llm_evidence_cn": "广告的隐私鲁棒增量测量",
+      "llm_evidence": "广告的隐私鲁棒增量测量",
+      "canonical_evidence": "广告的隐私鲁棒增量测量",
+      "llm_tldr_en": "Robust causal framework for advertising incrementality under signal loss",
+      "llm_tldr_cn": "信号丢失下广告增量的鲁棒因果框架",
+      "llm_tldr": "信号丢失下广告增量的鲁棒因果框架",
+      "llm_tags": [
+        "query:q5"
+      ],
+      "matched_query_tag": "query:q5",
+      "matched_query_text": "uplift modeling for advertising campaigns",
+      "matched_requirement_id": "req-5",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2606.04547v1",
+      "source": "arxiv",
+      "title": "Beyond Retrieval: Learning Compact User Representations for Scalable LLM Personalization",
+      "abstract": "Personalizing large language models requires adapting model behavior to individual users while preserving robustness and deployment-scale efficiency. Existing approaches typically personalize LLMs either at the input level, by retrieving user histories or constructing profile prompts, or at the parameter level, by maintaining user-specific parameter-efficient modules. The former makes personalization sensitive to retrieval quality and prompt design, whereas the latter incurs storage and maintenance costs that grow with the user population. To address these limitations, we propose TAP-PER (Temporal Attentive Prefix for PERsonalization), a prefix-based framework that encodes user preferences as learnable representations, eliminating explicit prompt construction and replacing heavy per-user adapters with lightweight user-state prefix embeddings. Inspired by personalized recommendation systems, TAP-PER decomposes user modeling into user-state and query-conditioned components, and incorporates temporal signals to capture the evolving nature of user interests. Experiments on six LaMP tasks show that TAP-PER consistently outperforms prompt-based and model-based baselines across classification, rating, and generation settings. Moreover, TAP-PER uses 130x fewer per-user parameters than OPPU and roughly half the total parameter footprint of PER-PCS at the 1,000-user scale, demonstrating that scalable LLM personalization can be achieved without explicit prompt construction or heavy per-user adapters.",
+      "authors": [
+        "Heng Cao",
+        "Fan Zhang",
+        "Jian Yao",
+        "Yujie Zheng",
+        "Changlin Zhao",
+        "Lu Hao",
+        "Yuxuan Wei",
+        "Wangze Ni",
+        "Huaiyu Fu",
+        "Yuqian Sun",
+        "Xuyan Mo"
+      ],
+      "primary_category": "cs.IR",
+      "categories": [
+        "cs.IR",
+        "cs.CL"
+      ],
+      "published": "2026-06-03T07:32:18+00:00",
+      "link": "https://arxiv.org/pdf/2606.04547v1",
+      "tags": [
+        "keyword:LLMApp",
+        "keyword:广告",
+        "query:LLMApp",
+        "query:广告"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "prefix-based framework for scalable LLM personalization",
+      "llm_evidence_cn": "基于前缀的可扩展大语言模型个性化框架",
+      "llm_evidence": "基于前缀的可扩展大语言模型个性化框架",
+      "canonical_evidence": "基于前缀的可扩展大语言模型个性化框架",
+      "llm_tldr_en": "TAP-PER encodes user preferences as learnable prefixes for efficient LLM personalization.",
+      "llm_tldr_cn": "TAP-PER将用户偏好编码为可学习前缀，实现高效的大模型个性化。",
+      "llm_tldr": "TAP-PER将用户偏好编码为可学习前缀，实现高效的大模型个性化。",
+      "llm_tags": [
+        "query:llmapp"
+      ],
+      "matched_query_tag": "query:llmapp",
+      "matched_query_text": "Applications of LLMs in advertising and personalized marketing",
+      "matched_requirement_id": "req-15",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2606.04944v1",
+      "source": "arxiv",
+      "title": "Dual-Stream MLP is All You Need for CTR Prediction",
+      "abstract": "Click-through rate (CTR) prediction holds a pivotal role in online advertising and recommendation systems, where even small improvements can significantly boost revenue. Existing research primarily focuses on designing dual-stream architectures to capture effective complex feature interactions from both explicit and implicit perspectives. However, these approaches are faced with two major challenges: 1) the high complexity of feature interaction learning, which increases computational demands and the overfitting risk, and 2) the imbalance between explicit and implicit modules, where one module's output may dominate the final prediction. To address these issues, in this paper, we propose Dual-Stream MLP (DS-MLP), a novel feature interaction framework for the CTR prediction task. Specially, it leverages knowledge distillation to consolidate the capacity of learning explicit feature interaction into a main MLP network, while a parallel MLP simultaneously captures implicit feature interactions as a complement. To effectively optimize the dual-stream MLP architecture, we further design a specific learning approach with two alignment strategies for enhancing the compatibility of the two MLP components. Experiments demonstrate that DS-MLP, though merely a vanilla MLP structure (the final model), can achieve state-of-the-art performance across three widely used benchmarks, offering a scalable and efficient solution for large-scale recommendation systems. Our code is available at https://github.com/RUCAIBox/DS-MLP.",
+      "authors": [
+        "Kesha Ou",
+        "Zhen Tian",
+        "Wayne Xin Zhao",
+        "Long Zhang",
+        "Sheng Chen",
+        "Ji-Rong Wen"
+      ],
+      "primary_category": "cs.IR",
+      "categories": [
+        "cs.IR"
+      ],
+      "published": "2026-06-03T14:34:32+00:00",
+      "link": "https://arxiv.org/pdf/2606.04944v1",
+      "tags": [
+        "keyword:LLMApp",
+        "keyword:广告",
+        "query:LLMApp",
+        "query:广告"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "CTR prediction for online advertising and recommendation",
+      "llm_evidence_cn": "在线广告和推荐系统中的点击率预测",
+      "llm_evidence": "在线广告和推荐系统中的点击率预测",
+      "canonical_evidence": "在线广告和推荐系统中的点击率预测",
+      "llm_tldr_en": "Proposes DS-MLP for CTR prediction in advertising and recommendation systems.",
+      "llm_tldr_cn": "提出DS-MLP用于广告和推荐系统的点击率预测",
+      "llm_tldr": "提出DS-MLP用于广告和推荐系统的点击率预测",
+      "llm_tags": [
+        "query:q1"
+      ],
+      "matched_query_tag": "query:q1",
+      "matched_query_text": "recommendation system for advertising",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "quick_skim": [
+    {
+      "id": "2606.01504v1",
+      "source": "arxiv",
+      "title": "Semantic Retrieval for Product Search in E-Commerce",
+      "abstract": "Semantic retrieval in e-commerce must handle short, noisy, and colloquial queries over large product catalogs with fine-grained attribute distinctions. We present a Siamese LLM dual-encoder trained through a two-stage pipeline: contrastive learning with a false-negative margin mask to prevent penalization of near-duplicate products, followed by Relative Odds Alignment for Retrieval (ROAR), a preference optimization objective that extends Bradley-Terry to variable-sized graded relevance groups via consecutive odds-ratio margins. The training corpus mirrors this progression - substitute query-product pairs provide coarse semantic supervision in Stage 1 and graded relevance annotations drive fine-grained ranking in Stage 2. The resulting system accurately retrieves exact matches while correctly ordering substitutes and complementary products, with gains confirmed across query-frequency strata and business verticals, and statistical significance validated through live A/B deployment at scale.",
+      "authors": [
+        "Nikhil Kothari",
+        "Saksham Samdani",
+        "Ritam Mallick",
+        "Praveen Gupta",
+        "Ankit Vijay",
+        "Surender Kumar"
+      ],
+      "primary_category": "cs.IR",
+      "categories": [
+        "cs.IR",
+        "cs.LG"
+      ],
+      "published": "2026-05-31T23:59:32+00:00",
+      "link": "https://arxiv.org/pdf/2606.01504v1",
+      "tags": [
+        "keyword:LLMApp",
+        "keyword:广告",
+        "query:LLMApp",
+        "query:广告"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "Semantic retrieval for e-commerce product search using Siamese LLM",
+      "llm_evidence_cn": "使用孪生LLM进行电子商务产品搜索的语义检索",
+      "llm_evidence": "使用孪生LLM进行电子商务产品搜索的语义检索",
+      "canonical_evidence": "使用孪生LLM进行电子商务产品搜索的语义检索",
+      "llm_tldr_en": "Proposes a Siamese LLM dual-encoder with contrastive learning and preference optimization for product search",
+      "llm_tldr_cn": "提出使用对比学习和偏好优化的孪生LLM双编码器进行产品搜索",
+      "llm_tldr": "提出使用对比学习和偏好优化的孪生LLM双编码器进行产品搜索",
+      "llm_tags": [
+        "query:llmapp"
+      ],
+      "matched_query_tag": "query:llmapp",
+      "matched_query_text": "LLM for recommendation",
+      "matched_requirement_id": "req-10",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "8plus"
+    },
+    {
+      "id": "2606.01282v1",
+      "source": "arxiv",
+      "title": "KG-FairDiff: Knowledge Graph-Guided Prompt Refinement for Demographically Fair Text-to-Image Generation",
+      "abstract": "Text-to-Image (TTI) systems are now everyday infrastructure for journalism, education, advertising, and public communication, and the demographic and cultural stereotypes they inherit from training data (rendering women, people of colour, older adults, and non-Western cultures as under-represented or caricatured) become a population-level harm at deployment scale. Existing mitigations either require costly retraining, infeasible for the closed-source backbones that dominate consumer products, or rely on fixed demographic templates that ignore cultural context. We present KG-FairDiff, a model-agnostic, inference-time framework that formalises fairness-aware prompt refinement as a constrained optimisation problem and operationalises it as a closed-loop pipeline: a knowledge graph of ~1,200 culture- and bias-related triples retrieves structured context, an LLM rewriter proposes refinements, and a validator accepts only prompts that reduce a divergence-based fairness loss while preserving semantic fidelity to the user's original intent. We prove a finite-termination bound for the refinement loop, contribute a mathematically consistent evaluation suite linking Bias-P/Bias-W to divergence from target distributions and ENS to KL divergence, and audit eight widely-deployed backbone generators. KG-FairDiff substantially reduces gender, race, age, and intersectional disparities while preserving prompt semantics, offering a practical, deployment-ready route to more equitable generative AI.",
+      "authors": [
+        "Farbod Davoodi",
+        "Seyed Reza Tavakoli Shiyadeh",
+        "Pooria Safaei",
+        "Sana Harighi",
+        "Parsa Gholami",
+        "Amirali Amini",
+        "Kimia Vanaei",
+        "Emad Firoozi",
+        "Parham Abed Azad",
+        "Babak Khalaj",
+        "Siavash Ahmadi",
+        "Amir Hossein Payberah",
+        "Mohammad Hossein Rohban",
+        "Soheil Kolouri",
+        "Ali Diba"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV",
+        "cs.CY",
+        "cs.LG"
+      ],
+      "published": "2026-05-31T15:06:43+00:00",
+      "link": "https://arxiv.org/pdf/2606.01282v1",
+      "tags": [
+        "keyword:LLMApp",
+        "keyword:广告",
+        "query:LLMApp",
+        "query:广告"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "Fair text-to-image generation with knowledge graphs for advertising",
+      "llm_evidence_cn": "使用知识图谱的公平文本到图像生成用于广告",
+      "llm_evidence": "使用知识图谱的公平文本到图像生成用于广告",
+      "canonical_evidence": "使用知识图谱的公平文本到图像生成用于广告",
+      "llm_tldr_en": "Proposes inference-time framework for fair text-to-image generation using knowledge graphs, applicable to advertising.",
+      "llm_tldr_cn": "提出推理时框架，使用知识图谱实现公平文本到图像生成，可应用于广告。",
+      "llm_tldr": "提出推理时框架，使用知识图谱实现公平文本到图像生成，可应用于广告。",
+      "llm_tags": [
+        "query:q6"
+      ],
+      "matched_query_tag": "query:q6",
+      "matched_query_text": "multimodal learning for advertising",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2606.01207v1",
+      "source": "arxiv",
+      "title": "Feature Alignment Determines Fusion Strategy: A Comparative Study of Cross-Attention and Concatenation in Multimodal Learning",
+      "abstract": "The choice between cross-attention and concatenation for multimodal fusion remains governed by practitioner intuition rather than principled understanding. In this paper, we demonstrate that feature alignment quality, not data scale alone, is the primary determinant of which fusion strategy excels. Through controlled experiments on Flickr8k using two feature extraction backbones (ResNet18 and CLIP ViT-B/32), we show that concatenation outperforms cross-attention by 4.1-5.1 percentage points across all tested scales (2048-16384 samples) when features are pre-aligned by a vision-language pretraining objective. We provide a theoretical explanation grounded in sample complexity analysis: concatenation requires O(d_v + d_t) samples to learn its fusion projection, while cross-attention requires O(d_v * d_t) samples to learn bilinear attention weights, over 256 times as many for 512-dimensional CLIP features. When features are already aligned, the approximation error gap between the two methods vanishes, and concatenation's sample efficiency dominates at all practical dataset sizes. An alignment degradation study confirms a monotonic trend: as feature alignment degrades, concatenation's advantage grows from 1.3% to 2.8%. These findings provide a principled decision framework for fusion method selection in multimodal systems, with direct implications for the design of Multimodal Large Language Models.",
+      "authors": [
+        "Zhiqiang Zhou",
+        "Xuezhen Xie"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV",
+        "cs.LG"
+      ],
+      "published": "2026-05-31T12:55:17+00:00",
+      "link": "https://arxiv.org/pdf/2606.01207v1",
+      "tags": [
+        "keyword:LLMApp",
+        "keyword:广告",
+        "query:LLMApp"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "study of multimodal fusion strategies, transferable to advertising",
+      "llm_evidence_cn": "多模态融合策略研究，可迁移到广告",
+      "llm_evidence": "多模态融合策略研究，可迁移到广告",
+      "canonical_evidence": "多模态融合策略研究，可迁移到广告",
+      "llm_tldr_en": "Shows feature alignment determines optimal multimodal fusion strategy",
+      "llm_tldr_cn": "揭示特征对齐决定多模态融合最优策略",
+      "llm_tldr": "揭示特征对齐决定多模态融合最优策略",
+      "llm_tags": [
+        "query:q6"
+      ],
+      "matched_query_tag": "query:q6",
+      "matched_query_text": "multimodal learning for advertising",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2606.01670v1",
+      "source": "arxiv",
+      "title": "Time-Aware Diffusion based on Preference Disentanglement for Generative Recommendation",
+      "abstract": "Recently, Generative Recommenders (GRs) have emerged as a transformative recommendation paradigm by replacing traditional item IDs with semantic indices (SIDs). Owing to the exceptional generative capabilities of diffusion models, a few pioneering works explore developing GRs with diffusion architectures as the backbone. However, a fatal limitation of existing diffusion-based GRs is that the diffusion process applies uniformly to all items within the historical interactions. In contrast, the user preference is shaped by multifaceted time-evolving factors and thus exhibits a non-stationary distribution in the temporal aspect. To bridge this gap, this study proposes a novel GR framework, named TDPM, by designing the time-aware diffusion on SID tokens. Specifically, TDPM explicitly integrates the impact of time-evolving user preferences into the diffusion process. In detail, the user preference is disentangled into (i) the period preference, which remains consistent over a long time-span, and (ii) the point preference, which is triggered by recent focal events. Extensive experiments on three public real-world datasets demonstrate the significant superiority of TDPM over the state-of-the-art baselines. TDPM achieves average improvements of up to 29.21% and 25.45% in terms of HR@20 and NDCG@20, respectively. The ablation study further underscores the necessity of time-aware token diffusion in diffusion-based GRs.",
+      "authors": [
+        "Bangguo Zhu",
+        "Peng Huo",
+        "Yuanbo Zhao",
+        "Zhicheng Du",
+        "Jun Yin",
+        "Senzhang Wang"
+      ],
+      "primary_category": "cs.IR",
+      "categories": [
+        "cs.IR",
+        "cs.AI"
+      ],
+      "published": "2026-06-01T04:27:49+00:00",
+      "link": "https://arxiv.org/pdf/2606.01670v1",
+      "tags": [
+        "keyword:LLMApp",
+        "keyword:广告",
+        "query:LLMApp",
+        "query:广告"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "Time-aware diffusion model for generative recommendation with preference disentanglement",
+      "llm_evidence_cn": "具有偏好解耦的时间感知扩散模型用于生成式推荐",
+      "llm_evidence": "具有偏好解耦的时间感知扩散模型用于生成式推荐",
+      "canonical_evidence": "具有偏好解耦的时间感知扩散模型用于生成式推荐",
+      "llm_tldr_en": "Proposes TDPM, a time-aware diffusion model for generative recommendation that handles non-stationary user preferences.",
+      "llm_tldr_cn": "提出了TDPM，一种用于生成式推荐的时间感知扩散模型，处理非平稳用户偏好。",
+      "llm_tldr": "提出了TDPM，一种用于生成式推荐的时间感知扩散模型，处理非平稳用户偏好。",
+      "llm_tags": [
+        "query:q1"
+      ],
+      "matched_query_tag": "query:q1",
+      "matched_query_text": "recommendation system for advertising",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "8plus"
+    },
+    {
+      "id": "2606.01352v1",
+      "source": "arxiv",
+      "title": "FlowTime: Towards Continuous Generative Watch Time Prediction via Flow-based Personalized Priors",
+      "abstract": "Watch time has emerged as a pivotal metric for optimizing deep user engagement in short-video recommender systems. However, current methods of watch time prediction (WTP) suffer from inherent paradigm-specific limitations. Direct Regression faces mean-collapse due to unimodal Gaussian assumptions, while Ordinal Regression is hampered by quantization errors from rigid discretization. Similarly, Discrete Generative Regression struggles with high inference latency and heuristic vocabulary design. Beyond these specific flaws, a shared deficiency is the inability to capture the intrinsic multimodality and heterogeneity of User-Item Interaction Patterns. To address these challenges, we first revisit the WTP problem from a causal perspective and identify these user-specific patterns as structural confounders that modulate watch time outcomes, where identical interests manifest as distinct watch time outcomes conditioned on diverse user habits. Then, we formally propose a new (or the fourth) paradigm -- Continuous Generative Regression, and introduce FlowTime, a novel method utilizing a One-step Generative Variational Autoencoder. FlowTime effectively circumvents the latency of iterative denoising while maintaining the expressivity of continuous latent spaces. Furthermore, we design a Flow-based Personalized Prior that leverages NFs to warp a standard Gaussian prior into a complex, history-conditioned manifold, thereby enabling the adaptive modeling of multimodal interaction patterns. Finally, we build TimeRec, the first open-source WTP Library, alongside a novel personalization metric to establish a rigorous benchmarking standard. Extensive offline experiments and online A/B tests demonstrate FlowTime's significant superiority over SOTA methods.",
+      "authors": [
+        "Hongxu Ma",
+        "Han Zhou",
+        "Chenghou Jin",
+        "Jie Zhang",
+        "Xiaoyu Yang",
+        "Chunjie Chen",
+        "Jihong Guan",
+        "Shuigeng Zhou"
+      ],
+      "primary_category": "cs.AI",
+      "categories": [
+        "cs.AI"
+      ],
+      "published": "2026-05-31T17:13:06+00:00",
+      "link": "https://arxiv.org/pdf/2606.01352v1",
+      "tags": [
+        "keyword:LLMApp",
+        "keyword:广告",
+        "query:LLMApp",
+        "query:广告"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "Watch time prediction for video recommender systems",
+      "llm_evidence_cn": "视频推荐系统中的观看时间预测",
+      "llm_evidence": "视频推荐系统中的观看时间预测",
+      "canonical_evidence": "视频推荐系统中的观看时间预测",
+      "llm_tldr_en": "Proposes a flow-based generative model for continuous watch time prediction, capturing multimodal user-item interactions",
+      "llm_tldr_cn": "提出基于流的生成模型进行连续观看时间预测，捕捉多模态用户-物品交互",
+      "llm_tldr": "提出基于流的生成模型进行连续观看时间预测，捕捉多模态用户-物品交互",
+      "llm_tags": [
+        "query:q1"
+      ],
+      "matched_query_tag": "query:q1",
+      "matched_query_text": "recommendation system for advertising",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2606.02784v1",
+      "source": "arxiv",
+      "title": "LAANN: I/O-Aware Look-Ahead Search for Disk-Based Approximate Nearest Neighbor Search",
+      "abstract": "Approximate nearest neighbor search (ANNS) is a fundamental primitive in large-scale retrieval, recommendation, and AI systems. As vector datasets grow to billions or even trillions of items, disk-based ANNS systems have emerged to handle this scale by storing vector data and index structures on storage systems, but their query performance remains dominated by I/O latency. Existing disk-based ANNS systems primarily optimize I/O efficiency or overlap I/O with computation, but they treat CPU computation and I/O access as largely separate components. This separation misses a critical opportunity: selectively processing candidates already cached in memory before making I/O decisions can reduce unnecessary disk accesses and improve search quality. However, exploiting this opportunity is challenging because excessive computation can delay critical I/O operations, while poorly chosen computation provides little benefit, potentially increasing overall query latency.   In this paper, we present LAANN, a disk-based ANNS system that makes graph search explicitly I/O-aware by co-optimizing CPU computation and I/O access. LAANN combines three techniques: look-ahead search, which adapts the search strategy across query stages to balance I/O reduction and timely I/O issuance; a priority I/O-CPU pipeline, which uses I/O waiting time to process candidates cached in memory according to their expected impact on upcoming I/O decisions; and a fast lightweight in-memory graph index, which provides high-quality initial candidates to accelerate convergence and reduce disk accesses. Experiments on million- and billion-scale datasets demonstrate that LAANN substantially outperforms state-of-the-art disk-based ANNS systems. At Recall@10 = 0.9, LAANN achieves 1.41x-4.66x higher throughput, 29%-79% lower latency, and 1.59x-6.34x fewer I/O operations.",
+      "authors": [
+        "Dingyi Kang",
+        "Juncheng Yang",
+        "Bingzhe Li"
+      ],
+      "primary_category": "cs.DB",
+      "categories": [
+        "cs.DB"
+      ],
+      "published": "2026-06-01T18:49:44+00:00",
+      "link": "https://arxiv.org/pdf/2606.02784v1",
+      "tags": [
+        "keyword:LLMApp",
+        "keyword:广告",
+        "query:LLMApp",
+        "query:广告"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "I/O-aware look-ahead search for disk-based approximate nearest neighbor search",
+      "llm_evidence_cn": "用于基于磁盘的近似最近邻搜索的I/O感知前瞻搜索",
+      "llm_evidence": "用于基于磁盘的近似最近邻搜索的I/O感知前瞻搜索",
+      "canonical_evidence": "用于基于磁盘的近似最近邻搜索的I/O感知前瞻搜索",
+      "llm_tldr_en": "Proposes LAANN, an I/O-aware ANN search algorithm that reduces disk accesses by leveraging cached candidates.",
+      "llm_tldr_cn": "提出了LAANN，一种利用缓存候选者减少磁盘访问的I/O感知ANN搜索算法。",
+      "llm_tldr": "提出了LAANN，一种利用缓存候选者减少磁盘访问的I/O感知ANN搜索算法。",
+      "llm_tags": [
+        "query:q1"
+      ],
+      "matched_query_tag": "query:q1",
+      "matched_query_text": "recommendation system for advertising",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2606.01783v1",
+      "source": "arxiv",
+      "title": "Breaking the Information Silo: Semantic Personas for Cross-Domain Recommendation",
+      "abstract": "Digital platforms increasingly operate as isolated information silos, limiting their ability to construct comprehensive user representations across domains. Cross-domain recommender systems seek to overcome this limitation by transferring knowledge from a source domain to a target domain, yet most existing approaches depend on shared users, shared items, or structurally similar interaction graphs. These assumptions are often unrealistic across independent platforms. We propose SPHERE (Semantic Personas for Heterogeneous cross-domain Recommendation), a design artifact that enables recommendation knowledge transfer across strictly disjoint domains with no shared users or items. Rather than aligning domains through identity or graph structure, SPHERE uses large language models to induce a shared behavioral vocabulary, generate structured semantic personas for users, and retrieve behaviorally similar source-domain communities that form a Community Source Persona. This semantic signal is integrated with collaborative signals through a dual-tower architecture and dynamic fusion gate, allowing SPHERE to augment standard recommender backbones. Empirical evaluation across Amazon Books, Goodreads, and Steam demonstrates consistent improvements over NCF, SVD++, and LightGCN baselines under full-ranking evaluation. The results show that cross-domain transfer effectiveness is not determined solely by semantic proximity between domains; rather, it depends critically on the structural density and native predictive strength of the target domain. The study contributes to information systems research by reframing cross-domain personalization as behavior-based semantic alignment, offering a practical mechanism for overcoming information silos while preserving interpretability and modularity.",
+      "authors": [
+        "Jonathan Mayo",
+        "Moshe Unger",
+        "Konstantin Bauman"
+      ],
+      "primary_category": "cs.IR",
+      "categories": [
+        "cs.IR",
+        "cs.AI"
+      ],
+      "published": "2026-06-01T07:04:10+00:00",
+      "link": "https://arxiv.org/pdf/2606.01783v1",
+      "tags": [
+        "keyword:LLMApp",
+        "keyword:广告",
+        "query:LLMApp",
+        "query:广告"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "Cross-domain recommendation method",
+      "llm_evidence_cn": "跨域推荐方法",
+      "llm_evidence": "跨域推荐方法",
+      "canonical_evidence": "跨域推荐方法",
+      "llm_tldr_en": "Semantic personas for cross-domain recommendation",
+      "llm_tldr_cn": "语义角色实现跨域推荐",
+      "llm_tldr": "语义角色实现跨域推荐",
+      "llm_tags": [
+        "query:q1"
+      ],
+      "matched_query_tag": "query:q1",
+      "matched_query_text": "recommendation system for advertising",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "8plus"
+    },
+    {
+      "id": "2606.01436v1",
+      "source": "arxiv",
+      "title": "Learning from Saturated Data: Signals Beyond Correctness for LLM Training",
+      "abstract": "The growing capabilities of large language models (LLMs) have led to the saturation of many benchmarks and training datasets used to improve them. Motivated by this, we investigate whether questions solved with perfect empirical accuracy can nevertheless be used to improve downstream performance. To do so, we replace binary correctness with two sources of more fine-grained quality signals: (1) pairwise LLM self-judgments, in which the model evaluates the relative quality of its own solutions, and (2) token-level entropy, where token-level uncertainty is used as a proxy for solution quality. We incorporate these signals into several training algorithms and evaluate them on Qwen3-1.7B-Base. When training exclusively on a simple arithmetic task, quality-based signals improve performance by up to $18.6\\%$ over the base model, substantially outperforming SFT. On GSM8K, however, gains are more modest and depend strongly on the quality signal. For instance, self-judgments show poor agreement with a stronger external judge and can even degrade performance below the base model. Overall, our results suggest that quality-based training can extract useful signal from saturated questions for base models, but that applying such signals to more complex tasks requires careful calibration and further study.",
+      "authors": [
+        "Hanno Hiss",
+        "Jasper Dekoninck",
+        "Martin Vechev"
+      ],
+      "primary_category": "cs.CL",
+      "categories": [
+        "cs.CL"
+      ],
+      "published": "2026-05-31T20:15:12+00:00",
+      "link": "https://arxiv.org/pdf/2606.01436v1",
+      "tags": [
+        "keyword:LLMApp",
+        "keyword:广告",
+        "query:LLMApp"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "LLM training with quality signals beyond correctness for fine-tuning",
+      "llm_evidence_cn": "使用超越正确性的质量信号进行LLM训练微调",
+      "llm_evidence": "使用超越正确性的质量信号进行LLM训练微调",
+      "canonical_evidence": "使用超越正确性的质量信号进行LLM训练微调",
+      "llm_tldr_en": "Investigates using fine-grained quality signals for LLM training on saturated data to improve downstream performance.",
+      "llm_tldr_cn": "研究在饱和数据上使用细粒度质量信号训练LLM以提升下游性能。",
+      "llm_tldr": "研究在饱和数据上使用细粒度质量信号训练LLM以提升下游性能。",
+      "llm_tags": [
+        "query:llmapp"
+      ],
+      "matched_query_tag": "query:llmapp",
+      "matched_query_text": "fine tuning large models for tasks",
+      "matched_requirement_id": "req-12",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2606.03091v2",
+      "source": "arxiv",
+      "title": "BAHSD: Bridging the Long-tail Gap via Adaptive Distillation in Black-box Sequential Recommendation",
+      "abstract": "Sequential recommendation systems are widely adopted but often deployed as black-box APIs, which has driven recent interest in model extraction to replicate their capabilities locally. However, the long-tail distribution induces severe signal heterogeneity: dense head sequences trigger the solidification of teacher preference, biasing extraction toward local patterns, while sparse tail sequences yield flat, noisy predictions. Existing one-size-fits-all extraction overlooks this disparity, resulting in noise overfitting and suboptimal knowledge transfer. We propose BAHSD, a black-box adaptive distillation framework that handles signal heterogeneity via a multi-scale consistency probing mechanism to implicitly quantify signal reliability. Based on this, an adaptive hierarchical objective is designed: dynamic-temperature KL divergence mitigates preference solidification for high-confidence signals, while ranking consistency and InfoNCE contrastive learning provide noise-robust enhancement for low-confidence signals. BAHSD consistently outperforms baselines, achieving up to 4.98\\% gain over the teacher and 80\\%+ improvement on tail users, offering a plug-and-play solution for high-fidelity black-box recommendation extraction.",
+      "authors": [
+        "Xi Zhou",
+        "Famin Wu",
+        "Mingming Li",
+        "Hongyue Zhang",
+        "Jiao Dai",
+        "Jizhong Han",
+        "Tao Guo"
+      ],
+      "primary_category": "cs.IR",
+      "categories": [
+        "cs.IR",
+        "cs.AI"
+      ],
+      "published": "2026-06-02T03:26:25+00:00",
+      "link": "https://arxiv.org/pdf/2606.03091v2",
+      "tags": [
+        "keyword:LLMApp",
+        "keyword:广告",
+        "query:LLMApp",
+        "query:广告"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "Black-box adaptive distillation for sequential recommendation, applicable to advertising",
+      "llm_evidence_cn": "黑盒自适应蒸馏用于序列推荐，可应用于广告",
+      "llm_evidence": "黑盒自适应蒸馏用于序列推荐，可应用于广告",
+      "canonical_evidence": "黑盒自适应蒸馏用于序列推荐，可应用于广告",
+      "llm_tldr_en": "Proposes adaptive distillation for black-box sequential recommendation, addressing long-tail heterogeneity.",
+      "llm_tldr_cn": "提出黑盒序列推荐的自适应蒸馏，解决长尾异质性。",
+      "llm_tldr": "提出黑盒序列推荐的自适应蒸馏，解决长尾异质性。",
+      "llm_tags": [
+        "query:q1"
+      ],
+      "matched_query_tag": "query:q1",
+      "matched_query_text": "recommendation system for advertising",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2606.01844v1",
+      "source": "arxiv",
+      "title": "Decoupled Residual Quantization for Robust Semantic IDs in Recommendation",
+      "abstract": "Semantic IDs represent items as shared discrete token sequences and have become a practical tool for recommendation and retrieval. Yet it remains difficult to tell why a tokenizer fails: poor quality may come from codebook underutilization, unstable decision boundaries, or geometric distortion of the embedding space. This paper develops a quantitative framework for diagnosing these failures through expected codeword overlap and effective codebook capacity. The former measures expected codeword confusion under retrieval-time perturbation, while the latter converts that confusion into an effective number of usable, well-separated codes. The framework links semantic boundary confusion to both code usage imbalance and Euclidean geometric constraints. As a proof of concept, we present Decoupled Residual Quantization (DRQ), which separates continuous geometry reconstruction from discrete distribution matching. Experiments on a large-scale industrial dataset show that Semantic ID quality is multi-objective: symbolic robustness, reconstruction fidelity, and behavior-aware soft matching each stress different aspects of a tokenizer. These downstream observations are based on one proprietary industrial dataset, so they should be read as a case study rather than a universal benchmark claim.",
+      "authors": [
+        "Xuesi Wang",
+        "Junjie Wang",
+        "Ziliang Wang",
+        "Weijie Bian",
+        "Guanxing Zhang"
+      ],
+      "primary_category": "cs.IR",
+      "categories": [
+        "cs.IR"
+      ],
+      "published": "2026-06-01T07:55:21+00:00",
+      "link": "https://arxiv.org/pdf/2606.01844v1",
+      "tags": [
+        "keyword:LLMApp",
+        "keyword:广告",
+        "query:LLMApp",
+        "query:广告"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "Robust semantic IDs for recommendation",
+      "llm_evidence_cn": "用于推荐的鲁棒语义ID",
+      "llm_evidence": "用于推荐的鲁棒语义ID",
+      "canonical_evidence": "用于推荐的鲁棒语义ID",
+      "llm_tldr_en": "Develops a diagnostic framework for semantic ID tokenizers to improve recommendation and retrieval",
+      "llm_tldr_cn": "开发语义ID分词器的诊断框架，改进推荐和检索",
+      "llm_tldr": "开发语义ID分词器的诊断框架，改进推荐和检索",
+      "llm_tags": [
+        "query:q1"
+      ],
+      "matched_query_tag": "query:q1",
+      "matched_query_text": "recommendation system for advertising",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "8plus"
+    },
+    {
+      "id": "2606.03535v1",
+      "source": "arxiv",
+      "title": "Can LLM Rerankers Predict Their Own Ranking Performance?",
+      "abstract": "Retrieval effectiveness varies substantially across queries, making it important to estimate ranking quality before relevance judgments are available. Query performance prediction (QPP) addresses this need, but most existing methods rely on external predictors after retrieval or reranking. In this paper, we study \\textit{reranker-internal QPP}: can an LLM reranker estimate the quality of the ranking it has just produced? We investigate both training-free and training-based approaches. For training-free estimation, we examine metric-specific self-consistency across sampled rankings and verbalized confidence produced directly by the reranker. Experiments on TREC Deep Learning 2019--2022 with four LLMs show that self-consistency is competitive with the state-of-the-art (SOTA) approach and better calibrated in almost all settings, while direct verbalized confidence is severely overconfident. To improve verbalized confidence, we propose two supervised methods, Verb-Num and Verb-List, which enable LLM rerankers to produce calibrated ranking-quality estimates with only a few additional output tokens.",
+      "authors": [
+        "Shiyu Ni",
+        "Keping Bi",
+        "Jiafeng Guo",
+        "Jingtong Wu",
+        "Zengxin Han",
+        "Xueqi Cheng"
+      ],
+      "primary_category": "cs.IR",
+      "categories": [
+        "cs.IR",
+        "cs.CL"
+      ],
+      "published": "2026-06-02T11:57:27+00:00",
+      "link": "https://arxiv.org/pdf/2606.03535v1",
+      "tags": [
+        "keyword:LLMApp",
+        "keyword:广告",
+        "query:LLMApp"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "LLM rerankers self-evaluating their ranking quality via self-consistency",
+      "llm_evidence_cn": "LLM重排序器通过自一致性评估自身排序质量",
+      "llm_evidence": "LLM重排序器通过自一致性评估自身排序质量",
+      "canonical_evidence": "LLM重排序器通过自一致性评估自身排序质量",
+      "llm_tldr_en": "Investigates whether LLM rerankers can predict their own ranking performance using self-consistency.",
+      "llm_tldr_cn": "探究LLM重排序器能否通过自一致性预测自身排序性能。",
+      "llm_tldr": "探究LLM重排序器能否通过自一致性预测自身排序性能。",
+      "llm_tags": [
+        "query:llmapp"
+      ],
+      "matched_query_tag": "query:llmapp",
+      "matched_query_text": "LLM for recommendation",
+      "matched_requirement_id": "req-10",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2606.03770v1",
+      "source": "arxiv",
+      "title": "E2LLM: Towards Efficient LLM Serving in Heterogeneous Edge/Fog Environments",
+      "abstract": "Large Language Models (LLMs) have become integral to modern applications, yet their deployment remains challenging. Beyond executing the models themselves, practical deployment must address cost efficiency, low latency, and optimal resource utilization. Conventional approaches typically assume that an entire model can be hosted on a single device, which does not hold in many real-world scenarios, particularly in Edge and Fog environments where device resources are constrained. In this paper, we introduce E2LLM, a framework designed to enable efficient LLM deployment in such resource limited settings. Rather than simply partitioning a single model across all available devices, E2LLM replicates the full model across multiple groups of devices (replicas) and applies model parallelism within each replica. Each replica is assigned a specialized role PREFILL or DECODER based on its efficiency in handling input and output tokens. This separation leverages the inherent differences between these two phases of LLM inference. To effectively organize devices, we utilize a Genetic Algorithm to form clusters that maximize system performance. Within each cluster, we apply Dynamic Programming to determine an optimal partitioning strategy that minimizes bottlenecks in model-parallel execution. Experimental results demonstrate that our approach adapts robustly to varying workloads, including scenarios with significant variation in input and output token lengths. Compared to the Splitwise baseline, E2LLM reduces average waiting time by over 50% under high-demand conditions",
+      "authors": [
+        "Truong-Thanh Le",
+        "Amir Taherkordi",
+        "Hoang-Loc La",
+        "Frank Eliassen",
+        "Phuong Hoai Ha",
+        "Peiyuan Guan"
+      ],
+      "primary_category": "cs.DC",
+      "categories": [
+        "cs.DC",
+        "cs.AI"
+      ],
+      "published": "2026-06-02T15:23:28+00:00",
+      "link": "https://arxiv.org/pdf/2606.03770v1",
+      "tags": [
+        "keyword:LLMApp",
+        "keyword:广告",
+        "query:LLMApp"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "Efficient LLM serving in edge/fog environments, enabling practical deployment",
+      "llm_evidence_cn": "在边缘/雾环境中高效LLM服务，支持实际部署",
+      "llm_evidence": "在边缘/雾环境中高效LLM服务，支持实际部署",
+      "canonical_evidence": "在边缘/雾环境中高效LLM服务，支持实际部署",
+      "llm_tldr_en": "Introduces a framework for efficient LLM deployment in heterogeneous edge environments.",
+      "llm_tldr_cn": "介绍一种在异构边缘环境中高效部署LLM的框架。",
+      "llm_tldr": "介绍一种在异构边缘环境中高效部署LLM的框架。",
+      "llm_tags": [
+        "query:llmapp"
+      ],
+      "matched_query_tag": "query:llmapp",
+      "matched_query_text": "large language model applications",
+      "matched_requirement_id": "req-9",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    }
+  ]
+}

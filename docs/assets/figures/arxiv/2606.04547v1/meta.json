@@ -1,0 +1,78 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2606.04547v1/fig-001.webp",
+      "caption": "Table 2: Component ablation of TAP-PER. Base is the Stage-1 task-adapted model. Full is the complete TAPPER with all components. −bridge, −Pq, and −Pu denote removing the bridge LoRA, query-aware record prefix, and user-state prefix, respectively. Bold denotes the best result per row.",
+      "page": 6,
+      "index": 1,
+      "width": 423,
+      "height": 304
+    },
+    {
+      "url": "assets/figures/arxiv/2606.04547v1/fig-002.webp",
+      "caption": "Table 8: Prompt templates for each personalization task. {USER PREFIX + RECORD PREFIX} denotes the combined prefix Pu,q = Pu + Pq, prepended as soft tokens (present only in TAP-PER; absent for all other methods). {USER_PROFILE} is a natural language summary of user preferences (present only in PAG variants). {USER_HISTORY} contains the top-k retrieved records (present only in RAG variants). Each placeholder and its surrounding section header are included only when the corresponding component is active; otherwise the entire block is omitted.",
+      "page": 15,
+      "index": 2,
+      "width": 921,
+      "height": 877
+    },
+    {
+      "url": "assets/figures/arxiv/2606.04547v1/fig-003.webp",
+      "caption": "Figure 4: Storage and time scaling comparison. Top: total parameter count as a function of user population. Bottom: per-user training time as a function of history length on LaMP-2M; the dashed green line denotes the TAP-PER variant without user-state prefix Pu, which requires no per-user gradient updates.",
+      "page": 7,
+      "index": 3,
+      "width": 449,
+      "height": 317
+    },
+    {
+      "url": "assets/figures/arxiv/2606.04547v1/fig-004.webp",
+      "caption": "Figure 3: Case study on a representative query from LaMP-2M. The non-personalized baseline and the temporal-free TAP-PER variant predict incorrect tags, whereas the full TAP-PER correctly identifies the ground-truth tag by attending to recent query-relevant records. Darker red indicates higher attention weight.",
+      "page": 7,
+      "index": 4,
+      "width": 946,
+      "height": 382
+    },
+    {
+      "url": "assets/figures/arxiv/2606.04547v1/fig-005.webp",
+      "caption": "Table 7: Comparison results on LaMP benchmark with Qwen3-4B as backbone. Notation follows Table 1.",
+      "page": 14,
+      "index": 5,
+      "width": 908,
+      "height": 276
+    },
+    {
+      "url": "assets/figures/arxiv/2606.04547v1/fig-006.webp",
+      "caption": "Figure 2: Overview of TAP-PER’s personalized prefix learning. With the task-adapted backbone θtask frozen, a user-state prefix Pu is fetched from a per-user embedding table and a query-aware record prefix Pq is produced by temporal-decayed attention over the user’s full interaction history. The two are summed and prepended to the query, while a shared bridge LoRA ∆θbridge is jointly trained to deeply condition the backbone on the prefix signals. Stage 1 (task-level LoRA adaptation) precedes this stage and is omitted from the diagram.",
+      "page": 3,
+      "index": 6,
+      "width": 946,
+      "height": 330
+    },
+    {
+      "url": "assets/figures/arxiv/2606.04547v1/fig-007.webp",
+      "caption": "Figure 6: Online adaptation to streaming feedback on LaMP-2M (top) and LaMP-5 (bottom). x-axis: fraction of training history absorbed (50% = bootstrap, 60–100% = after each of the five streaming chunks); y-axis: testset metric.",
+      "page": 8,
+      "index": 7,
+      "width": 450,
+      "height": 293
+    },
+    {
+      "url": "assets/figures/arxiv/2606.04547v1/fig-008.webp",
+      "caption": "Table 1: Comparison results on LaMP benchmark across prompt-based and model-based personalization. Bold and underline denote the best and second-best result per metric, respectively. k denotes the number of retrieved items, with k=0 indicating no retrieval. ↑ indicates higher is better; ↓ indicates lower is better. For OPPU and PER-PCS, the columns are cumulative: +rag adds RAG on top of base, and +pag further adds PAG on top of +rag. For P2P, single denotes the single hypernetwork-generated LoRA variant without retrieval or profile stacking. For TAP-PER: †base = task-adapted model (Stage 1 only); ‡+Pq = adding query-aware record prefix; §+Pu = further adding user-state prefix (full model). The Pq and Pu columns parallel the +rag and +pag columns of OPPU/PER-PCS, as they serve analogous roles through learned prefix representations.",
+      "page": 5,
+      "index": 8,
+      "width": 908,
+      "height": 276
+    },
+    {
+      "url": "assets/figures/arxiv/2606.04547v1/fig-009.webp",
+      "caption": "Table 9: Qualitative output comparison. ✓ marks a correct answer and ✗ an incorrect one.",
+      "page": 16,
+      "index": 9,
+      "width": 946,
+      "height": 996
+    }
+  ]
+}

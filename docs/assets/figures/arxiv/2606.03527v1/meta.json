@@ -1,0 +1,62 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2606.03527v1/fig-001.webp",
+      "caption": "Figure 7: An example of Theorem D.1. In the left panel, the red curve represents the amortized value distribution K(·), and the black curve represents the shifted prior. Function K(·) forms an MPC of the shifted prior over [−c, 1 − c]. In the right panel, the red curves represent the support set of the corresponding 2-D distribution that forms an equilibrium.",
+      "page": 53,
+      "index": 1,
+      "width": 857,
+      "height": 300
+    },
+    {
+      "url": "assets/figures/arxiv/2606.03527v1/fig-002.webp",
+      "caption": "Figure 5: Graph illustration of Lemma B.10",
+      "page": 34,
+      "index": 2,
+      "width": 863,
+      "height": 278
+    },
+    {
+      "url": "assets/figures/arxiv/2606.03527v1/fig-003.webp",
+      "caption": "Figure 3: The case of uniform prior. Let θ′1 = 2c2−4c+2 2−c denote the right endpoint of the linear segment. All elements share the same meanings as in Figure 2. This is a degenerate case where θ′1 < θ2 = 1 − c, causing the full-revelation interval [θ2 + c, 1] (yellow region in the right panel of Figure 2) to degenerate.",
+      "page": 18,
+      "index": 3,
+      "width": 866,
+      "height": 302
+    },
+    {
+      "url": "assets/figures/arxiv/2606.03527v1/fig-004.webp",
+      "caption": "Figure 4: Graph illustration of Lemma B.9",
+      "page": 32,
+      "index": 4,
+      "width": 939,
+      "height": 222
+    },
+    {
+      "url": "assets/figures/arxiv/2606.03527v1/fig-005.webp",
+      "caption": "Figure 1: The left panel illustrates the threshold value v. The support set of any best response 2-D distribution cannot have nonempty intersection with the red shaded regions. The right panel illustrates Algorithm 1. The solid dots and black curves represent the support set of one best response candidate G. The hollow dots represent the limit points of some monotone G-sequence. The arrows indicate the directions of convergence. All five cases above are shown in this figure. Case 1: Let λ(vA) = 0 since vA = v; Case 2: Let λ(vB) = u(vB−c) since θB = vB−c; Case 3.1: Let λ(vC) = u(vC−c) since there is a monotone G-sequence converging to (vC , θC); Case 3.2: Let λ(vD) = u′(θD)q(vD, θD) + p(vD, θD) since there is a strictly monotone G-sequence converging to (vD, θD); Case 3.3: Let λ(vE) = λ(vF )−p(vF ,θF )",
+      "page": 12,
+      "index": 5,
+      "width": 854,
+      "height": 285
+    },
+    {
+      "url": "assets/figures/arxiv/2606.03527v1/fig-006.webp",
+      "caption": "Figure 6: The dual variables constructed by the Recursive Reduction Procedure, based on the symmetric equilibrium constructed in Theorem 5.2",
+      "page": 52,
+      "index": 6,
+      "width": 872,
+      "height": 310
+    },
+    {
+      "url": "assets/figures/arxiv/2606.03527v1/fig-007.webp",
+      "caption": "Figure 2: An example of Theorem 5.2. In the left panel, the red curve represents the amortized value distribution K(κ), and the black curve the shifted prior F (κ + c). In the right panel, the red curves represent the support of the 2-D distribution in the equilibrium. In the light blue and light yellow regions, low values and high values are fully revealed; in the light green region, values are pooled to produce amortized values uniformly distributed on an interval. In particular, values above θ∗ + c and those below are paired in the pooling, where θ∗ ≜ f−1(ρ). In this non-degenerate case, θ′1 = θ2.",
+      "page": 16,
+      "index": 7,
+      "width": 859,
+      "height": 299
+    }
+  ]
+}

@@ -1,0 +1,118 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2606.01436v1/fig-001.webp",
+      "caption": "Table 5. pass@1 breakdown within the 6-term/6-digit subgroup (n = 2,955) by three structural features. The pass@1 range across all bins is only 0.55–0.63, indicating that difficulty is not explained by any of these arithmetic properties.",
+      "page": 11,
+      "index": 1,
+      "width": 833,
+      "height": 236
+    },
+    {
+      "url": "assets/figures/arxiv/2606.01436v1/fig-002.webp",
+      "caption": "Figure 2. DPO training dynamics on Dhard for random vs. judge-selected pair construction.",
+      "page": 15,
+      "index": 2,
+      "width": 985,
+      "height": 306
+    },
+    {
+      "url": "assets/figures/arxiv/2606.01436v1/fig-003.webp",
+      "caption": "Figure 3. Rank loss weight ablation on Dhard chain sum problems. The x-axis is log-scaled; λ=0 (no rank loss) is placed at the left as a reference point. Pass@1 peaks at λ=10−2 and degrades monotonically for larger weights. Pass@8 peaks at λ=10−1 with no clear monotonic trend, but some rank loss has an effect on generalization to OOD questions. Responses were ranked with the Self-judge.",
+      "page": 15,
+      "index": 3,
+      "width": 992,
+      "height": 307
+    },
+    {
+      "url": "assets/figures/arxiv/2606.01436v1/fig-004.webp",
+      "caption": "Figure 1. Quality signals on saturated questions. (1) Correctness: when all sampled completions are correct, binary reward provides no contrast. (2) LLM-as-a-Judge: a judge runs all pairwise comparisons, the win count wi ranks completions by judged quality. (3) Inverse Entropy: mean token-level entropy along each completion gives a judge-free quality proxy.",
+      "page": 2,
+      "index": 4,
+      "width": 1008,
+      "height": 298
+    },
+    {
+      "url": "assets/figures/arxiv/2606.01436v1/fig-005.webp",
+      "caption": "Table 4. Pass@1 (estimated from k = 8 generations) for Qwen3-1.7B-Base across chain-sum difficulty configurations. Cell color encodes pass@1 (darker = higher).",
+      "page": 10,
+      "index": 5,
+      "width": 898,
+      "height": 214
+    },
+    {
+      "url": "assets/figures/arxiv/2606.01436v1/fig-006.webp",
+      "caption": "Table 9. Method comparison on Dhard chain sum problems. + DPO (correctness) uses correct-vs-incorrect pairs from Dhard (Sec. 3.3). Bold is best per column.",
+      "page": 14,
+      "index": 6,
+      "width": 1017,
+      "height": 196
+    },
+    {
+      "url": "assets/figures/arxiv/2606.01436v1/fig-007.webp",
+      "caption": "Figure 5. Distribution of within-question Spearman ρ between each pair of scorers, for D′ strict chain sum (left) and Dsaturated GSM8K (right). Row labels indicate the scorer pair. Dashed red line: mean (ρ̄); solid orange line: median (ρ̃). The strong judge and inverse entropy show consistent positive correlation (middle row), while the self-judge agrees only weakly with the other two scorers.",
+      "page": 18,
+      "index": 7,
+      "width": 986,
+      "height": 769
+    },
+    {
+      "url": "assets/figures/arxiv/2606.01436v1/fig-008.webp",
+      "caption": "Table 8. Training hyperparameters. Sets indicate the values swept; we report results for the best-performing configuration per method.",
+      "page": 13,
+      "index": 8,
+      "width": 763,
+      "height": 787
+    },
+    {
+      "url": "assets/figures/arxiv/2606.01436v1/fig-009.webp",
+      "caption": "Figure 4. Implicit reward margin r̂(x, yw)− r̂(x, yl) over training on GSM8K. Inverse entropy reaches the highest margin; Qwen3-30B grows more steadily; Qwen3-1.7B-Base (self-judge) stays near zero. Faint lines are raw per-step values; bold lines are rolling averages.",
+      "page": 17,
+      "index": 9,
+      "width": 642,
+      "height": 267
+    },
+    {
+      "url": "assets/figures/arxiv/2606.01436v1/fig-010.webp",
+      "caption": "Table 12. Within-question Spearman rank correlations between scoring methods (r Jϕ i : strong judge, rJθ i : self-judge, rHi : inverse entropy) on D′ strict chain sum and Dsaturated GSM8K. Each cell reports mean (median) ρ and the percentage of questions with ρ > 0.",
+      "page": 17,
+      "index": 10,
+      "width": 1017,
+      "height": 184
+    },
+    {
+      "url": "assets/figures/arxiv/2606.01436v1/fig-011.webp",
+      "caption": "Table 7. LLM-as-a-judge configuration.",
+      "page": 12,
+      "index": 11,
+      "width": 713,
+      "height": 200
+    },
+    {
+      "url": "assets/figures/arxiv/2606.01436v1/fig-012.webp",
+      "caption": "Table 6. Evaluation configuration.",
+      "page": 12,
+      "index": 12,
+      "width": 713,
+      "height": 249
+    },
+    {
+      "url": "assets/figures/arxiv/2606.01436v1/fig-013.webp",
+      "caption": "Table 1. Method comparison on saturated chain-sum problems with two training splits. Bold is best per column.",
+      "page": 5,
+      "index": 13,
+      "width": 1017,
+      "height": 270
+    },
+    {
+      "url": "assets/figures/arxiv/2606.01436v1/fig-014.webp",
+      "caption": "Table 2. GSM8K accuracy for DPO and σ-RRHF variants trained on Dsaturated, evaluated on the test set. Inv. Entropy = inverse entropy. All σ-RRHF runs use λ = 0.1. Bold is best per column.",
+      "page": 5,
+      "index": 14,
+      "width": 494,
+      "height": 919
+    }
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2606.01352v1/fig-001.webp",
+      "caption": "Figure 2: Impact of interaction patterns on watch time. Predictions for identical interest levels diverge based on (a) user habits and (b) item characteristics, highlighting the necessity of pattern-aware modeling.",
+      "page": 2,
+      "index": 1,
+      "width": 502,
+      "height": 462
+    },
+    {
+      "url": "assets/figures/arxiv/2606.01352v1/fig-002.webp",
+      "caption": "Figure 3: The overall architecture of FlowTime. The framework employs a Variational Encoder to map inputs into a stochastic latent space. Crucially, we introduce a Flow-based Personalized Prior, which leverages Normalizing Flow conditioned on user/item interaction histories to progressively warp a standard Gaussian into a complex, pattern-specific latent manifold, enabling the Generative Decoder to yield precise watch time predictions.",
+      "page": 5,
+      "index": 2,
+      "width": 998,
+      "height": 275
+    }
+  ]
+}

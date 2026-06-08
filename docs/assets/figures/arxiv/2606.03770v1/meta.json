@@ -1,0 +1,38 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2606.03770v1/fig-001.webp",
+      "caption": "TABLE VII PERFORMANCE COMPARISION BETWEEN E2LLM AND SPLITWISE",
+      "page": 11,
+      "index": 1,
+      "width": 529,
+      "height": 580
+    },
+    {
+      "url": "assets/figures/arxiv/2606.03770v1/fig-002.webp",
+      "caption": "TABLE VIII PERFORMANCE COMPARISION (CONTINUE)",
+      "page": 11,
+      "index": 2,
+      "width": 544,
+      "height": 483
+    },
+    {
+      "url": "assets/figures/arxiv/2606.03770v1/fig-003.webp",
+      "caption": "Fig. 1. Phases in general LLM Generation Task.",
+      "page": 3,
+      "index": 3,
+      "width": 648,
+      "height": 210
+    },
+    {
+      "url": "assets/figures/arxiv/2606.03770v1/fig-004.webp",
+      "caption": "Fig. 2. Overview of E2LLM Architecture",
+      "page": 4,
+      "index": 4,
+      "width": 648,
+      "height": 266
+    }
+  ]
+}

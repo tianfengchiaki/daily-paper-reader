@@ -1,0 +1,174 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2606.08265v1/fig-001.webp",
+      "caption": "Figure 1 The Feed Generation Process in the Recommender System Notes: This figure illustrates the multi-stage feed-generation process of the recommender system, including candidate retrieval, user-video scoring based on embeddings, ranking, and final content delivery.",
+      "page": 11,
+      "index": 1,
+      "width": 882,
+      "height": 394
+    },
+    {
+      "url": "assets/figures/arxiv/2606.08265v1/fig-002.webp",
+      "caption": "Table 10 Category-Level Distributions of Demographic Variables",
+      "page": 43,
+      "index": 2,
+      "width": 460,
+      "height": 845
+    },
+    {
+      "url": "assets/figures/arxiv/2606.08265v1/fig-003.webp",
+      "caption": "Figure 4 Conversion Rate Treatment Effect vs. Content Co-occurrence",
+      "page": 25,
+      "index": 3,
+      "width": 686,
+      "height": 494
+    },
+    {
+      "url": "assets/figures/arxiv/2606.08265v1/fig-004.webp",
+      "caption": "Table 3 Randomization Check on Pre-Treatment Characteristics",
+      "page": 15,
+      "index": 4,
+      "width": 978,
+      "height": 468
+    },
+    {
+      "url": "assets/figures/arxiv/2606.08265v1/fig-005.webp",
+      "caption": "Table 2 Descriptions of Main Variables Used in the Empirical Analysis",
+      "page": 15,
+      "index": 5,
+      "width": 882,
+      "height": 433
+    },
+    {
+      "url": "assets/figures/arxiv/2606.08265v1/fig-006.webp",
+      "caption": "Table 15 Long-Term Treatment Effects Over Time: Live Duration",
+      "page": 47,
+      "index": 6,
+      "width": 972,
+      "height": 589
+    },
+    {
+      "url": "assets/figures/arxiv/2606.08265v1/fig-007.webp",
+      "caption": "Table 14 Long-Term Treatment Effects Over Time: Video Duration",
+      "page": 47,
+      "index": 7,
+      "width": 972,
+      "height": 588
+    },
+    {
+      "url": "assets/figures/arxiv/2606.08265v1/fig-008.webp",
+      "caption": "Table 9 HTE on Celebrity Content Recommendations by Pre-Campaign Exposure",
+      "page": 29,
+      "index": 8,
+      "width": 640,
+      "height": 853
+    },
+    {
+      "url": "assets/figures/arxiv/2606.08265v1/fig-009.webp",
+      "caption": "Table 7 Relative Effect Sizes of Treatment on Recommended and Played Ratios (%)",
+      "page": 22,
+      "index": 9,
+      "width": 872,
+      "height": 978
+    },
+    {
+      "url": "assets/figures/arxiv/2606.08265v1/fig-010.webp",
+      "caption": "Table 1 Participating Celebrities and Basic Characteristics",
+      "page": 14,
+      "index": 10,
+      "width": 436,
+      "height": 897
+    },
+    {
+      "url": "assets/figures/arxiv/2606.08265v1/fig-011.webp",
+      "caption": "Table 13 Long-Term Treatment Effects Over Time: Night Usage",
+      "page": 46,
+      "index": 11,
+      "width": 972,
+      "height": 589
+    },
+    {
+      "url": "assets/figures/arxiv/2606.08265v1/fig-012.webp",
+      "caption": "Table 12 Long-Term Treatment Effects Over Time: App Usage",
+      "page": 46,
+      "index": 12,
+      "width": 972,
+      "height": 588
+    },
+    {
+      "url": "assets/figures/arxiv/2606.08265v1/fig-013.webp",
+      "caption": "Table 5 Placebo Test: Treatment Effects on Never-Night Users",
+      "page": 18,
+      "index": 13,
+      "width": 356,
+      "height": 591
+    },
+    {
+      "url": "assets/figures/arxiv/2606.08265v1/fig-014.webp",
+      "caption": "Figure 3 Spillover Effect vs. Content Co-occurrence",
+      "page": 23,
+      "index": 14,
+      "width": 686,
+      "height": 494
+    },
+    {
+      "url": "assets/figures/arxiv/2606.08265v1/fig-015.webp",
+      "caption": "Figure 5 Placebo Test: Top-of-Feed Should Remain Unaffected",
+      "page": 45,
+      "index": 15,
+      "width": 764,
+      "height": 575
+    },
+    {
+      "url": "assets/figures/arxiv/2606.08265v1/fig-016.webp",
+      "caption": "Figure 2 Mechanism of Content Boosting in the Recommender System Notes: This figure illustrates how the sleep-reminder intervention modifies the ranking stage of the recommender system by adding a small positive score adjustment to sleep reminder videos during late-night hours for treated users, increasing their probability of appearing in the feed without forcing exposure.",
+      "page": 13,
+      "index": 16,
+      "width": 882,
+      "height": 406
+    },
+    {
+      "url": "assets/figures/arxiv/2606.08265v1/fig-017.webp",
+      "caption": "Table 6 Short-Term Treatment Effects During the Experimental Week",
+      "page": 19,
+      "index": 17,
+      "width": 764,
+      "height": 718
+    },
+    {
+      "url": "assets/figures/arxiv/2606.08265v1/fig-018.webp",
+      "caption": "Table 4 Manipulation Check",
+      "page": 17,
+      "index": 18,
+      "width": 514,
+      "height": 636
+    },
+    {
+      "url": "assets/figures/arxiv/2606.08265v1/fig-019.webp",
+      "caption": "Table 11 Alternative Placebo Test: Treatment Effects on Pre-Experiment Never-Night Users",
+      "page": 44,
+      "index": 19,
+      "width": 468,
+      "height": 455
+    },
+    {
+      "url": "assets/figures/arxiv/2606.08265v1/fig-020.webp",
+      "caption": "Table 8 Relative Effect Sizes of Treatment on Recommended and Played Counts (%)",
+      "page": 27,
+      "index": 20,
+      "width": 954,
+      "height": 1040
+    },
+    {
+      "url": "assets/figures/arxiv/2606.08265v1/fig-021.webp",
+      "caption": "Table 16 Relative Effect Sizes of Treatment on Conversion Rates (%)",
+      "page": 48,
+      "index": 21,
+      "width": 552,
+      "height": 1007
+    }
+  ]
+}

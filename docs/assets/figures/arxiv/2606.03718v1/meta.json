@@ -1,0 +1,54 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2606.03718v1/fig-001.webp",
+      "caption": "Table 4: Ablation of MARS-T (HR@10, ×100).",
+      "page": 7,
+      "index": 1,
+      "width": 827,
+      "height": 184
+    },
+    {
+      "url": "assets/figures/arxiv/2606.03718v1/fig-002.webp",
+      "caption": "Table 3: Comparison results (×100). MARS reports mean±std over five seeds. Backbone is selected by L̄, with † marking MARS-T (L̄ < 50) and ‡ marking MARS-M (L̄ ≥ 50). Best, second.",
+      "page": 7,
+      "index": 2,
+      "width": 829,
+      "height": 316
+    },
+    {
+      "url": "assets/figures/arxiv/2606.03718v1/fig-003.webp",
+      "caption": "Table 1: Sequential recommenders compared along five design axes for time-aware modelling.",
+      "page": 3,
+      "index": 3,
+      "width": 744,
+      "height": 214
+    },
+    {
+      "url": "assets/figures/arxiv/2606.03718v1/fig-004.webp",
+      "caption": "Figure 2: Hyperparameter sensitivity of MARS. (a) K on Beauty, (b) K on ML-1M for MARS-T and MARS-M, and (c) dropout on Beauty and ML-1M.",
+      "page": 8,
+      "index": 4,
+      "width": 811,
+      "height": 218
+    },
+    {
+      "url": "assets/figures/arxiv/2606.03718v1/fig-005.webp",
+      "caption": "Figure 1: MARS architecture. A sequence encoder produces hidden states H. MARS aggregates them into K recency-conditioned summaries via learnable rates {λk}Kk=1 that are modulated per user, then fuses them into the user vector hu through a context-adaptive gate.",
+      "page": 4,
+      "index": 5,
+      "width": 748,
+      "height": 411
+    },
+    {
+      "url": "assets/figures/arxiv/2606.03718v1/fig-006.webp",
+      "caption": "Table 6: Subgroup HR@10 (×100) by user history length Lu. Each cell: baseline→MARS (∆%). The baseline is SASRec for the four sparse benchmarks and the ML-1M, MARS-T row, and Mamba4Rec for the ML-1M, MARS-M row. Red marks ∆ < 0. Bucket sizes in Appendix F.",
+      "page": 9,
+      "index": 6,
+      "width": 830,
+      "height": 190
+    }
+  ]
+}

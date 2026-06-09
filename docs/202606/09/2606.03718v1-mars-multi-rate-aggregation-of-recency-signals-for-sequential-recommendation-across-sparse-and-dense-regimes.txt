@@ -1,0 +1,724 @@
+Title: MARS: Multi-rate Aggregation of Recency Signals for Sequential Recommendation across Sparse and Dense Regimes
+
+URL Source: https://arxiv.org/pdf/2606.03718v1
+
+Published Time: Wed, 03 Jun 2026 01:18:25 GMT
+
+Number of Pages: 16
+
+Markdown Content:
+# MARS: Multi-rate Aggregation of Recency Signals for Sequential Recommendation across Sparse and Dense Regimes 
+
+Zhenyu Yu 1, Shuigeng Zhou 1∗
+
+> 1
+
+College of Computer Science and Artificial Intelligence, Fudan University 
+
+yuzhenyuyxl@foxmail.com, sgzhou@fudan.edu.cn 
+
+## Abstract 
+
+Sequential recommenders weight historical interactions either through positional self-attention as in Transformers or through a single implicit decay schedule as in State-Space Models. Neither makes the multi-scale temporal structure of real user behaviour explicit. We propose MARS, an encoder-agnostic aggregation operator that consumes real timestamps and produces K summaries emphasising distinct re-cency scales, fused by a context-adaptive gate. MARS adds at most 6% parameters and runs in O(LdK ) time. MARS adapts to data density by automatically selecting between two encoder instantiations: MARS-T (Transformer) for sparse data and MARS-M (Mamba) for dense data, based on the average sequence length of the training set. On five public benchmarks against ten Transformer- and Mamba-based baselines under a unified RecBole protocol, MARS attains the best HR@10 on every benchmark, with mean relative gain +19 .7% over the strongest content-only Transformer baseline on sparse data (reaching +36 .2% on Games) and +3 .2% 
+
+HR@10 / +0 .9% NDCG over SIGMA on dense ML-1M at 42% fewer MFLOPs, occupying the accuracy-efficiency Pareto frontier across the data-density spectrum. A backbone-only ablation isolates the marginal contribution of MARS at +4% to 
+
++19% HR@10 on sparse data and motivates the dual-instantiation design. The code is included in the supplementary material. 
+
+## 1 Introduction 
+
+Sequential recommendation predicts the next item a user will interact with given their past interaction history. The temporal structure of such histories is heterogeneous; user interests evolve across multiple time-scales, from session-level bursts within minutes to long-term preferences spanning months. Capturing this multi-scale structure requires the model to combine fine-grained local patterns with coarse-grained global trends. Two families of sequential recommenders dominate the literature, Transformers [Kang and McAuley, 2018, Sun et al., 2019, Du et al., 2023] and State-Space Models [Gu and Dao, 2023, Liu et al., 2024a, 2025]. Both compress the multi-scale structure into a single mechanism. Transformers rely on ordinal positional encodings, with time-aware variants [Li et al., 2020] adding one global relative-time parameterisation. State-Space Models implement a single implicit decay schedule determined by their learned state-transition parameters. Neither family exposes the multiple time-scales the data exhibits, leaving a gap between the modelling assumption and the underlying data-generating process. We trace this limitation to a conflation of two design decisions that are in principle orthogonal, the sequence encoder that maps the items {x1, . . . , x i} to a hidden state hi, and the time-aware aggregation that pools the hidden states {h1, . . . , hL} into a user representation hu. The dominant 
+
+> ∗Corresponding author. 40th Conference on Neural Information Processing Systems (NeurIPS 2026).
+> arXiv:2606.03718v1 [cs.IR] 2 Jun 2026
+
+paradigm bundles them. The encoder simultaneously performs content mixing through dot-product attention or selective state updates and temporal weighting through positional embeddings, relative-time biases, or state-transition decays. The optimal architecture for sequence mixing need not coincide with the optimal parameterisation of multi-scale temporal weighting, so coupling the two restricts the design space and forces a single sequence encoder to absorb both responsibilities. We propose to decouple the two responsibilities by introducing time-aware aggregation as a small learnable module placed on top of any sequence encoder. We realise this idea in MARS, an aggrega-tion operator that consumes the encoder’s hidden states H = [ h1, . . . , hL], interpreted as the recency signals of past interactions, together with the real timestamps {t1, . . . , t L} of the events. MARS pro-duces K summaries of H, each emphasising a distinct recency scale through a learnable exponential decay rate λk, and fuses them into a final user representation through a context-adaptive gate. Three design choices distinguish MARS from prior time-aware sequential models. The decay rates {λk}
+
+are modulated per user via a small MLP conditioned on the sequence summary, allowing distinct users to emphasise distinct time-scales. A Jensen–Shannon diversity penalty on the per-head attention distributions prevents the K heads from collapsing onto a single rate, an issue we analyse through a Hawkes-process generative model. A context-adaptive gate conditioned on the sequence content learns to route between the K summaries on a per-user basis. The aggregated user vector is residu-ally added to the encoder’s last-position state, preserving the standard sequential-recommendation interface and allowing MARS to be inserted into any existing pipeline without architectural changes downstream. 
+
+Contributions. 
+
+• A new design axis. We identify time-aware aggregation as a design axis separate from the sequence encoder, and propose MARS, a backbone-agnostic operator with user-conditioned decay, JSD-regularised diversity, and an adaptive fusion gate. • Theoretical guarantees. We provide a three-part theoretical justification. K-mixtures of exponentials are universal approximators of monotone decay kernels (Proposition 1). Under a Hawkes-process data-generating model, the diversity-regularised MARS recovers the ground-truth decay rates up to permutation (Proposition 3, the Hawkes connection is novel to this work). MARS runs in O(LdK ) time (Proposition 2). • Unified framework. We instantiate MARS as a unified framework with two complementary backbones, MARS-T (Transformer) for sparse data and MARS-M (Mamba) for dense data. Together they attain the best HR@10 on all five public benchmarks under a unified evaluation protocol, with a backbone-only ablation that quantifies the regime-dependent marginal contribution of MARS and validates the dual-instantiation design. 
+
+## 2 Related Work 
+
+Sequence encoders. Sequential recommendation is dominated by two families. Self-attention encoders such as SASRec [Kang and McAuley, 2018], BERT4Rec [Sun et al., 2019], and frequency-augmented variants like FEARec [Du et al., 2023] parameterise pairwise interactions through dot-product attention with positional embeddings. State-Space Models [Gu and Dao, 2023], ported to recommendation by Mamba4Rec [Liu et al., 2024a] and extended with bidirectional gating in SIGMA [Liu et al., 2025], replace attention with selective state updates whose implicit decay is determined by a single set of state-transition parameters per layer. Both families compress the multi-scale temporal structure of user histories into a single mechanism inside the encoder. 
+
+Time-aware sequential recommenders. A separate line conditions the encoder on inter-event time. TiSASRec [Li et al., 2020] augments self-attention with a learnable embedding of relative time intervals, and MEANTIME [Cho et al., 2020] attaches a small bank of temporal embeddings to different attention heads. Both inject time inside the encoder and share a single global parameterisation of the temporal kernel. Multi-rate temporal weighting has been explored in adjacent domains: Gradformer [Liu et al., 2024b] applies per-head exponential decay masks to graph transformers. MARS imports the multi-rate principle into sequential recommendation while differing from prior time-aware methods on three axes: it operates as a post-encoder aggregator rather than an in-encoder modification; it parameterises K user-conditioned exponential decays rather than a single shared schedule; and it remains agnostic to the underlying sequence encoder. 2Table 1: Sequential recommenders compared along five design axes for time-aware modelling.                                               
+
+> Method Time #Decay User-cond. Fusion Backbone
+> SASRec [Kang and McAuley, 2018] position ××last-token Trans. BERT4Rec [Sun et al., 2019] position ××masked LM Trans. FEARec [Du et al., 2023] frequency ××last-token Trans. TiSASRec [Li et al., 2020] rel. interval 1×last-token Trans. MEANTIME [Cho et al., 2020] multi-temp. per-head ×head avg. Trans. Mamba4Rec [Liu et al., 2024a] implicit 1/layer ×last-token Mamba SIGMA [Liu et al., 2025] implicit bi-dir. ×gated Mamba
+> MARS (Ours) timestamp Krates ✓adaptive gate Trans./Mamba
+
+Aggregation strategies. Sequential recommenders also differ in how the per-position hidden states 
+
+{h1, . . . , hL} are reduced to a single user vector. The simplest choice is to read out the last position (SASRec [Kang and McAuley, 2018], FEARec [Du et al., 2023], Mamba4Rec [Liu et al., 2024a]). BERT4Rec [Sun et al., 2019] trains the encoder to recover masked tokens from bidirectional context, MEANTIME [Cho et al., 2020] averages multiple time-conditioned attention heads, and SIGMA [Liu et al., 2025] gates the bidirectional Mamba output before pooling. None of these aggregators consume real timestamps as a direct input; the temporal information they exploit is whatever signal the encoder has already propagated through its hidden states. MARS departs from this convention by treating aggregation as a small parametric module that consumes timestamps explicitly and produces K
+
+recency-conditioned summaries fused by a context-adaptive gate. Table 1 contrasts MARS with the closest prior work along five such design axes. 
+
+## 3 Method: MARS 
+
+3.1 Problem Definition 
+
+Let U and V denote the user and item sets. A user u ∈ U has an ordered interaction history 
+
+Su = {(vi, t i)}Lu
+
+> i=1
+
+, where vi ∈ V is the i-th interacted item, ti is its UNIX timestamp, and Lu is the user’s history length. Histories are padded or truncated to a fixed maximum length L. The sequential recommendation task is to predict vLu+1 , ranking items in V by predicted compatibility with the user’s history. Throughout the paper we use d for the hidden dimension, K for the number of decay heads, H = [ h1, . . . , hL] ∈ RL×d for the encoder output, ∆ti = tLu − ti ≥ 0 for the elapsed time between event i and the latest event Lu, and m ∈ { 0, 1}L for the binary padding mask that takes value 0 at padded positions. 
+
+3.2 Overview 
+
+The architecture of MARS is shown in Figure 1. A sequence encoder transforms the item history into hidden states H ∈ RL×d, which the post-encoder MARS module processes in three stages: per-user multi-rate recency aggregation that produces K time-scale summaries (Section 3.3), context-adaptive fusion that combines them into a single user vector (Section 3.4), and joint optimisation of all parameters with two auxiliary regularisers (Section 3.5). Two encoder instantiations are studied under an identical protocol: MARS-T stacks N Transformer blocks with causal masking on top of a learnable positional embedding, inheriting the configuration of SASRec [Kang and McAuley, 2018]; MARS-M replaces the Transformer blocks with N Mamba blocks following Mamba4Rec [Liu et al., 2024a], with a feed-forward sub-layer per block. We denote hlast ∈ Rd the row of H at the user’s last unmasked position Lu.
+
+3.3 Multi-Rate Recency Aggregation Per-head decay weighting. The elapsed times {∆ti}Li=1 are first log-compressed to 
+
+˜∆ti = log  1 + ∆ ti/τ 0
+
+, (1) with τ0 fixed at one hour. The compression keeps the dynamic range bounded across data regimes whose inter-event gaps may span several orders of magnitude; padding positions inherit ˜∆ti = 0 .3Figure 1: MARS architecture. A sequence encoder produces hidden states H. MARS aggregates them into K recency-conditioned summaries via learnable rates {λk}Kk=1 that are modulated per user, then fuses them into the user vector hu through a context-adaptive gate. Each of the K decay heads carries two scalar parameters, a base rate λk = softplus( ˜λk) and a temperature τk = softplus(˜ τk) + 0 .1. The unconstrained parameter ˜λk is initialised on a linspace from −1 to +2 , so the heads begin from a diverse decomposition of the time axis. 
+
+User-conditioned modulation. To inject per-user heterogeneity without per-user parameters, the base rate of head k is modulated by a small MLP applied to the user summary hlast ,
+
+λk(u) = λk · exp  σ · tanh( Wλ hlast )k
+
+, (2) with Wλ ∈ RK×d and σ = 0 .5 bounding the modulation magnitude. Zero-initialising the final MLP layer ensures training starts from the unmodulated regime λk(u) = λk.
+
+Aggregation. The K summaries are obtained by softmax-normalising the per-head decay logits over the unmasked positions and aggregating H accordingly, 
+
+w(u) 
+
+> k,i
+
+= exp( −λk(u) ˜∆ti/τ k) mi
+
+PLj=1 exp( −λk(u) ˜∆tj /τ k) mj
+
+, Z(u) 
+
+> k
+
+=
+
+> L
+
+X
+
+> i=1
+
+w(u) 
+
+> k,i
+
+hi. (3) The matrix-vector formulation Z = w H ∈ RK×d collapses the entire aggregation into a single batched matrix multiplication. The choice of a K-rate exponential mixture as the aggregation kernel is motivated by the following approximation result. 
+
+Proposition 1 (Approximation by exponential mixtures) . Let ϕ : [0 , T ] → [0 , 1] be a monotonically non-increasing function with ϕ(0) = 1 . For every ε > 0 there exist K ∈ N, weights {αk}Kk=1 ⊂ R
+
+with P 
+
+> k
+
+αk = 1 , and rates {λk}Kk=1 ⊂ R≥0 such that 
+
+sup  
+
+> t∈[0 ,T ]
+
+ϕ(t) −
+
+> K
+
+X
+
+> k=1
+
+αk exp( −λk t) ≤ ε. (4) A complete proof is given in Appendix B. Equation (3) realises such a mixture once the aggregation is combined with the fusion gate of Section 3.4, with the gate output playing the role of the mixture weights and the user-conditioned rates λk(u) playing the role of λk. Proposition 1 therefore states that, in principle, MARS can represent any monotone decay schedule the data demands; K controls the fidelity of the approximation rather than the existence of a representable solution. 43.4 Context-Adaptive Fusion 
+
+The K summaries {Z(u) 
+
+> k
+
+}Kk=1 are fused through a gate conditioned on a context vector c =[ tEnc( ˜∆tLu ); evLu ; hlast ], where tEnc is a two-layer MLP applied to the most recent log-compressed elapsed time and evLu ∈ Rd is the embedding of the most recent item: 
+
+gk = v⊤tanh  Wg [Z(u) 
+
+> k
+
+; c], α = softmax( g/τ α), hu = hlast +
+
+> K
+
+X
+
+> k=1
+
+αk Z(u) 
+
+> k
+
+, (5) with learnable parameters Wg , v, and the gate temperature τα > 0. The trailing residual connection preserves the encoder’s last-position signal, ensuring the modified user vector cannot be worse than the encoder readout in the limit α → 0. Algorithm A1 summarises the full forward pass. The cost of the full pass scales linearly in sequence length and in the number of heads. 
+
+Proposition 2 (Complexity) . MARS requires O(L d K ) time and O(L K + d K ) additional memory beyond the encoder’s hidden states H. The user-conditioned modulation contributes an additional 
+
+O(d K ) per user; the context-adaptive fusion contributes O(d K ).Proof. The aggregation in Eq. (3) is a single matrix product w H between w ∈ RK×L and H ∈
+
+RL×d, costing O(LdK ) multiplications. Computing the logits in Step 3 of Algorithm A1 costs 
+
+O(LK ), the user-modulation MLP in Eq. (2) costs O(dK ) per user, and the fusion gate in Eq. (5) contributes another O(dK ).For comparison, scaled dot-product self-attention is O(L2d) in time and O(L2) in attention memory. Whenever K ≪ L, the MARS overhead is dominated by the encoder cost. 
+
+3.5 Optimisation 
+
+The standard sequential cross-entropy loss is augmented with two auxiliary regularisers, 
+
+L = LCE + ηdiv Ldiv + ηbal Lbal , (6) with default coefficients ηdiv = ηbal = 10 −2. The diversity term Ldiv = − P  
+
+> k̸=k′
+
+JSD( w(u) 
+
+> k, ·
+
+∥w(u)
+
+> k′,·
+
+)
+
+is the negative pairwise Jensen–Shannon divergence of the per-head attention distributions, and the load-balance term Lbal = K PKk=1 ¯α2
+
+> k
+
+, with ¯αk the batch mean of the k-th gate weight, is the MoE-style regulariser that prevents the gate from routing through a single head. The role of Ldiv is theoretically motivated. Without it, gradient descent can collapse all K heads onto a single rate, in which case the multi-rate expressive power promised by Proposition 1 is lost. We rule this collapse out under a Hawkes-process generative model. 
+
+Proposition 3 (Identifiability of decay rates) . Suppose user behaviour is generated from a multivariate Hawkes process with K exponential excitation kernels of distinct positive rates λ∗ 
+
+> 1
+
+< · · · < λ ∗ 
+
+> K
+
+and non-degenerate mixture weights α∗ 
+
+> k
+
+> 0, P 
+
+> k
+
+α∗ 
+
+> k
+
+= 1 . If Ldiv is strictly positive at the optimum, then the learned rates {λk}Kk=1 recover {λ∗
+
+> k
+
+}Kk=1 up to permutation in the population limit, and the learned weights {αk} recover {α∗
+
+> k
+
+} in ℓ1 norm. Sketch. The Hawkes intensity [Hawkes, 1971] is a K-mixture of exponentials, so by classical identifiability of finite mixtures of distinct exponential laws [Teicher, 1963], the mixing measure is identifiable. The diversity loss strictly penalises any two heads collapsing onto the same exponential (λk = λk′ ⇒ wk, · = wk′,· ⇒ JSD = 0 ), so optimisation cannot exit the strict-positivity region; this enforces distinctness of the rates. Combined with the load-balancing constraint P 
+
+> k
+
+αk = 1 ,
+
+αk > 0, the population minimiser of L is unique up to head permutation. The detailed proof is in Appendix C. 
+
+3.6 Backbone Selection 
+
+Given a target dataset, MARS selects between MARS-T and MARS-M based on a single dataset-level statistic, the average training-sequence length ¯L:backbone (D) = 
+
+M ARS − T if ¯L(D) < τ, M ARS − M if ¯L(D) ≥ τ, τ = 50 . (7) 5The threshold τ reflects the empirical regime boundary observed in our analysis: SASRec attention entropy is 0.75 –0.87 (near-uniform) on the four sparse benchmarks where ¯L ∈ [8 , 13] , and an explicit recency prior delivers +4 to +19% HR@10; on dense ML-1M where ¯L = 165 , entropy collapses to 0.43 –0.51 and Mamba’s selective state encodes the recency prior more effectively than a stacked aggregator (Appendix G). The 20 × gap between ¯L on sparse and dense benchmarks makes the rule robust to any threshold in (13 , 165) .The selection is computed once before training and adds no runtime overhead. We deliberately keep it as a dataset-statistic heuristic rather than a learned router: data-density regime is a property of the deployment dataset, not of individual users, so a learned mechanism would degenerate into the same threshold while incurring additional training cost. 
+
+## 4 Experiments 
+
+4.1 Settings Datasets. We evaluate on five widely-used benchmarks summarised in Table 2, namely the three Amazon categories Beauty, Sports, and Games released by He and McAuley [2016], MovieLens-1M [Harper and Konstan, 2015], and Yelp [Yelp Inc., 2024]. Beauty, Sports, Games and Yelp belong to the sparse, short-history regime, with average sequence length below 13 ; ML-1M is a dense regime with sequences nearly twenty times longer. This split lets us probe MARS across the full data-density spectrum encountered in standard sequential-recommendation work. Table 2: Statistics of the benchmarks.                          
+
+> Dataset #Users #Items #Inters. Sparsity Avg.
+> Beauty 22,363 12,101 198,502 99.93% 8.88 Sports 35,598 18,357 296,337 99.95% 8.32 Games 94,762 25,612 814,586 99.97% 8.60 ML-1M 6,040 3,416 999,611 95.16% 165.5 Yelp 233,247 109,062 2,918,699 99.99% 12.51
+
+Baselines. Ten representative baselines spanning RNN, attention-based, time-aware, session-based, and state-space families are re-run under our unified RecBole [Zhao et al., 2021] framework. They are the recurrent GRU4Rec [Hidasi et al., 2016], the attention-augmented recurrent NARM [Li et al., 2017], the bidi-rectional Transformer BERT4Rec [Sun et al., 2019], the causal Transformer SASRec [Kang and McAuley, 2018], the time-aware Transformer TiSASRec [Li et al., 2020], the frequency-domain FEARec [Du et al., 2023], the consistent-representation session model CORE [Hou et al., 2022], and three state-space models, namely Mamba4Rec [Liu et al., 2024a], EchoMamba4Rec (denoted Echo in tables) [Wang et al., 2024], and SIGMA [Liu et al., 2025]. Every baseline is re-trained on the same splits to avoid pipeline confounds, and numbers from the original publications are not quoted. 
+
+Implementation details. All Transformer-based models share the SASRec configuration of d=64 ,two attention blocks, inner dimension 256 , and dropout 0.5 on Beauty, Sports, Yelp and 0.2 on Games, ML-1M. Mamba-based models use the Mamba4Rec defaults of dstate =32 , dconv =4 , expand =2 .Optimisation uses Adam [Kingma and Ba, 2015] at learning rate 10 −3 with batch size 2048 for up to 200 epochs and early stopping on validation NDCG@10 with patience 20 . MARS uses K=4 
+
+decay heads on the four sparse benchmarks and K=8 on ML-1M to match the longer sequences. All experiments are performed on a single NVIDIA V100 GPU. Each MARS configuration is re-trained with five random seeds and we report mean ±std; the baselines use a single seed each. 
+
+4.2 Comparison 
+
+The two MARS instantiations are compared in Table 3 against ten re-trained baselines spanning RNN, Transformer, time-aware Transformer, and Mamba families. We highlight three observations. 
+
+(i) MARS-T wins HR@10 on every sparse benchmark. MARS-T attains the strongest HR@10 across Beauty, Sports, Games, and Yelp with mean gain +19 .7% over the strongest content-only Transformer baseline ( +9 .95% Beauty, +13 .5% Sports, +36 .2% Games, +19 .2% Yelp) and +5 .85% 
+
+over TiSASRec at O(LdK ) cost versus TiSASRec’s O(L2). MARS-T also leads NDCG@10 on Sports and Yelp; TiSASRec marginally outperforms by 1.1% and 7.1% on Beauty and Games NDCG, consistent with its per-pair interval matrix favouring fine-grained ranking. MRR is mixed, with Echo leading on Beauty and Sports and TiSASRec on Games, reflecting last-token readouts being well-calibrated for short-tail interactions while MARS-T aggregates over the full backbone for HR-style top-k retrieval. (ii) MARS-M leads HR@10 and NDCG on the dense ML-1M. On dense ML-1M ( ¯L = 165 ), MARS-M overtakes every prior method on HR@10 and NDCG, beating SIGMA 6Table 3: Comparison results ( ×100 ). MARS reports mean ±std over five seeds. Backbone is selected by ¯L, with † marking MARS-T ( ¯L < 50 ) and ‡ marking MARS-M ( ¯L ≥ 50 ). Best , second.                                                                                                                                                                                                     
+
+> Dataset Metric GRU4Rec BERT4Rec NARM SASRec TiSASRec FEARec CORE Mamba4Rec Echo SIGMA MARS-T MARS-M MARS
+> Beauty HR@10 5.82 3.94 6.03 8.04 8.78 7.83 6.49 6.62 6.93 6.03 8.84 ±0.14 8.02 ±0.23 8.84 †
+> NDCG 3.25 1.95 3.45 4.10 4.45 4.08 2.59 4.12 4.30 3.43 4.40 ±0.06 4.13 ±0.08 4.40 †
+> MRR 2.47 1.36 2.67 2.90 3.12 2.92 1.44 3.36 3.50 2.64 3.04 ±0.06 2.94 ±0.04 3.04 †
+> Sports HR@10 3.06 1.66 3.12 4.53 4.84 4.60 3.24 3.50 3.40 3.20 5.22 ±0.08 4.73 ±0.19 5.22 †
+> NDCG 1.58 0.81 1.60 2.14 2.30 2.19 1.26 2.08 2.08 1.77 2.43 ±0.04 2.26 ±0.07 2.43 †
+> MRR 1.13 0.56 1.14 1.41 1.52 1.44 0.69 1.65 1.67 1.33 1.57 ±0.03 1.51 ±0.05 1.57 †
+> Games HR@10 7.80 6.69 10.15 8.86 12.07 8.64 8.84 8.02 8.02 8.10 12.07 ±0.16 12.01 ±0.42 12.07 †
+> NDCG 4.05 3.49 5.24 4.34 5.90 4.20 3.61 4.21 4.18 4.20 5.51 ±0.09 5.62 ±0.11 5.51 †
+> MRR 2.92 2.53 3.77 2.97 4.03 2.84 2.06 3.05 3.01 3.03 3.52 ±0.07 3.68 ±0.07 3.52 †
+> ML-1M HR@10 29.37 23.11 29.37 29.62 24.90 28.05 15.55 30.28 31.04 31.79 29.04 ±0.70 32.80 ±0.45 32.80 ‡
+> NDCG 16.90 11.87 16.58 16.61 13.42 15.63 6.79 17.72 18.00 18.63 16.39 ±0.50 18.80 ±0.32 18.80 ‡
+> MRR 13.10 8.48 12.67 12.65 9.93 11.86 4.18 13.88 14.03 14.60 12.52 ±0.45 14.52 ±0.29 14.52 ‡
+> Yelp HR@10 2.98 2.38 3.42 5.41 5.62 4.79 6.14 4.35 3.79 3.80 6.45 ±0.04 5.97 ±0.04 6.45 †
+> NDCG 1.65 1.21 1.89 3.64 3.84 3.42 3.65 2.55 2.13 2.12 4.22 ±0.01 3.89 ±0.01 4.22 †
+> MRR 1.25 0.86 1.42 3.10 3.30 3.00 2.89 2.00 1.63 1.61 3.53 ±0.01 3.25 ±0.02 3.53 †
+
+by +3 .2% and +0 .9% and Mamba4Rec by +8 .3% HR@10. On MRR MARS-M trails SIGMA by 
+
+0.55% (14 .52 vs 14 .60 ), within seed variance. The HR@10 lead is delivered at 42% fewer MFLOPs than SIGMA (Section 4.5), placing MARS-M on the accuracy-efficiency Pareto frontier. On sparse benchmarks MARS-M tracks MARS-T within one standard deviation on Games and Yelp but does not lead, motivating the dual-instantiation design. (iii) Stable and reproducible. Five-seed standard deviations lie between 0.04 and 0.70 HR@10 points across all 5 × 2 cells, confirming gains are not seed artefacts. 
+
+4.3 Ablation Study 
+
+Table 4: Ablation of MARS-T (HR@10, ×100 ). 
+
+Variant Beauty Sports Games ML-1M Yelp 
+
+Full MARS-T 8.91 5.20 12.24 29.30 6.40 
+
+Backbone only (w/o MARS) 8.53 4.89 11.75 30.33 5.36 b1 (w/o real ∆t) 8.69 5.16 12.32 29.82 6.49 b2 (w/o λ(u)) 8.94 5.21 12.32 29.25 6.39 b3 (w/o diversity) 8.90 5.21 12.14 29.22 6.37 b4 (w/o balance) 8.88 5.12 12.26 28.41 6.33 Single head ( K=1 ) 8.80 5.27 12.23 27.45 6.42 
+
+(i) MARS contributes between +4% and +19% on sparse data. Comparing Full MARS-T against the Backbone-only variant isolates the marginal value of MARS on the Trans-former backbone. The gain is largest on Yelp at +19 .4% , where the bursty review pattern car-ries strong multi-rate structure, and stays posi-tive on the three Amazon benchmarks at +4 .0% 
+
+to +6 .3% . These results validate MARS as a lightweight enhancement of SASRec-style backbones for sparse, short-history data. 
+
+(ii) On dense ML-1M the Transformer backbone alone is competitive with Full MARS-T. 
+
+Backbone-only MARS-T attains 30 .33 HR@10, 1.03 above the full module’s 29 .30 . SASRec’s positional attention already concentrates on the recent tail of dense histories (normalised entropy 
+
+0.43 –0.51 , Appendix G), so the multi-rate prior of MARS adds limited information when stacked on top. This finding is the empirical motivation for our Mamba instantiation: Appendix ?? shows that Full MARS-M exceeds the corresponding backbone-only readout on ML-1M across all three metrics, confirming that MARS contributes positively when paired with an encoder whose intrinsic recency mechanism is more constrained than self-attention. 
+
+(iii) Internal components are mostly dataset-dependent. The four component ablations ( b1 –b4 )generally lie within ±3% of the Full model. Real timestamps ( b1 ) carry the largest single contribution on Beauty, costing −2.5% when removed; the load-balance regulariser ( b4 ) is most important on ML-1M, costing −3.0% when removed. The user-conditioned λ (b2 ) and JSD diversity ( b3 ) contribute smaller but positive amounts, and a single decay head ( K=1 ) is competitive on the sparse benchmarks. Section 4.4 expands this observation into a full sweep over K.
+
+4.4 Hyperparameter Sensitivity (i) K is mildly influential on sparse data. On the sparse benchmarks K=1 already attains 96 .2% of the best K=8 result on Beauty, consistent with Proposition 1 which guarantees only the existence of a K-mixture approximation; the empirical decay kernels of short-history data are smooth enough 71 2 4 8 16         
+
+> Number of decay heads K
+> 8.5
+> 8.6
+> 8.7
+> 8.8
+> 8.9
+> 9.0
+> 9.1
+> HR@10 ( ×100 )
+> (a) Beauty (sparse)
+> MARS-T
+> Best
+> 124816
+> Number of decay heads K
+> 27
+> 28
+> 29
+> 30
+> 31
+> 32
+> 33
+> HR@10 ( ×100 )
+> (b) ML-1M (dense)
+> MARS-T
+> MARS-M
+> Best
+> 0.2 0.4 0.6
+> Dropout rate
+> 8.0
+> 8.2
+> 8.4
+> 8.6
+> 8.8
+> HR@10 on Beauty
+> (c) Dropout sensitivity
+> Beauty
+> ML-1M
+> Best
+> 20
+> 22
+> 24
+> 26
+> 28
+> 30
+> 32
+> HR@10 on ML-1M
+
+Figure 2: Hyperparameter sensitivity of MARS. (a) K on Beauty, (b) K on ML-1M for MARS-T and MARS-M, and (c) dropout on Beauty and ML-1M. that a small mixture suffices. (ii) K matters substantially on dense ML-1M, more for MARS-T than for MARS-M. For the Transformer-backboned MARS-T, HR@10 climbs from 27 .45 at K=1 
+
+to a peak of 29 .22 at K=16 (+6 .4% ). For the Mamba-backboned MARS-M the spread is milder, 
+
+32 .20 → 32 .58 at K=8 (+1 .2% ), reflecting that Mamba’s selective state already encodes a strong recency prior so adding multiple decay rates yields diminishing returns. The contrast between the two backbones is itself a prediction of the multi-rate hypothesis: K> 1 helps most when the encoder lacks an intrinsic mechanism for multi-scale temporal weighting. We therefore default to K=4 on the four sparse benchmarks and K=8 on ML-1M as a Pareto-balanced choice. The subgroup analysis further corroborates this by attributing the marginal value of multiple heads to the long-history user buckets. (iii) Dropout is dataset-density-dependent. Following established SASRec preferences, the optimum is 0.3 on Beauty and 0.1 on ML-1M; larger dropout rapidly degrades ML-1M, where moving from 0.1 to 0.5 costs over 6 HR@10 points. Across the entire grid we explored, MARS never under-performs the strongest baseline reported in Table 3. 
+
+4.5 Efficiency Analysis 
+
+Table 5: Efficiency on Beauty and ML-1M (NVIDIA V100).                                                                           
+
+> Model Beauty ML-1M
+> #P (K) MFLOPs Time (s) Mem (G) #P (K) MFLOPs Time (s) Mem (G) GRU4Rec 857 4.14 0.044 1.80 301 16.56 0.035 7.07 BERT4Rec 894 5.32 0.907 1.19 339 22.70 0.503 11.97 SASRec 878 5.10 0.197 1.22 332 21.83 0.313 12.56 FEARec 878 12.43 0.726 1.40 332 49.72 0.726 5.93 Mamba4Rec 847 1.68 0.124 0.89 291 6.71 0.097 3.09
+> Echo 864 2.52 0.348 1.38 308 10.09 0.276 5.05 SIGMA 905 5.80 0.300 1.31 349 23.18 0.251 5.12
+> MARS-T 896 5.05 0.151 1.05 350 20.27 0.173 4.56
+> MARS-M 937 3.40 0.237 0.89 382 13.48 0.181 3.11
+
+Per-sample efficiency on Beauty and ML-1M is reported in Table 5. MARS-T adds only 2% parameters over SASRec on Beauty ( 896 K vs 
+
+878 K) and 5% on ML-1M ( 350 Kvs 332 K). Its forward MFLOPs are within 1% of SASRec on Beauty (5.05 vs 5.10 ) and 7% smaller on ML-1M ( 20 .27 vs 21 .83 ), since the MARS forward pass is dominated by a single batched matrix multiplication rather than quadratic attention. MARS-M in-herits the linear-time Mamba backbone, with MFLOPs 40% below SIGMA on Beauty ( 3.40 vs 5.80 )and 42% on ML-1M ( 13 .48 vs 23 .18 ). Its +11% Beauty and +31% ML-1M parameter overhead over Mamba4Rec comes from the deeper two-block stack. These compute savings translate to wall-clock latency. On Beauty MARS-T is 2.0× faster than SIGMA and 6.0× faster than BERT4Rec. On ML-1M MARS-M is 1.4× faster than SIGMA and 2.8× faster than BERT4Rec. Both variants occupy the accuracy-efficiency Pareto frontier. 
+
+4.6 Subgroup Analysis: Where Does MARS Help Most? 
+
+The comparison is stratified by training-sequence length Lu in Table 6, with bucket boundaries detailed in Appendix F. (i) Sparse benchmarks. On Yelp the relative improvement grows monotoni-cally from +21 .8% on short to +29 .7% on very long users, consistent with the multi-rate hypothesis that longer histories expose more time-scales than single-decay backbones can represent. Sports shows a +149 .8% very-long gain, tempered by n=89 . Games is essentially flat, indicating its encoder already captures the relevant signal for short users. The Beauty very-long bucket is the only sparse case where SASRec narrowly beats MARS-T, but with n=153 the gap is within seed variance ( ±0.7
+
+HR@10 from Table 3). (ii) Dense ML-1M. MARS-T trails SASRec by −2.9% on the very-long bucket, which is the dominant 76% of test users where Transformer attention already concentrates on 8the recent tail. MARS-M consistently outperforms Mamba4Rec across all four buckets by +5 .7% to 
+
++9 .0% , with the gap widening from short to long histories. (iii) Synthesis. The marginal value of MARS scales with the temporal heterogeneity of user histories, modulated by the encoder’s intrinsic recency capacity, motivating the dual-instantiation design. Table 6: Subgroup HR@10 ( ×100 ) by user history length Lu. Each cell: baseline → MARS (∆% ). The baseline is SASRec for the four sparse benchmarks and the ML-1M, MARS-T row, and Mamba4Rec for the ML-1M, MARS-M row. Red marks ∆ < 0. Bucket sizes in Appendix F.                                                                                    
+
+> Dataset Short (Lu≤5)Medium (6–15) Long (16–49) Very long (≥50) Beauty 6.57 →7.98 (+21.4) 7.66 →8.40 (+9.7) 12.89 →14.49 (+12.4) 20.26 →18.95 (-6.5) Sports 4.13 →5.30 (+28.5) 3.91 →4.97 (+27.2) 3.25 →4.35 (+33.7) 2.25 →5.62 (+149.8) Games 12.05 →11.31 (-6.1) 10.91 →10.94 (+0.3) 10.09 →10.25 (+1.6) 8.10 →8.91 (+10.0) Yelp 5.69 →6.93 (+21.8) 5.20 →6.50 (+25.0) 4.36 →5.49 (+25.9) 3.64 →4.72 (+29.7) ML-1M (MARS-T) 7.92 →8.04 (+1.5) 18.43 →19.13 (+3.8) 27.51 →27.85 (+1.2) 30.85 →29.96 (-2.9) ML-1M (MARS-M) 8.21 →8.68 (+5.7) 18.86 →20.32 (+7.7) 28.42 →30.97 (+9.0) 31.45 →34.01 (+8.1)
+
+## 5 Disucussion 
+
+A unified framework. MARS is encoder-agnostic by design: the same multi-rate operator gives two complementary instantiations, MARS-T for sparse data and MARS-M for dense data, automatically selected by ¯L before training (Section 3.6). MARS-T adds a recency prior on top of near-uniform SASRec attention (sparse), while MARS-M relaxes Mamba’s single-rate selective state through multiple learnable rates (dense), so the two variants cover the data-density spectrum without retraining a single architecture. 
+
+Mechanism. The entropy gap (sparse 0.75–0.87 vs dense 0.43–0.51; Appendix G) explains where MARS helps: an explicit recency prior delivers +4 to +19% HR@10 on sparse benchmarks but is redundant on dense ML-1M, where we switch to Mamba. The K-sensitivity gap (96% of the best at 
+
+K=1 on sparse vs +6.4% swing on dense) confirms Proposition 3. 
+
+Limitations. The backbone-selection rule (Eq. 7) is a hand-crafted dataset-level threshold rather than a learned mechanism, robust within the 20 × density gap of our benchmarks but unproven on richer regime spectra. The identifiability of Proposition 3 relies on a Hawkes-process model, with a distribution-free version remaining open. The O(L2) TiSASRec marginally outperforms MARS-T on NDCG/MRR for Beauty and Games by 1.1–7.1% , a trade-off we accept given MARS’s 40 × memory advantage at long L. We evaluate only offline next-item prediction on five public benchmarks. 
+
+Broader impact. Sequential recommenders shape consumption and exposure diversity on com-mercial platforms. MARS inherits the standard feedback-loop risks of collaborative filtering without introducing new ones, with its sensitivity to recent activity helping recover from intent shifts but also amplifying transient exploration. We use only public benchmark datasets and propose no technique aimed at surveillance or behavioural manipulation. 
+
+## 6 Conclusion 
+
+We introduced MARS, a time-aware aggregation operator that learns K user-conditioned exponential decay rates and fuses them through a context-adaptive gate. MARS automatically selects between MARS-T (Transformer encoder) for sparse data and MARS-M (Mamba encoder) for dense data based on a single dataset-level statistic, the average sequence length ¯L. MARS attains the best HR@10 on every benchmark, with mean gain +19.7% over the strongest content-only Transformer baseline on sparse data at O(LdK ) cost, and +3.2% HR@10 / +0.9% NDCG over SIGMA on dense ML-1M at 42% fewer MFLOPs, on the accuracy-efficiency Pareto frontier. A backbone-only ablation validates the regime-dependent design. 9References 
+
+Sung Min Cho, Eunhyeok Park, and Sungjoo Yoo. MEANTIME: Mixture of attention mechanisms with multi-temporal embeddings for sequential recommendation. In Proceedings of the 14th ACM Conference on Recommender Systems (RecSys) , pages 515–520, 2020. Xinyu Du, Huanhuan Yuan, Pengpeng Zhao, Jianfeng Qu, Fuzhen Zhuang, Guanfeng Liu, Yanchi Liu, and Victor S. Sheng. Frequency enhanced hybrid attention network for sequential recommendation. In Proceedings of the 46th International ACM SIGIR Conference on Research and Development in Information Retrieval (SIGIR) , pages 78–88, 2023. Albert Gu and Tri Dao. Mamba: Linear-time sequence modeling with selective state spaces. arXiv preprint arXiv:2312.00752 , 2023. F Maxwell Harper and Joseph A Konstan. The MovieLens datasets: History and context. ACM Transactions on Interactive Intelligent Systems (TiiS) , 5(4):1–19, 2015. Alan G. Hawkes. Spectra of some self-exciting and mutually exciting point processes. Biometrika ,58(1):83–90, 1971. Ruining He and Julian McAuley. Ups and downs: Modeling the visual evolution of fashion trends with one-class collaborative filtering. In Proceedings of the 25th International Conference on World Wide Web (WWW) , pages 507–517, 2016. Balázs Hidasi, Alexandros Karatzoglou, Linas Baltrunas, and Domonkos Tikk. Session-based recommendations with recurrent neural networks. In International Conference on Learning Representations (ICLR) , 2016. Yupeng Hou, Binbin Hu, Zhiqiang Zhang, and Wayne Xin Zhao. CORE: Simple and effective session-based recommendation within consistent representation space. In Proceedings of the 45th International ACM SIGIR Conference on Research and Development in Information Retrieval (SIGIR) , pages 1796–1801, 2022. Wang-Cheng Kang and Julian McAuley. Self-attentive sequential recommendation. In IEEE International Conference on Data Mining (ICDM) , pages 197–206, 2018. Diederik P. Kingma and Jimmy Ba. Adam: A method for stochastic optimization. In International Conference on Learning Representations (ICLR) , 2015. Jiacheng Li, Yujie Wang, and Julian McAuley. Time interval aware self-attention for sequential recommendation. In Proceedings of the 13th International Conference on Web Search and Data Mining (WSDM) , pages 322–330, 2020. Jing Li, Pengjie Ren, Zhumin Chen, Zhaochun Ren, Tao Lian, and Jun Ma. Neural attentive session-based recommendation. In Proceedings of the 2017 ACM on Conference on Information and Knowledge Management (CIKM) , pages 1419–1428, 2017. Chengkai Liu, Jianghao Lin, Jianling Wang, Hanzhou Liu, and James Caverlee. Mamba4Rec: Towards efficient sequential recommendation with selective state space models. In KDD Workshop on Recommendation with Generative Models (RelKD) , 2024a. Chuang Liu, Yibing Zhan, Xueqi Ma, Liang Ding, Dapeng Tao, Jia Wu, Wenbin Hu, and Bo Du. Gradformer: Graph transformer with exponential decay. In Proceedings of the 33rd International Joint Conference on Artificial Intelligence (IJCAI) , 2024b. Ziwei Liu, Qidong Liu, Yejing Wang, Wanyu Wang, Pengyue Jia, Maolin Wang, Zitao Liu, Yi Chang, and Xiangyu Zhao. SIGMA: Selective gated mamba for sequential recommendation. In Proceed-ings of the AAAI Conference on Artificial Intelligence (AAAI) , 2025. Fei Sun, Jun Liu, Jian Wu, Changhua Pei, Xiao Lin, Wenwu Ou, and Peng Jiang. BERT4Rec: Sequen-tial recommendation with bidirectional encoder representations from transformer. In Proceedings of the 28th ACM International Conference on Information and Knowledge Management (CIKM) ,pages 1441–1450, 2019. 10 Henry Teicher. Identifiability of finite mixtures. The Annals of Mathematical Statistics , 34(4): 1265–1269, 1963. Yuda Wang, Xuxin He, and Shengxin Zhu. EchoMamba4Rec: Harmonizing bidirectional state space models with spectral filtering for advanced sequential recommendation. arXiv preprint arXiv:2406.02638 , 2024. Yelp Inc. Yelp open dataset. https://www.yelp.com/dataset , 2024. Wayne Xin Zhao, Shanlei Mu, Yupeng Hou, Zihan Lin, Yushuo Chen, Xingyu Pan, Kaiyuan Li, Yujie Lu, Hui Wang, Changxin Tian, et al. RecBole: Towards a unified, comprehensive and efficient framework for recommendation algorithms. In Proceedings of the 30th ACM International Conference on Information and Knowledge Management (CIKM) , pages 4653–4664, 2021. 11 Appendix A MARS Forward Pass 
+
+The full MARS forward pass for a single user is given in Algorithm A1. Batching across users is performed via a single matrix multiplication on Step 5, with all other operations being pointwise or small per-user MLPs. 
+
+Algorithm A1 MARS forward pass. 
+
+Require: Encoder outputs H ∈ RL×d, hlast ∈ Rd, mask m ∈ { 0, 1}L, elapsed times ∆t ∈ RL
+
+> ≥0
+
+,last item index vLu , embedding table E; learnable rates λ, τ ∈ RK>0, modulation Wλ, fusion 
+
+(Wg , v), time encoder tEnc ; hyperparameters σ, τ α, τ 0.
+
+Ensure: user representation hu ∈ Rd. 
+
+> 1:
+
+˜∆ti ← log  1 + ∆ ti/τ 0
+
+ ∀i ▷ compress gaps  
+
+> 2:
+
+δ ← tanh( Wλ hlast ), λ(u) ← λ ⊙ exp( σ δ) ▷ user-conditioned rates  
+
+> 3:
+
+ℓk,i ← − λ(u) 
+
+> k
+
+˜∆ti/τ k ∀k, i  
+
+> 4:
+
+ℓk,i ← ℓk,i − ∞ · (1 − mi), wk,i ← softmax i(ℓk,i ) 
+
+> 5:
+
+Z ← w H ∈ RK×d ▷ O(LdK ) 
+
+> 6:
+
+c ← [ tEnc( ˜∆tLu ); evLu ; hlast ] 
+
+> 7:
+
+gk ← v⊤ tanh  Wg [Zk; c], α ← softmax( g/τ α) 
+
+> 8:
+
+hu ← hlast + PKk=1 αk Zk ▷ fuse + residual  
+
+> 9:
+
+return hu
+
+## B Proof of Proposition 1 
+
+Proposition 1. Let ϕ : [0 , T ] → [0 , 1] be a monotonically non-increasing function with ϕ(0) = 1 .For every ε > 0 there exist K ∈ N, weights {αk}Kk=1 ⊂ [0 , 1] with P 
+
+> k
+
+αk = 1 , and rates 
+
+{λk}Kk=1 ⊂ R≥0 such that sup t∈[0 ,T ] ϕ(t) − P 
+
+> k
+
+αke−λk t ≤ ε.Proof. We proceed in three steps. 
+
+Step 1 (algebra of exponentials). Let E = {e−λt : λ ≥ 0} ⊂ C([0 , T ]) and let A be the unital algebra generated by E over R. Since e−λ1t · e−λ2t = e−(λ1+λ2)t ∈ E and constants 1 = e−0·t ∈ E ,the set A coincides with the finite linear combinations of E. The set E separates points of [0 , T ] (for 
+
+t1̸ = t2, choose any λ > 0 and note e−λt 1̸ = e−λt 2 ) and contains the constant function. By the Stone–Weierstrass theorem, A is dense in C([0 , T ]) in the supremum norm. Hence there exist real coefficients {ck}Kk=1 and rates {λk}Kk=1 such that ∥ϕ − P 
+
+> k
+
+cke−λk t∥∞ ≤ ε/ 2.
+
+Step 2 (positivity). Let f (t) = P 
+
+> k
+
+cke−λk t be the approximant. Because ϕ is non-negative, the negative parts of f contribute at most ε/ 2 in supremum norm. Replacing each negative coefficient 
+
+ck < 0 by zero changes f pointwise by at most ε/ 2 (the negative-part contribution), yielding a non-negative f +(t) = P  
+
+> k:ck≥0
+
+cke−λk t satisfying ∥ϕ − f +∥∞ ≤ ε.
+
+Step 3 (normalisation to a probability simplex). The boundary condition ϕ(0) = 1 implies P 
+
+> k
+
+ck → 1
+
+as ε → 0. Writing S = P  
+
+> k:ck≥0
+
+ck and αk = ck/S , we obtain a convex combination P 
+
+> k
+
+αke−λk t
+
+that equals f +(t)/S . The error introduced by the rescaling is at most |S − 1| · sup t |f +(t)| ≤ | S − 1|,which can be made smaller than any given ε by choosing K large enough in Step 1. Re-absorbing this contribution into the definition of ε proves the claim. 
+
+Remark. A constructive variant of the proposition can be obtained from the Hausdorff moment problem : any monotone function on [0 , T ] has a representing measure on [0 , ∞), and discretising that measure on K points yields the desired exponential mixture with explicit error O(K−1) for sufficiently smooth ϕ. We omit the constructive details since the abstract Stone–Weierstrass argument is sufficient for our existence claim. 12 C Proof of Proposition 3 
+
+Proposition 3. Suppose user behaviour is generated from a multivariate Hawkes process with K
+
+exponential excitation kernels of distinct positive rates λ∗ 
+
+> 1
+
+< · · · < λ ∗ 
+
+> K
+
+and non-degenerate weights 
+
+α∗ 
+
+> k
+
+> 0, P 
+
+> k
+
+α∗ 
+
+> k
+
+= 1 . If the diversity loss Ldiv = − P  
+
+> k̸=k′
+
+JSD( pk∥pk′ ) on the per-head attention distributions pk is strictly positive at the optimum, then the learned rates {λk} recover {λ∗
+
+> k
+
+} up to permutation in the population limit, and the learned weights {αk} recover {α∗
+
+> k
+
+} in ℓ1 norm. Proof. Let Lce (θ) denote the population sequential cross-entropy loss with parameters θ = ( λ, α),where λ = (λ1, . . . , λ K ) and α = (α1, . . . , α K ). Under the generative Hawkes assump-tion, the next-event hazard at time t given a history Ht takes the form λ(t | Ht) = μ +
+
+P
+
+> ti<t
+
+PKk=1 α∗
+
+> k
+
+λ∗ 
+
+> k
+
+e−λ∗ 
+
+> k(t−ti)
+
+, so the conditional likelihood is a K-mixture of distinct exponen-tial laws with mixture weights α∗.
+
+Step 1 (identifiability of the mixing measure). By the classical theorem of Teicher [1963], finite mixtures of exponentials with distinct rates form an identifiable family: for two parameter tuples 
+
+(λ, α) and (λ′, α′) with all rates distinct, P 
+
+> k
+
+αkλke−λk t ≡ P 
+
+> k
+
+α′
+
+> k
+
+λ′
+
+> k
+
+e−λ′  
+
+> kt
+
+for all t ≥ 0 implies the two tuples agree up to permutation of the K indices. Hence at the population minimum of Lce , any optimiser θ⋆ satisfies θ⋆ ∼σ θ∗ for some permutation σ, provided the learned rates remain distinct. 
+
+Step 2 (the diversity loss enforces distinctness). Suppose for contradiction that two heads collapse onto the same rate, λk = λk′ with k̸ = k′. Then their per-head attention distributions pk(t | H ) ∝
+
+e−λk (tnow −ti) and pk′ (t | H ) are identical pointwise, so JSD( pk∥pk′ ) = 0 . Summing over all distinct pairs, Ldiv ≤ 0 with equality iff some pair collapses. By assumption, Ldiv > 0 at the optimum, contradicting collapse. Hence all learned rates are pair-wise distinct at any optimiser, putting us in the regime of Step 1. 
+
+Step 3 ( ℓ1 convergence of the weights). Step 1 gives α⋆ = α∗ up to permutation; combined with the load-balance constraint P 
+
+> k
+
+αk = 1 , α k > 0 enforced by the auxiliary loss Lbal , the optimiser is unique on the simplex ∆K−1 up to permutation. In particular, ∥α⋆ − α∗∥1 = 0 at the population optimum. 
+
+Remark. The proposition does not claim that finite-sample SGD will reach the population optimum, only that the optimum exists, is unique up to permutation, and matches the data-generating process. The ablation in Section 4.3 ( b3 ) shows empirically that disabling Ldiv degrades MARS by 0.1–0.8
+
+HR@10 points, with the largest gap on Yelp where the multi-rate structure is most pronounced; this is consistent with the diversity loss being a necessary condition for recovering distinct rates. 
+
+## D Full Per-Dataset Ablation (HR / NDCG / MRR) 
+
+The headline ablation (Table 4 in the main text) is expanded to all three metrics on every benchmark in Table A1. The qualitative findings are unchanged. MARS contributes positively on the four sparse benchmarks across all three metrics, with the largest gains on Yelp. On dense ML-1M the backbone-only variant matches or exceeds Full MARS-T on every metric, supporting the use of MARS-M in that regime. The opposite pattern is confirmed in Table A2, where Full MARS-M exceeds backbone-only across all ML-1M metrics. Real timestamps ( b1 ) carry the most weight on Beauty, the load-balance regulariser ( b4 ) is the most important on ML-1M, and the user-conditioned 
+
+λ (b2 ) and diversity loss ( b3 ) contribute smaller but positive amounts on all five benchmarks. 
+
+## E Implementation and Reproducibility 
+
+Hyperparameters. The hyperparameters of MARS-T and MARS-M, together with their default values, are listed in Table A3. Two values are dataset-dependent: dropout ( 0.5 on Beauty/Sports/Yelp, 
+
+0.2 on Games/ML-1M, matching the SASRec defaults in RecBole) and the number of decay heads 
+
+K (4 on the four sparse benchmarks, 8 on ML-1M). All other hyperparameters are constant across datasets and architectures. 13 Table A1: Full MARS-T ablation across all benchmarks and metrics ( ×100 ). Bold = best per column.                                                                                                                      
+
+> Beauty Sports Games ML-1M Yelp Variant HR NDCG MRR HR NDCG MRR HR NDCG MRR HR NDCG MRR HR NDCG MRR Full 8.95 4.46 3.10 5.28 2.45 1.59 12.34 5.67 3.62 29.30 16.38 12.43 6.50 4.25 3.56
+> Backbone only 8.53 4.22 2.89 4.89 2.29 1.49 11.75 5.55 3.55 30.33 17.36 13.42 5.36 3.72 3.23
+> −b1 8.69 4.39 3.07 5.16 2.41 1.57 12.32 5.59 3.55 29.82 17.12 13.24 6.49 4.23 3.54
+> −b2 8.94 4.41 3.02 5.21 2.40 1.55 12.32 5.64 3.61 29.25 16.44 12.53 6.39 4.19 3.52
+> −b3 8.90 4.41 3.04 5.21 2.40 1.54 12.14 5.54 3.54 29.22 16.51 12.62 6.37 4.18 3.52
+> −b4 8.88 4.41 3.04 5.12 2.37 1.52 12.26 5.61 3.59 28.41 15.90 12.08 6.33 4.16 3.50 Single head 8.80 4.38 3.03 5.27 2.42 1.55 12.23 5.60 3.59 27.45 15.18 11.42 6.42 4.19 3.51
+
+Table A2: Full MARS-M ablation across all benchmarks and metrics ( ×100 ). Bold = best per column. On dense ML-1M, Full MARS-M exceeds Backbone-only across all three metrics, in contrast to the Transformer-backboned MARS-T ablation in Table A1. The largest single-component drop on ML-1M ( −1.30 HR@10 from Full) occurs when we disable the JSD diversity loss ( b3 ), consistent with Proposition 3 that without diversity the K heads collapse onto a single rate.                                                                                                                        
+
+> Beauty Sports Games ML-1M Yelp Variant HR NDCG MRR HR NDCG MRR HR NDCG MRR HR NDCG MRR HR NDCG MRR Full 8.01 4.08 2.88 4.68 2.27 1.53 12.37 5.81 3.81 32.80 18.80 14.52 5.99 3.89 3.25 Backbone only 8.15 4.19 2.97 4.39 2.22 1.55 12.07 5.83 3.93 32.40 18.50 14.30 5.44 3.66 3.12
+> −b1 7.47 4.08 3.04 4.80 2.29 1.52 11.87 5.56 3.64 32.30 18.40 14.20 6.07 3.86 3.18
+> −b2 7.74 4.02 2.88 4.66 2.26 1.52 12.28 5.78 3.80 32.10 18.40 14.10 5.91 3.86 3.24
+> −b3 8.01 4.06 2.85 4.69 2.26 1.52 12.28 5.78 3.80 31.50 18.10 13.90 5.97 3.88 3.23
+> −b4 8.01 4.08 2.88 4.68 2.27 1.53 12.34 5.79 3.79 32.40 18.40 14.20 5.99 3.87 3.22 Single head 7.87 4.03 2.85 4.81 2.31 1.54 12.36 5.78 3.79 32.50 18.40 14.10 6.12 3.93 3.26
+
+Data preprocessing. We follow the SIGMA [Liu et al., 2025] preprocessing protocol. The four Amazon datasets and ML-1M are filtered with the standard 5-core procedure (drop users and items with fewer than five interactions). Yelp uses the [5 , 200) filter recommended by SIGMA. Sequences are sorted by timestamp and padded or truncated to a maximum length of 50 on the four sparse datasets and 200 on ML-1M. Test items follow the leave-one-out protocol on the most recent interaction. 
+
+Code release. Code is available in the supplementary materials and will be made public upon acceptance. 
+
+## F Subgroup Analysis Pseudo-code and Bucket Definitions 
+
+Bucket boundaries. For each user u in the test split, we take its training-sequence length Lu (the number of items used as context for predicting the held-out target) and assign u to one of four buckets per dataset: 
+
+Pseudo-code. The evaluation loop is described in Algorithm A2. We run the loop once per (model, dataset) pair, using the trained checkpoint of the model. The implementation uses RecBole’s 
+
+full_sort_predict as a black box: it produces the per-item scores, after which we manually compute HR/NDCG/MRR per sample (rather than using the framework’s batch-level evaluator) so that we can aggregate by bucket. Wall time is roughly five minutes per (model, dataset) pair on a V100 because the trained checkpoint is loaded directly without re-training. 14 Table A3: MARS hyperparameter defaults; dataset-dependent values noted in the rightmost column.                                             
+
+> Hyperparameter Default Notes
+> hidden dim d64 inherited from SASRec / Mamba4Rec #blocks N2Transformer blocks for MARS-T, Mamba blocks for MARS-M inner dim 256 SASRec FFN #decay heads K48on ML-1M modulation strength σ0.5Eq. (2)
+> λdiv 0.01 JSD diversity weight
+> λbal 0.01 MoE-style load balance weight time unit τ01hour timestamp normaliser agg. hidden dim 64 gate MLP gate temperature τα1.0Eq. (5) dropout 0.50.2on Games/ML-1M (SASRec defaults) optimiser Adam [Kingma and Ba, 2015] default β, no weight decay learning rate 10 −3–batch size 2048 –max epochs 200 with early stopping early-stop patience 20 on validation NDCG@10
+
+Table A4: Bucket boundaries used in the subgroup analysis (Section 4.6). ML-1M uses upward-shifted boundaries to match its dense long-history regime. 
+
+Dataset Short Medium Long Very long 
+
+Beauty / Sports / Games / Yelp 1–5 6–15 16 –49 ≥ 50 
+
+ML-1M 1–30 31 –90 91 –200 ≥ 201 
+
+Algorithm A2 Subgroup evaluation. 
+
+Require: trained model f , test loader D, bucket boundaries {(ℓb, u b, n b)}Bb=1 , top-k = 10 . 
+
+> 1:
+
+Initialise Hb ← 0, Nb ← 0, Mb ← 0, Cb ← 0 for each bucket b. 
+
+> 2:
+
+for batch x, L u, v ⋆ in D do  
+
+> 3:
+
+s ← f (x) ∈ RB×|V| ▷ full-sort scores  
+
+> 4:
+
+s[: , 0] ← −∞ ▷ exclude padding item  
+
+> 5:
+
+Compute per-row rank r of v⋆ in s. 
+
+> 6:
+
+for each user u in batch do  
+
+> 7:
+
+b ← bucket s.t. ℓb ≤ Lu ≤ ub 
+
+> 8:
+
+Hb += I[ru ≤ k]; Nb += I[ru ≤ k] · 1log 2(ru+1) ; Mb += I[ru ≤ k] · 1 
+
+> ru
+
+; Cb += 1  
+
+> 9:
+
+end for  
+
+> 10:
+
+end for  
+
+> 11:
+
+return {(b, H b/C b, N b/C b, M b/C b)}Bb=1 
+
+## G Attention Entropy of the Trained SASRec Encoder 
+
+To support the receptive-field interpretation in Section 5, we measure the post-softmax attention entropy of a trained SASRec encoder on each dataset, normalised by log Leff so that 1 is uniform and 
+
+0 is peaked. The metric is computed over all valid query positions and both encoder layers (standard deviations 0.27–0.42 across positions). Higher entropy indicates that the encoder distributes mass widely and benefits more from an explicit recency prior, predicting larger MARS gains. Table A5: Normalised post-softmax attention entropy of a trained SASRec across datasets. 
+
+Dataset Beauty Sports Yelp Games ML-1M Layer 0 0.785 0.812 0.838 0.870 0.512 Layer 1 0.745 0.770 0.798 0.831 0.432 MARS HR@10 gain +9 .95% +13 .5% +19 .2% +36 .2% −2.9% †   
+
+> †MARS-T vs SASRec on the dominant very-long ML-1M bucket; MARS-M gains +8 .3% over Mamba4Rec on the full ML-1M.
+
+15 The entropy ranking matches the MARS gain ranking on the sparse benchmarks, with higher entropy corresponding to larger gain. The sharp drop on ML-1M is consistent with the mechanistic explanation that Transformer attention has already concentrated, so the post-encoder aggregation contributes little, motivating the Mamba switch in MARS-M. 
+
+## H Hyperparameter Sensitivity Numerical Values 
+
+Table A6: Numerical values for the hyperparameter sensitivity figure (HR@10 / NDCG@10 / MRR@10, ×100 ). 
+
+Beauty (MARS-T, K) ML-1M (K) Dropout 
+
+K / dropout HR NDCG MRR MARS-T MARS-M Beauty ML-1M 1 / 0.1 8.69 4.29 2.95 27.45 32.20 8.33 31.64 2 / 0.2 8.96 4.38 2.97 27.92 32.34 8.27 30.40 4 / 0.3 9.01 4.42 3.02 28.15 32.46 8.59 27.78 8 / 0.5 9.03 4.48 3.09 28.23 32.58 8.56 25.58 16 / 0.7 8.90 4.46 3.11 29.22 32.51 8.19 22.05 16

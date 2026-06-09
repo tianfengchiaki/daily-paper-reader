@@ -1,0 +1,70 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2606.04302v1/fig-001.webp",
+      "caption": "Figure 1. Comparison of positional encoding strategies within a Transform block. Existing methods, even the state-of-the-art Block-Attention for KV cache reuse, eagerly apply positions before caching, making KV caches position-dependent and nonshareable. LazyAttention applies positions lazily inside the fused attention kernel, enabling reuse and sharing without duplication.",
+      "page": 2,
+      "index": 1,
+      "width": 499,
+      "height": 264
+    },
+    {
+      "url": "assets/figures/arxiv/2606.04302v1/fig-002.webp",
+      "caption": "Table 4. TTFT Comparison under Uniform Sampled Documents across different GPUs.",
+      "page": 18,
+      "index": 2,
+      "width": 595,
+      "height": 295
+    },
+    {
+      "url": "assets/figures/arxiv/2606.04302v1/fig-003.webp",
+      "caption": "Table 5. Long-form literature review latency (Tulu3-Block-FT 8B, H100).",
+      "page": 18,
+      "index": 3,
+      "width": 749,
+      "height": 202
+    },
+    {
+      "url": "assets/figures/arxiv/2606.04302v1/fig-004.webp",
+      "caption": "Figure 4. TTFT vs request rate under different document distributions. We vary the request rate (req/s) and plot time-to-first-token (TTFT). (a) Uniform—few documents recur across requests (low reuse). (b) Skewed—a small set of documents is frequently reused (high reuse).",
+      "page": 8,
+      "index": 4,
+      "width": 827,
+      "height": 250
+    },
+    {
+      "url": "assets/figures/arxiv/2606.04302v1/fig-005.webp",
+      "caption": "Table 1. VRAM cache hit ratio (%) under different KV cache budgets. A high hit ratio indicates more effective cache reuse. LazyAttention is the most effective, and its advantage persists up to the full GPU budget (a single-copy design keeps reusing documents at any offset, whereas the gains of position-coupled methods saturate).",
+      "page": 8,
+      "index": 5,
+      "width": 1018,
+      "height": 203
+    },
+    {
+      "url": "assets/figures/arxiv/2606.04302v1/fig-006.webp",
+      "caption": "Table 3. TTFT on RAG QA for 8B vs 70B models.",
+      "page": 17,
+      "index": 6,
+      "width": 807,
+      "height": 268
+    },
+    {
+      "url": "assets/figures/arxiv/2606.04302v1/fig-007.webp",
+      "caption": "Figure 5. Overhead analysis. (a) Breakdown of overhead across phases: ① document processing, ② query prefilling, and ③ decoding. Deferred rotation adds only 0.13% overhead in decoding. (b) Accumulated latency with and without deferred rotation, where the dominant gain comes from document processing rather than token generation.",
+      "page": 9,
+      "index": 7,
+      "width": 904,
+      "height": 228
+    },
+    {
+      "url": "assets/figures/arxiv/2606.04302v1/fig-008.webp",
+      "caption": "Figure 3. Comparison of Rotary Embedding (R) placement in tiled attention. (a) Naive deferred encoding: Rotates keys twice (resetting to zero, then shifting to target) before attention (A), incurring high computational overhead. (b) LazyAttention (prefilling): Rotates only the keys inside the attention kernel on the fly, allowing Keys/Values to be read as-is to avoid materialization overhead (K1/K2 denote the RoPE half-dimensions). The rotary vector is loaded from HBM to avoid extra computation. (c) LazyAttention (decoding): Fuses rotation directly into the attention inner loop, applying it to Q on-the-fly via relative offsets, ensuring the KV cache remains position-agnostic with negligible cost. The rotary vector is computed on the fly to save bandwidth.",
+      "page": 5,
+      "index": 8,
+      "width": 1016,
+      "height": 185
+    }
+  ]
+}

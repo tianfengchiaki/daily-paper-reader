@@ -1,0 +1,566 @@
+Title: Adaptive Loss Balancing for Noise-Robust GRPO in Generative Recommendation
+
+URL Source: https://arxiv.org/pdf/2606.08480v1
+
+Published Time: Tue, 09 Jun 2026 01:03:57 GMT
+
+Number of Pages: 9
+
+Markdown Content:
+# Adaptive Loss Balancing for Noise-Robust GRPO in Generative Recommendation 
+
+# Kewei Xu ∗
+
+xukewei3@jd.com JD.com Beijing, China 
+
+# Junbo Qi ∗
+
+junboqi@toki.waseda.jp Waseda University Tokyo, Japan 
+
+# Yanyan Zou †
+
+zoe.yyzou@gmail.com JD.com Beijing, China 
+
+# Pengfei Zhang 
+
+202421080437@std.uestc.edu.cn University of Electronic Science and Technology of China Chengdu, China 
+
+# Xingzhi Yao 
+
+yaoxingzhi1@jd.com JD.com Beijing, China 
+
+# Shengjie Li ‡
+
+lishengjie1@jd.com JD.com Beijing, China 
+
+## Abstract 
+
+Reinforcement learning (RL) presents a promising avenue for en-hancing generative recommendation beyond supervised imitation, leveraging reward signals to guide policy improvement. However, its efficacy is critically contingent on the trustworthiness of the reward model for the samples it evaluates. In practice, produc-tion rankers, the widely adopted reward models, are trained on exposure-biased logs, leading to sample-dependent inaccuracies that violate this assumption. Our stratified analysis uncovers a con-sistent pattern: reward guidance is most beneficial when the policy exhibits uncertainty and the ranker can effectively discriminate the ground-truth item from rollout negatives. On other samples, the reward signal is either negligible or detrimental, highlighting the risk of uniform RL application. To address such an issue, we introduce AdaGRPO , a novel frame-work that treats reward-guided optimization as selective admission rather than uniform pressure. Training is anchored in supervised negative log-likelihood, while the GRPO objective is gated by a bi-nary, per-sample clip determined by two rollout diagnostics: policy-side difficulty and reward discriminability. Instances failing either diagnostic default to pure supervision, ensuring stability and miti-gating the amplification of noisy gradients. We validate AdaGRPO on a large-scale e-commerce dataset. At the best intermediate checkpoint, it elevates HR@10 from 11.01% to 12.18% while constraining hallucination below 0.22%, and main-tains robustness at the final checkpoint (HR@10 11.63%, halluci-nation 0.27%), outperforming fixed NLL–GRPO mixtures across the retrieval–validity frontier. In production A/B tests, AdaGRPO achieves statistically significant gains in click-through rate and  
+
+> ∗Both authors contributed equally to this research.
+> †Project lead.
+> ‡Corresponding author. Permission to make digital or hard copies of all or part of this work for personal or classroom use is granted without fee provided that copies are not made or distributed for profit or commercial advantage and that copies bear this notice and the full citation on the first page. Copyrights for components of this work owned by others than the author(s) must be honored. Abstracting with credit is permitted. To copy otherwise, or republish, to post on servers or to redistribute to lists, requires prior specific permission and/or a fee. Request permissions from permissions@acm.org.
+> RecSys ’25, Prague, Czech Republic
+> ©2025 Copyright held by the owner/author(s). Publication rights licensed to ACM. ACM ISBN 978-1-4503-XXXX-X/2025/10 https://doi.org/XXXXXXX.XXXXXXX
+
+dwell time, confirming its practical utility. These results suggest that the central challenge in applying RL to generative recommen-dation lies not in designing stronger rewards, but in discerning when the reward signal can be trusted to improve policy learning. 
+
+## CCS Concepts 
+
+• Information systems → Recommender systems .
+
+## Keywords 
+
+Generative Retrieval, Recommender System, Post Training 
+
+ACM Reference Format: 
+
+Kewei Xu, Junbo Qi, Yanyan Zou, Pengfei Zhang, Xingzhi Yao, and Shengjie Li. 2025. Adaptive Loss Balancing for Noise-Robust GRPO in Generative Recommendation. In Proceedings of Proceedings of the 19th ACM Conference on Recommender Systems (RecSys ’25). ACM, New York, NY, USA, 9 pages. https://doi.org/XXXXXXX.XXXXXXX 
+
+## 1 Introduction 
+
+Industrial recommendation systems are built as a cascade: a recall stage retrieves thousands of candidates from a catalogue of billions, and a ranking stage rescores them with richer features and heavier models before presentation. The recall stage prizes coverage —it must sweep a vast item space efficiently, tolerating imprecision in exchange for not missing relevant items. The ranking stage prizes 
+
+discrimination —it fuses dense cross-features (user–item interac-tions, real-time context, multi-objective labels for click, conversion, and dwell time) to separate good candidates from great ones within the much smaller set it receives. Generative retrieval (GR) reformulates the conventional recall mechanism with autoregressive decoding over learned item identi-fiers [ 7 , 11 , 12 ]. Instead of maintaining per-item embeddings and performing approximate nearest-neighbor search, a GR model com-presses the catalogue into a shared codebook of Semantic IDs and generates candidates as token sequences conditioned on the user’s interaction history [ 5 , 16 , 26 ]. The formulation inherits the gener-alization strength of large language models: items sharing seman-tic prefixes are decoded through common pathways, giving GR natural coverage over semantically related and long-tail products that embedding-based recall might miss. The same weight-sharing, however, limits fine-grained discrimination among items within a  
+
+> arXiv:2606.08480v1 [cs.LG] 7 Jun 2026 RecSys ’25, October 6–10, 2025, Prague, Czech Republic Kewei Xu, Junbo Qi, Yanyan Zou, Pengfei Zhang, Xingzhi Yao, and Shengjie Li
+
+cluster—a capacity that ranking models acquire through dedicated per-item parameters and dense multi-objective supervision. A natural idea is to close this precision gap with reinforcement learning: treat a multi-objective ranking model as a reward model (RM) and fine-tune the GR policy to generate candidates the RM scores favorably. Group Relative Policy Optimization (GRPO) [ 8, 18 ], which normalizes rewards within each rollout group and avoids a learned value network, has become the standard vehicle. Recent work on RL-based alignment for generative recommendation [ 5 , 26 ]confirms that reward-guided fine-tuning can push performance beyond pure supervised imitation. The RL recipe works cleanly in domains such as mathematical reasoning [ 8], where a deterministic verifier certifies each rollout as correct or incorrect. Recommendation admits no such verifier. The reward signal traces back to user feedback—clicks and purchases— that is both exposure-biased (users interact only with items they have been shown) and sparse (the vast majority of user–item pairs are unobserved) [ 3, 10 ]. An RM trained on these logs inherits their blind spots: it may be well-calibrated on frequently exposed items yet unreliable on long-tail or recently added products that lie outside its effective training distribution. Existing RL-for-recommendation methods, however, have not examined the resulting capability con-flict between the GR policy and the RM—a conflict rooted in their different architectures, objectives, and feature regimes—and instead apply the reward signal uniformly across all training instances. Easy Sample               
+
+> GR Rollouts
+> 1GT (ground truth)
+> 2item A
+> 3item B
+> 4...
+> RM Score (noisy)
+> 0.82
+> 0.81
+> 0.80
+> ...
+> Rewards are
+> close
+> advantage ≈ 0
+> Noise dominates
+> GR Rollouts
+> 1popular item X
+> 2popular item Y
+> 3GT (ground truth)
+> 4...
+> Hard Sample
+> RM Score (biased)
+> 0.91
+> 0.88
+> 0.24
+> ... GT
+> RM prefers
+> popular
+> items over GT
+> Exposure bias
+> (a) GT already in top rollouts
+> (b) GT is long -tail / unseen
+
+Figure 1: Two failure modes of uniform reward application. (a) On easy samples the ground truth already ranks among top rollouts; rewards cluster tightly and the GRPO advantage is dominated by RM noise. (b) On hard samples where the RM is unreliable, exposure bias causes it to score popular distractors above the ground truth, pushing the policy in the wrong direction. 
+
+Uniform trust in the RM exposes two failure modes that pull in opposite directions (Figure 1). On easy instances—those where the policy already places the ground-truth item near the top of its rollout ranking—reward scores cluster tightly around the group mean. The GRPO advantage collapses to near zero and residual RM noise dominates the gradient, driving the kind of overoptimization documented in the reward-hacking literature [ 2, 6]. At the other extreme, not every hard instance benefits from RL. Some are hard precisely because the ground truth lies in a region where the RM is locally miscalibrated—long-tail products that are underrepresented in logged exposures. On these instances the RM scores popular distractors above the true target, and the resulting policy-gradient update pushes the model away from the correct answer. A stratified analysis (Section 4) makes this picture precise. Aggre-gated over all training instances, the RM’s influence on the ground-truth rank is near zero ( 𝐾 =50 ). The aggregate, however, masks a strong compositional effect: conditioned on the policy being uncer-tain about an instance and the RM exhibiting clean discriminability on it, the per-instance influence becomes substantial. The RM is not globally uninformative; it is conditionally valuable—and both conditions are computable at training time from quantities already materialized during GRPO rollout generation. These observations motivate AdaGRPO , which reframes reward-guided optimization as selective admission rather than uniform pres-sure. Supervised NLL anchors every training instance; the GRPO term is gated by a per-sample binary clip computed from two rank-based diagnostics on the rollout group. The first diagnostic certifies 
+
+policy-side difficulty —it fires when the ground truth falls outside the policy’s top-ranked rollouts, signaling that the supervised loss alone under-specifies the correct target. The second certifies reward-side discriminability —it requires the RM to rank the ground truth near the top while pushing contextually irrelevant negatives to the bottom, ensuring clean separation. Their conjunction admits the GRPO loss only where the policy needs help and the RM can reliably provide it; everywhere else, the update reduces to pure supervision. Conceptually, AdaGRPO lifts the clipping principle of PPO [ 17 ]from the ratio domain to the sample domain: it defines a trust re-gion not over how far each token-level update may move, but over 
+
+which instances are permitted to contribute a policy-gradient signal at all. We validate AdaGRPO on a large-scale e-commerce dataset. Of-fline, it raises HR@10 from 11.01% to 12.18% at the best intermediate checkpoint while holding hallucination at ≤0.22%, and remains the strongest final-checkpoint model across the retrieval–validity fron-tier. In a production A/B test it delivers a statistically significant +0.43% lift in effective item page views together with gains in click-through rate and dwell time. The results point to a conclusion that may generalize beyond this setting: the central challenge of RL for generative recommendation is not designing stronger rewards, but knowing when to trust them. 
+
+## 2 Related Work 
+
+Generative retrieval for recommendation. Generative retrieval casts recommendation as autoregressive decoding over item identi-fiers [ 5, 7, 26 ], bypassing the traditional recall–rank cascade. SFT-based alignment [ 1] and retrieval-augmented variants [ 11 , 12 , 24 ]have established strong baselines; our work targets the subsequent RL fine-tuning stage. 
+
+RL alignment for LLMs. RLHF [ 13 ] and its derivatives—PPO [ 17 ], DPO [ 15 ], GRPO [ 18 ]—form the standard toolkit, with DeepSeek-R1 [ 8] confirming that pure RL can unlock capabilities beyond Adaptive Loss Balancing for Noise-Robust GRPO in Generative Recommendation RecSys ’25, October 6–10, 2025, Prague, Czech Republic 
+
+SFT. PPO is the closest mechanistic precedent: it bounds each up-date by clipping the importance-sampling ratio (a per-token trust region). AdaGRPO clips in the sample domain, gating whether an instance contributes a policy gradient at all. In recommenda-tion, Rank-GRPO [ 25 ] introduces reward masking and ranking-importance weights, and MiniRec [ 21 ] improves sample efficiency via RL-specific filtering. These works refine how the RM signal is used; we ask when it should be trusted. 
+
+Difficulty-aware training. Ji et al. [ 9] show that only intermediate-difficulty samples yield clean policy gradients in reasoning, and [ 14 ]quantifies up to 47% additional GRPO gain on hard instances. Meth-ods like GRPO-LEAD [ 22 ], DiPO [ 20 ], and DART-Math [ 19 ] opera-tionalize this through advantage reweighting and difficulty-aware rejection tuning. Translating to recommendation is non-trivial for two reasons. First, difficulty is ill-posed: user interests are implicit and contextual, so difficulty must be inferred from the policy’s uncertainty over noisy behavioral logs rather than from a deter-ministic verifier. Second, prior work generally assumes the reward model remains trustworthy on upweighted samples. Production rankers suffer from domain-specific inaccuracies: real-time dynam-ics (shifting user intent, daily catalogue updates) and selection bias in logged exposures [ 3, 10 ]. Because difficulty and reward reliabil-ity fail independently, simply upweighting hard samples is unsafe. AdaGRPO addresses this by conjoining a difficulty condition with a local RM-discriminability check. 
+
+## 3 Preliminaries 3.1 Generative Recommendation as Autoregressive Decoding 
+
+Let V denote the item catalogue. A user’s interaction history x =
+
+(𝑥 1, . . . , 𝑥 𝑇 ) ∈ V 𝑇 serves as a prompt, and the task is to predict the next item 𝑦 ∗ ∈ V . Each item 𝑣 ∈ V is assigned a Semantic ID (SID) [7]: an 𝐿 -token code sid (𝑣 ) = (𝑠 1, . . . , 𝑠 𝐿 ) from a learned codebook S with |S| ≪ |V | , constructed so that semantically related items share prefix tokens. An LLM with parameters 𝜃 defines the policy 
+
+𝜋 𝜃 (𝑦 | x) =
+
+> 𝐿
+
+Ö
+
+> ℓ=1
+
+𝜋 𝜃 
+
+ 𝑠 ℓ | x, 𝑠 <ℓ
+
+, (1) where the history x is itself tokenized into SIDs. At inference, can-didates are produced by beam search and only sequences mapping to valid items are retained. We use rollout for a single sampled sequence and group for a set of 𝐾 rollouts from one prompt. 
+
+## 3.2 Supervised Fine-Tuning 
+
+Given history–target pairs D = {( x(𝑖 ) , 𝑦 ∗( 𝑖 ) )} 𝑁 𝑖 =1, the negative log-likelihood (NLL) objective is 
+
+𝐿 NLL (𝜃 ) = −E(x,𝑦 ∗ )∼D 
+
+" 𝐿 ∑︁ 
+
+> ℓ=1
+
+log 𝜋 𝜃 (𝑠 ∗ 
+
+> ℓ
+
+| x, 𝑠 ∗ 
+
+> <ℓ
+
+)
+
+#
+
+. (2) NLL is stable, anchored to observed behavior, and requires no re-ward model. It provides the base policy on which RL fine-tuning is applied. 
+
+Table 1: Average ground-truth position under LLM vs. RM ordering (all samples). Influence Δ = idx LLM − idx RM ; positive means the RM helps. The net contribution is negligible or negative. 
+
+Beam width 𝐾 Avg idx LLM Avg idx RM Δ
+
+50 15.79 15.31 +0.48 128 35.57 35.86 −0.28 
+
+## 3.3 Group Relative Policy Optimization 
+
+GRPO [ 8 , 18 ] avoids PPO’s value-network overhead by using group-level reward statistics as the baseline. For each prompt x, it draws 
+
+𝐾 rollouts {𝑦 1, . . . , 𝑦 𝐾 } from 𝜋 𝜃 old and scores each: 𝑟 𝑘 = RM (𝑦 𝑘 , x).The group-relative advantage is 
+
+𝐴 𝑘 = 𝑟 𝑘 − ¯𝑟 𝜎 𝑟 + 𝜖 , (3) where ¯𝑟 and 𝜎 𝑟 are the group mean and standard deviation. With importance ratio 𝑤 𝑘 (𝜃 ) = 𝜋 𝜃 (𝑦 𝑘 | x)/ 𝜋 𝜃 old (𝑦 𝑘 | x), GRPO optimizes the clipped surrogate 
+
+𝐿 GRPO (𝜃 ) = −Ex, {𝑦 𝑘 }∼ 𝜋 𝜃 old 
+
+ 1
+
+𝐾 
+
+> 𝐾
+
+∑︁ 
+
+> 𝑘 =1
+
+min 
+
+
+
+𝑤 𝑘 𝐴 𝑘 ,
+
+clip  𝑤 𝑘 , 1−𝜖, 1+𝜖 𝐴 𝑘 
+
+
+
+.
+
+(4) This token-level ratio clipping is the mechanism AdaGRPO lifts to the sample level in Section 5. 
+
+## 4 The Reward Model Helps Conditionally: Hard Samples with High RM Discriminability 
+
+Before introducing the method, we test empirically whether the reward model provides a useful training signal. The answer is con-ditional —a finding that directly determines what AdaGRPO clips in Section 5. 
+
+## 4.1 Protocol 
+
+For each prompt x in a held-out set, we run beam search with width 
+
+𝐾 and collect candidates R = {𝑦 1, . . . , 𝑦 𝐾 }. We rank R by descend-ing beam-search log-probability ( LLM order ) and by descending re-ward score ( RM order ), recording the ground-truth position idx LLM 
+
+and idx RM respectively. The signed difference Δ = idx LLM − idx RM 
+
+measures RM influence : Δ > 0 means the RM moves the ground truth closer to the top (helpful), Δ < 0 means farther (harmful). 
+
+Note. This analysis uses beam search for reproducibility; GRPO training uses sampling. The distributional gap means the stratified patterns below are indicative rather than a direct measurement of training-time conditions, but they motivate the clip design, which is evaluated end-to-end in Section 6. 
+
+## 4.2 Aggregate RM Influence Is Near Zero Across All Samples 
+
+Table 1 shows that the RM’s aggregate influence is near zero at 
+
+𝐾 =50 and turns negative at 𝐾 =128 . The degradation is consistent with exposure bias: larger beam widths surface out-of-distribution RecSys ’25, October 6–10, 2025, Prague, Czech Republic Kewei Xu, Junbo Qi, Yanyan Zou, Pengfei Zhang, Xingzhi Yao, and Shengjie Li 
+
+Table 2: Average ground-truth position on hard samples only. The RM provides substantial positive guidance that grows with beam width.               
+
+> 𝐾 Avg idx LLM Avg idx RM ΔCoverage 50 30.07 18.66 +11.41 42.2% 128 77.09 46.33 +30.77 33.9%
+
+Table 3: Influence after jointly applying both conditions. Per-sample influence roughly doubles, but coverage drops, ex-posing the precision–coverage trade-off the clip navigates. 
+
+𝐾 Δ Coverage 50 +23.24 11.6% 128 +59.93 13.4% candidates the RM has never been calibrated against. A fixed NLL– GRPO mixture, which trusts the RM uniformly, inherits this near-zero net signal. 
+
+## 4.3 RM Provides Strong Guidance Only on Hard Samples 
+
+The aggregate picture masks a strong compositional effect. We partition samples by LLM difficulty : a sample is hard if its ground truth falls outside the top ⌊𝜏𝐾 ⌋ positions under LLM ordering, and 
+
+easy otherwise—the same partition the clip condition 𝑓 1 acts on in Section 5. Table 2 shows the contrast: the RM now improves ground-truth position by 11.4 ranks at 𝐾 =50 and 30.8 at 𝐾 =128 —the benefit grows 
+
+with candidate-set size, the opposite of the aggregate trend. On the easy partition the influence is near-zero or negative, pulling down the aggregate. The RM is conditionally valuable, and the condition—the policy’s own confidence—is observable at training time. 
+
+## 4.4 RM Discriminability Further Doubles Per-Sample Influence at the Cost of Coverage 
+
+Difficulty is necessary but not sufficient. Among hard samples, cases remain where the RM is unreliable—e.g., when the ground truth lies outside its training distribution. We add a second condition mirroring 𝑓 2 of Section 5: retain only hard samples where the RM ranks the ground truth in the top ⌊𝜏𝐾 ⌋ and every in-batch negative falls below ⌊𝜌𝐾 ⌋, so the RM exhibits clear separation between relevant and irrelevant items. Table 3 shows that the discriminability condition roughly doubles per-sample influence (nearly 60 ranks at 𝐾 =128 ), but only 12–13% of samples survive both conditions. The clip resolves this trade-off: it spends RL updates on the high-influence minority and falls back to supervision on the rest. 
+
+## 5 Method: AdaGRPO 
+
+AdaGRPO targets the regime in which the reward model supplies informative gradients on only a proper subset of training instances. Rather than trusting the reward signal globally, we retain the su-pervised negative log-likelihood as a stationary anchor and admit the policy-gradient signal through a sample-level clip : on each in-stance the GRPO loss is either passed through intact or clipped to zero, with the clip decision driven entirely by diagnostics on the instance’s own rollout group. The per-instance objective is 
+
+𝐿 𝑖 (𝜃 ) = 𝐿 (𝑖 ) 
+
+> NLL
+
+(𝜃 ) + 𝜆 𝛼 𝑖 𝐿 (𝑖 ) 
+
+> GRPO
+
+(𝜃 ), 𝛼 𝑖 ∈ { 0, 1}, (5) where 𝜆 > 0 is a global scaling coefficient and 𝛼 𝑖 is the clip coefficient for instance 𝑖 , determined by two rank-based diagnostics on the rollout group. The coefficient is detached : no gradient flows through its computation, so clipping reshapes the optimization landscape without introducing a biased surrogate gradient. Setting 
+
+𝛼 𝑖 = 0 clips the GRPO term and leaves a pure supervised update; setting 𝛼 𝑖 = 1 admits the full GRPO correction on instance 𝑖 .
+
+On the non-triviality of difficulty estimation in recommendation. 
+
+The notion of sample difficulty in our setting is fundamentally distinct from its counterpart in difficulty-aware RL for reasoning tasks [ 9]. In mathematical or code reasoning, difficulty admits a clean operational proxy—the pass rate —because the reward is sparse and binary and because difficulty is an intrinsic property of the problem, largely decoupled from the policy. Recommendation vio-lates both assumptions. First, there is no policy-independent notion of a “hard” user: difficulty is entangled with the current parameteri-zation, the time-varying item catalogue, and the user’s idiosyncratic interaction history. Second, the reward signal is dense : the produc-tion ranker assigns a continuous score to every rollout, rendering pass-rate-style proxies undefined. These structural differences motivate three desiderata for any quantity that gates a sample-level clip in recommendation: (i) com-putability from rollout statistics alone, without auxiliary models or heuristics; (ii) independence from sparse correctness signals; and (iii) meaningfulness even when all rollouts receive non-trivial reward scores. The rank-based diagnostics introduced below sat-isfy all three, and—being read off the same rollout group already materialized for GRPO—add no sampling cost to the clip. 
+
+Rank-threshold hyperparameters. Both diagnostics convert the rollout group size into rank thresholds through two scalar hyperpa-rameters: a prominence fraction 𝜏 ∈ ( 0, 1) and a suppression fraction 
+
+𝜌 ∈ ( 0, 1), with 𝜏 < 𝜌 . The prominence threshold ⌊𝜏𝐾 ⌋ marks the top 𝜏 -fraction of a sorted diagnostic pool, and the suppression threshold ⌊𝜌𝐾 ⌋ marks its complementary tail. Setting 𝜏 = 1/3 re-covers a top-tertile threshold ⌊𝐾 /3⌋ and 𝜌 = 0.9 recovers a bottom-decile threshold ⌊0.9 𝐾 ⌋; these defaults are used throughout unless stated otherwise and are empirically stable across tasks. Expressing both thresholds as fractions of 𝐾 makes the clip scale-free in the number of rollouts. 
+
+Policy-side diagnostic: difficulty. For each prompt x𝑖 , we draw 𝐾 
+
+rollout candidates R𝑖 = {𝑦 (1) 
+
+> 𝑖
+
+, . . . , 𝑦 (𝐾 ) 
+
+> 𝑖
+
+} from the reference policy 
+
+𝜋 𝜃 old . Let 𝑦 ★ 
+
+> 𝑖
+
+denote the ground-truth target from the supervised dataset. We evaluate 𝑦 ★ 
+
+> 𝑖
+
+under 𝜋 𝜃 old via teacher forcing and compute Adaptive Loss Balancing for Noise-Robust GRPO in Generative Recommendation RecSys ’25, October 6–10, 2025, Prague, Czech Republic Policy 
+
+Model 🔥 ... 
+
+> User History
+
+# ... 
+
+Reward 
+
+Model          
+
+> PMDifficulty
+> 𝑓 !
+> "
+> RM Reliability
+> 𝑓 #
+> "
+> Adaptive Gate
+> 𝛼 "=𝑓 !
+> "⋅𝑓 #
+> "
+> Loss
+> 𝐿 NLL
+> "𝜃
+> +𝜆 𝛼 "𝐿 GRPO
+> "𝜃
+
+Update 
+
+1. Rollout Generation 2. RM Scoring 3. Adaptive Gate & Dynamic Loss Mixing 
+
+Figure 2: Overview of AdaGRPO. Two rank-based diagnostics—one probing policy-side difficulty ( 𝑓 (𝑖 ) 
+
+> 1
+
+), the other probing reward-model discriminability ( 𝑓 (𝑖 ) 
+
+> 2
+
+)—are evaluated on each training instance and combined into a binary sample-level clip . The clip decides, at instance granularity, whether the GRPO loss is admitted into the update or clipped to zero. 
+
+its length-normalized log-likelihood. Inserting this score into the set of log-likelihoods already computed for the 𝐾 rollouts and sorting in descending order yields the policy-side diagnostic pool :
+
+P 𝜋 𝑖 = Sort ↓
+
+ ℓ𝜋 (𝑦 ) : 𝑦 ∈ R 𝑖 ∪ { 𝑦 ★ 
+
+> 𝑖
+
+}
+
+
+
+, (6) where ℓ𝜋 (𝑦 ) is the length-normalized log-probability under 𝜋 𝜃 old .Let rk 𝜋 (𝑦 ★ 
+
+> 𝑖
+
+) denote the 1-indexed rank of 𝑦 ★ 
+
+> 𝑖
+
+in P 𝜋 𝑖 . The difficulty diagnostic 𝑓 1 is 
+
+𝑓 (𝑖 ) 
+
+> 1
+
+= 1
+
+h
+
+rk 𝜋 (𝑦 ★ 
+
+> 𝑖
+
+) > ⌊𝜏𝐾 ⌋
+
+i
+
+. (7) It fires when the ground truth falls outside the top 𝜏 -fraction of the policy’s own ranking, certifying that the policy does not already assign high likelihood to the correct target. In this regime the supervised gradient alone provides limited corrective signal, so the GRPO term is worth admitting. Conversely, when the ground truth already resides in the top 𝜏 -fraction the instance is well served by 𝐿 NLL and the GRPO term is redundant—a clear candidate for clipping. 
+
+Reward-side diagnostic: reliability. Difficulty alone is not a suf-ficient license to admit the GRPO term: a difficult instance may be precisely one on which the reward model lacks discriminative fidelity, in which case the policy-gradient signal is actively mislead-ing and must be clipped. We therefore add a second diagnostic that probes whether the reward model can separate the ground truth from contextually irrelevant distractors. For each instance 𝑖 , we construct a negative set Z𝑖 = {𝑧 (1) 
+
+> 𝑖
+
+, . . . , 𝑧 (𝑀 ) 
+
+> 𝑖
+
+}
+
+by uniformly sampling 𝑀 rollouts from other instances in the same mini-batch. In our experiments we set 𝑀 = 5 throughout; see Sec-tion 7 for a discussion of sensitivity to this choice. These serve as contrastive probes: plausible model generations that are contextu-ally irrelevant to x𝑖 . We score 𝑦 ★ 
+
+> 𝑖
+
+and every element of Z𝑖 under the reward model, insert the resulting scores into the rewards al-ready computed for R𝑖 , and sort in descending order to form the 
+
+reward-side diagnostic pool :
+
+P 𝑟 𝑖 = Sort ↓
+
+ 𝑟 (𝑦 | x𝑖 ) : 𝑦 ∈ R 𝑖 ∪ { 𝑦 ★ 
+
+> 𝑖
+
+} ∪ Z 𝑖 
+
+
+
+, (8) where 𝑟 (· | x𝑖 ) is the reward score conditioned on prompt x𝑖 . The 
+
+reliability diagnostic 𝑓 2 is the conjunction of two rank constraints— 
+
+ground-truth prominence and distractor suppression :
+
+𝑓 (𝑖 ) 
+
+> 2
+
+= 1
+
+h
+
+rk 𝑟 (𝑦 ★ 
+
+> 𝑖
+
+) ≤ ⌊𝜏𝐾 ⌋
+
+i
+
+· 1
+
+
+
+min   
+
+> 𝑚 ∈ [ 𝑀 ]
+
+rk 𝑟 (𝑧 (𝑚 ) 
+
+> 𝑖
+
+) > ⌊𝜌𝐾 ⌋
+
+
+
+.
+
+(9) The first factor (ground-truth prominence) requires the ground truth to reside in the top 𝜏 -fraction of the reward ranking; the sec-ond factor (distractor suppression) requires every distractor to fall into the bottom (1 − 𝜌 )-fraction. Together they certify clean rank separation between contextually relevant and irrelevant outputs. If either sub-condition is violated, the reward model is locally un-calibrated on this instance and 𝑓 (𝑖 ) 
+
+> 2
+
+= 0, so the instance is clipped regardless of its difficulty. 
+
+The sample-level clip. The clip coefficient is the conjunction of both diagnostics: 
+
+𝛼 𝑖 = 𝑓 (𝑖 ) 
+
+> 1
+
+· 𝑓 (𝑖 ) 
+
+> 2
+
+. (10) The GRPO loss survives the clip if and only if both diagnostics evaluate to unity: the instance must be simultaneously difficult for the current policy and backed by a locally reliable reward signal. Ev-ery other instance is clipped to zero and contributes only its super-vised update. The two diagnostics thus carve out a complementary failure taxonomy—redundant supervision on one side, unreliable reward on the other—and clip both away, admitting policy-gradient updates only on the instances that survive both tests. RecSys ’25, October 6–10, 2025, Prague, Czech Republic Kewei Xu, Junbo Qi, Yanyan Zou, Pengfei Zhang, Xingzhi Yao, and Shengjie Li 
+
+A sample-domain trust region. This rule extends the clipping principle of PPO [ 17 ] from the ratio domain to the sample domain .PPO clips the importance-sampling ratio to bound the magnitude of each per-token update; AdaGRPO clips entire per-sample losses to exclude instances on which the policy-gradient signal is redundant or unreliable. Both define a trust region by zeroing out updates that fall outside a certified-safe set, but AdaGRPO’s trust region is defined over training instances rather than over policy-ratio excursions—a clip on which samples may speak, rather than on how far each may move. 
+
+Design properties. The clip is hyperparameter-lean : its only free quantities are the rank-threshold fractions 𝜏 and 𝜌 , both defined relative to the rollout group size 𝐾 and empirically stable across tasks. It is interpretable by construction : each clip decision is binary, so every instance is unambiguously assigned to the GRPO-active set or its complement, and the two diagnostics expose why 
+
+an instance was clipped, easing diagnosis during training. And it makes no global assumption on reward-model quality: the clip admits the GRPO loss only where both diagnostics locally certify the reward signal as informative, acting as a conservative, instance-wise admission rule for policy-gradient updates. 
+
+## 6 Experiments 6.1 Experimental Setup 
+
+Dataset. We evaluate on proprietary interaction logs from a large-scale e-commerce platform. The training set consists of approxi-mately 175K user–item interaction sequences drawn from a one-week window, and evaluation is conducted on a held-out test set from the two subsequent weeks. This training scale is intentionally smaller than the corpora used for SFT on the same platform, which are on the order of 10 8 sequences. Two practical considerations moti-vate the choice. First, e-commerce traffic is strongly non-stationary: in preliminary studies, expanding the training window to multiple months consistently degraded held-out HR, an outcome consistent with concept drift in user intent and catalogue composition over longer horizons. Second, naive scaling of the RL training set un-der the standard GRPO recipe triggered reward hacking—HR@10 dropped sharply as the policy increasingly exploited reward-model artefacts—and a robust remedy is still under development. Restrict-ing the training window to one week is therefore a conservative operating point under which all baselines and AdaGRPO can be compared on equal footing. We view scaling AdaGRPO to longer training horizons as an open problem and discuss it as a limitation in Section 7. 
+
+Base model. The base policy is a decoder-only LLM supervised-fine-tuned on user–item interaction sequences. Items are repre-sented as semantic token IDs derived from a hierarchical product taxonomy. Unless otherwise stated, each rollout group uses 𝐾 =50 
+
+sampled candidates, and 𝑀 =5 in-batch negatives are drawn for the reward-side diagnostic (Section 5). 
+
+Reward model. We use the CTR head of a production encoder– decoder Transformer ranker [ 4, 23 ] trained on logged click and purchase signals via multi-task learning with a Mixture-of-Experts output layer (AUC ≈ 0.76) as an informative but imperfect reward signal. 
+
+Baselines. We compare against four training variants. Base de-notes the SFT-only model. GRPO applies standard policy-gradient training using reward-model scores. GRPO+NLL uses a hybrid objective with a constant mixing coefficient 𝜆 tuned on a validation split. AdaGRPO denotes our clipped objective, evaluated as w. 𝑓 1
+
+with the difficulty condition only and as w. 𝑓 1 & 𝑓 2 with both the difficulty and reward-discriminability conditions. 
+
+Metrics. For offline evaluation, we report HR@ 𝑘 , ClkRwd@ 𝑘 ,OrdRwd@ 𝑘 for 𝑘 ∈ { 1, 10 , 50 }, together with hallucination rate. HR measures agreement with the held-out next-item target, while ClkRwd and OrdRwd measure reward-model preference under click and order objectives. For online evaluation, we report effective IPV, UCTR, dwell time, and the number of exposed and clicked third-level categories as diversity-related diagnostics. 
+
+## 6.2 Offline Results 
+
+Figure 3 summarizes the offline training dynamics, including both the best intermediate checkpoints and the final training state. Ta-ble 4 reports the exact performance at the final training checkpoint, so the table should be interpreted as a stability comparison rather than as a best-checkpoint selection. The results support three ob-servations. 
+
+Reward-only GRPO improves RM scores but suffers from late-stage collapse. While GRPO steadily increases ClkRwd and OrdRwd met-rics during training, the policy eventually collapses under over-optimization. As shown in Table 4, at the final checkpoint, HR@10 and HR@50 significantly degrade from the Base model’s 11.01% and 24.44% down to 10.39% and 22.49%, respectively. Simultane-ously, the hallucination rate spikes severely to 0.89%. This pattern indicates a fundamental misalignment: optimizing solely for the reward model actively destroys the policy’s structural knowledge for held-out target retrieval. 
+
+A fixed hybrid objective is more stable but remains insufficient. 
+
+GRPO+NLL slows the decline in retrieval metrics relative to GRPO-only training, roughly maintaining the base HR@10 (11.06% at final step). However, the hallucination rate still drifts upwards, reaching 0.59% at the end of training. This confirms the central premise of our clip: a single global mixing coefficient cannot account for sample-level variation in reward-model reliability, so it inevitably leaks noisy reward signal into the gradient on the instances where the RM is uninformative. 
+
+AdaGRPO ensures stability and improves the HR–reward–hallucination trade-off. In contrast to the baselines, AdaGRPO safely lifts perfor-mance without collapsing. Along the training trajectory, AdaGRPO (w. 𝑓 1 & 𝑓 2) reaches a best checkpoint with HR@10 of 12.18%, im-proving over the Base model’s 11.01%, while keeping hallucination at or below 0.22%. This best-checkpoint result reflects the peak retrieval–validity trade-off observed in the dynamic curves of Fig-ure 3. At the final checkpoint, which is the setting reported in Table 4, AdaGRPO (w. 𝑓 1 & 𝑓 2) still yields the best retrieval accu-racy among the final models (HR@10 of 11.63%, HR@50 of 25.43%) while keeping hallucination controlled at 0.27%. Comparing the Adaptive Loss Balancing for Noise-Robust GRPO in Generative Recommendation RecSys ’25, October 6–10, 2025, Prague, Czech Republic 
+
+Figure 3: Offline training dynamics over 2,500 steps. Standard GRPO increases reward-model scores but is accompanied by a decline in HR@10 and an increase in hallucination rate, suggesting over-optimization to the reward model. GRPO+NLL with a fixed mixing coefficient reduces part of this degradation but does not eliminate the late-stage increase in hallucination. AdaGRPO reaches its best checkpoint at an intermediate training step, improving HR@10 from the Base model’s 11.01% to 12.18% while keeping hallucination at or below 0.22%. At the final checkpoint, AdaGRPO remains stable and achieves the best retrieval accuracy among the final models, as detailed in Table 4. Adding the reward-discriminability condition 𝑓 2 further reduces variance and improves the HR–reward–hallucination trade-off. Table 4: Offline performance evaluated at the final training checkpoint. Best intermediate checkpoints are discussed in Figure 3 and the surrounding text; this table reports the final state to highlight training stability. Standard GRPO eventually collapses, trading target retrieval and generation validity for reward maximization, whereas AdaGRPO maintains a stable and superior final-checkpoint trade-off across retrieval accuracy, reward improvement, and hallucination control. The two AdaGRPO rows correspond to the two variants shown in Figure 3: difficulty-only clipping (w. 𝑓 1) and the full clip with both conditions (w. 𝑓 1 & 𝑓 2). 
+
+Method HR (%) ClkRwd OrdRwd Hallucination (%) @1 @10 @50 @1 @10 @50 @1 @10 @50 Base 2.31 11.01 24.44 0.1232 0.1981 0.2403 0.2575 0.4247 0.5212 0.08 
+
+GRPO 2.20 10.39 22.49 0.1402 0.2158 0.2556 0.2915 0.4450 0.5260 0.89 GRPO+NLL 2.30 11.06 24.14 0.1629 0.2391 0.2747 0.2976 0.4479 0.5280 0.59 AdaGRPO w. 𝑓 1 2.40 11.48 25.12 0.1521 0.2345 0.2710 0.2958 0.4589 0.5451 0.31 AdaGRPO w. 𝑓 1 & 𝑓 2 2.46 11.63 25.43 0.1508 0.2331 0.2698 0.2950 0.4617 0.5487 0.27 
+
+two AdaGRPO rows, adding the reward-discriminability condition 
+
+𝑓 2 further reduces hallucination (from 0.31% to 0.27%) and improves HR, confirming the value of the reward-side diagnostic. This sta-bility comes with a mild and acceptable reduction in the absolute ClkRwd peak relative to the fixed variant, which is consistent with the design intent of the clip: it withholds RL updates in less reliable reward regions to preserve long-term generation quality. 
+
+Difficulty-stratified analysis. We further partition the test set into five equal-mass bins according to the ground-truth rank under the base model’s rollout. Table 5 reports the per-bin HR@10 for GRPO+NLL and AdaGRPO (w. 𝑓 1 & 𝑓 2). The HR@10 gain is largest in the intermediate-difficulty region, with a gain of +0.017 over GRPO+NLL in the 40–80% difficulty range. The gain is mildly neg-ative in the easiest bin, −0.015 , and close to zero in the hardest bin. This pattern is consistent with the intended behavior of the clip: it admits RL updates where the policy is uncertain and the reward is reliable, clips them where the policy is already confident, and clips them again where the rollout set lies too far from the reward model’s reliable region. The analysis supports the clipping RecSys ’25, October 6–10, 2025, Prague, Czech Republic Kewei Xu, Junbo Qi, Yanyan Zou, Pengfei Zhang, Xingzhi Yao, and Shengjie Li 
+
+mechanism, but it should be read as diagnostic evidence rather than as a complete validation of the causal mechanism. 
+
+Table 5: Difficulty-stratified HR@10 (%) at the final check-point. Bins are defined by the ground-truth rank percentile under the base model’s rollout (0–20% is easiest, 80–100% is hardest). Δ denotes AdaGRPO minus GRPO+NLL. 
+
+Difficulty bin GRPO+NLL AdaGRPO Δ
+
+0–20% (easiest) 24.31 24.16 −0.015 20–40% 12.83 12.90 +0.007 40–60% 8.47 8.64 +0.017 60–80% 5.21 5.38 +0.017 80–100% (hardest) 2.48 2.49 +0.001 
+
+## 6.3 Online A/B Test 
+
+Table 6: Online A/B results. Each number is reported as lift relative to the contemporaneous production control in its cor-responding experiment. GRPO+NLL ran from 01/03 to 15/03, and AdaGRPO ran from 24/03 to 31/03. Because the two ex-periments were conducted in different time windows against 
+
+different controls , the columns should not be compared di-rectly as a head-to-head result; they are presented together for compactness only. Superscript ∗ denotes 𝑝 value < 0.05 .
+
+Metric GRPO+NLL AdaGRPO Eff. IPV +0.09% +0.43% ∗
+
+Strict IPV +0.14% +0.35% ∗
+
+UCTR −0.09% +0.27% ∗
+
+Dwell time +0.01% +0.23% ∗
+
+Exposed cats. +0.14% ∗ +0.25% ∗
+
+Clicked cats. +0.16% ∗ +0.28% ∗
+
+Table 6 reports online results from two production A/B tests. GRPO+NLL shows small and statistically non-significant changes on the main engagement metrics, despite improving some offline reward metrics. This suggests that higher reward-model scores alone do not necessarily translate into measurable user engagement gains. AdaGRPO shows statistically significant positive lifts on the reported engagement metrics, including effective IPV, UCTR, and dwell time. It also increases the number of exposed and clicked third-level categories, suggesting that the clip does not collapse the policy toward a narrower set of reward-favored categories in this deploy-ment. These online results are consistent with the offline diagnosis that clipping GRPO updates to locally reliable instances improves the usefulness of reward-model training. However, because the two experiments were conducted in different time windows against different contemporaneous controls, the evidence should be viewed as production support for each method relative to its own control, rather than as a definitive head-to-head causal comparison between GRPO+NLL and AdaGRPO. Overall, the offline and online results indicate that AdaGRPO can improve the trade-off between reward optimization, target retrieval, and hallucination control in this industrial recommendation setting. The evidence is strongest for the claim that a sample-level clip makes GRPO training more robust to reward-model noise. Broader claims about general deployment robustness require additional A/B tests across traffic slices, user segments, item popularity levels, and catalogue freshness regimes. 
+
+## 7 Discussion 
+
+AdaGRPO’s clip is not naive filtering: it acts solely on the GRPO term while the NLL term remains active for all instances, ensuring that even clipped samples continue to anchor the model’s recom-mendation behavior through supervision. The clip operates on rank quantiles relative to 𝐾 (⌊𝜏𝐾 ⌋, ⌊𝜌𝐾 ⌋), so decisions depend on the instance’s position within the diagnostic pool rather than absolute score magnitudes, making it a conservative admission rule rather than a proof of reward model correctness. The diagnostics 𝑓 1 and 
+
+𝑓 2 serve as computable proxies, identifying policy uncertainty and reward-model discriminability, and a surviving clip merely indi-cates that an instance is suitable for a GRPO update under these diagnostics, not that the reward model is perfectly calibrated or causally aligned. This principle applies in settings where super-vised targets are available, reward signals are noisy, and rollout diagnostics can detect locally informative guidance, though do-mains lacking a ranked candidate set, identifiable ground truth, or meaningful in-batch negatives may require alternative diagnostics. Limitations include the introduction of hyperparameters 𝜏 , 𝜌 , 𝜆 , and 
+
+𝑀 , which require validation-based tuning, sensitivity of 𝑓 2 to batch composition, reliance on ground-truth items during training, and the fact that online evaluation was conducted in a single production setting with separate A/B test windows, emphasizing the need for extended experiments across user segments, item popularity levels, and catalogue freshness regimes to establish broader robustness. 
+
+## 8 Conclusion 
+
+We presented AdaGRPO, a sample-level adaptive framework for RL fine-tuning of generative recommenders. By anchoring training on supervised NLL and admitting the GRPO term only when a binary clip certifies both policy-side difficulty and reward-model discriminability, AdaGRPO addresses the core tension of using noisy production rankers as reward sources. Empirically, the RM’s aggregate influence is near zero, but it provides strong guidance on the subset of hard samples where it is locally reliable. AdaGRPO exploits this structure: offline, it improves HR@10 from 11.01% to 12.18% at the best checkpoint while controlling hallucination, and remains the strongest final-checkpoint model. Online, it delivers statistically significant engagement gains. Our results suggest that the central challenge of RL for generative recommendation is not designing stronger rewards, but knowing when to trust them. 
+
+## 9 Speaker Bio 
+
+Yanyan Zou is an applied scientist in Recommendation Platform at JD.com since 2020, launching cutting-edge AI models into practical productions. Her research interests primarily lie in the areas of large language model and recommendation, with around 20 papers Adaptive Loss Balancing for Noise-Robust GRPO in Generative Recommendation RecSys ’25, October 6–10, 2025, Prague, Czech Republic 
+
+published in top-tier conferences (e.g., ACL, EMNLP, AAAI). She received her B.Engr. degree in 2015 from Xiamen University, China, as well as her Ph.D. degree from Singapore University of Technology and Design in 2020. 
+
+## References 
+
+[1] Keqin Bao, Jizhi Zhang, Yang Zhang, Wenjie Wang, Fuli Feng, and Xiangnan He. 2023. Tallrec: An effective and efficient tuning framework to align large language model with recommendation. In Proceedings of the 17th ACM conference on recommender systems . 1007–1014. [2] Stephen Casper, Xander Davies, Claudia Shi, Thomas Krendl Gilbert, Jérémy Scheurer, Javier Rando, Rachel Freedman, Tomasz Korbak, David Lindner, Pedro Freire, et al . 2023. Open problems and fundamental limitations of reinforcement learning from human feedback. arXiv preprint arXiv:2307.15217 (2023). [3] Jiawei Chen, Hande Dong, Xiang Wang, Fuli Feng, Meng Wang, and Xiangnan He. 2023. Bias and debias in recommender system: A survey and future directions. 
+
+ACM Transactions on Information Systems 41, 3 (2023), 1–39. [4] Qiwei Chen, Huan Zhao, Wei Li, Pipei Huang, and Wenwu Ou. 2019. Behavior sequence transformer for e-commerce recommendation in alibaba. In Proceedings of the 1st international workshop on deep learning practice for high-dimensional sparse data . 1–4. [5] Jiaxin Deng, Shiyao Wang, Kuo Cai, Lejian Ren, Qigen Hu, Weifeng Ding, Qiang Luo, and Guorui Zhou. 2025. Onerec: Unifying retrieve and rank with generative recommender and iterative preference alignment. arXiv preprint arXiv:2502.18965 
+
+(2025). [6] Leo Gao, John Schulman, and Jacob Hilton. 2023. Scaling laws for reward model overoptimization. In International Conference on Machine Learning . PMLR, 10835– 10866. [7] Shijie Geng, Shuchang Liu, Zuohui Fu, Yingqiang Ge, and Yongfeng Zhang. 2022. Recommendation as language processing (rlp): A unified pretrain, personalized prompt & predict paradigm (p5). In Proceedings of the 16th ACM conference on recommender systems . 299–315. [8] Daya Guo, Dejian Yang, Haowei Zhang, Junxiao Song, Peiyi Wang, Qihao Zhu, Runxin Xu, Ruoyu Zhang, Shirong Ma, Xiao Bi, et al . 2025. DeepSeek-R1 in-centivizes reasoning in LLMs through reinforcement learning. Nature 645, 8081 (2025), 633–638. [9] Yunjie Ji, Sitong Zhao, Xiaoyu Tian, Haotian Wang, Shuaiting Chen, Yiping Peng, Han Zhao, and Xiangang Li. 2025. How Difficulty-Aware Staged Reinforcement Learning Enhances LLMs’ Reasoning Capabilities: A Preliminary Experimental Study. arXiv preprint arXiv:2504.00829 (2025). [10] Thorsten Joachims, Adith Swaminathan, and Tobias Schnabel. 2017. Unbiased learning-to-rank with biased feedback. In Proceedings of the tenth ACM interna-tional conference on web search and data mining . 781–789. [11] Jiacheng Li, Ming Wang, Jin Li, Jinmiao Fu, Xin Shen, Jingbo Shang, and Julian McAuley. 2023. Text is all you need: Learning language representations for sequential recommendation. In Proceedings of the 29th ACM SIGKDD Conference on Knowledge Discovery and Data Mining . 1258–1267. [12] Jianghao Lin, Rong Shan, Chenxu Zhu, Kounianhua Du, Bo Chen, Shigang Quan, Ruiming Tang, Yong Yu, and Weinan Zhang. 2024. Rella: Retrieval-enhanced large language models for lifelong sequential behavior comprehension in recom-mendation. In Proceedings of the ACM Web Conference 2024 . 3497–3508. [13] Long Ouyang, Jeffrey Wu, Xu Jiang, Diogo Almeida, Carroll Wainwright, Pamela Mishkin, Chong Zhang, Sandhini Agarwal, Katarina Slama, Alex Ray, et al . 2022. Training language models to follow instructions with human feedback. Advances in neural information processing systems 35 (2022), 27730–27744. [14] Benjamin Pikus, Pratyush Ranjan Tiwari, and Burton Ye. 2025. Hard Examples Are All You Need: Maximizing GRPO Post-Training Under Annotation Budgets. 
+
+arXiv preprint arXiv:2508.14094 (2025). [15] Rafael Rafailov, Archit Sharma, Eric Mitchell, Christopher D Manning, Stefano Ermon, and Chelsea Finn. 2023. Direct preference optimization: Your language model is secretly a reward model. Advances in neural information processing systems 36 (2023), 53728–53741. [16] Shashank Rajput, Nikhil Mehta, Anima Singh, Raghunandan Hulikal Keshavan, Trung Vu, Lukasz Heldt, Lichan Hong, Yi Tay, Vinh Tran, Jonah Samost, Maciej Kula, Ed Chi, and Maheswaran Sathiamoorthy. 2023. Recommender Systems with Generative Retrieval. In Advances in Neural Information Processing Systems ,A. Oh, T. Naumann, A. Globerson, K. Saenko, M. Hardt, and S. Levine (Eds.), Vol. 36. Curran Associates, Inc., 10299–10315. [17] John Schulman, Filip Wolski, Prafulla Dhariwal, Alec Radford, and Oleg Klimov. 2017. Proximal policy optimization algorithms. arXiv preprint arXiv:1707.06347 
+
+(2017). [18] Zhihong Shao, Peiyi Wang, Qihao Zhu, Runxin Xu, Junxiao Song, Xiao Bi, Haowei Zhang, Mingchuan Zhang, YK Li, Yang Wu, et al . 2024. Deepseekmath: Pushing the limits of mathematical reasoning in open language models. arXiv preprint arXiv:2402.03300 (2024). [19] Yuxuan Tong, Xiwen Zhang, Rui Wang, Ruidong Wu, and Junxian He. 2024. Dart-math: Difficulty-aware rejection tuning for mathematical problem-solving. 
+
+Advances in Neural Information Processing Systems 37 (2024), 7821–7846. [20] Qian Wan, Ziao Xu, Luona Wei, Xiaoxuan Shen, and Jianwen Sun. 2026. Mitigating Overthinking in Large Reasoning Models via Difficulty-aware Reinforcement Learning. arXiv preprint arXiv:2601.21418 (2026). [21] Lin Wang, Yang Zhang, Jingfan Chen, Xiaoyan Zhao, Fengbin Zhu, Qing Li, and Tat-Seng Chua. 2026. MiniRec: Data-Efficient Reinforcement Learning for LLM-based Recommendation. arXiv preprint arXiv:2602.04278 (2026). [22] Jixiao Zhang and Chunsheng Zuo. 2025. Grpo-lead: A difficulty-aware reinforce-ment learning approach for concise mathematical reasoning in language models. In Proceedings of the 2025 Conference on Empirical Methods in Natural Language Processing . 5642–5665. [23] Zhe Zhao, Lichan Hong, Li Wei, Jilin Chen, Aniruddh Nath, Shawn Andrews, Aditee Kumthekar, Maheswaran Sathiamoorthy, Xinyang Yi, and Ed Chi. 2019. Recommending what video to watch next: a multitask ranking system. In Pro-ceedings of the 13th ACM conference on recommender systems . 43–51. [24] Zhi Zheng, Wenshuo Chao, Zhaopeng Qiu, Hengshu Zhu, and Hui Xiong. 2024. Harnessing large language models for text-rich sequential recommendation. In 
+
+Proceedings of the ACM Web Conference 2024 . 3207–3216. [25] Yaochen Zhu, Harald Steck, Dawen Liang, Yinhan He, Vito Ostuni, Jundong Li, and Nathan Kallus. 2025. Rank-GRPO: Training LLM-based Conversational Rec-ommender Systems with Reinforcement Learning. arXiv preprint arXiv:2510.20150 
+
+(2025). [26] Yanyan Zou, Junbo Qi, Lunsong Huang, Yu Li, Kewei Xu, Jiabao Gao, Bin-glei Zhao, Xuanhua Yang, Sulong Xu, and Shengjie Li. 2026. GenRec: A Preference-Oriented Generative Framework for Large-Scale Recommendation. arXiv:2604.14878 [cs.IR] https://arxiv.org/abs/2604.14878

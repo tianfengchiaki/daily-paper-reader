@@ -1,0 +1,78 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2606.03371v2/fig-001.webp",
+      "caption": "Figure 1: Motivating example for proactive retail intervention.",
+      "page": 1,
+      "index": 1,
+      "width": 436,
+      "height": 379
+    },
+    {
+      "url": "assets/figures/arxiv/2606.03371v2/fig-002.webp",
+      "caption": "Table 4: Compact ablation results on Target-Test (n=30).",
+      "page": 7,
+      "index": 2,
+      "width": 458,
+      "height": 373
+    },
+    {
+      "url": "assets/figures/arxiv/2606.03371v2/fig-003.webp",
+      "caption": "Table 3: Best-action macro F1 across evaluation scenarios. Oracle uses ground-truth customer state; E2E predicts state from video. Closed-source baselines are evaluated via 302ai with the same prompts; GPT-5.5 is a diagnostic Codex CLI reference.",
+      "page": 7,
+      "index": 3,
+      "width": 950,
+      "height": 228
+    },
+    {
+      "url": "assets/figures/arxiv/2606.03371v2/fig-004.webp",
+      "caption": "Table 1: PIWM structured outputs and AIDAconditioned candidate actions.",
+      "page": 4,
+      "index": 4,
+      "width": 461,
+      "height": 384
+    },
+    {
+      "url": "assets/figures/arxiv/2606.03371v2/fig-005.webp",
+      "caption": "Figure 4: ELICIT example.",
+      "page": 12,
+      "index": 5,
+      "width": 447,
+      "height": 504
+    },
+    {
+      "url": "assets/figures/arxiv/2606.03371v2/fig-006.webp",
+      "caption": "Figure 3: HOLD example.",
+      "page": 12,
+      "index": 6,
+      "width": 447,
+      "height": 527
+    },
+    {
+      "url": "assets/figures/arxiv/2606.03371v2/fig-007.webp",
+      "caption": "Table 2: Dataset and supervision sources.",
+      "page": 5,
+      "index": 7,
+      "width": 438,
+      "height": 278
+    },
+    {
+      "url": "assets/figures/arxiv/2606.03371v2/fig-008.webp",
+      "caption": "Figure 2: Overview of GuidanceSalesBench construction and PIWM training. The pipeline generates AIDA–BDI manifests, candidate actions, action-conditioned outcomes, and best-action labels before producing the final SFT training set.",
+      "page": 5,
+      "index": 8,
+      "width": 929,
+      "height": 375
+    },
+    {
+      "url": "assets/figures/arxiv/2606.03371v2/fig-009.webp",
+      "caption": "Figure 5: Additional real-store pilot frame examples. Rows correspond to distinct paid-participant sessions covering different gold AIDA stages and best-action labels. All participants signed release forms covering public release of recorded materials (see Ethics Statement).",
+      "page": 16,
+      "index": 9,
+      "width": 950,
+      "height": 1268
+    }
+  ]
+}

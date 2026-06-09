@@ -1,0 +1,54 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2606.02129v1/fig-001.webp",
+      "caption": "Table 1: Quantitative comparison under unstylized and stylized prompts. The best and the second best results are boldfaced and underlined.",
+      "page": 6,
+      "index": 1,
+      "width": 502,
+      "height": 308
+    },
+    {
+      "url": "assets/figures/arxiv/2606.02129v1/fig-002.webp",
+      "caption": "Figure 6: Qualitative comparison with prevalent methods. Please zoom in for a better view.",
+      "page": 7,
+      "index": 2,
+      "width": 898,
+      "height": 1071
+    },
+    {
+      "url": "assets/figures/arxiv/2606.02129v1/fig-003.webp",
+      "caption": "Figure 7: The best and the second best results are boldfaced and underlined. (Upper) Numerical analysis with",
+      "page": 8,
+      "index": 3,
+      "width": 456,
+      "height": 785
+    },
+    {
+      "url": "assets/figures/arxiv/2606.02129v1/fig-004.webp",
+      "caption": "Figure 9: Numerical analysis of FDTE. 𝑝𝑙 , 𝑝ℎ , and 𝑝𝑜 represent the probability of choosing low-frequency, high-frequency and original images, respectively.",
+      "page": 8,
+      "index": 4,
+      "width": 498,
+      "height": 256
+    },
+    {
+      "url": "assets/figures/arxiv/2606.02129v1/fig-005.webp",
+      "caption": "Figure 2: Method overview. In the training stage, the Frequency-aware Decoupled TextualEmbedding (FDTE) decomposes the original image 𝐼 𝑔 𝑜𝑟𝑖 into low frequency (LF) and high frequency (HF) bands, which are selectively formed into the input of denoising UNet along with their corresponding text embeddings including 𝑆∗ 𝐿𝐹 and 𝑆∗ 𝐻𝐹 . After encoding into the latent space, the target features undergo forward diffusion added with noise in Mask Guided Diffusion Process (MGDP), thereby mitigating the impact of background elements. Subsequently, Residual Reference Attention (RRA) integrates spatial details from the reference image 𝐼𝑟 into the result to enhance image consistency. During inference, we first generate corresponding spatial domain embedding 𝑆∗ by optimized high-frequency and low-frequency text embeddings. Then, the sampled Gaussian noise 𝑧𝑔 𝑇 is iteratively denoised into generation result aligned with the text for 𝑇 steps.",
+      "page": 4,
+      "index": 5,
+      "width": 1002,
+      "height": 354
+    },
+    {
+      "url": "assets/figures/arxiv/2606.02129v1/fig-006.webp",
+      "caption": "Figure 3: Illustration of Mask Guided Diffusion Process. To eliminate background interference on the concept representation S*, we exclusively apply noise addition and prediction to the subject region indicated by subject mask𝑀𝑔.",
+      "page": 4,
+      "index": 6,
+      "width": 506,
+      "height": 260
+    }
+  ]
+}

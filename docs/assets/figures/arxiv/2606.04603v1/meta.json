@@ -1,0 +1,30 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2606.04603v1/fig-001.webp",
+      "caption": "Table 2: Stratified Catalogue Coverage and Inclusion Rate at 𝐾=1000 by popularity quintile. Higher is better.",
+      "page": 4,
+      "index": 1,
+      "width": 776,
+      "height": 215
+    },
+    {
+      "url": "assets/figures/arxiv/2606.04603v1/fig-002.webp",
+      "caption": "Table 1: Global Recall@𝐾 and Catalogue Coverage@𝐾 (%) across retrieval methods. Higher is better.",
+      "page": 4,
+      "index": 2,
+      "width": 1032,
+      "height": 217
+    },
+    {
+      "url": "assets/figures/arxiv/2606.04603v1/fig-003.webp",
+      "caption": "Figure 1: Pareto Frontier of Recall vs. Exploration at varying retrieval depths (𝐾 ∈ {100, 500, 1000}). dinosaur strictly dominates",
+      "page": 4,
+      "index": 3,
+      "width": 1030,
+      "height": 192
+    }
+  ]
+}

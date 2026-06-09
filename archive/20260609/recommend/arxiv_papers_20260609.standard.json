@@ -1,0 +1,794 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-06-09T22:06:16.893987+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 2,
+    "deep_divecandidates": 23,
+    "deep_cap": 7,
+    "deep_selected": 7,
+    "quick_candidates": 44,
+    "quick_skim_target": 12,
+    "quick_selected": 12
+  },
+  "deep_dive": [
+    {
+      "id": "2606.03878v1",
+      "source": "arxiv",
+      "title": "Privacy-Robust Incrementality Measurement for Advertising Systems under Signal Loss",
+      "abstract": "Advertising platforms use randomized lift tests to measure incrementality, but privacy-preserving reporting systems degrade the observed signal through match-rate loss, linkability loss, attribution-window loss, aggregation-threshold suppression, randomized reporting noise, and segment-heterogeneous signal loss. This paper formulates privacy-constrained advertising measurement as a robust causal decision problem under the mentioned signal losses. Given a randomized experiment and an ambiguity set for privacy-induced degradation, the framework projects the observation-compatible fiber of clean/unfiltered experimental worlds onto the incrementality functional and returns certified, rejected, and unresolved decisions. The main result gives a sharp decision frontier. Reports outside the frontier support uniformly valid certification or rejection, whereas reports inside it contain too little information for any method to uniformly distinguish above-threshold incrementality from non-incrementality. Supporting results give finite-sample certification, sample-complexity guarantees, a minimax lower bound showing that signal loss reduces effective information, and a reporting-granularity tradeoff. On 2.0M Criteo Uplift rows and the 64K-row Hillstrom email experiment, clean conversion lift is positive in both datasets, with lifts 0.00112 and 0.00495, respectively. Population certification survives mild degradation in Criteo and severe degradation in Hillstrom, while all considered finite-sample stress settings in both datasets remain unresolved after simultaneous uncertainty and reporting noise are included. Overall, the research contributes a decision-theoretic layer for privacy-aware incrementality measurement whose output is the strongest causal-claim justified by degraded ads signals.",
+      "authors": [
+        "Prashant Shekhar",
+        "Caroline Howard"
+      ],
+      "primary_category": "stat.ML",
+      "categories": [
+        "stat.ML",
+        "cs.LG"
+      ],
+      "published": "2026-06-02T16:46:38+00:00",
+      "link": "https://arxiv.org/pdf/2606.03878v1",
+      "tags": [
+        "keyword:广告",
+        "query:LLMApp",
+        "query:广告"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "incrementality measurement for advertising",
+      "llm_evidence_cn": "广告增量测量",
+      "llm_evidence": "广告增量测量",
+      "canonical_evidence": "广告增量测量",
+      "llm_tldr_en": "Proposes robust causal framework for measuring advertising incrementality under privacy constraints.",
+      "llm_tldr_cn": "提出在隐私约束下测量广告增量效果的鲁棒因果框架",
+      "llm_tldr": "提出在隐私约束下测量广告增量效果的鲁棒因果框架",
+      "llm_tags": [
+        "query:q5"
+      ],
+      "matched_query_tag": "query:q5",
+      "matched_query_text": "uplift modeling for advertising campaigns",
+      "matched_requirement_id": "req-5",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2606.04944v1",
+      "source": "arxiv",
+      "title": "Dual-Stream MLP is All You Need for CTR Prediction",
+      "abstract": "Click-through rate (CTR) prediction holds a pivotal role in online advertising and recommendation systems, where even small improvements can significantly boost revenue. Existing research primarily focuses on designing dual-stream architectures to capture effective complex feature interactions from both explicit and implicit perspectives. However, these approaches are faced with two major challenges: 1) the high complexity of feature interaction learning, which increases computational demands and the overfitting risk, and 2) the imbalance between explicit and implicit modules, where one module's output may dominate the final prediction. To address these issues, in this paper, we propose Dual-Stream MLP (DS-MLP), a novel feature interaction framework for the CTR prediction task. Specially, it leverages knowledge distillation to consolidate the capacity of learning explicit feature interaction into a main MLP network, while a parallel MLP simultaneously captures implicit feature interactions as a complement. To effectively optimize the dual-stream MLP architecture, we further design a specific learning approach with two alignment strategies for enhancing the compatibility of the two MLP components. Experiments demonstrate that DS-MLP, though merely a vanilla MLP structure (the final model), can achieve state-of-the-art performance across three widely used benchmarks, offering a scalable and efficient solution for large-scale recommendation systems. Our code is available at https://github.com/RUCAIBox/DS-MLP.",
+      "authors": [
+        "Kesha Ou",
+        "Zhen Tian",
+        "Wayne Xin Zhao",
+        "Long Zhang",
+        "Sheng Chen",
+        "Ji-Rong Wen"
+      ],
+      "primary_category": "cs.IR",
+      "categories": [
+        "cs.IR"
+      ],
+      "published": "2026-06-03T14:34:32+00:00",
+      "link": "https://arxiv.org/pdf/2606.04944v1",
+      "tags": [
+        "keyword:LLMApp",
+        "keyword:广告",
+        "query:LLMApp",
+        "query:广告"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "CTR prediction for online advertising",
+      "llm_evidence_cn": "在线广告点击率预测",
+      "llm_evidence": "在线广告点击率预测",
+      "canonical_evidence": "在线广告点击率预测",
+      "llm_tldr_en": "Proposes DS-MLP for efficient CTR prediction in advertising and recommendation.",
+      "llm_tldr_cn": "提出DS-MLP用于广告和推荐中的高效点击率预测。",
+      "llm_tldr": "提出DS-MLP用于广告和推荐中的高效点击率预测。",
+      "llm_tags": [
+        "query:q1"
+      ],
+      "matched_query_tag": "query:q1",
+      "matched_query_text": "recommendation system for advertising",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2606.05671v1",
+      "source": "arxiv",
+      "title": "QueryAgent-R1: Bridging Query Generation and Product Retrieval for E-Commerce Query Recommendation",
+      "abstract": "Query recommendation in e-commerce search aims to proactively suggest queries that match users' potential interests. However, existing methods mainly optimize query-level relevance, while neglecting whether the retrieved products align with users' downstream preferences. This mismatch often leads to high query click through rates (CTR) but low product conversion rates (CVR). To bridge this gap, we propose QueryAgent-R1, a memory-augmented agentic framework that improves end-to-end alignment via chain-of-retrieval optimization. Our QueryAgent-R1 grounds query generation in real inventory retrieval, allowing the agent to validate and refine queries based on retrieved products. We also design a consistency reward in the agentic reinforcement learning (RL) process to jointly optimize query relevance and downstream engagement. In addition, we construct a memory abstraction module for efficient user profiling. To support offline evaluation, we construct two datasets based on both proprietary industrial data and public datasets, on which QueryAgent-R1 consistently outperforms strong baselines. Moreover, on a large scale production platform, QueryAgent-R1 improves Query CTR by 2.9% and guided CVR by 3.1% in online A/B tests.",
+      "authors": [
+        "Dike Sun",
+        "Zheng Zou",
+        "Jingtong Zang",
+        "Qi Sun",
+        "Huaipeng Zhaoand Tao Luo",
+        "Xiaoyi Zeng"
+      ],
+      "primary_category": "cs.CL",
+      "categories": [
+        "cs.CL"
+      ],
+      "published": "2026-06-04T03:51:21+00:00",
+      "link": "https://arxiv.org/pdf/2606.05671v1",
+      "tags": [
+        "keyword:LLMApp",
+        "keyword:广告",
+        "query:LLMApp",
+        "query:广告"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "Agentic framework for e-commerce query recommendation with product retrieval alignment",
+      "llm_evidence_cn": "电商查询推荐的智能体框架，对齐产品检索",
+      "llm_evidence": "电商查询推荐的智能体框架，对齐产品检索",
+      "canonical_evidence": "电商查询推荐的智能体框架，对齐产品检索",
+      "llm_tldr_en": "QueryAgent-R1 bridges query generation and product retrieval for better conversion",
+      "llm_tldr_cn": "QueryAgent-R1连接查询生成与产品检索以提升转化率",
+      "llm_tldr": "QueryAgent-R1连接查询生成与产品检索以提升转化率",
+      "llm_tags": [
+        "query:q1"
+      ],
+      "matched_query_tag": "query:q1",
+      "matched_query_text": "recommendation system for advertising",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2606.06779v1",
+      "source": "arxiv",
+      "title": "Mind the Gap: Bridging Behavioral Silos with LLMs in Multi-Vertical Recommendations",
+      "abstract": "In multi-vertical e-commerce platforms like DoorDash, relatively newer product verticals such as grocery and retail present a significant opportunity for personalization innovation. A key challenge lies in solving the \"cold start\" problem for users. This paper introduces a novel framework for enhancing recommendation quality by transferring knowledge from data-rich verticals (e.g., restaurants at DoorDash) to data-sparse ones. We leverage Large Language Models (LLMs) to perform generative inference, synthesizing sparse, high-dimensional features that encapsulate latent user affinities. Specifically, we employ a hierarchical Retrieval-Augmented Generation (RAG) pipeline to derive multi-level taxonomic features from user restaurant order histories and search queries. These generated features, encoding both long-term cross-vertical preferences and short-term intent, are integrated into a production Multi-Task Learning (MTL) ranking model. We demonstrate through extensive offline and online evaluation that this approach significantly improves personalization and engagement in emerging business verticals, effectively bridging the behavioral data gap.",
+      "authors": [
+        "Nimesh Sinha",
+        "Raghav Saboo",
+        "Martin Wang",
+        "Sudeep Das"
+      ],
+      "primary_category": "cs.IR",
+      "categories": [
+        "cs.IR",
+        "cs.AI"
+      ],
+      "published": "2026-06-04T23:39:52+00:00",
+      "link": "https://arxiv.org/pdf/2606.06779v1",
+      "tags": [
+        "keyword:LLMApp",
+        "keyword:广告",
+        "query:LLMApp",
+        "query:广告"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "LLM-based cross-vertical recommendation for e-commerce",
+      "llm_evidence_cn": "基于LLM的跨品类电子商务推荐",
+      "llm_evidence": "基于LLM的跨品类电子商务推荐",
+      "canonical_evidence": "基于LLM的跨品类电子商务推荐",
+      "llm_tldr_en": "The paper bridges behavioral silos using LLMs for multi-vertical recommendations, directly matching LLM for recommendation.",
+      "llm_tldr_cn": "本文利用LLM桥接多品类推荐中的行为孤岛，直接匹配LLM用于推荐。",
+      "llm_tldr": "本文利用LLM桥接多品类推荐中的行为孤岛，直接匹配LLM用于推荐。",
+      "llm_tags": [
+        "query:llmapp"
+      ],
+      "matched_query_tag": "query:llmapp",
+      "matched_query_text": "LLM for recommendation",
+      "matched_requirement_id": "req-10",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2606.07995v1",
+      "source": "arxiv",
+      "title": "Customer-Agent: Overcoming Context Limitations in Ultra-Long Shopping Trajectories via Tool-Augmented Agents and RLVR",
+      "abstract": "Understanding customer shopping trajectories is essential for enabling personalized shopping experiences. However, shopping records (i.e., customer's search, clicks, purchases, etc.) often span long time horizons over multiple years, resulting in extremely long trajectories that pose significant challenges for existing large language models (LLMs). Despite the importance of this problem, existing benchmarks are limited to short customer trajectories, while real-world trajectories from large e-commerce platforms are rarely accessible due to data privacy constraints. To address this gap, we introduce ShopTrajQA, a long-context evaluation benchmark constructed from real-world product information and simulated shopping trajectories. The dataset includes variants of up to 32k and 64k tokens, enabling systematic evaluation of model robustness under varying context lengths. Through comprehensive benchmarking of frontier LLMs, we identify critical performance gaps in reasoning over long shopping trajectory data. To address these challenges, we propose a Customer Agent Framework for ultra-long context management. Leveraging a Reinforcement Learning with Verifiable Rewards (RLVR) agentic training paradigm, our approach stores trajectories as external local files and trains the agent to autonomously retrieve and parse them through code-interpreter interactions (e.g., SQL queries), effectively bypassing the fixed in-context window constraints of LLMs. Experimental results demonstrate that our framework achieves strong performance for ShopTrajQA and shows generalization to other complex reasoning tasks.",
+      "authors": [
+        "Hongye Liu",
+        "Rongmei Lin",
+        "Anurag Kashyap",
+        "Hejie Cui",
+        "Ricardo Henao",
+        "Besnik Fetahu",
+        "Bing Yin"
+      ],
+      "primary_category": "cs.CL",
+      "categories": [
+        "cs.CL"
+      ],
+      "published": "2026-06-06T06:22:07+00:00",
+      "link": "https://arxiv.org/pdf/2606.07995v1",
+      "tags": [
+        "keyword:LLMApp",
+        "keyword:广告",
+        "query:LLMApp",
+        "query:广告"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "LLM agents for shopping trajectory understanding in personalized marketing",
+      "llm_evidence_cn": "LLM代理用于购物轨迹理解以实现个性化营销",
+      "llm_evidence": "LLM代理用于购物轨迹理解以实现个性化营销",
+      "canonical_evidence": "LLM代理用于购物轨迹理解以实现个性化营销",
+      "llm_tldr_en": "Uses tool-augmented LLM agents to understand ultra-long shopping trajectories for personalization",
+      "llm_tldr_cn": "使用工具增强的LLM代理理解超长购物轨迹以实现个性化",
+      "llm_tldr": "使用工具增强的LLM代理理解超长购物轨迹以实现个性化",
+      "llm_tags": [
+        "query:llmapp"
+      ],
+      "matched_query_tag": "query:llmapp",
+      "matched_query_text": "Applications of LLMs in advertising and personalized marketing",
+      "matched_requirement_id": "req-15",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2606.08265v1",
+      "source": "arxiv",
+      "title": "Unintended Consequences of Recommender System Interventions: Evidence from a Field Experiment",
+      "abstract": "Platform content interventions in recommendation systems are typically evaluated as static \"nudges\", ignoring that the systems adaptively learn from the resulting user behavior. We investigate this dynamic through a large-scale field experiment on a short-video platform. The experiment involves a \"sleep reminder\" campaign designed to reduce late-night usage. Paradoxically, the intervention increased late-night engagement by 14.75% and overall platform usage by 2.18%, and the effects persisted for weeks even after the experiment. We explain this through a forced-exploration mechanism, showing that by revealing high latent demand for the promoted content, the intervention triggers a recommendation policy update that routine user behavior would not produce. The data generated by the intervention induced the algorithm to update its post-campaign policy, reinforcing the very engagement loops the campaign aimed to mitigate. Our findings demonstrate that user-facing interventions can effectively retrain the underlying algorithm, triggering durable, system-wide shifts in content distribution that challenge standard evaluation metrics in platform governance and social responsibility initiatives.",
+      "authors": [
+        "Shilei Luo",
+        "Song Yao",
+        "Dennis J. Zhang"
+      ],
+      "primary_category": "econ.GN",
+      "categories": [
+        "econ.GN"
+      ],
+      "published": "2026-06-06T17:21:22+00:00",
+      "link": "https://arxiv.org/pdf/2606.08265v1",
+      "tags": [
+        "keyword:LLMApp",
+        "keyword:广告",
+        "query:LLMApp",
+        "query:广告"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "Field experiment on short-video platform recommendation intervention",
+      "llm_evidence_cn": "短视频平台推荐系统干预的实地实验",
+      "llm_evidence": "短视频平台推荐系统干预的实地实验",
+      "canonical_evidence": "短视频平台推荐系统干预的实地实验",
+      "llm_tldr_en": "Recommender system intervention increased late-night usage, revealing forced-exploration effect",
+      "llm_tldr_cn": "推荐系统干预反而增加深夜使用，揭示强制探索机制",
+      "llm_tldr": "推荐系统干预反而增加深夜使用，揭示强制探索机制",
+      "llm_tags": [
+        "query:q1"
+      ],
+      "matched_query_tag": "query:q1",
+      "matched_query_text": "recommendation system for advertising",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2606.08480v1",
+      "source": "arxiv",
+      "title": "Adaptive Loss Balancing for Noise-Robust GRPO in Generative Recommendation",
+      "abstract": "Reinforcement learning (RL) presents a promising avenue for enhancing generative recommendation beyond supervised imitation, leveraging reward signals to guide policy improvement. However, its efficacy is critically contingent on the trustworthiness of the reward model for the samples it evaluates. In practice, production rankers, the widely adopted reward models, are trained on exposure-biased logs, leading to sample-dependent inaccuracies that violate this assumption. Our stratified analysis uncovers a consistent pattern: reward guidance is most beneficial when the policy exhibits uncertainty and the ranker can effectively discriminate the ground-truth item from rollout negatives. On other samples, the reward signal is either negligible or detrimental, highlighting the risk of uniform RL application. To address such an issue, we introduce AdaGRPO, a novel framework that treats reward-guided optimization as selective admission rather than uniform pressure. Training is anchored in supervised negative log-likelihood, while the GRPO objective is gated by a binary, per-sample clip determined by two rollout diagnostics: policy-side difficulty and reward discriminability. Instances failing either diagnostic default to pure supervision, ensuring stability and mitigating the amplification of noisy gradients. We validate AdaGRPO on a large-scale e-commerce dataset. At the best intermediate checkpoint, it elevates HR@10 from 11.01% to 12.18% while constraining hallucination below 0.22%, and maintains robustness at the final checkpoint (HR@10 11.63%, hallucination 0.27%), outperforming fixed NLL--GRPO mixtures across the retrieval--validity frontier. In production A/B tests, AdaGRPO achieves statistically significant gains in click-through rate and dwell time, confirming its practical utility.",
+      "authors": [
+        "Kewei Xu",
+        "Junbo Qi",
+        "Yanyan Zou",
+        "Pengfei Zhang",
+        "Xingzhi Yao",
+        "Shengjie Li"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG",
+        "cs.AI",
+        "cs.IR"
+      ],
+      "published": "2026-06-07T06:51:18+00:00",
+      "link": "https://arxiv.org/pdf/2606.08480v1",
+      "tags": [
+        "keyword:LLMApp",
+        "keyword:广告",
+        "query:LLMApp",
+        "query:广告"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "generative recommendation with RL for advertising",
+      "llm_evidence_cn": "生成式推荐强化学习应用于广告",
+      "llm_evidence": "生成式推荐强化学习应用于广告",
+      "canonical_evidence": "生成式推荐强化学习应用于广告",
+      "llm_tldr_en": "Proposes adaptive loss balancing for noise-robust reinforcement learning in generative recommendation",
+      "llm_tldr_cn": "提出用于生成式推荐中噪声鲁棒强化学习的自适应损失平衡",
+      "llm_tldr": "提出用于生成式推荐中噪声鲁棒强化学习的自适应损失平衡",
+      "llm_tags": [
+        "query:q1"
+      ],
+      "matched_query_tag": "query:q1",
+      "matched_query_text": "recommendation system for advertising",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "quick_skim": [
+    {
+      "id": "2606.01670v1",
+      "source": "arxiv",
+      "title": "Time-Aware Diffusion based on Preference Disentanglement for Generative Recommendation",
+      "abstract": "Recently, Generative Recommenders (GRs) have emerged as a transformative recommendation paradigm by replacing traditional item IDs with semantic indices (SIDs). Owing to the exceptional generative capabilities of diffusion models, a few pioneering works explore developing GRs with diffusion architectures as the backbone. However, a fatal limitation of existing diffusion-based GRs is that the diffusion process applies uniformly to all items within the historical interactions. In contrast, the user preference is shaped by multifaceted time-evolving factors and thus exhibits a non-stationary distribution in the temporal aspect. To bridge this gap, this study proposes a novel GR framework, named TDPM, by designing the time-aware diffusion on SID tokens. Specifically, TDPM explicitly integrates the impact of time-evolving user preferences into the diffusion process. In detail, the user preference is disentangled into (i) the period preference, which remains consistent over a long time-span, and (ii) the point preference, which is triggered by recent focal events. Extensive experiments on three public real-world datasets demonstrate the significant superiority of TDPM over the state-of-the-art baselines. TDPM achieves average improvements of up to 29.21% and 25.45% in terms of HR@20 and NDCG@20, respectively. The ablation study further underscores the necessity of time-aware token diffusion in diffusion-based GRs.",
+      "authors": [
+        "Bangguo Zhu",
+        "Peng Huo",
+        "Yuanbo Zhao",
+        "Zhicheng Du",
+        "Jun Yin",
+        "Senzhang Wang"
+      ],
+      "primary_category": "cs.IR",
+      "categories": [
+        "cs.IR",
+        "cs.AI"
+      ],
+      "published": "2026-06-01T04:27:49+00:00",
+      "link": "https://arxiv.org/pdf/2606.01670v1",
+      "tags": [
+        "keyword:LLMApp",
+        "keyword:广告",
+        "query:LLMApp",
+        "query:广告"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "Generative recommendation with diffusion models for preference disentanglement, directly applicable to advertising recommendation.",
+      "llm_evidence_cn": "使用扩散模型的生成式推荐进行偏好解缠，直接应用于广告推荐。",
+      "llm_evidence": "使用扩散模型的生成式推荐进行偏好解缠，直接应用于广告推荐。",
+      "canonical_evidence": "使用扩散模型的生成式推荐进行偏好解缠，直接应用于广告推荐。",
+      "llm_tldr_en": "Proposes time-aware diffusion for generative recommendation by disentangling time-evolving user preferences.",
+      "llm_tldr_cn": "提出时间感知扩散模型通过解缠时间演化用户偏好进行生成式推荐。",
+      "llm_tldr": "提出时间感知扩散模型通过解缠时间演化用户偏好进行生成式推荐。",
+      "llm_tags": [
+        "query:q1"
+      ],
+      "matched_query_tag": "query:q1",
+      "matched_query_text": "recommendation system for advertising",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "8plus"
+    },
+    {
+      "id": "2606.02129v1",
+      "source": "arxiv",
+      "title": "Equilibrated Diffusion: Frequency-aware Textual Embedding for Equilibrated Image Customization",
+      "abstract": "Image customization learns target subjects from reference concept images and generates conditioned images per text prompts, mainly modifying styles or backgrounds. Prevailing methods adopt fine-tuning to pack diverse concept attributes into a unified latent embedding, yet entangled attributes hinder elimination of irrelevant disturbances from style and background. To address this issue, we propose Equilibrated Diffusion, a frequency-driven approach that disentangles tangled concept features for balanced customization and consistent text-visual matching. Unlike conventional methods learning full concepts with shared embeddings and unified tuning, our work utilizes the inherent link between image frequency components and semantics: low frequencies represent subject content and high frequencies correspond to styles. We decompose concepts in frequency space and optimize each embedding independently. This separate optimization enables the denoiser to capture style detached from subject identity and generalize better to unseen stylistic prompts. Merging multi-frequency embeddings preserves the model's original spatial customization ability. We further deploy mask-guided diffusion to restrict irrelevant background changes and boost text alignment. Residual Reference Attention (RRA) is inserted into spatial attention to retain subject structure and identity consistency. Experiments prove Equilibrated Diffusion exceeds mainstream baselines on subject fidelity and text adherence, verifying our method's superiority.",
+      "authors": [
+        "Liyuan Ma",
+        "Xueji Fang",
+        "Guo-Jun Qi"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-06-01T11:57:10+00:00",
+      "link": "https://arxiv.org/pdf/2606.02129v1",
+      "tags": [
+        "keyword:LLMApp",
+        "keyword:广告",
+        "query:LLMApp",
+        "query:广告"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "multimodal diffusion model for image customization applicable to ad creatives",
+      "llm_evidence_cn": "基于扩散模型的多模态图像定制可用于广告创意",
+      "llm_evidence": "基于扩散模型的多模态图像定制可用于广告创意",
+      "canonical_evidence": "基于扩散模型的多模态图像定制可用于广告创意",
+      "llm_tldr_en": "Equilibrated Diffusion disentangles style and content for image customization, supporting multimodal ad generation.",
+      "llm_tldr_cn": "Equilibrated Diffusion解耦风格与内容实现图像定制，支持多模态广告生成。",
+      "llm_tldr": "Equilibrated Diffusion解耦风格与内容实现图像定制，支持多模态广告生成。",
+      "llm_tags": [
+        "query:q6"
+      ],
+      "matched_query_tag": "query:q6",
+      "matched_query_text": "multimodal learning for advertising",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2606.01697v1",
+      "source": "arxiv",
+      "title": "RCEM: Embedder Equipped with Query Rewriting Skill for Robust Conversational Search in Distributional Shift",
+      "abstract": "Conversational search has become increasingly important in retrieval-augmented generation (RAG) systems, where users interact with AI assistants through multi-turn conversations containing context-dependent queries. We propose RCEM, a conversational dense retrieval model that distills the query reformulation capability of LLMs into the embedding model, enabling context-aware retrieval without explicit query rewriting during inference. Unlike prior conversational dense retrieval approaches that learn direct conversation-to-document matching, RCEM aligns conversational-query embeddings with rewritten-query embeddings, improving robustness under distributional shift. RCEM does not require conversational query-to-document relevance mappings for training, which are often expensive and difficult to obtain with high quality. Extensive experiments on QReCC, TopiOCQA, and TREC CAsT demonstrate that RCEM consistently outperforms strong conversational retrieval baselines, achieving particularly large gains under distributional shift, including up to 20% improvement in Recall@10. RCEM further extends the base embedding model with conversational query rewriting capability while preserving its original retrieval functionality, allowing both standalone and conversational queries to be encoded by a single model and searched against existing document indexes without rebuilding the retrieval database.",
+      "authors": [
+        "Kilho Son",
+        "Paul Hsu",
+        "Cha Zhang",
+        "Dinei Florencio"
+      ],
+      "primary_category": "cs.CL",
+      "categories": [
+        "cs.CL"
+      ],
+      "published": "2026-06-01T05:04:17+00:00",
+      "link": "https://arxiv.org/pdf/2606.01697v1",
+      "tags": [
+        "keyword:LLMApp",
+        "keyword:广告",
+        "query:LLMApp",
+        "query:广告"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "LLM distillation for conversational dense retrieval, applicable to recommendation in search.",
+      "llm_evidence_cn": "LLM蒸馏用于对话稠密检索，可应用于搜索推荐。",
+      "llm_evidence": "LLM蒸馏用于对话稠密检索，可应用于搜索推荐。",
+      "canonical_evidence": "LLM蒸馏用于对话稠密检索，可应用于搜索推荐。",
+      "llm_tldr_en": "Proposes RCEM to distill LLM query rewriting into embedders for robust conversational search.",
+      "llm_tldr_cn": "提出RCEM将LLM查询重写蒸馏到嵌入器中实现鲁棒对话搜索。",
+      "llm_tldr": "提出RCEM将LLM查询重写蒸馏到嵌入器中实现鲁棒对话搜索。",
+      "llm_tags": [
+        "query:llmapp"
+      ],
+      "matched_query_tag": "query:llmapp",
+      "matched_query_text": "Large language model applications in recommendation",
+      "matched_requirement_id": "req-14",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2606.03371v1",
+      "source": "arxiv",
+      "title": "See, Infer, Intervene: Proactive World Modeling for Goal-Oriented Social Intelligence",
+      "abstract": "Multimodal retail agents should not only recognize what a customer is doing, but also decide whether and how to assist before an explicit request is made. We study this setting through the See--Infer--Intervene (SII) framework, where a device must see pre-interaction behavior, infer latent customer intent, and act by selecting an appropriate service intervention or choosing to wait. We instantiate SII with the Proactive Intent World Model (PIWM), which represents customer state with AIDA (Attention, Interest, Desire, Action) purchasing phases and BDI (belief, desire, intention) psychological fields, predicts action-conditioned intent transitions, and selects from five response classes: Greet, Elicit, Inform, Recommend, and Hold. We further construct GuidanceSalesBench, a smart-retail benchmark containing state manifests, pre-interaction videos, candidate responses, action-conditioned outcomes, and best-action labels. When conditioned on ground-truth customer state to isolate action selection, PIWM achieves 0.641 macro F1 on 30 held-out target videos, outperforming a zero-shot Qwen2.5-VL-7B baseline and training variants without balanced action supervision; end-to-end video-only selection drops to 0.295, below the 5-class balanced random baseline of 0.414, identifying video-to-state grounding as the dominant deployment-time bottleneck. A preliminary staged real-store pilot (recorded with paid participants performing scripted customer behaviors) reaches 0.579 action macro F1 on 20 fully annotated videos, with 10 additional accessible videos released with index-level labels.",
+      "authors": [
+        "Honghui Zhang",
+        "Chenmeinian Guo",
+        "Yichen Yu",
+        "Guanyu Liu",
+        "Yongming Qin",
+        "Chongguo Song",
+        "Mengyue Yang",
+        "Lei Yu",
+        "Tianyu Shi"
+      ],
+      "primary_category": "cs.CL",
+      "categories": [
+        "cs.CL"
+      ],
+      "published": "2026-06-02T09:18:39+00:00",
+      "link": "https://arxiv.org/pdf/2606.03371v1",
+      "tags": [
+        "keyword:LLMApp",
+        "keyword:广告",
+        "query:LLMApp",
+        "query:广告"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "Multimodal retail agent for proactive customer assistance",
+      "llm_evidence_cn": "多模态零售代理实现主动客户协助",
+      "llm_evidence": "多模态零售代理实现主动客户协助",
+      "canonical_evidence": "多模态零售代理实现主动客户协助",
+      "llm_tldr_en": "Proposes SII framework for proactive retail agents that infer intent and choose interventions",
+      "llm_tldr_cn": "提出SII框架，使零售代理能推断意图并选择干预措施",
+      "llm_tldr": "提出SII框架，使零售代理能推断意图并选择干预措施",
+      "llm_tags": [
+        "query:q7"
+      ],
+      "matched_query_tag": "query:q7",
+      "matched_query_text": "Practical implementation of advertising in real life scenarios‌",
+      "matched_requirement_id": "req-7",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "8plus"
+    },
+    {
+      "id": "2606.03527v1",
+      "source": "arxiv",
+      "title": "Competitive Information Design in Sequential Search",
+      "abstract": "Advertisements often strategically disclose information to consumers who make decisions on further information acquisition and eventual purchase. Anderson and Renault (2006) model this problem using an information design framework, where the advertiser acts as a sender and the consumer as a receiver. We extend this model to a competitive setting with horizontally differentiated senders competing for a unit-demand receiver. Under costly inspection, the receiver's optimal sequential search action is given by Weitzman's Index Algorithm.   We give a method, based on duality arguments, to verify whether a sender's given information strategy constitutes a best response against his competitors (other senders). We establish the existence of an equilibrium in the game among senders when the prior distributions have no mass; we also illustrate that such equilibria may exhibit intricate behaviors. Finally, we meticulously characterize symmetric equilibria played by the senders for cases when the prior distributions have monotone increasing densities, while offering economic intuitions behind the insightful equilibrium structure.",
+      "authors": [
+        "Zhicheng Du",
+        "Hu Fu",
+        "Ying Qin",
+        "Zihe Wang"
+      ],
+      "primary_category": "cs.GT",
+      "categories": [
+        "cs.GT",
+        "econ.TH"
+      ],
+      "published": "2026-06-02T11:50:09+00:00",
+      "link": "https://arxiv.org/pdf/2606.03527v1",
+      "tags": [
+        "keyword:广告",
+        "query:LLMApp",
+        "query:广告"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "advertiser information design in sequential search",
+      "llm_evidence_cn": "广告信息设计在序贯搜索中",
+      "llm_evidence": "广告信息设计在序贯搜索中",
+      "canonical_evidence": "广告信息设计在序贯搜索中",
+      "llm_tldr_en": "Extends advertiser information design to competitive setting with sequential search.",
+      "llm_tldr_cn": "将广告信息设计扩展到竞争环境下的序贯搜索",
+      "llm_tldr": "将广告信息设计扩展到竞争环境下的序贯搜索",
+      "llm_tags": [
+        "query:q2"
+      ],
+      "matched_query_tag": "query:q2",
+      "matched_query_text": "advertising technology",
+      "matched_requirement_id": "req-2",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2606.02784v1",
+      "source": "arxiv",
+      "title": "LAANN: I/O-Aware Look-Ahead Search for Disk-Based Approximate Nearest Neighbor Search",
+      "abstract": "Approximate nearest neighbor search (ANNS) is a fundamental primitive in large-scale retrieval, recommendation, and AI systems. As vector datasets grow to billions or even trillions of items, disk-based ANNS systems have emerged to handle this scale by storing vector data and index structures on storage systems, but their query performance remains dominated by I/O latency. Existing disk-based ANNS systems primarily optimize I/O efficiency or overlap I/O with computation, but they treat CPU computation and I/O access as largely separate components. This separation misses a critical opportunity: selectively processing candidates already cached in memory before making I/O decisions can reduce unnecessary disk accesses and improve search quality. However, exploiting this opportunity is challenging because excessive computation can delay critical I/O operations, while poorly chosen computation provides little benefit, potentially increasing overall query latency.   In this paper, we present LAANN, a disk-based ANNS system that makes graph search explicitly I/O-aware by co-optimizing CPU computation and I/O access. LAANN combines three techniques: look-ahead search, which adapts the search strategy across query stages to balance I/O reduction and timely I/O issuance; a priority I/O-CPU pipeline, which uses I/O waiting time to process candidates cached in memory according to their expected impact on upcoming I/O decisions; and a fast lightweight in-memory graph index, which provides high-quality initial candidates to accelerate convergence and reduce disk accesses. Experiments on million- and billion-scale datasets demonstrate that LAANN substantially outperforms state-of-the-art disk-based ANNS systems. At Recall@10 = 0.9, LAANN achieves 1.41x-4.66x higher throughput, 29%-79% lower latency, and 1.59x-6.34x fewer I/O operations.",
+      "authors": [
+        "Dingyi Kang",
+        "Juncheng Yang",
+        "Bingzhe Li"
+      ],
+      "primary_category": "cs.DB",
+      "categories": [
+        "cs.DB"
+      ],
+      "published": "2026-06-01T18:49:44+00:00",
+      "link": "https://arxiv.org/pdf/2606.02784v1",
+      "tags": [
+        "keyword:LLMApp",
+        "keyword:广告",
+        "query:LLMApp",
+        "query:广告"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "I/O-aware ANN search for large-scale retrieval",
+      "llm_evidence_cn": "面向大规模检索的I/O感知ANN搜索",
+      "llm_evidence": "面向大规模检索的I/O感知ANN搜索",
+      "canonical_evidence": "面向大规模检索的I/O感知ANN搜索",
+      "llm_tldr_en": "Proposes look-ahead search to overlap I/O with computation for faster disk-based ANN search.",
+      "llm_tldr_cn": "提出提前搜索以重叠I/O和计算加速磁盘ANN搜索",
+      "llm_tldr": "提出提前搜索以重叠I/O和计算加速磁盘ANN搜索",
+      "llm_tags": [
+        "query:q1"
+      ],
+      "matched_query_tag": "query:q1",
+      "matched_query_text": "recommendation system for advertising",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2606.03371v2",
+      "source": "arxiv",
+      "title": "See, Infer, Intervene: Proactive World Modeling for Goal-Oriented Social Intelligence",
+      "abstract": "Multimodal retail agents should not only recognize what a customer is doing, but also decide whether and how to assist before an explicit request is made. We study this setting through the See--Infer--Intervene (SII) framework, where a device must see pre-interaction behavior, infer latent customer intent, and act by selecting an appropriate service intervention or choosing to wait. We instantiate SII with the Proactive Intent World Model (PIWM), which represents customer state with AIDA (Attention, Interest, Desire, Action) purchasing phases and BDI (belief, desire, intention) psychological fields, predicts action-conditioned intent transitions, and selects from five response classes: Greet, Elicit, Inform, Recommend, and Hold. We further construct GuidanceSalesBench, a smart-retail benchmark containing state manifests, pre-interaction videos, candidate responses, action-conditioned outcomes, and best-action labels. When conditioned on ground-truth customer state to isolate action selection, PIWM achieves 0.641 macro F1 on 30 held-out target videos, outperforming a zero-shot Qwen2.5-VL-7B baseline and training variants without balanced action supervision; end-to-end video-only selection drops to 0.295, below the 5-class balanced random baseline of 0.414, identifying video-to-state grounding as the dominant deployment-time bottleneck. A preliminary staged real-store pilot (recorded with paid participants performing scripted customer behaviors) reaches 0.579 action macro F1 on 20 fully annotated videos, with 10 additional accessible videos released with index-level labels.",
+      "authors": [
+        "Honghui Zhang",
+        "Chenmeinian Guo",
+        "Yichen Yu",
+        "Guanyu Liu",
+        "Yujia Zhang",
+        "Yongming Qin",
+        "Chongguo Song",
+        "Mengyue Yang",
+        "Lei Yu",
+        "Tianyu Shi"
+      ],
+      "primary_category": "cs.CL",
+      "categories": [
+        "cs.CL"
+      ],
+      "published": "2026-06-02T09:18:39+00:00",
+      "link": "https://arxiv.org/pdf/2606.03371v2",
+      "tags": [
+        "keyword:LLMApp",
+        "keyword:广告",
+        "query:LLMApp",
+        "query:广告"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "proactive retail agent for advertising in real scenarios",
+      "llm_evidence_cn": "实际场景中用于广告的主动零售代理",
+      "llm_evidence": "实际场景中用于广告的主动零售代理",
+      "canonical_evidence": "实际场景中用于广告的主动零售代理",
+      "llm_tldr_en": "SII framework enables agents to infer customer intent and recommend without explicit request.",
+      "llm_tldr_cn": "SII框架使代理能推断顾客意图并在无明确请求时推荐",
+      "llm_tldr": "SII框架使代理能推断顾客意图并在无明确请求时推荐",
+      "llm_tags": [
+        "query:q7"
+      ],
+      "matched_query_tag": "query:q7",
+      "matched_query_text": "Practical implementation of advertising in real life scenarios‌",
+      "matched_requirement_id": "req-7",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "8plus"
+    },
+    {
+      "id": "2606.04302v1",
+      "source": "arxiv",
+      "title": "LazyAttention: Efficient Retrieval-Augmented Generation with Deferred Positional Encoding",
+      "abstract": "Key-value (KV) caching accelerates inference of large language models (LLMs) by reusing past computations for generated tokens. Its importance becomes even greater in long-context applications such as retrieval-augmented generation (RAG) and in-context learning (ICL). However, conventional KV caching embeds positional information directly into the cache, limiting its reusability. Existing solutions either restrict reuse to prefixes or require expensive memory materialization for positional re-encoding. We introduce LazyAttention, a novel attention mechanism that kernelizes deferred positional encoding to enable zero-copy, position-agnostic KV reuse. By adjusting positional encoding within attention kernels on-the-fly, LazyAttention resolves the materialization bottleneck, allowing a single physical KV copy to serve multiple logical requests at arbitrary positions. Leveraging attention kernels tailored for prefilling and decoding, our system achieves significant efficiency improvements: under skewed document distributions, it reduces time-to-first-token (TTFT) by 1.37$\\times$ and increases inference throughput by 1.40$\\times$ compared to the state-of-the-art Block-Attention, while maintaining comparable output quality.",
+      "authors": [
+        "Haocheng Xia",
+        "Mihir Pamnani",
+        "Hanxi Fang",
+        "Supawit Chockchowwat",
+        "Yongjoo Park"
+      ],
+      "primary_category": "cs.CL",
+      "categories": [
+        "cs.CL",
+        "cs.LG"
+      ],
+      "published": "2026-06-03T00:12:22+00:00",
+      "link": "https://arxiv.org/pdf/2606.04302v1",
+      "tags": [
+        "keyword:LLMApp",
+        "keyword:广告",
+        "query:LLMApp"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "efficient KV caching for LLM inference in RAG",
+      "llm_evidence_cn": "用于RAG中LLM推理的高效KV缓存",
+      "llm_evidence": "用于RAG中LLM推理的高效KV缓存",
+      "canonical_evidence": "用于RAG中LLM推理的高效KV缓存",
+      "llm_tldr_en": "LazyAttention improves LLM inference by deferred positional encoding for KV reuse.",
+      "llm_tldr_cn": "LazyAttention通过延迟位置编码改进LLM推理的KV重用",
+      "llm_tldr": "LazyAttention通过延迟位置编码改进LLM推理的KV重用",
+      "llm_tags": [
+        "query:llmapp"
+      ],
+      "matched_query_tag": "query:llmapp",
+      "matched_query_text": "large language model applications",
+      "matched_requirement_id": "req-9",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2606.03635v1",
+      "source": "arxiv",
+      "title": "VidMsg: A Benchmark for Implicit Message Inference in Short Videos",
+      "abstract": "Understanding short online videos involves more than identifying visible objects and actions; video makers often include an underlying message or purpose in the clip. We introduce VidMsg, a benchmark for evaluating implicit message understanding in short, internet-native video clips. VidMsg contains 400 YouTube-derived clips across 9 practical topic areas and 52 fine-grained target messages, covering domains such as career and finance, education, health and well-being, culture, safety, sustainability, and lifestyle. VidMsg is constructed through a message-first pipeline: an LLM first translates target messages into indirect search scenarios, which are used to retrieve candidate clips. Human annotators then retain clips that convey the intended message without being overly explicit. VidMsg is designed primarily for bidirectional message-clip retrieval for scalable applications such as video search and recommendation, where systems must capture holistic video understanding. In addition to retrieval, VidMsg includes a diagnostic multiple-choice QA benchmark, where models select the intended message of a clip from semantically related alternatives. Experiments with contemporary video-language and retrieval models show that strong models often fail on VidMsg, because the task requires pragmatic inference, integration of contextual cues, and discrimination among semantically close messages. We also introduce VidVec-Msg, a baseline method that improves message-oriented retrieval while leaving substantial headroom for future work.",
+      "authors": [
+        "Issar Tzachor",
+        "Michael Green",
+        "Rami Ben-Ari"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV",
+        "cs.AI"
+      ],
+      "published": "2026-06-02T13:31:57+00:00",
+      "link": "https://arxiv.org/pdf/2606.03635v1",
+      "tags": [
+        "keyword:LLMApp",
+        "keyword:广告",
+        "query:LLMApp",
+        "query:广告"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "benchmark for implicit message inference in short videos",
+      "llm_evidence_cn": "短视频隐式消息推理基准",
+      "llm_evidence": "短视频隐式消息推理基准",
+      "canonical_evidence": "短视频隐式消息推理基准",
+      "llm_tldr_en": "Benchmark for understanding implicit messages in short videos using LLM.",
+      "llm_tldr_cn": "使用LLM理解短视频隐式消息的基准测试。",
+      "llm_tldr": "使用LLM理解短视频隐式消息的基准测试。",
+      "llm_tags": [
+        "query:llmapp"
+      ],
+      "matched_query_tag": "query:llmapp",
+      "matched_query_text": "multimodal large language model applications",
+      "matched_requirement_id": "req-13",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2606.03718v1",
+      "source": "arxiv",
+      "title": "MARS: Multi-rate Aggregation of Recency Signals for Sequential Recommendation across Sparse and Dense Regimes",
+      "abstract": "Sequential recommenders weight historical interactions either through positional self-attention as in Transformers or through a single implicit decay schedule as in State-Space Models. Neither makes the multi-scale temporal structure of real user behaviour explicit. We propose MARS, an encoder-agnostic aggregation operator that consumes real timestamps and produces K summaries emphasising distinct recency scales, fused by a context-adaptive gate. MARS adds at most 6% parameters and runs in $\\mathcal{O}(LdK)$ time. MARS adapts to data density by automatically selecting between two encoder instantiations: MARS-T (Transformer) for sparse data and MARS-M (Mamba) for dense data, based on the average sequence length of the training set. On five public benchmarks against ten Transformer- and Mamba-based baselines under a unified RecBole protocol, MARS attains the best HR@10 on every benchmark, with mean relative gain +19.7% over the strongest content-only Transformer baseline on sparse data (reaching +36.2% on Games) and +3.2% HR@10 / +0.9% NDCG over SIGMA on dense ML-1M at 42% fewer MFLOPs, occupying the accuracy-efficiency Pareto frontier across the data-density spectrum. A backbone-only ablation isolates the marginal contribution of MARS at +4% to +19% HR@10 on sparse data and motivates the dual-instantiation design. The code is included in the supplementary material.",
+      "authors": [
+        "Zhenyu Yu",
+        "Shuigeng Zhou"
+      ],
+      "primary_category": "cs.IR",
+      "categories": [
+        "cs.IR"
+      ],
+      "published": "2026-06-02T14:39:19+00:00",
+      "link": "https://arxiv.org/pdf/2606.03718v1",
+      "tags": [
+        "keyword:LLMApp",
+        "keyword:广告",
+        "query:LLMApp",
+        "query:广告"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "sequential recommendation method for advertising",
+      "llm_evidence_cn": "用于广告的序列推荐方法",
+      "llm_evidence": "用于广告的序列推荐方法",
+      "canonical_evidence": "用于广告的序列推荐方法",
+      "llm_tldr_en": "Introduces multi-rate recency aggregation for sequential recommendation across sparse and dense regimes",
+      "llm_tldr_cn": "引入多速率最近性聚合用于稀疏和稠密场景下的序列推荐",
+      "llm_tldr": "引入多速率最近性聚合用于稀疏和稠密场景下的序列推荐",
+      "llm_tags": [
+        "query:q1"
+      ],
+      "matched_query_tag": "query:q1",
+      "matched_query_text": "recommendation system for advertising",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "8plus"
+    },
+    {
+      "id": "2606.04374v1",
+      "source": "arxiv",
+      "title": "DSIRM: Learning Query-Bridged Discrete Semantic Identifiers for E-commerce Relevance Modeling",
+      "abstract": "Despite rapid progress of continuous embeddings for e-commerce search relevance, a long-standing open problem is the difficulty in capturing fine-grained attribute distinctions. While discrete Semantic Identifiers (SIDs) have been widely adopted as a promising alternative, existing SID generation methods rely heavily on unsupervised quantization. In realistic scenarios, the lack of explicit supervision often makes it more difficult to dictate which items should share an SID, resulting in limited capability for query-dependent ranking. To address the issue of unsupervised SIDs, we propose to explicitly model discrete relevance features and develop a Discrete Semantic Identifier Relevance Model (DSIRM). Specifically, we present a query-bridged contrastive quantization approach on the item side, injecting query-item interaction supervision into Residual Quantization to actively learn relevance-aware semantic partitions. On the other hand, we explore generative LLMs on the query side to explicitly predict item SIDs from text, resolving tail queries and intent ambiguity. Hierarchical prefix matching between query and item SIDs yields discriminative features that perfectly complement dense signals. Extensive experimental results on Tmall's production data show that our proposed approach has achieved better results, improving offline AUC by +1.54\\%. Deployed via an efficient hybrid architecture, it achieves significant online lifts (+0.13\\% UCTR, +0.25\\% UCTCVR), proving its massive industrial value.",
+      "authors": [
+        "Bokang Wang",
+        "Xing Fang",
+        "Mingmin Jin",
+        "Jing Wang",
+        "Zhentao Song",
+        "Guangxin Song",
+        "Jianbo Zhu"
+      ],
+      "primary_category": "cs.IR",
+      "categories": [
+        "cs.IR",
+        "cs.AI"
+      ],
+      "published": "2026-06-03T02:42:52+00:00",
+      "link": "https://arxiv.org/pdf/2606.04374v1",
+      "tags": [
+        "keyword:LLMApp",
+        "keyword:广告",
+        "query:LLMApp",
+        "query:广告"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "E-commerce relevance modeling with discrete semantic identifiers, applicable to advertising recommendation.",
+      "llm_evidence_cn": "使用离散语义标识符的电子商务相关性建模，适用于广告推荐。",
+      "llm_evidence": "使用离散语义标识符的电子商务相关性建模，适用于广告推荐。",
+      "canonical_evidence": "使用离散语义标识符的电子商务相关性建模，适用于广告推荐。",
+      "llm_tldr_en": "Proposes DSIRM to learn query-bridged discrete semantic identifiers for e-commerce search relevance.",
+      "llm_tldr_cn": "提出DSIRM学习查询桥接的离散语义标识符用于电商搜索相关性。",
+      "llm_tldr": "提出DSIRM学习查询桥接的离散语义标识符用于电商搜索相关性。",
+      "llm_tags": [
+        "query:q1"
+      ],
+      "matched_query_tag": "query:q1",
+      "matched_query_text": "recommendation system for advertising",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2606.04603v1",
+      "source": "arxiv",
+      "title": "Distributional Approximate Nearest Neighbour Search for Uncertainty-Aware Retrieval",
+      "abstract": "Approximate Nearest Neighbour search indices form the backbone of real-world recommender systems, enabling real-time candidate retrieval over million-item catalogues. Typically, a single point estimate embedding is learnt for every user and every item. At serving time, the user embedding queries the index for relevant items. Since these representations are learnt from sparse interaction data, they are noisy and might fail to capture all the nuances that contribute to ``relevance'' -- ignoring the fundamental uncertainty that is inherent to them. The result is a retrieval pipeline that is systematically biased toward the small minority of popular head items with well-estimated embeddings, at the expense of the long-tail majority of niche, diverse, and serendipitous content.   We propose DINOSAUR (Distributional Approximate Nearest Neighbour Search for Uncertainty-Aware Retrieval): a simple and infrastructure-compatible framework to incorporate embedding uncertainty into candidate generation. Rather than indexing point estimates, DINOSAUR samples $S_i$ embeddings per item and constructs an index on this augmented set. Analogously, at query time, a user embedding is sampled. This two-sided stochastic retrieval process implicitly marginalises over embedding uncertainty, without requiring changes to model architecture or ANN index infrastructure.   On the analytical side, we show that DINOSAUR recovers standard point-estimate retrieval as uncertainty vanishes, and we characterise how increased embedding variance expands the regions of latent space in which uncertain items are retrievable. Reproducible empirical observations align with these expectations, showing large coverage gains with small losses in offline recall.",
+      "authors": [
+        "Olivier Jeunen"
+      ],
+      "primary_category": "cs.IR",
+      "categories": [
+        "cs.IR",
+        "cs.LG",
+        "stat.ML"
+      ],
+      "published": "2026-06-03T08:41:27+00:00",
+      "link": "https://arxiv.org/pdf/2606.04603v1",
+      "tags": [
+        "keyword:LLMApp",
+        "keyword:广告",
+        "query:LLMApp",
+        "query:广告"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "approximate nearest neighbor for retrieval in recommendation",
+      "llm_evidence_cn": "近似最近邻搜索用于推荐检索",
+      "llm_evidence": "近似最近邻搜索用于推荐检索",
+      "canonical_evidence": "近似最近邻搜索用于推荐检索",
+      "llm_tldr_en": "Proposes distributional ANN search to handle uncertainty in embeddings for better long-tail recommendations.",
+      "llm_tldr_cn": "提出分布型ANN搜索处理嵌入不确定性以改善长尾推荐",
+      "llm_tldr": "提出分布型ANN搜索处理嵌入不确定性以改善长尾推荐",
+      "llm_tags": [
+        "query:q1"
+      ],
+      "matched_query_tag": "query:q1",
+      "matched_query_text": "recommendation system for advertising",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    }
+  ]
+}

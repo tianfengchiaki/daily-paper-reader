@@ -1,0 +1,38 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2606.06779v1/fig-001.webp",
+      "caption": "Table 4: LLM Evaluation of LLM-Generated Feature Personalization (GPT-4o). N=1000 samples per signal.",
+      "page": 4,
+      "index": 1,
+      "width": 1056,
+      "height": 413
+    },
+    {
+      "url": "assets/figures/arxiv/2606.06779v1/fig-002.webp",
+      "caption": "Table 2: Illustrative examples of LLM-generated category recommendations from consumer signals.",
+      "page": 4,
+      "index": 2,
+      "width": 1056,
+      "height": 219
+    },
+    {
+      "url": "assets/figures/arxiv/2606.06779v1/fig-003.webp",
+      "caption": "Figure 1: System flowchart illustrating the hierarchical RAG pipeline for generating user affinity features and their integration into the MTL ranking model.",
+      "page": 3,
+      "index": 3,
+      "width": 844,
+      "height": 202
+    },
+    {
+      "url": "assets/figures/arxiv/2606.06779v1/fig-004.webp",
+      "caption": "Figure 4: Relative improvement (%) in online shadow traffic metrics for the Proposed Model versus the Baseline.",
+      "page": 5,
+      "index": 4,
+      "width": 506,
+      "height": 273
+    }
+  ]
+}

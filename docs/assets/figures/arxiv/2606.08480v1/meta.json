@@ -1,0 +1,38 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2606.08480v1/fig-001.webp",
+      "caption": "Figure 1: Two failure modes of uniform reward application. (a) On easy samples the ground truth already ranks among top rollouts; rewards cluster tightly and the GRPO advantage is dominated by RM noise. (b) On hard samples where the RM is unreliable, exposure bias causes it to score popular distractors above the ground truth, pushing the policy in the wrong direction.",
+      "page": 2,
+      "index": 1,
+      "width": 498,
+      "height": 337
+    },
+    {
+      "url": "assets/figures/arxiv/2606.08480v1/fig-002.webp",
+      "caption": "Table 4: Offline performance evaluated at the final training checkpoint. Best intermediate checkpoints are discussed in Figure 3 and the surrounding text; this table reports the final state to highlight training stability. Standard GRPO eventually collapses, trading target retrieval and generation validity for reward maximization, whereas AdaGRPO maintains a stable and superior final-checkpoint trade-off across retrieval accuracy, reward improvement, and hallucination control. The two AdaGRPO rows correspond to the two variants shown in Figure 3: difficulty-only clipping (w. 𝑓1) and the full clip with both conditions (w. 𝑓1 & 𝑓2).",
+      "page": 7,
+      "index": 2,
+      "width": 1044,
+      "height": 223
+    },
+    {
+      "url": "assets/figures/arxiv/2606.08480v1/fig-003.webp",
+      "caption": "Figure 3: Offline training dynamics over 2,500 steps. Standard GRPO increases reward-model scores but is accompanied by a decline in HR@10 and an increase in hallucination rate, suggesting over-optimization to the reward model. GRPO+NLL with a fixed mixing coefficient reduces part of this degradation but does not eliminate the late-stage increase in hallucination. AdaGRPO reaches its best checkpoint at an intermediate training step, improving HR@10 from the Base model’s 11.01% to 12.18% while keeping hallucination at or below 0.22%. At the final checkpoint, AdaGRPO remains stable and achieves the best retrieval accuracy among the final models, as detailed in Table 4. Adding the reward-discriminability condition 𝑓2 further reduces variance and improves the HR–reward–hallucination trade-off.",
+      "page": 7,
+      "index": 3,
+      "width": 1056,
+      "height": 475
+    },
+    {
+      "url": "assets/figures/arxiv/2606.08480v1/fig-004.webp",
+      "caption": "Figure 2: Overview of AdaGRPO. Two rank-based diagnostics—one probing policy-side difficulty (𝑓 (𝑖 ) 1 ), the other probing reward-model discriminability (𝑓 (𝑖 ) 2 )—are evaluated on each training instance and combined into a binary sample-level clip. The clip decides, at instance granularity, whether the GRPO loss is admitted into the update or clipped to zero.",
+      "page": 5,
+      "index": 4,
+      "width": 989,
+      "height": 313
+    }
+  ]
+}

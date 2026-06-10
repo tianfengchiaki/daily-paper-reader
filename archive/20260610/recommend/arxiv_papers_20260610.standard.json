@@ -1,0 +1,820 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-06-10T22:30:06.084318+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 2,
+    "deep_divecandidates": 26,
+    "deep_cap": 7,
+    "deep_selected": 7,
+    "quick_candidates": 59,
+    "quick_skim_target": 12,
+    "quick_selected": 12
+  },
+  "deep_dive": [
+    {
+      "id": "2606.03878v1",
+      "source": "arxiv",
+      "title": "Privacy-Robust Incrementality Measurement for Advertising Systems under Signal Loss",
+      "abstract": "Advertising platforms use randomized lift tests to measure incrementality, but privacy-preserving reporting systems degrade the observed signal through match-rate loss, linkability loss, attribution-window loss, aggregation-threshold suppression, randomized reporting noise, and segment-heterogeneous signal loss. This paper formulates privacy-constrained advertising measurement as a robust causal decision problem under the mentioned signal losses. Given a randomized experiment and an ambiguity set for privacy-induced degradation, the framework projects the observation-compatible fiber of clean/unfiltered experimental worlds onto the incrementality functional and returns certified, rejected, and unresolved decisions. The main result gives a sharp decision frontier. Reports outside the frontier support uniformly valid certification or rejection, whereas reports inside it contain too little information for any method to uniformly distinguish above-threshold incrementality from non-incrementality. Supporting results give finite-sample certification, sample-complexity guarantees, a minimax lower bound showing that signal loss reduces effective information, and a reporting-granularity tradeoff. On 2.0M Criteo Uplift rows and the 64K-row Hillstrom email experiment, clean conversion lift is positive in both datasets, with lifts 0.00112 and 0.00495, respectively. Population certification survives mild degradation in Criteo and severe degradation in Hillstrom, while all considered finite-sample stress settings in both datasets remain unresolved after simultaneous uncertainty and reporting noise are included. Overall, the research contributes a decision-theoretic layer for privacy-aware incrementality measurement whose output is the strongest causal-claim justified by degraded ads signals.",
+      "authors": [
+        "Prashant Shekhar",
+        "Caroline Howard"
+      ],
+      "primary_category": "stat.ML",
+      "categories": [
+        "stat.ML",
+        "cs.LG"
+      ],
+      "published": "2026-06-02T16:46:38+00:00",
+      "link": "https://arxiv.org/pdf/2606.03878v1",
+      "tags": [
+        "keyword:广告",
+        "query:LLMApp",
+        "query:广告"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "Privacy-robust incrementality measurement for advertising systems",
+      "llm_evidence_cn": "广告系统的隐私鲁棒增量测量",
+      "llm_evidence": "广告系统的隐私鲁棒增量测量",
+      "canonical_evidence": "广告系统的隐私鲁棒增量测量",
+      "llm_tldr_en": "Formulates privacy-constrained advertising measurement as a robust causal decision problem and provides certified decisions.",
+      "llm_tldr_cn": "将隐私约束下的广告测量建模为鲁棒因果决策问题，并提供认证决策。",
+      "llm_tldr": "将隐私约束下的广告测量建模为鲁棒因果决策问题，并提供认证决策。",
+      "llm_tags": [
+        "query:q5"
+      ],
+      "matched_query_tag": "query:q5",
+      "matched_query_text": "uplift modeling for advertising campaigns",
+      "matched_requirement_id": "req-5",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2606.09082v1",
+      "source": "arxiv",
+      "title": "Teach Multimodal Recommendation Model to See via Personalized Visual Extraction and Adaptive Learning",
+      "abstract": "Multimodal sequential recommendation (MSR) incorporates textual and visual information to improve recommendation quality. However, recent studies and our empirical analysis show that visual features are often underutilized, thereby contributing far less than textual signals. We attribute this issue to two factors: insufficient visual representation learning (pretrained encoders fail to capture preference-relevant cues) and unbalanced visual-text optimization (textual features dominate the learning process). To address these issues, we propose Teach Multimodal Recommendation Model to See via Personalized Visual Extraction and Adaptive Learning (REVEAL), a plug-and-play framework that enhances visual representation learning and cross-modal optimization without modifying the original recommendation backbone. REVEAL consists of Feedback-Guided Visual Extraction (FVE), which refines prompt-guided visual extraction through task-level feedback, and Adaptive Visual Learning (AVL), which dynamically reweights visual learning to alleviate modality imbalance. Experiments on multiple real-world datasets and MSR backbones demonstrate that REVEAL consistently improves recommendation performance. Further analysis shows that these gains arise from more effective attention to preference-relevant visual regions and better visual utilization during training. The code is available at https://github.com/YutongLi2024/REVEAL.",
+      "authors": [
+        "Yutong Li",
+        "Xinyi Zhang",
+        "Ziyi Ye",
+        "Daoguo Dong",
+        "Yu-gang Jiang"
+      ],
+      "primary_category": "cs.IR",
+      "categories": [
+        "cs.IR"
+      ],
+      "published": "2026-06-08T06:28:25+00:00",
+      "link": "https://arxiv.org/pdf/2606.09082v1",
+      "tags": [
+        "keyword:LLMApp",
+        "keyword:广告",
+        "query:LLMApp",
+        "query:广告"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "multimodal recommendation with visual extraction",
+      "llm_evidence_cn": "多模态推荐中的视觉提取方法",
+      "llm_evidence": "多模态推荐中的视觉提取方法",
+      "canonical_evidence": "多模态推荐中的视觉提取方法",
+      "llm_tldr_en": "Enhances visual representation in multimodal sequential recommendation.",
+      "llm_tldr_cn": "增强多模态序列推荐中的视觉表征.",
+      "llm_tldr": "增强多模态序列推荐中的视觉表征.",
+      "llm_tags": [
+        "query:q6"
+      ],
+      "matched_query_tag": "query:q6",
+      "matched_query_text": "multimodal learning for advertising",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2606.09896v1",
+      "source": "arxiv",
+      "title": "HMAF: A Hierarchical Multi-Slot GD-RTB Allocation Framework",
+      "abstract": "In modern online advertising platforms, Guaranteed Delivery (GD) contracts coexist and bid with Real-Time Bidding (RTB) auctions. Recent approaches either decouple GD and RTB optimization or rely on heuristic priority rules, and thus fail to effectively balance short-term revenue maximization with long-term contract delivery under complex multi-slot delivery and impression constraints. To address these challenges, we propose HMAF (Hierarchical Multi-Slot Allocation Framework), a unified framework designed to optimize impression allocation in GD--RTB advertising platforms. HMAF employs the Plan--Calibrate--Execute paradigm as its core structure, and integrates offline constraint optimization with online decision-making, balancing offline GD resource planning, dynamically calibrating GD--RTB competitiveness, and making real-time listwise rank decisions across multi-slot environments. HMAF has been implemented in multiple marketing scenarios at Meituan, one of the world's largest online food delivery platforms, leading to a 3.72% increase in GD delivery rate and a 1.59% increase in total advertisement revenue.",
+      "authors": [
+        "Tianxing Bu",
+        "Zhaoqi Zhang",
+        "Linyou Cai",
+        "Miao Xie",
+        "Shengri Xue",
+        "Tan Qu",
+        "Qianlong Xie",
+        "Xingxing Wang",
+        "Siqiang Luo",
+        "Gao Cong"
+      ],
+      "primary_category": "cs.GT",
+      "categories": [
+        "cs.GT",
+        "cs.AI",
+        "cs.LG"
+      ],
+      "published": "2026-06-04T22:50:38+00:00",
+      "link": "https://arxiv.org/pdf/2606.09896v1",
+      "tags": [
+        "keyword:广告",
+        "query:LLMApp",
+        "query:广告"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "hierarchical allocation framework for GD-RTB advertising platforms",
+      "llm_evidence_cn": "GD-RTB广告平台的分层分配框架",
+      "llm_evidence": "GD-RTB广告平台的分层分配框架",
+      "canonical_evidence": "GD-RTB广告平台的分层分配框架",
+      "llm_tldr_en": "Proposes a unified framework for impression allocation in GD-RTB advertising balancing short-term revenue and long-term contract delivery.",
+      "llm_tldr_cn": "提出GD-RTB广告印象分配统一框架，平衡短期收入与长期合同交付。",
+      "llm_tldr": "提出GD-RTB广告印象分配统一框架，平衡短期收入与长期合同交付。",
+      "llm_tags": [
+        "query:q2"
+      ],
+      "matched_query_tag": "query:q2",
+      "matched_query_text": "advertising technology",
+      "matched_requirement_id": "req-2",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2606.10187v1",
+      "source": "arxiv",
+      "title": "Decision-Calibrated Conformal Uncertainty for Pacing Decisions in Streaming Advertising",
+      "abstract": "We develop a decision-calibrated conformal framework for pacing decisions in streaming advertising. Pacing depends on uncertain future inventory, demand pressure, incremental response, and member-experience load. Instead of calibrating a generic forecast residual, the framework measures forecast error by its largest impact on the policies that could actually be deployed. The main theorem shows that the proposed score is the smallest valid uncertainty measure that uniformly protects all deployable pacing policies. Geometrically, it is the support function of the signed policy sensitivity set. Split conformal calibration gives finite-sample coverage for this score. A high-dimensional separation theorem shows that traditional residual calibration can be arbitrarily more conservative by paying for nuisance inventory dimensions, and a robust pacing result combines inventory, response, and experience uncertainty. On public-data-calibrated pacing replays built from Criteo Uplift and KuaiRand datasets, traditional conformal pacing remains unresolved with high residual radii of 7236.7 on Criteo and 4629.4 on KuaiRand. With the proposed decision calibration approach, the uncertainty radii are reduced to 18.4 and 278.6 respectively, with separate margins for value, delivery, budget, and member load. On Criteo, the proposed method certifies a less aggressive pacing policy than the point-forecast baseline, and reduces held-out any-violation rate from 16.7% to 3.3%, with zero budget and member-load violations. On KuaiRand, the choice remains unresolved. In a nutshell, the paper establishes that forecasts, response estimates, and member-experience models should be judged by whether they shrink the uncertainty that the pacing decision uses, as this leads to confident decisions that are not overly conservative.",
+      "authors": [
+        "Prashant Shekhar",
+        "Caroline Howard"
+      ],
+      "primary_category": "stat.ML",
+      "categories": [
+        "stat.ML",
+        "cs.LG"
+      ],
+      "published": "2026-06-08T21:26:15+00:00",
+      "link": "https://arxiv.org/pdf/2606.10187v1",
+      "tags": [
+        "keyword:广告",
+        "query:LLMApp",
+        "query:广告"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "Decision-calibrated conformal uncertainty for ad pacing",
+      "llm_evidence_cn": "用于广告节奏控制的决策校准共形不确定性",
+      "llm_evidence": "用于广告节奏控制的决策校准共形不确定性",
+      "canonical_evidence": "用于广告节奏控制的决策校准共形不确定性",
+      "llm_tldr_en": "Develops a conformal framework for pacing decisions in streaming advertising, protecting deployed policies.",
+      "llm_tldr_cn": "开发了一种用于流式广告节奏控制的共形框架，保护部署策略。",
+      "llm_tldr": "开发了一种用于流式广告节奏控制的共形框架，保护部署策略。",
+      "llm_tags": [
+        "query:q2"
+      ],
+      "matched_query_tag": "query:q2",
+      "matched_query_text": "advertising technology",
+      "matched_requirement_id": "req-2",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2606.10243v1",
+      "source": "arxiv",
+      "title": "DUET -- Dual User Embedding Transformers for Offsite Conversion Prediction",
+      "abstract": "Offsite conversion rate (OCVR) prediction is an important ranking problem in computational recommendation systems. This task presents a modeling challenge: click signals are abundant and exhibit short temporal horizons, whereas conversion signals are inherently sparse, long-delayed, and frequently unattributed. Despite these statistical disparities, both signal types must inform models that operate within strict serving-latency constraints. Prior pre-training approaches address this heterogeneity with a single, undifferentiated encoder applied uniformly across both data streams. We propose DUET (Dual User Embedding Transformers), a framework that explicitly partitions user behavioral data into two domain-coherent streams -- clicks and conversions -- and pre-trains dedicated transformer encoders with architectures tailored to each stream's statistical characteristics: multi-layer self-attention for the dense click stream and interleaved cross- and self-attention for the sparse conversion stream. The resulting complementary embeddings are jointly consumed by a downstream ranker without exceeding serving-latency budgets. Evaluation demonstrates up to 0.38% normalized entropy (NE) reduction relative to the strongest baseline, and A/B test shows consistent improvements in OCVR prediction accuracy.",
+      "authors": [
+        "Reazul Hasan Russel",
+        "Mingwei Tang",
+        "Rostam Shirani",
+        "Xinlong Liu",
+        "Navid Madani",
+        "Leo Ding",
+        "Yawen He",
+        "Xiangyu Wang",
+        "Mustafa Acar",
+        "Ashish Katiyar",
+        "Yuhai Li",
+        "Alan Yang",
+        "Metarya Ruparel",
+        "Derek Qiang Xu",
+        "Rupert Wu",
+        "Rui Yang",
+        "Liang Tao",
+        "Xinyi Zhao",
+        "Larry Zhang",
+        "Sri Reddy",
+        "Rob Malkin"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG"
+      ],
+      "published": "2026-06-08T23:13:58+00:00",
+      "link": "https://arxiv.org/pdf/2606.10243v1",
+      "tags": [
+        "keyword:LLMApp",
+        "keyword:广告",
+        "query:LLMApp",
+        "query:广告"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "offsite conversion prediction for advertising",
+      "llm_evidence_cn": "面向广告的站外转化预测",
+      "llm_evidence": "面向广告的站外转化预测",
+      "canonical_evidence": "面向广告的站外转化预测",
+      "llm_tldr_en": "Proposes dual user embedding transformers for offsite conversion prediction in recommendation.",
+      "llm_tldr_cn": "提出双用户嵌入Transformer用于推荐中的站外转化预测。",
+      "llm_tldr": "提出双用户嵌入Transformer用于推荐中的站外转化预测。",
+      "llm_tags": [
+        "query:q2"
+      ],
+      "matched_query_tag": "query:q2",
+      "matched_query_text": "advertising technology",
+      "matched_requirement_id": "req-2",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2606.10907v1",
+      "source": "arxiv",
+      "title": "From Prompt to Purchase: How AI Brand Recommendations Move Consumers on the Open Web",
+      "abstract": "When a conversational assistant recommends a brand to a user with no recent observed engagement, that user's same-name Google search rises +4.3 percentage points (pp) [3.1, 5.5], visits to the brand's own site +2.4 pp [1.4, 3.5], and brand-specific retailer-page visits +1.0 pp [0.3, 1.7] over matched backward placebos. Recovering that estimate is the work. The mention creates a brand exposure no web log attributes to the assistant, and the naive all-mention funnel that seems to measure it is confounded: many mentions are incidental references to brands the user already uses (\"your Netflix download\"), whose downstream visits are that existing customer's own behavior and surface as a brand-specific pre-trend. We measure off-platform response on a panel that joins opt-in clickstream to the same users' ChatGPT, Claude, and Gemini conversations, and isolate the effect with a pre-trend event study, a stance classifier, non-customer conditioning, and a within-response same-category control: incidental name-drops then move behavior far less (+1.8/+1.1/+0.3), and the named brand moves far more than unnamed same-category brands in the same response. The downstream path is mostly search-mediated and reaches both own sites and retailer pages, with a destination mix that tracks baseline brand-directed behavior rather than redirecting toward either. The design is observational and we do not observe transactions, so retail is purchase-adjacent. Standard referrer-based and last-click measurement miss this upstream exposure: assistants move observably-unengaged users into open-web brand navigation along a path attributed elsewhere.",
+      "authors": [
+        "Michael Iannelli",
+        "Alan Ai"
+      ],
+      "primary_category": "cs.CY",
+      "categories": [
+        "cs.CY",
+        "cs.IR"
+      ],
+      "published": "2026-06-09T14:16:48+00:00",
+      "link": "https://arxiv.org/pdf/2606.10907v1",
+      "tags": [
+        "keyword:LLMApp",
+        "keyword:广告",
+        "query:LLMApp",
+        "query:广告"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "measures causal effect of AI brand recommendations on consumer actions",
+      "llm_evidence_cn": "衡量AI品牌推荐对消费者行为的因果效应",
+      "llm_evidence": "衡量AI品牌推荐对消费者行为的因果效应",
+      "canonical_evidence": "衡量AI品牌推荐对消费者行为的因果效应",
+      "llm_tldr_en": "Quantifies how AI brand recommendations increase search and site visits for brands.",
+      "llm_tldr_cn": "量化AI品牌推荐如何增加品牌的搜索和网站访问量。",
+      "llm_tldr": "量化AI品牌推荐如何增加品牌的搜索和网站访问量。",
+      "llm_tags": [
+        "query:q1"
+      ],
+      "matched_query_tag": "query:q1",
+      "matched_query_text": "recommendation system for advertising",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2606.06614v1",
+      "source": "arxiv",
+      "title": "Re-Centering Humans in LLM Personalization",
+      "abstract": "Despite growing interest, most evaluations of large language models' (LLMs') personalization abilities have relied on synthetic data. It remains unclear how well current personalization systems work for real users. In this paper, we study the gap in LLM personalization performance when using synthetic versus human data. We collect human conversations (550 conversations) and judgments across three stages of personalization: extracting user attributes from conversations (5,949 judgments), pairing relevant attributes with new prompts (11,919), and incorporating relevant attributes into a personalized response (1,101). Incorporating human data reveals system limitations at each stage. Models struggle to extract attributes from human conversations, disagree with human judgments on relevant attributes, and generate personalized responses that humans judge no better than generic responses (though that LLM judges widely rate as better). We introduce two lightweight training-based interventions that shift automated personalization evaluation closer to human data in our first two stages. However, in our third stage we find that learned reward models achieve only modest correlation with human ratings, suggesting that human-aligned personalization quality judgments are difficult to model directly. Our collected data provides a foundation for studying how models should extract, select, and incorporate user information in ways that humans find useful.",
+      "authors": [
+        "Lechen Zhang",
+        "Jiarui Liu",
+        "Tal August"
+      ],
+      "primary_category": "cs.CL",
+      "categories": [
+        "cs.CL",
+        "cs.AI",
+        "cs.HC"
+      ],
+      "published": "2026-06-04T18:04:47+00:00",
+      "link": "https://arxiv.org/pdf/2606.06614v1",
+      "tags": [
+        "keyword:LLMApp",
+        "keyword:广告",
+        "query:LLMApp",
+        "query:广告"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "LLM personalization with real human data for personalized marketing",
+      "llm_evidence_cn": "基于真实人类数据的LLM个性化用于个性化营销",
+      "llm_evidence": "基于真实人类数据的LLM个性化用于个性化营销",
+      "canonical_evidence": "基于真实人类数据的LLM个性化用于个性化营销",
+      "llm_tldr_en": "Studies LLM personalization gap between synthetic and human data for personalized responses.",
+      "llm_tldr_cn": "研究LLM在合成与人类数据上的个性化差距。",
+      "llm_tldr": "研究LLM在合成与人类数据上的个性化差距。",
+      "llm_tags": [
+        "query:llmapp"
+      ],
+      "matched_query_tag": "query:llmapp",
+      "matched_query_text": "Applications of LLMs in advertising and personalized marketing",
+      "matched_requirement_id": "req-15",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "quick_skim": [
+    {
+      "id": "2606.03371v2",
+      "source": "arxiv",
+      "title": "See, Infer, Intervene: Proactive World Modeling for Goal-Oriented Social Intelligence",
+      "abstract": "Multimodal retail agents should not only recognize what a customer is doing, but also decide whether and how to assist before an explicit request is made. We study this setting through the See--Infer--Intervene (SII) framework, where a device must see pre-interaction behavior, infer latent customer intent, and act by selecting an appropriate service intervention or choosing to wait. We instantiate SII with the Proactive Intent World Model (PIWM), which represents customer state with AIDA (Attention, Interest, Desire, Action) purchasing phases and BDI (belief, desire, intention) psychological fields, predicts action-conditioned intent transitions, and selects from five response classes: Greet, Elicit, Inform, Recommend, and Hold. We further construct GuidanceSalesBench, a smart-retail benchmark containing state manifests, pre-interaction videos, candidate responses, action-conditioned outcomes, and best-action labels. When conditioned on ground-truth customer state to isolate action selection, PIWM achieves 0.641 macro F1 on 30 held-out target videos, outperforming a zero-shot Qwen2.5-VL-7B baseline and training variants without balanced action supervision; end-to-end video-only selection drops to 0.295, below the 5-class balanced random baseline of 0.414, identifying video-to-state grounding as the dominant deployment-time bottleneck. A preliminary staged real-store pilot (recorded with paid participants performing scripted customer behaviors) reaches 0.579 action macro F1 on 20 fully annotated videos, with 10 additional accessible videos released with index-level labels.",
+      "authors": [
+        "Honghui Zhang",
+        "Chenmeinian Guo",
+        "Yichen Yu",
+        "Guanyu Liu",
+        "Yujia Zhang",
+        "Yongming Qin",
+        "Chongguo Song",
+        "Mengyue Yang",
+        "Lei Yu",
+        "Tianyu Shi"
+      ],
+      "primary_category": "cs.CL",
+      "categories": [
+        "cs.CL"
+      ],
+      "published": "2026-06-02T09:18:39+00:00",
+      "link": "https://arxiv.org/pdf/2606.03371v2",
+      "tags": [
+        "keyword:LLMApp",
+        "keyword:广告",
+        "query:LLMApp",
+        "query:广告"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "proactive intent world model for multimodal retail agents",
+      "llm_evidence_cn": "多模态零售代理的主动意图世界模型",
+      "llm_evidence": "多模态零售代理的主动意图世界模型",
+      "canonical_evidence": "多模态零售代理的主动意图世界模型",
+      "llm_tldr_en": "Proposes a framework for proactive intervention in retail based on multimodal intent inference.",
+      "llm_tldr_cn": "提出基于多模态意图推理的零售主动干预框架。",
+      "llm_tldr": "提出基于多模态意图推理的零售主动干预框架。",
+      "llm_tags": [
+        "query:q1"
+      ],
+      "matched_query_tag": "query:q1",
+      "matched_query_text": "recommendation system for advertising",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "8plus"
+    },
+    {
+      "id": "2606.03091v2",
+      "source": "arxiv",
+      "title": "BAHSD: Bridging the Long-tail Gap via Adaptive Distillation in Black-box Sequential Recommendation",
+      "abstract": "Sequential recommendation systems are widely adopted but often deployed as black-box APIs, which has driven recent interest in model extraction to replicate their capabilities locally. However, the long-tail distribution induces severe signal heterogeneity: dense head sequences trigger the solidification of teacher preference, biasing extraction toward local patterns, while sparse tail sequences yield flat, noisy predictions. Existing one-size-fits-all extraction overlooks this disparity, resulting in noise overfitting and suboptimal knowledge transfer. We propose BAHSD, a black-box adaptive distillation framework that handles signal heterogeneity via a multi-scale consistency probing mechanism to implicitly quantify signal reliability. Based on this, an adaptive hierarchical objective is designed: dynamic-temperature KL divergence mitigates preference solidification for high-confidence signals, while ranking consistency and InfoNCE contrastive learning provide noise-robust enhancement for low-confidence signals. BAHSD consistently outperforms baselines, achieving up to 4.98\\% gain over the teacher and 80\\%+ improvement on tail users, offering a plug-and-play solution for high-fidelity black-box recommendation extraction.",
+      "authors": [
+        "Xi Zhou",
+        "Famin Wu",
+        "Mingming Li",
+        "Hongyue Zhang",
+        "Jiao Dai",
+        "Jizhong Han",
+        "Tao Guo"
+      ],
+      "primary_category": "cs.IR",
+      "categories": [
+        "cs.IR",
+        "cs.AI"
+      ],
+      "published": "2026-06-02T03:26:25+00:00",
+      "link": "https://arxiv.org/pdf/2606.03091v2",
+      "tags": [
+        "keyword:LLMApp",
+        "keyword:广告",
+        "query:LLMApp",
+        "query:广告"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "adaptive distillation for black-box sequential recommendation",
+      "llm_evidence_cn": "黑盒序列推荐的适应性蒸馏",
+      "llm_evidence": "黑盒序列推荐的适应性蒸馏",
+      "canonical_evidence": "黑盒序列推荐的适应性蒸馏",
+      "llm_tldr_en": "Handles signal heterogeneity in black-box sequential recommendation via adaptive distillation.",
+      "llm_tldr_cn": "通过适应性蒸馏处理黑盒序列推荐中的信号异质性。",
+      "llm_tldr": "通过适应性蒸馏处理黑盒序列推荐中的信号异质性。",
+      "llm_tags": [
+        "query:q1"
+      ],
+      "matched_query_tag": "query:q1",
+      "matched_query_text": "recommendation system for advertising",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2606.03091v1",
+      "source": "arxiv",
+      "title": "BAHSD: Bridging the Long-tail Gap via Adaptive Distillation in Black-box Sequential Recommendation",
+      "abstract": "Sequential recommendation systems are widely adopted but often deployed as black-box APIs, which has driven recent interest in model extraction to replicate their capabilities locally. However, the long-tail distribution induces severe signal heterogeneity: dense head sequences trigger the solidification of teacher preference, biasing extraction toward local patterns, while sparse tail sequences yield flat, noisy predictions. Existing one-size-fits-all extraction overlooks this disparity, resulting in noise overfitting and suboptimal knowledge transfer. We propose BAHSD, a black-box adaptive distillation framework that handles signal heterogeneity via a multi-scale consistency probing mechanism to implicitly quantify signal reliability. Based on this, an adaptive hierarchical objective is designed: dynamic-temperature KL divergence mitigates preference solidification for high-confidence signals, while ranking consistency and InfoNCE contrastive learning provide noise-robust enhancement for low-confidence signals. BAHSD consistently outperforms baselines, achieving up to 4.98\\% gain over the teacher and 80\\%+ improvement on tail users, offering a plug-and-play solution for high-fidelity black-box recommendation extraction.",
+      "authors": [
+        "Xi Zhou",
+        "Famin Wu",
+        "Mingming Li",
+        "Hongyue Zhang",
+        "Jiao Dai",
+        "Jizhong Han",
+        "Tao Guo"
+      ],
+      "primary_category": "cs.IR",
+      "categories": [
+        "cs.IR",
+        "cs.AI"
+      ],
+      "published": "2026-06-02T03:26:25+00:00",
+      "link": "https://arxiv.org/pdf/2606.03091v1",
+      "tags": [
+        "keyword:LLMApp",
+        "keyword:广告",
+        "query:LLMApp",
+        "query:广告"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "sequential recommendation system",
+      "llm_evidence_cn": "序列推荐系统",
+      "llm_evidence": "序列推荐系统",
+      "canonical_evidence": "序列推荐系统",
+      "llm_tldr_en": "Proposes adaptive distillation for black-box sequential recommendation",
+      "llm_tldr_cn": "提出黑盒序列推荐的自适应蒸馏方法",
+      "llm_tldr": "提出黑盒序列推荐的自适应蒸馏方法",
+      "llm_tags": [
+        "query:q1"
+      ],
+      "matched_query_tag": "query:q1",
+      "matched_query_text": "recommendation system for advertising",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2606.03527v1",
+      "source": "arxiv",
+      "title": "Competitive Information Design in Sequential Search",
+      "abstract": "Advertisements often strategically disclose information to consumers who make decisions on further information acquisition and eventual purchase. Anderson and Renault (2006) model this problem using an information design framework, where the advertiser acts as a sender and the consumer as a receiver. We extend this model to a competitive setting with horizontally differentiated senders competing for a unit-demand receiver. Under costly inspection, the receiver's optimal sequential search action is given by Weitzman's Index Algorithm.   We give a method, based on duality arguments, to verify whether a sender's given information strategy constitutes a best response against his competitors (other senders). We establish the existence of an equilibrium in the game among senders when the prior distributions have no mass; we also illustrate that such equilibria may exhibit intricate behaviors. Finally, we meticulously characterize symmetric equilibria played by the senders for cases when the prior distributions have monotone increasing densities, while offering economic intuitions behind the insightful equilibrium structure.",
+      "authors": [
+        "Zhicheng Du",
+        "Hu Fu",
+        "Ying Qin",
+        "Zihe Wang"
+      ],
+      "primary_category": "cs.GT",
+      "categories": [
+        "cs.GT",
+        "econ.TH"
+      ],
+      "published": "2026-06-02T11:50:09+00:00",
+      "link": "https://arxiv.org/pdf/2606.03527v1",
+      "tags": [
+        "keyword:广告",
+        "query:LLMApp",
+        "query:广告"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "advertising information design in sequential search",
+      "llm_evidence_cn": "广告信息设计在顺序搜索中",
+      "llm_evidence": "广告信息设计在顺序搜索中",
+      "canonical_evidence": "广告信息设计在顺序搜索中",
+      "llm_tldr_en": "Competitive information design for advertisements in sequential search.",
+      "llm_tldr_cn": "广告在顺序搜索中的竞争信息设计。",
+      "llm_tldr": "广告在顺序搜索中的竞争信息设计。",
+      "llm_tags": [
+        "query:q2"
+      ],
+      "matched_query_tag": "query:q2",
+      "matched_query_text": "advertising technology",
+      "matched_requirement_id": "req-2",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "8plus"
+    },
+    {
+      "id": "2606.03371v1",
+      "source": "arxiv",
+      "title": "See, Infer, Intervene: Proactive World Modeling for Goal-Oriented Social Intelligence",
+      "abstract": "Multimodal retail agents should not only recognize what a customer is doing, but also decide whether and how to assist before an explicit request is made. We study this setting through the See--Infer--Intervene (SII) framework, where a device must see pre-interaction behavior, infer latent customer intent, and act by selecting an appropriate service intervention or choosing to wait. We instantiate SII with the Proactive Intent World Model (PIWM), which represents customer state with AIDA (Attention, Interest, Desire, Action) purchasing phases and BDI (belief, desire, intention) psychological fields, predicts action-conditioned intent transitions, and selects from five response classes: Greet, Elicit, Inform, Recommend, and Hold. We further construct GuidanceSalesBench, a smart-retail benchmark containing state manifests, pre-interaction videos, candidate responses, action-conditioned outcomes, and best-action labels. When conditioned on ground-truth customer state to isolate action selection, PIWM achieves 0.641 macro F1 on 30 held-out target videos, outperforming a zero-shot Qwen2.5-VL-7B baseline and training variants without balanced action supervision; end-to-end video-only selection drops to 0.295, below the 5-class balanced random baseline of 0.414, identifying video-to-state grounding as the dominant deployment-time bottleneck. A preliminary staged real-store pilot (recorded with paid participants performing scripted customer behaviors) reaches 0.579 action macro F1 on 20 fully annotated videos, with 10 additional accessible videos released with index-level labels.",
+      "authors": [
+        "Honghui Zhang",
+        "Chenmeinian Guo",
+        "Yichen Yu",
+        "Guanyu Liu",
+        "Yongming Qin",
+        "Chongguo Song",
+        "Mengyue Yang",
+        "Lei Yu",
+        "Tianyu Shi"
+      ],
+      "primary_category": "cs.CL",
+      "categories": [
+        "cs.CL"
+      ],
+      "published": "2026-06-02T09:18:39+00:00",
+      "link": "https://arxiv.org/pdf/2606.03371v1",
+      "tags": [
+        "keyword:LLMApp",
+        "keyword:广告",
+        "query:LLMApp",
+        "query:广告"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "multimodal retail agent with proactive intent modeling",
+      "llm_evidence_cn": "多模态零售代理与主动意图建模",
+      "llm_evidence": "多模态零售代理与主动意图建模",
+      "canonical_evidence": "多模态零售代理与主动意图建模",
+      "llm_tldr_en": "Proactive multimodal framework for goal-oriented retail assistance.",
+      "llm_tldr_cn": "主动多模态框架用于目标导向的零售辅助。",
+      "llm_tldr": "主动多模态框架用于目标导向的零售辅助。",
+      "llm_tags": [
+        "query:q6"
+      ],
+      "matched_query_tag": "query:q6",
+      "matched_query_text": "multimodal learning for advertising",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2606.03718v1",
+      "source": "arxiv",
+      "title": "MARS: Multi-rate Aggregation of Recency Signals for Sequential Recommendation across Sparse and Dense Regimes",
+      "abstract": "Sequential recommenders weight historical interactions either through positional self-attention as in Transformers or through a single implicit decay schedule as in State-Space Models. Neither makes the multi-scale temporal structure of real user behaviour explicit. We propose MARS, an encoder-agnostic aggregation operator that consumes real timestamps and produces K summaries emphasising distinct recency scales, fused by a context-adaptive gate. MARS adds at most 6% parameters and runs in $\\mathcal{O}(LdK)$ time. MARS adapts to data density by automatically selecting between two encoder instantiations: MARS-T (Transformer) for sparse data and MARS-M (Mamba) for dense data, based on the average sequence length of the training set. On five public benchmarks against ten Transformer- and Mamba-based baselines under a unified RecBole protocol, MARS attains the best HR@10 on every benchmark, with mean relative gain +19.7% over the strongest content-only Transformer baseline on sparse data (reaching +36.2% on Games) and +3.2% HR@10 / +0.9% NDCG over SIGMA on dense ML-1M at 42% fewer MFLOPs, occupying the accuracy-efficiency Pareto frontier across the data-density spectrum. A backbone-only ablation isolates the marginal contribution of MARS at +4% to +19% HR@10 on sparse data and motivates the dual-instantiation design. The code is included in the supplementary material.",
+      "authors": [
+        "Zhenyu Yu",
+        "Shuigeng Zhou"
+      ],
+      "primary_category": "cs.IR",
+      "categories": [
+        "cs.IR"
+      ],
+      "published": "2026-06-02T14:39:19+00:00",
+      "link": "https://arxiv.org/pdf/2606.03718v1",
+      "tags": [
+        "keyword:LLMApp",
+        "keyword:广告",
+        "query:LLMApp",
+        "query:广告"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "Multi-rate temporal aggregation for sequential recommendation",
+      "llm_evidence_cn": "多速率时间聚合用于序列推荐",
+      "llm_evidence": "多速率时间聚合用于序列推荐",
+      "canonical_evidence": "多速率时间聚合用于序列推荐",
+      "llm_tldr_en": "MARS aggregates recency signals at multiple scales for better sequential recommendation",
+      "llm_tldr_cn": "MARS多尺度聚合时效信号提升序列推荐性能",
+      "llm_tldr": "MARS多尺度聚合时效信号提升序列推荐性能",
+      "llm_tags": [
+        "query:q1"
+      ],
+      "matched_query_tag": "query:q1",
+      "matched_query_text": "recommendation system for advertising",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2606.04110v1",
+      "source": "arxiv",
+      "title": "Variance Reduction for Heavy-Tailed Monetization Metrics in Ranking Experiments via Post-Stratification",
+      "abstract": "Online evaluation of ranking and retrieval systems often relies on downstream monetization metrics such as app revenue or creator earnings. These metrics are typically heavy-tailed, with a small fraction of users dominating both mean and variance, leading to low statistical power and unreliable conclusions in A/B experiments -- especially under limited traffic.   We present a practical framework for variance reduction in online experiments by combining post-stratification with CUPED. Our approach leverages pre-experiment covariates to improve the sensitivity of monetization experiments without requiring additional traffic. Deployed at ShareChat across ranking-driven monetization experiments, the method substantially reduces variance and improves decision stability, achieving equivalent statistical confidence with ~45\\% less traffic than standard metrics. We further discuss practical design choices, guardrails, and limitations, providing guidance on when post-stratification is appropriate for real-world information retrieval and Recommendation systems.",
+      "authors": [
+        "Neeti Pokharna",
+        "Olivier Jeunen",
+        "Yatharth Saraf",
+        "Aleksei Ustimenko"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG",
+        "stat.ML"
+      ],
+      "published": "2026-06-02T18:14:14+00:00",
+      "link": "https://arxiv.org/pdf/2606.04110v1",
+      "tags": [
+        "keyword:LLMApp",
+        "keyword:广告",
+        "query:LLMApp",
+        "query:广告"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "variance reduction for ranking monetization experiments",
+      "llm_evidence_cn": "排序变现实验的方差缩减",
+      "llm_evidence": "排序变现实验的方差缩减",
+      "canonical_evidence": "排序变现实验的方差缩减",
+      "llm_tldr_en": "Reduces variance in heavy-tailed monetization metrics for ranking experiments.",
+      "llm_tldr_cn": "减少排序实验中重尾变现指标的方差.",
+      "llm_tldr": "减少排序实验中重尾变现指标的方差.",
+      "llm_tags": [
+        "query:q2"
+      ],
+      "matched_query_tag": "query:q2",
+      "matched_query_text": "advertising technology",
+      "matched_requirement_id": "req-2",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "8plus"
+    },
+    {
+      "id": "2606.04550v1",
+      "source": "arxiv",
+      "title": "Trading Engagement for Sustainability: Carbon-Aware Re-ranking for E-commerce Recommendations",
+      "abstract": "E-commerce recommender systems strongly influence which products users consider and purchase, yet sustainability signals such as Product Carbon Footprint (PCF) are almost never available at catalog scale. We study carbon-aware product recommendation in the realistic setting where PCF labels are missing for most items and must be inferred. We first estimate product-level carbon footprints via a retrieval-augmented PCF estimation pipeline that transfers supervision from the Carbon Catalogue, a small set of life-cycle-assessed products, to a large unlabeled e-commerce catalog using semantic similarity search, few-shot LLM prompting, and a nearest-neighbour fallback. We then apply a carbon-aware post-hoc re-ranking strategy on top of relevance scores produced by three established recommendation models: BPR, NeuMF, and LightGCN. The method trades off predicted user-item engagement against estimated carbon footprint through a single tunable parameter, lambda. In this offline study, engagement is operationalized through Amazon review interactions, which serve as implicit feedback and as a proxy for user interest or purchase behavior. We evaluate the framework on the Amazon Reviews dataset across three product categories: Home and Kitchen, Sports and Outdoors, and Electronics. By sweeping lambda, we construct Pareto frontiers that characterize the achievable engagement and carbon trade-off for each model and category. Substantial carbon reductions are achievable at minimal engagement cost across all models and categories. However, the available carbon headroom varies by model and category, underscoring the importance of model choice and domain context.",
+      "authors": [
+        "Noah Lund Syrdal",
+        "Anders Vestrum",
+        "Jorgen Bergh"
+      ],
+      "primary_category": "cs.IR",
+      "categories": [
+        "cs.IR",
+        "cs.AI",
+        "cs.SI"
+      ],
+      "published": "2026-06-03T07:34:46+00:00",
+      "link": "https://arxiv.org/pdf/2606.04550v1",
+      "tags": [
+        "keyword:LLMApp",
+        "keyword:广告",
+        "query:LLMApp",
+        "query:广告"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "Carbon-aware e-commerce recommendation with few-shot LLM",
+      "llm_evidence_cn": "基于少样本LLM的碳感知电商推荐",
+      "llm_evidence": "基于少样本LLM的碳感知电商推荐",
+      "canonical_evidence": "基于少样本LLM的碳感知电商推荐",
+      "llm_tldr_en": "Re-ranks e-commerce recommendations to reduce carbon footprint using LLM-based estimation",
+      "llm_tldr_cn": "使用LLM估计碳排放，对电商推荐进行重排序以降低碳足迹",
+      "llm_tldr": "使用LLM估计碳排放，对电商推荐进行重排序以降低碳足迹",
+      "llm_tags": [
+        "query:q1"
+      ],
+      "matched_query_tag": "query:q1",
+      "matched_query_text": "recommendation system for advertising",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2606.04387v1",
+      "source": "arxiv",
+      "title": "Rethinking Sales Lead Scoring with LLM-based Hierarchical Preference Ranking",
+      "abstract": "Sales lead conversion in high-stakes domains (e.g., automotive, real estate) differs fundamentally from e-commerce recommendation due to prolonged decision cycles and multi-stage funnels. Traditional lead scoring methods rule-based scorecards, machine learning, or pointwise CTR models face severe challenges: sparse supervision, a semantic gap in unstructured CRM logs, and inability to capture relative lead priority. While Large Language Models(LLMs) offer superior semantic understanding of customer interactions, general-purpose LLMs are ill-suited for lead ranking: they generate text rather than comparable scores, and lack alignment with the hierarchical priorities of sales funnels. We introduce an LLM-based discriminative framework for sales lead scoring, which supports joint modeling of structured CRM features and unstructured customer interactions. On top of this framework, we propose HPRO (Hierarchical Preference Ranking Optimization), which augments sales lead scoring with a hierarchical preference ranking objective. HPRO employs a margin-aware Bradley-Terry formulation to transform sparse binary labels into dense, funnel-aware preference pairs, enabling lead scoring to leverage both pointwise and pairwise supervision. Experiments on large-scale data from a leading NEV brand demonstrate state-of-the-art classification (AUC 0.8161) and ranking performance (+39.7% precision among top-ranked leads). A 132-day online A/B test validates 9.5% sales volume uplift, confirming real-world commercial impact.",
+      "authors": [
+        "Chenyu Zhang",
+        "Yiwen Liu",
+        "Yin Sun",
+        "Xinyuan Zhang",
+        "Yuji Cao",
+        "Junming Jiao",
+        "Juyi Qiao"
+      ],
+      "primary_category": "cs.IR",
+      "categories": [
+        "cs.IR",
+        "cs.AI"
+      ],
+      "published": "2026-06-03T03:05:57+00:00",
+      "link": "https://arxiv.org/pdf/2606.04387v1",
+      "tags": [
+        "keyword:LLMApp",
+        "keyword:广告",
+        "query:LLMApp",
+        "query:广告"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "LLM-based hierarchical preference ranking for sales leads",
+      "llm_evidence_cn": "基于大语言模型的分层偏好排序用于销售线索",
+      "llm_evidence": "基于大语言模型的分层偏好排序用于销售线索",
+      "canonical_evidence": "基于大语言模型的分层偏好排序用于销售线索",
+      "llm_tldr_en": "LLM framework for hierarchical lead scoring in sales funnels.",
+      "llm_tldr_cn": "大模型框架用于销售漏斗中的分层线索评分。",
+      "llm_tldr": "大模型框架用于销售漏斗中的分层线索评分。",
+      "llm_tags": [
+        "query:llmapp"
+      ],
+      "matched_query_tag": "query:llmapp",
+      "matched_query_text": "LLM for recommendation",
+      "matched_requirement_id": "req-10",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2606.04374v1",
+      "source": "arxiv",
+      "title": "DSIRM: Learning Query-Bridged Discrete Semantic Identifiers for E-commerce Relevance Modeling",
+      "abstract": "Despite rapid progress of continuous embeddings for e-commerce search relevance, a long-standing open problem is the difficulty in capturing fine-grained attribute distinctions. While discrete Semantic Identifiers (SIDs) have been widely adopted as a promising alternative, existing SID generation methods rely heavily on unsupervised quantization. In realistic scenarios, the lack of explicit supervision often makes it more difficult to dictate which items should share an SID, resulting in limited capability for query-dependent ranking. To address the issue of unsupervised SIDs, we propose to explicitly model discrete relevance features and develop a Discrete Semantic Identifier Relevance Model (DSIRM). Specifically, we present a query-bridged contrastive quantization approach on the item side, injecting query-item interaction supervision into Residual Quantization to actively learn relevance-aware semantic partitions. On the other hand, we explore generative LLMs on the query side to explicitly predict item SIDs from text, resolving tail queries and intent ambiguity. Hierarchical prefix matching between query and item SIDs yields discriminative features that perfectly complement dense signals. Extensive experimental results on Tmall's production data show that our proposed approach has achieved better results, improving offline AUC by +1.54\\%. Deployed via an efficient hybrid architecture, it achieves significant online lifts (+0.13\\% UCTR, +0.25\\% UCTCVR), proving its massive industrial value.",
+      "authors": [
+        "Bokang Wang",
+        "Xing Fang",
+        "Mingmin Jin",
+        "Jing Wang",
+        "Zhentao Song",
+        "Guangxin Song",
+        "Jianbo Zhu"
+      ],
+      "primary_category": "cs.IR",
+      "categories": [
+        "cs.IR",
+        "cs.AI"
+      ],
+      "published": "2026-06-03T02:42:52+00:00",
+      "link": "https://arxiv.org/pdf/2606.04374v1",
+      "tags": [
+        "keyword:LLMApp",
+        "keyword:广告",
+        "query:LLMApp",
+        "query:广告"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "e-commerce relevance modeling for advertising technology",
+      "llm_evidence_cn": "面向广告技术的电商相关性建模",
+      "llm_evidence": "面向广告技术的电商相关性建模",
+      "canonical_evidence": "面向广告技术的电商相关性建模",
+      "llm_tldr_en": "Proposes DSIRM for fine-grained relevance using discrete semantic identifiers",
+      "llm_tldr_cn": "提出DSIRM，使用离散语义标识符进行细粒度相关性建模",
+      "llm_tldr": "提出DSIRM，使用离散语义标识符进行细粒度相关性建模",
+      "llm_tags": [
+        "query:q2"
+      ],
+      "matched_query_tag": "query:q2",
+      "matched_query_text": "advertising technology",
+      "matched_requirement_id": "req-2",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "8plus"
+    },
+    {
+      "id": "2606.04909v1",
+      "source": "arxiv",
+      "title": "BEATS: Bootstrapping E-commerce Attribute Taxonomies for Search through Iterative Human-AI Collaboration",
+      "abstract": "E-commerce platforms in emerging markets often operate with underdeveloped product catalogs that contain only category taxonomies but lack structured attribute schemas. This absence of fine-grained product attributes limits search capabilities -- preventing faceted filtering, degrading query understanding, and weakening semantic representations used by search systems. We present BEATS, a human-in-the-loop LLM framework for bootstrapping product attribute taxonomies entirely from scratch. Our approach extends a multi-stage LLM generation pipeline with two critical production stages: (1) proactive quality checking by model developers to filter erroneous outputs, and (2) human annotation by domain-expert local staff to validate generated attributes. The framework operates iteratively -- prompts at each generation stage are refined based on quality check observations and annotator feedback across successive rounds, progressively improving attribute quality. Once the attribute taxonomy is established, we employ LLMs to perform structured attribute tagging on individual product items, enriching their contextual representations. The enriched catalog directly benefits multiple components of the search system: enabling granular attribute-based filtering, providing structured features for ranking models, and improving semantic representations for dense retrieval. We validate the generated taxonomy by training dense retrieval models on attribute-enriched product data, demonstrating consistent improvements over baselines using original catalog information. Our system has been deployed at Rakuten Taiwan, enriching 9 major categories spanning 2,694 sub-categories with 67,277 generated attributes, and over 5.4 million products have been tagged with the generated attributes, with plans to enrich the entire product catalog.",
+      "authors": [
+        "Yung-Yu Shih",
+        "Shang-Yu Su",
+        "Tzu-I Ho",
+        "Dongzhe Wang",
+        "Yun-Nung Chen"
+      ],
+      "primary_category": "cs.IR",
+      "categories": [
+        "cs.IR",
+        "cs.CL"
+      ],
+      "published": "2026-06-03T14:06:27+00:00",
+      "link": "https://arxiv.org/pdf/2606.04909v1",
+      "tags": [
+        "keyword:LLMApp",
+        "keyword:广告",
+        "query:LLMApp",
+        "query:广告"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "LLM for bootstrapping product attribute taxonomies in e-commerce",
+      "llm_evidence_cn": "电商中LLM用于构建产品属性分类",
+      "llm_evidence": "电商中LLM用于构建产品属性分类",
+      "canonical_evidence": "电商中LLM用于构建产品属性分类",
+      "llm_tldr_en": "Presents human-in-the-loop LLM pipeline for attribute taxonomy creation",
+      "llm_tldr_cn": "提出人工在环的LLM流水线创建属性分类",
+      "llm_tldr": "提出人工在环的LLM流水线创建属性分类",
+      "llm_tags": [
+        "query:q7"
+      ],
+      "matched_query_tag": "query:q7",
+      "matched_query_text": "Practical implementation of advertising in real life scenarios‌",
+      "matched_requirement_id": "req-7",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2606.04603v1",
+      "source": "arxiv",
+      "title": "Distributional Approximate Nearest Neighbour Search for Uncertainty-Aware Retrieval",
+      "abstract": "Approximate Nearest Neighbour search indices form the backbone of real-world recommender systems, enabling real-time candidate retrieval over million-item catalogues. Typically, a single point estimate embedding is learnt for every user and every item. At serving time, the user embedding queries the index for relevant items. Since these representations are learnt from sparse interaction data, they are noisy and might fail to capture all the nuances that contribute to ``relevance'' -- ignoring the fundamental uncertainty that is inherent to them. The result is a retrieval pipeline that is systematically biased toward the small minority of popular head items with well-estimated embeddings, at the expense of the long-tail majority of niche, diverse, and serendipitous content.   We propose DINOSAUR (Distributional Approximate Nearest Neighbour Search for Uncertainty-Aware Retrieval): a simple and infrastructure-compatible framework to incorporate embedding uncertainty into candidate generation. Rather than indexing point estimates, DINOSAUR samples $S_i$ embeddings per item and constructs an index on this augmented set. Analogously, at query time, a user embedding is sampled. This two-sided stochastic retrieval process implicitly marginalises over embedding uncertainty, without requiring changes to model architecture or ANN index infrastructure.   On the analytical side, we show that DINOSAUR recovers standard point-estimate retrieval as uncertainty vanishes, and we characterise how increased embedding variance expands the regions of latent space in which uncertain items are retrievable. Reproducible empirical observations align with these expectations, showing large coverage gains with small losses in offline recall.",
+      "authors": [
+        "Olivier Jeunen"
+      ],
+      "primary_category": "cs.IR",
+      "categories": [
+        "cs.IR",
+        "cs.LG",
+        "stat.ML"
+      ],
+      "published": "2026-06-03T08:41:27+00:00",
+      "link": "https://arxiv.org/pdf/2606.04603v1",
+      "tags": [
+        "keyword:LLMApp",
+        "keyword:广告",
+        "query:LLMApp",
+        "query:广告"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "Approximate nearest neighbour search for candidate retrieval in recommender systems",
+      "llm_evidence_cn": "推荐系统中用于候选检索的近似最近邻搜索",
+      "llm_evidence": "推荐系统中用于候选检索的近似最近邻搜索",
+      "canonical_evidence": "推荐系统中用于候选检索的近似最近邻搜索",
+      "llm_tldr_en": "Proposes distributional ANN search to handle uncertainty in recommender embeddings",
+      "llm_tldr_cn": "提出分布性近似最近邻搜索以处理推荐嵌入的不确定性",
+      "llm_tldr": "提出分布性近似最近邻搜索以处理推荐嵌入的不确定性",
+      "llm_tags": [
+        "query:q1"
+      ],
+      "matched_query_tag": "query:q1",
+      "matched_query_text": "recommendation system for advertising",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    }
+  ]
+}

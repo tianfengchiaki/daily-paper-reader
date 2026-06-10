@@ -1,0 +1,54 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2606.10243v1/fig-001.webp",
+      "caption": "Table 2 Ablation study on the upstream encoders.",
+      "page": 11,
+      "index": 1,
+      "width": 632,
+      "height": 251
+    },
+    {
+      "url": "assets/figures/arxiv/2606.10243v1/fig-002.webp",
+      "caption": "Figure 3 End-to-end system: recurring pre-training with checkpoint validation followed by SIDE-based embedding compression and finally event-triggered inference and serving.",
+      "page": 7,
+      "index": 2,
+      "width": 968,
+      "height": 481
+    },
+    {
+      "url": "assets/figures/arxiv/2606.10243v1/fig-003.webp",
+      "caption": "Figure 6 Eval NE gains (%) on Different Types and Stages of downstream rankers. Higher is better.",
+      "page": 10,
+      "index": 3,
+      "width": 627,
+      "height": 460
+    },
+    {
+      "url": "assets/figures/arxiv/2606.10243v1/fig-004.webp",
+      "caption": "Figure 1 DUET unified framework: data routing, representation pre-training, and downstream ranker.",
+      "page": 4,
+      "index": 4,
+      "width": 894,
+      "height": 300
+    },
+    {
+      "url": "assets/figures/arxiv/2606.10243v1/fig-005.webp",
+      "caption": "Figure 4 Principal components of quantized user embeddings. ConvAUE and ClickAUE occupy distinct regions, indicating non-redundant information. Figure5 Orthogonality between ConvAUE and ClickAUE. Degree of complementarity varies, higher orthogonality indicating greater potential for additive information gain.",
+      "page": 9,
+      "index": 5,
+      "width": 977,
+      "height": 334
+    },
+    {
+      "url": "assets/figures/arxiv/2606.10243v1/fig-006.webp",
+      "caption": "Figure 2 DUET architecture. Left: the DLRM backbone with parallel sequence and non-sequence branches. Right: event tower structure with stacked attention blocks and DCN user summarization.",
+      "page": 5,
+      "index": 6,
+      "width": 968,
+      "height": 518
+    }
+  ]
+}

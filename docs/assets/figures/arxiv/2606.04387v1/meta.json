@@ -1,0 +1,38 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2606.04387v1/fig-001.webp",
+      "caption": "Figure 1: Overview of the proposed framework. Left: Feature processing and hierarchical sampling from structured and unstructured inputs. Middle: LLM backbone with LoRA adaptation. Right: Three optimization objectives corresponding to the triple-head mechanism.",
+      "page": 3,
+      "index": 1,
+      "width": 827,
+      "height": 391
+    },
+    {
+      "url": "assets/figures/arxiv/2606.04387v1/fig-002.webp",
+      "caption": "Table 1: Results on Benchmark Dataset. Upper: comparison with CTR baselines. +htext denotes injection of asLLR-extracted textual embeddings. Lower: ablation on asLLR components.",
+      "page": 5,
+      "index": 2,
+      "width": 522,
+      "height": 434
+    },
+    {
+      "url": "assets/figures/arxiv/2606.04387v1/fig-003.webp",
+      "caption": "Figure 2: Cumulative conversion rates (left axis) and relative difference (right axis, shaded) over 132 days. Stable 9.5% gap validates HPRO’s effectiveness",
+      "page": 6,
+      "index": 3,
+      "width": 750,
+      "height": 492
+    },
+    {
+      "url": "assets/figures/arxiv/2606.04387v1/fig-004.webp",
+      "caption": "Table 2: Ranking effectiveness on the industrial dataset. P@K% and R@5.0% denote precision and recall at top K% (or 5.0%) of ranked leads. Relative Lift is computed with respect to asLLR (w/o HPRO).",
+      "page": 6,
+      "index": 4,
+      "width": 722,
+      "height": 220
+    }
+  ]
+}

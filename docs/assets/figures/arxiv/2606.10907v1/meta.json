@@ -1,0 +1,30 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2606.10907v1/fig-001.webp",
+      "caption": "Figure 3: Own-site event study around the response. Naive all-mention named brands (blue) rise before the response, a pre-existing-customer pre-trend; same-category unnamed brands (grey) are flat; recommendation × non-customer (green) steps up only at the response. The peach band is the non-customer eligibility window, zero by construction; identification compares the post-response level to the backward placebo at 𝑇−14/−21/−28, not to this window (§4.4). Curves are raw daily own-site visit rates; the placebo comparison is applied in the analysis, not to the plotted values. Bins are 3 days at bin center.",
+      "page": 6,
+      "index": 1,
+      "width": 471,
+      "height": 326
+    },
+    {
+      "url": "assets/figures/arxiv/2606.10907v1/fig-002.webp",
+      "caption": "Table 2: Identification and measurement threats and the control that addresses each; the evidence column gives the diagnostic or result that addresses it. The one residual threat, a brand-specific within-session intent shock, is not fully identifiable on observational data (§8).",
+      "page": 4,
+      "index": 2,
+      "width": 1032,
+      "height": 294
+    },
+    {
+      "url": "assets/figures/arxiv/2606.10907v1/fig-003.webp",
+      "caption": "Table 8: Retail measurement failure modes and corrections. Host-only matching reads near-null; the corrections recover a real but modest brand-specific retail effect.",
+      "page": 9,
+      "index": 3,
+      "width": 498,
+      "height": 252
+    }
+  ]
+}

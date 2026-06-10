@@ -1,0 +1,110 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2606.10187v1/fig-001.webp",
+      "caption": "Figure 4: Response-estimation inputs to the conformal pacing selector. The left panel compares the response scale supplied to the pacing problem under three modes: (i) a model-predicted response, (ii) a context-adjusted doubly robust estimate when treatment contrast is available, and (iii) a robust response input that subtracts the response uncertainty radius. Criteo has enough randomized treatment contrast for the doubly robust estimate, so its response input increases relative to the raw prediction and remains positive after robust adjustment. KuaiRand has weaker treatment contrast in the loaded recommendation log, so the implementation uses a conservative public-data-calibrated response fallback and records the uncertainty in the robust certificate. The right panel shows the downstream pacing outcome under the same three response modes. Criteo remains certified in all modes, with realized value around 379.5 and held-out any-violation rate 0.03. KuaiRand remains unresolved in all modes because repeated-exposure and member-load uncertainty keep the robust constraints from clearing, even when the response input changes.",
+      "page": 15,
+      "index": 1,
+      "width": 861,
+      "height": 356
+    },
+    {
+      "url": "assets/figures/arxiv/2606.10187v1/fig-002.webp",
+      "caption": "Figure 6: Theory-level separation and coverage diagnostics. These are synthetic diagnostics for Theorem 5.2 and the splitconformal coverage statement in Theorem 4.1. The left panel constructs forecast-error vectors with one decision-relevant coordinate and an increasing number of nuisance inventory coordinates that are orthogonal to every policy-sensitivity direction. The decision-calibrated radius stays fixed at 1, because the nuisance coordinates do not affect any deployable policy in the catalog. The generic Euclidean residual radius grows from about 1.41 to 16.03 as the nuisance dimension increases to 256, showing the separation predicted by Theorem 5.2. The right panel verifies split-conformal coverage over synthetic Gaussian forecast-error draws for dimensions 6, 24, and 96. The dashed horizontal line is the target coverage 0.90. Both the decision-calibrated score and the generic residual score achieve coverage slightly above the target, while only the decision-calibrated score avoids paying for nuisance dimensions.",
+      "page": 21,
+      "index": 2,
+      "width": 769,
+      "height": 302
+    },
+    {
+      "url": "assets/figures/arxiv/2606.10187v1/fig-003.webp",
+      "caption": "Figure 1: Decision-calibrated conformal pacing. Generic residual calibration uses a radius that covers all forecast errors, including irrelevant inventory directions. The decision-calibrated score projects forecast errors onto value and constraint directions used by the pacing catalog, calibrates the resulting policy-impact radius, and returns either a certified policy or an unresolved decision.",
+      "page": 2,
+      "index": 3,
+      "width": 901,
+      "height": 604
+    },
+    {
+      "url": "assets/figures/arxiv/2606.10187v1/fig-004.webp",
+      "caption": "Table 7: Sensitivity-ablation summary. Values are read from the saved appendix artifacts.",
+      "page": 22,
+      "index": 4,
+      "width": 902,
+      "height": 277
+    },
+    {
+      "url": "assets/figures/arxiv/2606.10187v1/fig-005.webp",
+      "caption": "Table 6: Medium pacing-policy catalog used in the main experiments. The catalog crosses four intensity levels with three quality-focus levels, giving 12 deployable policies.",
+      "page": 22,
+      "index": 5,
+      "width": 701,
+      "height": 324
+    },
+    {
+      "url": "assets/figures/arxiv/2606.10187v1/fig-006.webp",
+      "caption": "Figure 3: Forecasting inputs evaluated by downstream pacing uncertainty and certification outcome. The top-left panel reports Criteo decision-calibrated radii by forecaster; smaller radii mean less uncertainty in the value and constraint directions used by the pacing selector, and all Criteo forecasters certify a policy. The bottom-left panel reports the same quantity for KuaiRand, where every forecaster remains unresolved despite substantially smaller radii than generic residual calibration. The top-right panel shows the ratio between the generic residual radius and the decision-calibrated radius; large ratios indicate how much extra slack generic calibration reserves for forecast-error directions that are not priced by the policy catalog. The bottom-right panel summarizes the final decision state by dataset and forecaster, with blue cells denoting certified policies and gray cells denoting unresolved decisions. The figure shows that forecast accuracy alone is not the relevant object for pacing. The useful quantity is the calibrated radius after forecast errors are projected through the value and constraint sensitivities of the deployable policy catalog.",
+      "page": 14,
+      "index": 6,
+      "width": 885,
+      "height": 484
+    },
+    {
+      "url": "assets/figures/arxiv/2606.10187v1/fig-007.webp",
+      "caption": "Figure 7: Calibration sample-size diagnostic for Proposition 5.1. The experiment builds longer 480-block Criteo and KuaiRand streaming cases, treats the full 120-block calibration split as the reference calibration set, then repeatedly subsamples smaller calibration sets and reruns the same component-radius calibration and robust selector. The left panel reports the median maximum component quantile error across value, delivery, budget, and member-load radii, relative to the full-calibration reference. Shaded bands show the interquartile range over resamples, and dashed horizontal lines show half of the empirical decision margin for each case. Because the vertical axis is logarithmic, exact zero errors relative to the reference are displayed at a small positive floor. The middle panel reports two stability rates: (i) the solid line is the share of resamples recovering the same decision state as the full-calibration reference, and (ii) the dashed line is the share satisfying the sufficient margin condition from Proposition 5.1. The right panel reports the median shortlist size under calibration uncertainty. Criteo stabilizes to the reference certified policy as calibration size grows, while KuaiRand stabilizes to the unresolved state because member-load and delivery margins remain weak even with small calibration error.",
+      "page": 23,
+      "index": 7,
+      "width": 885,
+      "height": 280
+    },
+    {
+      "url": "assets/figures/arxiv/2606.10187v1/fig-008.webp",
+      "caption": "Figure 2: Deployment-facing replay comparison. Point-forecast pacing ignores forecast uncertainty. Generic-residual conformal pacing uses an unweighted residual radius, while the decision-calibrated selector uses component radii built from catalog sensitivities. Criteo has enough margin for a certified policy, while KuaiRand remains unresolved under repeated-exposure and member-load uncertainty.",
+      "page": 13,
+      "index": 8,
+      "width": 885,
+      "height": 265
+    },
+    {
+      "url": "assets/figures/arxiv/2606.10187v1/fig-009.webp",
+      "caption": "Table 2: Guide to the main calibration quantities. The first three rows define the combined Lagrangian score used in Theorem 4.1. The remaining rows define the component radii used by the deployable selector in Eq. (7).",
+      "page": 8,
+      "index": 9,
+      "width": 906,
+      "height": 420
+    },
+    {
+      "url": "assets/figures/arxiv/2606.10187v1/fig-010.webp",
+      "caption": "Table 1: Problem-setup notation used in the objective and constraints.",
+      "page": 4,
+      "index": 10,
+      "width": 831,
+      "height": 255
+    },
+    {
+      "url": "assets/figures/arxiv/2606.10187v1/fig-011.webp",
+      "caption": "Table 3: Empirical benchmark provenance. Criteo and KuaiRand provide public-data structure for response, context heterogeneity, time ordering, and repeated exposure, while the campaign budgets, delivery targets, member-load limits, pacing policies, and constraint system are constructed as a reproducible pacing layer. The experiments should therefore be considered as public-data-calibrated simulated stress tests, not as production pacing logs.",
+      "page": 12,
+      "index": 11,
+      "width": 902,
+      "height": 348
+    },
+    {
+      "url": "assets/figures/arxiv/2606.10187v1/fig-012.webp",
+      "caption": "Figure 5: Geometry diagnostic for Theorem 4.1. This is a synthetic theorem-level diagnostic rather than a Criteo or KuaiRand experiment. The implementation constructs 8 orthogonal policy-sensitivity directions in a 16-dimensional forecast-error space and evaluates 500 random forecast-error draws plus targeted active-direction errors. The left panel reports each candidate certificate’s mean size relative to the minimal signed-hull support function. The right panel reports the catalog violation rate, meaning the share of tested forecast errors for which the candidate certificate is smaller than the true catalog support score. Supersets of the signed sensitivity hull are valid but conservative. Certificates that omit an active signed sensitivity or scale below the support function violate catalog validity.",
+      "page": 20,
+      "index": 12,
+      "width": 861,
+      "height": 315
+    },
+    {
+      "url": "assets/figures/arxiv/2606.10187v1/fig-013.webp",
+      "caption": "Table 5: Appendix diagnostics associated with the theoretical results.",
+      "page": 20,
+      "index": 13,
+      "width": 902,
+      "height": 325
+    }
+  ]
+}

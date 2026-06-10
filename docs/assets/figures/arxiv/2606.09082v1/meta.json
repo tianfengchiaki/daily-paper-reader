@@ -1,0 +1,94 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2606.09082v1/fig-001.webp",
+      "caption": "Table 2. Performance comparison against all baselines. w/ REVEAL denotes the incorporation of our framework into the corresponding backbone. Improve. reports the relative gain over the vanilla model. † indicates results reproduced by ourselves. All results are averaged over five runs and are statistically significant (𝑝 < 0.05).",
+      "page": 15,
+      "index": 1,
+      "width": 919,
+      "height": 534
+    },
+    {
+      "url": "assets/figures/arxiv/2606.09082v1/fig-002.webp",
+      "caption": "Fig. 1. Illustration of the limitations of visual features in MSR based on the Beauty dataset. (a) User review of the item. (b) Visual encoder attention on regions weakly aligned with user preferences. (c) Textual encoder attention on semantics aligned with user preferences. (d) Modality ablation results. (e) Performance comparison of Vision-Only (Multimodal) vs. (Unimodal).",
+      "page": 2,
+      "index": 2,
+      "width": 929,
+      "height": 228
+    },
+    {
+      "url": "assets/figures/arxiv/2606.09082v1/fig-003.webp",
+      "caption": "Fig. 4. Performance comparison of M3SRec+REVEAL with 𝑋max hyperparameter settings on the different datasets.",
+      "page": 22,
+      "index": 3,
+      "width": 934,
+      "height": 209
+    },
+    {
+      "url": "assets/figures/arxiv/2606.09082v1/fig-004.webp",
+      "caption": "Fig. 3. Case study illustrating how FVE refines visual features extraction through prompt optimization on the Sports dataset.",
+      "page": 18,
+      "index": 4,
+      "width": 898,
+      "height": 296
+    },
+    {
+      "url": "assets/figures/arxiv/2606.09082v1/fig-005.webp",
+      "caption": "Fig. 5. Performance comparison of M3SRec+REVEAL with 𝛼 hyperparameter settings on the different datasets.",
+      "page": 23,
+      "index": 5,
+      "width": 934,
+      "height": 209
+    },
+    {
+      "url": "assets/figures/arxiv/2606.09082v1/fig-006.webp",
+      "caption": "Table 7. The training and inference cost comparison of M3SRec and M3SRec+REVEAL across different datasets. Under Training Time (h), w/o FVE denotes the backbone training time without the FVE module, w/ FVE denotes the additional training overhead introduced by FVE, and Total denotes the overall training time. M3SRec+REVEAL uses Qwen2.5-VL-7B in FVE. Inference time is reported in seconds under the same deployment setting.",
+      "page": 23,
+      "index": 6,
+      "width": 744,
+      "height": 291
+    },
+    {
+      "url": "assets/figures/arxiv/2606.09082v1/fig-007.webp",
+      "caption": "Table 4. Performance comparison under the Vision-Only (V-Only) setting across datasets and variants, where text embeddings are replaced with zero vectors. The Best results are in bold. All Results are averaged over five runs with 𝑝 < 0.05.",
+      "page": 17,
+      "index": 7,
+      "width": 842,
+      "height": 556
+    },
+    {
+      "url": "assets/figures/arxiv/2606.09082v1/fig-008.webp",
+      "caption": "Table 3. Ablation results of different variants on Home dataset. “w/” denotes “with.” The Best results are in bold. All results are averaged over five runs with 𝑝 < 0.05.",
+      "page": 17,
+      "index": 8,
+      "width": 710,
+      "height": 352
+    },
+    {
+      "url": "assets/figures/arxiv/2606.09082v1/fig-009.webp",
+      "caption": "Table 5. Performance comparison of FVE with Qwen2.5-VL(Q-VL) across scaling sizes. The best results are highlighted in bold. All results are averaged over five runs.",
+      "page": 20,
+      "index": 9,
+      "width": 744,
+      "height": 379
+    },
+    {
+      "url": "assets/figures/arxiv/2606.09082v1/fig-010.webp",
+      "caption": "Table 6. Performance comparison of FVE across different VLM backbones. The best results are highlighted in bold. † indicates the baseline setting of our method, where Qwen2.5-VL-7B is used as the default VLM backbone. All results are averaged over five runs.",
+      "page": 20,
+      "index": 10,
+      "width": 750,
+      "height": 328
+    },
+    {
+      "url": "assets/figures/arxiv/2606.09082v1/fig-011.webp",
+      "caption": "Fig. 2. The overall architecture of the proposed REVEAL.",
+      "page": 5,
+      "index": 11,
+      "width": 936,
+      "height": 503
+    }
+  ]
+}

@@ -1,0 +1,150 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2606.04550v1/fig-001.webp",
+      "caption": "Figure 1: Overview of the carbon-aware recommendation framework. Product text denotes the available item metadata used for embedding and PCF estimation, primarily title and category fields in the reported Amazon run.",
+      "page": 6,
+      "index": 1,
+      "width": 677,
+      "height": 740
+    },
+    {
+      "url": "assets/figures/arxiv/2606.04550v1/fig-002.webp",
+      "caption": "Figure 2: λ sensitivity for the Electronics category. Each panel plots NDCG@10 (solid, left axis) and AvgPCF@10 (dashed, right axis) as λ increases from the engagement-only baseline (λ = 0) toward carbononly re-ranking (λ = 1). The shaded green region marks operating points whose NDCG@10 remains within 5% of the λ = 0 baseline.",
+      "page": 11,
+      "index": 2,
+      "width": 976,
+      "height": 274
+    },
+    {
+      "url": "assets/figures/arxiv/2606.04550v1/fig-003.webp",
+      "caption": "Figure 15: Few-shot LLM prompt template for PCF estimation.",
+      "page": 25,
+      "index": 3,
+      "width": 579,
+      "height": 1276
+    },
+    {
+      "url": "assets/figures/arxiv/2606.04550v1/fig-004.webp",
+      "caption": "Figure 6: Distribution of predicted PCF (few-shot) across Carbon Catalogue sectors used in PCF estimation diagnostics. Sectors span a wide range, including a heavy industrial tail that drives large errors on the full 866-item holdout relative to the consumer-scale benchmark in Table 1.",
+      "page": 21,
+      "index": 4,
+      "width": 902,
+      "height": 462
+    },
+    {
+      "url": "assets/figures/arxiv/2606.04550v1/fig-005.webp",
+      "caption": "Figure 7: Highest-average-PCF categories in the Carbon Catalogue based on the predicted values. A few heavy industrial sectors dominate the extreme tail, which is precisely why full-holdout RMSE paints a much harsher picture of LLM-based estimation than the consumer-scale subset used as the main benchmark.",
+      "page": 21,
+      "index": 5,
+      "width": 802,
+      "height": 433
+    },
+    {
+      "url": "assets/figures/arxiv/2606.04550v1/fig-006.webp",
+      "caption": "Figure 8: λ sensitivity for the Home and Kitchen category, shown in the same format as Figure 2; the shaded green region marks settings within a 5% NDCG@10 drop from the λ = 0 baseline.",
+      "page": 22,
+      "index": 6,
+      "width": 976,
+      "height": 275
+    },
+    {
+      "url": "assets/figures/arxiv/2606.04550v1/fig-007.webp",
+      "caption": "Figure 9: λ sensitivity for the Sports and Outdoors category, shown in the same format as Figure 2; the shaded green region marks settings within a 5% NDCG@10 drop from the λ = 0 baseline.",
+      "page": 22,
+      "index": 7,
+      "width": 979,
+      "height": 276
+    },
+    {
+      "url": "assets/figures/arxiv/2606.04550v1/fig-008.webp",
+      "caption": "Figure 10: Engagement and carbon Pareto frontiers for Electronics. Each point corresponds to one λ value; faint gray points are evaluated but dominated settings, red points and lines denote Pareto-optimal operating points, and the star marks the engagement-only baseline (λ = 0).",
+      "page": 22,
+      "index": 8,
+      "width": 979,
+      "height": 272
+    },
+    {
+      "url": "assets/figures/arxiv/2606.04550v1/fig-009.webp",
+      "caption": "Table 3: Carbon-aware re-ranking configuration.",
+      "page": 18,
+      "index": 9,
+      "width": 698,
+      "height": 256
+    },
+    {
+      "url": "assets/figures/arxiv/2606.04550v1/fig-010.webp",
+      "caption": "Table 2: RecBole training and evaluation hyperparameters.",
+      "page": 18,
+      "index": 10,
+      "width": 926,
+      "height": 354
+    },
+    {
+      "url": "assets/figures/arxiv/2606.04550v1/fig-011.webp",
+      "caption": "Figure 12: Engagement and carbon Pareto frontiers for Sports and Outdoors, shown in the same format as Figure 10, with faint gray points denoting dominated λ settings.",
+      "page": 23,
+      "index": 11,
+      "width": 979,
+      "height": 273
+    },
+    {
+      "url": "assets/figures/arxiv/2606.04550v1/fig-012.webp",
+      "caption": "Figure 13: Best Pareto operating point per model and category, subject to at least 10% carbon reduction relative to λ = 0. The left panel reports NDCG@10 at the chosen operating point; the right panel reports the corresponding carbon reduction.",
+      "page": 23,
+      "index": 12,
+      "width": 979,
+      "height": 362
+    },
+    {
+      "url": "assets/figures/arxiv/2606.04550v1/fig-013.webp",
+      "caption": "Figure 11: Engagement and carbon Pareto frontiers for Home and Kitchen, shown in the same format as Figure 10, with faint gray points denoting dominated λ settings.",
+      "page": 23,
+      "index": 13,
+      "width": 979,
+      "height": 275
+    },
+    {
+      "url": "assets/figures/arxiv/2606.04550v1/fig-014.webp",
+      "caption": "Figure 4: Heatmap of maximum carbon reduction (%) achievable while limiting NDCG@10 degradation to at most 5% relative to the λ = 0 baseline, across all model and category combinations.",
+      "page": 13,
+      "index": 14,
+      "width": 640,
+      "height": 439
+    },
+    {
+      "url": "assets/figures/arxiv/2606.04550v1/fig-015.webp",
+      "caption": "Table 4: PCF estimation pipeline configuration.",
+      "page": 19,
+      "index": 15,
+      "width": 694,
+      "height": 281
+    },
+    {
+      "url": "assets/figures/arxiv/2606.04550v1/fig-016.webp",
+      "caption": "Figure 3: Multi-model Pareto frontier comparison. Each panel overlays the Pareto-optimal trade-offs of BPR, LightGCN, and NeuMF for one category; curves closer to the upper-left corner offer a better engagement and carbon trade-off. Faint points show evaluated λ settings that are dominated, while the darker connected points show the Pareto-optimal subset.",
+      "page": 12,
+      "index": 16,
+      "width": 979,
+      "height": 274
+    },
+    {
+      "url": "assets/figures/arxiv/2606.04550v1/fig-017.webp",
+      "caption": "Figure 14: Cross-category Pareto frontier comparison, one panel per model. Each panel overlays the three product categories to isolate category effects while holding the recommendation backbone fixed.",
+      "page": 24,
+      "index": 17,
+      "width": 979,
+      "height": 275
+    },
+    {
+      "url": "assets/figures/arxiv/2606.04550v1/fig-018.webp",
+      "caption": "Figure 5: PCF estimation accuracy on the full 866-item holdout and the consumer-scale subset (PCFtrue ≤ 10,000). The full-holdout error metrics are dominated by a small number of extreme industrial products, whereas the consumer-scale subset is better aligned with the Amazon recommendation setting studied downstream.",
+      "page": 20,
+      "index": 18,
+      "width": 979,
+      "height": 592
+    }
+  ]
+}

@@ -6,77 +6,77 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-06-09
-- 运行时间：2026-06-09 22:08:26 UTC
+- 最新运行日期：2026-06-10
+- 运行时间：2026-06-10 22:32:34 UTC
 - 运行状态：成功
 - 本次总论文数：19
 - 精读区：7
 - 速读区：12
 
 ### 今日简报（AI）
-今日推荐19篇论文，精读聚焦广告系统隐私鲁棒性与CTR预测新架构；最值得关注方向：信号丢失下的增量测量方法、双流MLP模型替代传统深度学习；建议读者优先精读这两篇高分论文，并关注生成式推荐中的时间感知扩散模型。
-- 详情：[/202606/09/README](/202606/09/README)
+今日共推荐19篇论文，精读两篇高分研究：隐私鲁棒广告增量测量与多模态推荐模型的视觉提取学习。建议重点关注广告系统信号损失下的测量方案及推荐模型的多模态自适应学习方向。普通读者可速读社会智能世界建模、搜索信息设计及排名实验方差缩减三篇实证研究。
+- 详情：[/202606/10/README](/202606/10/README)
 
 ### 精读区论文标签
-1. [Privacy-Robust Incrementality Measurement for Advertising Systems under Signal Loss](/202606/09/2606.03878v1-privacy-robust-incrementality-measurement-for-advertising-systems-under-signal-loss)  
+1. [Privacy-Robust Incrementality Measurement for Advertising Systems under Signal Loss](/202606/10/2606.03878v1-privacy-robust-incrementality-measurement-for-advertising-systems-under-signal-loss)  
    标签：评分：9.0/10、query:q5
-   evidence：广告增量测量
-2. [Dual-Stream MLP is All You Need for CTR Prediction](/202606/09/2606.04944v1-dual-stream-mlp-is-all-you-need-for-ctr-prediction)  
+   evidence：广告系统的隐私鲁棒增量测量
+2. [Teach Multimodal Recommendation Model to See via Personalized Visual Extraction and Adaptive Learning](/202606/10/2606.09082v1-teach-multimodal-recommendation-model-to-see-via-personalized-visual-extraction-and-adaptive-learning)  
+   标签：评分：9.0/10、query:q6
+   evidence：多模态推荐中的视觉提取方法
+3. [HMAF: A Hierarchical Multi-Slot GD-RTB Allocation Framework](/202606/10/2606.09896v1-hmaf-a-hierarchical-multi-slot-gd-rtb-allocation-framework)  
+   标签：评分：9.0/10、query:q2
+   evidence：GD-RTB广告平台的分层分配框架
+4. [Decision-Calibrated Conformal Uncertainty for Pacing Decisions in Streaming Advertising](/202606/10/2606.10187v1-decision-calibrated-conformal-uncertainty-for-pacing-decisions-in-streaming-advertising)  
+   标签：评分：9.0/10、query:q2
+   evidence：用于广告节奏控制的决策校准共形不确定性
+5. [DUET -- Dual User Embedding Transformers for Offsite Conversion Prediction](/202606/10/2606.10243v1-duet----dual-user-embedding-transformers-for-offsite-conversion-prediction)  
+   标签：评分：9.0/10、query:q2
+   evidence：面向广告的站外转化预测
+6. [From Prompt to Purchase: How AI Brand Recommendations Move Consumers on the Open Web](/202606/10/2606.10907v1-from-prompt-to-purchase-how-ai-brand-recommendations-move-consumers-on-the-open-web)  
    标签：评分：9.0/10、query:q1
-   evidence：在线广告点击率预测
-3. [QueryAgent-R1: Bridging Query Generation and Product Retrieval for E-Commerce Query Recommendation](/202606/09/2606.05671v1-queryagent-r1-bridging-query-generation-and-product-retrieval-for-e-commerce-query-recommendation)  
-   标签：评分：9.0/10、query:q1
-   evidence：电商查询推荐的智能体框架，对齐产品检索
-4. [Mind the Gap: Bridging Behavioral Silos with LLMs in Multi-Vertical Recommendations](/202606/09/2606.06779v1-mind-the-gap-bridging-behavioral-silos-with-llms-in-multi-vertical-recommendations)  
-   标签：评分：9.0/10、query:llmapp
-   evidence：基于LLM的跨品类电子商务推荐
-5. [Customer-Agent: Overcoming Context Limitations in Ultra-Long Shopping Trajectories via Tool-Augmented Agents and RLVR](/202606/09/2606.07995v1-customer-agent-overcoming-context-limitations-in-ultra-long-shopping-trajectories-via-tool-augmented-agents-and-rlvr)  
-   标签：评分：9.0/10、query:llmapp
-   evidence：LLM代理用于购物轨迹理解以实现个性化营销
-6. [Unintended Consequences of Recommender System Interventions: Evidence from a Field Experiment](/202606/09/2606.08265v1-unintended-consequences-of-recommender-system-interventions-evidence-from-a-field-experiment)  
-   标签：评分：9.0/10、query:q1
-   evidence：短视频平台推荐系统干预的实地实验
-7. [Adaptive Loss Balancing for Noise-Robust GRPO in Generative Recommendation](/202606/09/2606.08480v1-adaptive-loss-balancing-for-noise-robust-grpo-in-generative-recommendation)  
-   标签：评分：9.0/10、query:q1
-   evidence：生成式推荐强化学习应用于广告
+   evidence：衡量AI品牌推荐对消费者行为的因果效应
+7. [Re-Centering Humans in LLM Personalization](/202606/10/2606.06614v1-re-centering-humans-in-llm-personalization)  
+   标签：评分：8.0/10、query:llmapp
+   evidence：基于真实人类数据的LLM个性化用于个性化营销
 
 ### 速读区论文标签
-1. [Time-Aware Diffusion based on Preference Disentanglement for Generative Recommendation](/202606/09/2606.01670v1-time-aware-diffusion-based-on-preference-disentanglement-for-generative-recommendation)  
+1. [See, Infer, Intervene: Proactive World Modeling for Goal-Oriented Social Intelligence](/202606/10/2606.03371v2-see-infer-intervene-proactive-world-modeling-for-goal-oriented-social-intelligence)  
    标签：评分：8.0/10、query:q1
-   evidence：使用扩散模型的生成式推荐进行偏好解缠，直接应用于广告推荐。
-2. [See, Infer, Intervene: Proactive World Modeling for Goal-Oriented Social Intelligence](/202606/09/2606.03371v1-see-infer-intervene-proactive-world-modeling-for-goal-oriented-social-intelligence)  
-   标签：评分：8.0/10、query:q7
-   evidence：多模态零售代理实现主动客户协助
-3. [See, Infer, Intervene: Proactive World Modeling for Goal-Oriented Social Intelligence](/202606/09/2606.03371v2-see-infer-intervene-proactive-world-modeling-for-goal-oriented-social-intelligence)  
-   标签：评分：8.0/10、query:q7
-   evidence：实际场景中用于广告的主动零售代理
-4. [MARS: Multi-rate Aggregation of Recency Signals for Sequential Recommendation across Sparse and Dense Regimes](/202606/09/2606.03718v1-mars-multi-rate-aggregation-of-recency-signals-for-sequential-recommendation-across-sparse-and-dense-regimes)  
-   标签：评分：8.0/10、query:q1
-   evidence：用于广告的序列推荐方法
-5. [Equilibrated Diffusion: Frequency-aware Textual Embedding for Equilibrated Image Customization](/202606/09/2606.02129v1-equilibrated-diffusion-frequency-aware-textual-embedding-for-equilibrated-image-customization)  
-   标签：评分：7.0/10、query:q6
-   evidence：基于扩散模型的多模态图像定制可用于广告创意
-6. [Competitive Information Design in Sequential Search](/202606/09/2606.03527v1-competitive-information-design-in-sequential-search)  
-   标签：评分：7.0/10、query:q2
-   evidence：广告信息设计在序贯搜索中
-7. [LazyAttention: Efficient Retrieval-Augmented Generation with Deferred Positional Encoding](/202606/09/2606.04302v1-lazyattention-efficient-retrieval-augmented-generation-with-deferred-positional-encoding)  
-   标签：评分：7.0/10、query:llmapp
-   evidence：用于RAG中LLM推理的高效KV缓存
-8. [DSIRM: Learning Query-Bridged Discrete Semantic Identifiers for E-commerce Relevance Modeling](/202606/09/2606.04374v1-dsirm-learning-query-bridged-discrete-semantic-identifiers-for-e-commerce-relevance-modeling)  
+   evidence：多模态零售代理的主动意图世界模型
+2. [Competitive Information Design in Sequential Search](/202606/10/2606.03527v1-competitive-information-design-in-sequential-search)  
+   标签：评分：8.0/10、query:q2
+   evidence：广告信息设计在顺序搜索中
+3. [Variance Reduction for Heavy-Tailed Monetization Metrics in Ranking Experiments via Post-Stratification](/202606/10/2606.04110v1-variance-reduction-for-heavy-tailed-monetization-metrics-in-ranking-experiments-via-post-stratification)  
+   标签：评分：8.0/10、query:q2
+   evidence：排序变现实验的方差缩减
+4. [DSIRM: Learning Query-Bridged Discrete Semantic Identifiers for E-commerce Relevance Modeling](/202606/10/2606.04374v1-dsirm-learning-query-bridged-discrete-semantic-identifiers-for-e-commerce-relevance-modeling)  
+   标签：评分：8.0/10、query:q2
+   evidence：面向广告技术的电商相关性建模
+5. [BAHSD: Bridging the Long-tail Gap via Adaptive Distillation in Black-box Sequential Recommendation](/202606/10/2606.03091v2-bahsd-bridging-the-long-tail-gap-via-adaptive-distillation-in-black-box-sequential-recommendation)  
    标签：评分：7.0/10、query:q1
-   evidence：使用离散语义标识符的电子商务相关性建模，适用于广告推荐。
-9. [RCEM: Embedder Equipped with Query Rewriting Skill for Robust Conversational Search in Distributional Shift](/202606/09/2606.01697v1-rcem-embedder-equipped-with-query-rewriting-skill-for-robust-conversational-search-in-distributional-shift)  
-   标签：评分：6.0/10、query:llmapp
-   evidence：LLM蒸馏用于对话稠密检索，可应用于搜索推荐。
-10. [LAANN: I/O-Aware Look-Ahead Search for Disk-Based Approximate Nearest Neighbor Search](/202606/09/2606.02784v1-laann-io-aware-look-ahead-search-for-disk-based-approximate-nearest-neighbor-search)  
+   evidence：黑盒序列推荐的适应性蒸馏
+6. [See, Infer, Intervene: Proactive World Modeling for Goal-Oriented Social Intelligence](/202606/10/2606.03371v1-see-infer-intervene-proactive-world-modeling-for-goal-oriented-social-intelligence)  
+   标签：评分：7.0/10、query:q6
+   evidence：多模态零售代理与主动意图建模
+7. [Trading Engagement for Sustainability: Carbon-Aware Re-ranking for E-commerce Recommendations](/202606/10/2606.04550v1-trading-engagement-for-sustainability-carbon-aware-re-ranking-for-e-commerce-recommendations)  
+   标签：评分：7.0/10、query:q1
+   evidence：基于少样本LLM的碳感知电商推荐
+8. [BEATS: Bootstrapping E-commerce Attribute Taxonomies for Search through Iterative Human-AI Collaboration](/202606/10/2606.04909v1-beats-bootstrapping-e-commerce-attribute-taxonomies-for-search-through-iterative-human-ai-collaboration)  
+   标签：评分：7.0/10、query:q7
+   evidence：电商中LLM用于构建产品属性分类
+9. [BAHSD: Bridging the Long-tail Gap via Adaptive Distillation in Black-box Sequential Recommendation](/202606/10/2606.03091v1-bahsd-bridging-the-long-tail-gap-via-adaptive-distillation-in-black-box-sequential-recommendation)  
    标签：评分：6.0/10、query:q1
-   evidence：面向大规模检索的I/O感知ANN搜索
-11. [VidMsg: A Benchmark for Implicit Message Inference in Short Videos](/202606/09/2606.03635v1-vidmsg-a-benchmark-for-implicit-message-inference-in-short-videos)  
-   标签：评分：6.0/10、query:llmapp
-   evidence：短视频隐式消息推理基准
-12. [Distributional Approximate Nearest Neighbour Search for Uncertainty-Aware Retrieval](/202606/09/2606.04603v1-distributional-approximate-nearest-neighbour-search-for-uncertainty-aware-retrieval)  
+   evidence：序列推荐系统
+10. [MARS: Multi-rate Aggregation of Recency Signals for Sequential Recommendation across Sparse and Dense Regimes](/202606/10/2606.03718v1-mars-multi-rate-aggregation-of-recency-signals-for-sequential-recommendation-across-sparse-and-dense-regimes)  
    标签：评分：6.0/10、query:q1
-   evidence：近似最近邻搜索用于推荐检索
+   evidence：多速率时间聚合用于序列推荐
+11. [Rethinking Sales Lead Scoring with LLM-based Hierarchical Preference Ranking](/202606/10/2606.04387v1-rethinking-sales-lead-scoring-with-llm-based-hierarchical-preference-ranking)  
+   标签：评分：6.0/10、query:llmapp
+   evidence：基于大语言模型的分层偏好排序用于销售线索
+12. [Distributional Approximate Nearest Neighbour Search for Uncertainty-Aware Retrieval](/202606/10/2606.04603v1-distributional-approximate-nearest-neighbour-search-for-uncertainty-aware-retrieval)  
+   标签：评分：6.0/10、query:q1
+   evidence：推荐系统中用于候选检索的近似最近邻搜索
 
 
 <div class="dpr-home-promo-card">

@@ -1,0 +1,62 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2606.06614v1/fig-001.webp",
+      "caption": "Figure 3: Full pairwise Cohen’s κ between all three human annotators and five LLMs. Human–human agreement (top-left block) is consistently higher than LLM– human agreement (off-diagonal), confirming that LLMs are not reliable proxies for human relevance judgment.",
+      "page": 6,
+      "index": 1,
+      "width": 409,
+      "height": 299
+    },
+    {
+      "url": "assets/figures/arxiv/2606.06614v1/fig-002.webp",
+      "caption": "Table 4: Representative attributes and intra-user diversity scores for five sampled WildChat users, spanning the full specialist–generalist spectrum. Intra-user Diversity is mean pairwise cosine distance among a user’s merged attributes (min-max normalised to [0, 1]; 0 = specialist, 1 = generalist).",
+      "page": 14,
+      "index": 2,
+      "width": 950,
+      "height": 556
+    },
+    {
+      "url": "assets/figures/arxiv/2606.06614v1/fig-003.webp",
+      "caption": "Figure 1: Overview of our three-stage personalization framework. (1) User Attribute Extraction from conversation history, (2) Attribute Relevance Matching for the current interaction context, and (3) Personalized Response Generation based on the selected attributes. By incorporating human-grounded data, we reveal limitations at each stage of personalization: models struggle to extract accurate attributes from human conversations, pair those attributes with new prompts, and determine what makes a personalized response effective.",
+      "page": 3,
+      "index": 3,
+      "width": 854,
+      "height": 343
+    },
+    {
+      "url": "assets/figures/arxiv/2606.06614v1/fig-004.webp",
+      "caption": "Figure 8: Task 1 annotation interface. Annotators judge each extracted attribute against the user’s conversation history using a three-way label.",
+      "page": 19,
+      "index": 4,
+      "width": 808,
+      "height": 425
+    },
+    {
+      "url": "assets/figures/arxiv/2606.06614v1/fig-005.webp",
+      "caption": "Figure 9: Task 2 annotation interface. Annotators decide YES or NO for each (attribute, prompt) pair, with model votes shown for reference.",
+      "page": 19,
+      "index": 5,
+      "width": 808,
+      "height": 427
+    },
+    {
+      "url": "assets/figures/arxiv/2606.06614v1/fig-006.webp",
+      "caption": "Figure 10: Task 3 annotation interface. Annotators rate attribute-level preference between two anonymized responses on a 1–5 scale.",
+      "page": 20,
+      "index": 6,
+      "width": 808,
+      "height": 427
+    },
+    {
+      "url": "assets/figures/arxiv/2606.06614v1/fig-007.webp",
+      "caption": "Table 7: Base vs. GRPO-optimized Qwen3-4B reasoning on the same (attribute, prompt) pair. The base model conflates possible influence with meaningful influence. The GRPO model self-corrects (highlighted) and applies a more conservative, human-aligned standard.",
+      "page": 16,
+      "index": 7,
+      "width": 929,
+      "height": 309
+    }
+  ]
+}

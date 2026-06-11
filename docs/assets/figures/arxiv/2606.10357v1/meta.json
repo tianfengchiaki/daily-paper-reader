@@ -1,0 +1,46 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2606.10357v1/fig-001.webp",
+      "caption": "Figure 1: Kuaishou spans multiple heterogeneous domains, making cross-domain recommendation crucial for intent transfer, but facing two key challenges: (1) Prohibitive RealTime Inference Expanse of Large Language Models, and (2) Large-Scale and Noisy User Behavior Sequences.",
+      "page": 2,
+      "index": 1,
+      "width": 502,
+      "height": 438
+    },
+    {
+      "url": "assets/figures/arxiv/2606.10357v1/fig-002.webp",
+      "caption": "Table 2: The Overall Recommendation Performance on the Amazon Dataset.",
+      "page": 7,
+      "index": 2,
+      "width": 852,
+      "height": 363
+    },
+    {
+      "url": "assets/figures/arxiv/2606.10357v1/fig-003.webp",
+      "caption": "Table 6: Industry Online A/B Test Results.",
+      "page": 8,
+      "index": 3,
+      "width": 509,
+      "height": 403
+    },
+    {
+      "url": "assets/figures/arxiv/2606.10357v1/fig-004.webp",
+      "caption": "Figure 2: Our proposed AIR (Atomic Intent Reasoning) tackles cross-domain recommendation via a four-stage pipeline: (1) Atomic Intent Pair Generation, (2) Real-time Unified User Intent Tree Construction, (3) Target-aware Intent Retrieval, and (4) MHA-based Intent Extraction.",
+      "page": 4,
+      "index": 4,
+      "width": 1054,
+      "height": 479
+    },
+    {
+      "url": "assets/figures/arxiv/2606.10357v1/fig-005.webp",
+      "caption": "Figure 3: Online serving in AIR with separated offline/online serving stages. Offline, LLMs generate and index atomic behavior–intent pairs. Online, user behaviors are decomposed into parallel intent queries and efficiently retrieved to summarize user intent, achieving an effect equivalent to real-time LLM inference while supporting low-latency, high-QPS recommendation.",
+      "page": 5,
+      "index": 5,
+      "width": 1052,
+      "height": 384
+    }
+  ]
+}

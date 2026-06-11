@@ -1,0 +1,70 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2606.12245v1/fig-001.webp",
+      "caption": "Table 7. The efficiency analysis of different models. The experiments are conducted on a Tesla V100 GPU card with 32 GB memory.",
+      "page": 15,
+      "index": 1,
+      "width": 548,
+      "height": 281
+    },
+    {
+      "url": "assets/figures/arxiv/2606.12245v1/fig-002.webp",
+      "caption": "Fig. 1. The seesaw dilemma for three representative cold-start recommendation methods (i.e., Heater [39], GAR [2] and ALDI [11]), where they fail to improve the performance for cold and warm items simultaneously. In contrast, our DiffCold can address the seesaw dilemma and achieve consistent improvement for all three types of task.",
+      "page": 2,
+      "index": 2,
+      "width": 722,
+      "height": 477
+    },
+    {
+      "url": "assets/figures/arxiv/2606.12245v1/fig-003.webp",
+      "caption": "Table 3. Overall, Cold and Warm recommendation performance of all models. The R@20 and N@20 mean Recall@20 and NDCG@20, respectively. The improvements are calculated by comparing DiffCold to the best baseline (underline) on each dataset.",
+      "page": 10,
+      "index": 3,
+      "width": 719,
+      "height": 404
+    },
+    {
+      "url": "assets/figures/arxiv/2606.12245v1/fig-004.webp",
+      "caption": "Fig. 5. The hyperparamter result of α1, α2 and β1, β2 on Citeulike based on MF.",
+      "page": 14,
+      "index": 4,
+      "width": 723,
+      "height": 305
+    },
+    {
+      "url": "assets/figures/arxiv/2606.12245v1/fig-005.webp",
+      "caption": "Table 5. The ablation study (Recall@20) about DiffCold.",
+      "page": 14,
+      "index": 5,
+      "width": 690,
+      "height": 327
+    },
+    {
+      "url": "assets/figures/arxiv/2606.12245v1/fig-006.webp",
+      "caption": "Fig. 4. The distribution of learned ID representations of users, warm and cold items on Movielens.",
+      "page": 13,
+      "index": 6,
+      "width": 558,
+      "height": 399
+    },
+    {
+      "url": "assets/figures/arxiv/2606.12245v1/fig-007.webp",
+      "caption": "Fig. 3. The comparison between different starting representation methods based on MF backbone.",
+      "page": 12,
+      "index": 7,
+      "width": 714,
+      "height": 327
+    },
+    {
+      "url": "assets/figures/arxiv/2606.12245v1/fig-008.webp",
+      "caption": "Fig. 2. The overall procedure of training and inference in DiffCold. The detailed algorithm of training and inference is summarized in Algorithm 1 and 2.",
+      "page": 5,
+      "index": 8,
+      "width": 707,
+      "height": 404
+    }
+  ]
+}

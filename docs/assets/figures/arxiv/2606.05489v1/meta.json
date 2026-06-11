@@ -1,0 +1,54 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2606.05489v1/fig-001.webp",
+      "caption": "Figure 2: Optimization framework: five methods over 𝑁=50 iterations (adaptive methods receive score feedback).",
+      "page": 7,
+      "index": 1,
+      "width": 908,
+      "height": 449
+    },
+    {
+      "url": "assets/figures/arxiv/2606.05489v1/fig-002.webp",
+      "caption": "Table 4: System efficiency on HICO-DET (47,776 images, 600 queries; best-configuration per representative seed; 3-seed mean Scores in Table 3). §difficulty-weighted; †corpus-scale artifact (see Section 5.3.1).",
+      "page": 10,
+      "index": 2,
+      "width": 844,
+      "height": 341
+    },
+    {
+      "url": "assets/figures/arxiv/2606.05489v1/fig-003.webp",
+      "caption": "Table 3: ANN optimizer comparison on HICO-DET (50 iters, 3-seed means; Grid: 1 run). ¶GPSampler+EI [26]; §difficulty-weighted; †corpus-scale artifact (see Section 5.3.1); ‡SIEVE Score= 0 (mAP< 𝜏=0.15); raw QPS= 19.67 / 19.46 respectively.",
+      "page": 10,
+      "index": 3,
+      "width": 668,
+      "height": 225
+    },
+    {
+      "url": "assets/figures/arxiv/2606.05489v1/fig-004.webp",
+      "caption": "Figure 3: LLM prompt structure (parameter physics, historyH𝑡−1, and phase-conditioned hints).",
+      "page": 8,
+      "index": 4,
+      "width": 782,
+      "height": 679
+    },
+    {
+      "url": "assets/figures/arxiv/2606.05489v1/fig-005.webp",
+      "caption": "Table 1: Configuration space Θ (Definition 1); †conditional on engine; total |Θ|=102,144.",
+      "page": 4,
+      "index": 5,
+      "width": 502,
+      "height": 288
+    },
+    {
+      "url": "assets/figures/arxiv/2606.05489v1/fig-006.webp",
+      "caption": "Figure 1: Two-stage retrieval pipeline (CLIP ANN retrieval + DINOv2 reranking).",
+      "page": 5,
+      "index": 6,
+      "width": 742,
+      "height": 237
+    }
+  ]
+}

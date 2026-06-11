@@ -1,0 +1,303 @@
+Title: LLM-Based User Personas for Recommendations at Scale
+
+URL Source: https://arxiv.org/pdf/2606.12198v1
+
+Published Time: Thu, 11 Jun 2026 01:25:42 GMT
+
+Number of Pages: 9
+
+Markdown Content:
+# LLM-Based User Personas for Recommendations at Scale 
+
+# Haoting Wang 
+
+Google Deepmind New York, NY, USA haotingwang@google.com 
+
+# Haokai Lu 
+
+Google Deepmind Mountain View, CA, USA haokai@google.com 
+
+# Zheyun Feng 
+
+Google Mountain View, CA, USA zfeng@google.com 
+
+# Jenny Huang 
+
+Google Mountain View, CA, USA huangjenny@google.com 
+
+# Yifat Amir 
+
+Google Mountain View, CA, USA yifat@google.com 
+
+# Gregory Hinkson 
+
+Google Mountain View, CA, USA gregkhinkson@google.com 
+
+# Ben Most 
+
+Google Mountain View, CA, USA bmost@google.com 
+
+# Zelong Zhao 
+
+Google Mountain View, CA, USA zelongzhao@google.com 
+
+# Kelly (Yixin) Cui 
+
+Google Mountain View, CA, USA kellycui@google.com 
+
+# Rein Zhang 
+
+Google Mountain View, CA, USA reinwzhang@google.com 
+
+# Fabio Soldo 
+
+Google Mountain View, CA, USA fsoldo@google.com 
+
+# Yu Xia ∗
+
+GNucleus AI Mountain View, CA, USA peggy.xia@gnucleus.ai 
+
+# Nihar Bhupalam 
+
+Google Mountain View, CA, USA niharb@google.com 
+
+# Minmin Chen 
+
+Google Deepmind Mountain View, CA, USA minminc@google.com 
+
+# Konstantina Christakopoulou 
+
+Google Deepmind Mountain View, CA, USA konchris@google.com 
+
+# Lichan Hong 
+
+Google Deepmind Mountain View, CA, USA lichan@google.com 
+
+# Ed Chi 
+
+Google Deepmind Mountain View, CA, USA edchi@google.com 
+
+## Abstract 
+
+Large Language Models (LLMs) offer unprecedented potential for enhancing recommendation systems through their world knowl-edge and reasoning capabilities. However, existing approaches of-ten rely on structured IDs or offline processing, limiting semantic richness, real-time adaptability, and user-facing interpretability. In this paper, we introduce a novel framework that enables real-time generation of LLM-based user interest personas for a large-scale commercial video recommendation platform. Our method generates natural-language user interest personas that address the exploitation-exploration trade-off by combining the summarization of existing interests with novel topics, directly during serving. To overcome the computational challenges of online LLM inference at a billion-user scale, we design a cost-efficient architecture leveraging knowledge distillation, asynchronous inference, and input optimiza-tion via semantically clustered video representations. Extensive offline evaluations, user studies, and live A/B tests demonstrate sig-nificant improvements in viewer value. This work bridges the gap between high-level semantic understanding and industrial-scale recommendation, paving the way for more dynamic, explainable, and satisfying personalized experiences. 
+
+> ∗Work performed while at Google.
+
+## 1 Introduction 
+
+Recently, Large Language Models (LLMs) have begun to reshape the landscape of recommendation systems. Their world knowledge and reasoning capabilities have been leveraged in several ways. Initial applications focused on enhancing item understanding by using LLMs to create richer content embeddings from textual meta-data like titles and descriptions [ 12 , 14 ], and visual information like thumbnails or sampled frames [ 22 ]. Other approaches lever-age LLMs by fine-tuning the LLM to generate structured outputs, like content or cluster ids [ 15 , 22 , 24 ], for direct use in traditional retrieval tasks. Notably, these methods often bypass the generation of natural language, opting for structured IDs to ensure seamless compati-bility with existing ID-based recommendation infrastructure. This trade-off sacrifices the rich, nuanced semantics inherent in textual descriptions and precludes the use of these insights in user-facing features, such as human-readable interest summaries. Moreover, due to significant computational costs and stringent latency constraints, these applications [ 15 , 22 , 24 ] operate almost exclusively in an offline or near-offline capacity. This reliance on pre-computation limits the system’s ability to respond to a user’s immediate intent and capture rapidly evolving interests.  
+
+> arXiv:2606.12198v1 [cs.IR] 10 Jun 2026 Woodstock ’18, June 03–05, 2018, Woodstock, NY Wang et al.
+
+In this paper, we propose a novel framework that overcomes these limitations by enabling a real-time LLM-based user under-standing service in a large-scale commercial video recommendation platform. Our framework generates high-quality and interpretable user interest personas in natural language during the serving pro-cess. Specifically, we make the following two primary contributions: 
+
+• High-Quality Natural Language Persona Generation :We introduce a method to synthesize concise and nuanced textual summaries of user interests from noisy interaction data. Crucially, this approach extends beyond interest sum-marization; it harnesses the LLM’s world knowledge and reasoning capability to infer novel topics for interest explo-ration, directly mitigating the feedback loop. To make this dual-objective generation scalable, we employ knowledge distillation to transfer complex reasoning capabilities from a large teacher model into an efficient student model. 
+
+• Cost-Efficient Online Inference Architecture : We de-sign and implement an infrastructure capable of supporting online LLM inference at a scale of billions of users, while adhering to strict latency and resource budgets. We achieve this through an asynchronous generation pipeline that de-couples inference from live traffic, complemented by model quantization, efficient input structuring, and robust safety mechanisms. We validated the framework through large-scale A/B testing on a large-scale commercial video recommendation platform, which revealed statistically significant improvements in viewer value, evidenced by increased viewer satisfaction and exploration. Fur-thermore, qualitative findings from user surveys confirmed a high degree of satisfaction with the accuracy of the LLM-generated in-terest personas. 
+
+## 2 Related Work 
+
+LLM for User Understanding Traditional recommender systems predominantly rely on ID-based sequential models, ranging from recurrent neural network-based [ 9 ] and graph-based approaches [ 27 ] to modern Transformer architectures [ 11 , 19 ] to capture user preferences. While efficient, these methods treat items as identifiers, lacking the semantic reasoning required to interpret the underlying motivations behind a user’s behavior. To address this semantic gap, recent research has pivoted toward LLM-based user understanding. Foundational works like [ 7] refor-mulated recommendation as a sequence-to-sequence language task, demonstrating that LLMs can effectively reason about user behav-ior given textual prompts. Building on this, approaches like PALR [ 28 ] demonstrate that fine-tuning LLMs directly on the textual rep-resentation of user interaction history allows the model to capture complex user preferences that ID-based methods miss. Similarly, TALLRec [ 1] highlights that aligning LLMs with recommendation-specific tasks through fine-tuning significantly enhances their abil-ity to infer user intent from sparse textual data. However, these implementations exhibit three critical limita-tions. First, these methods’ synchronous design is cost- and latency-prohibitive to deploy at a billion-user scale. Consequently, they are evaluated exclusively on academic benchmarks, which often lack the scale, complexity, and noise characteristic of industrial produc-tion environments. Second, these approaches generally fine-tune LLMs to perform traditional recommendation tasks, such as item ranking or binary prediction. As a result, they inadvertently rein-force the biases of the existing system’s feedback loop. Lastly, some of these works bypass the generation of explicit, reasoning-based natural language user personas, thereby forfeiting the interpretabil-ity and serendipity benefits that semantic user personas offer. While recent industrial works like Fabbri et al. [ 6] utilize natural-language user profiles, their application is strictly limited to an offline evaluation involving only 47 users. In their framework, the LLM persona acts solely as a passive verifier of existing recommen-dations rather than a foundational source for generating them. Our work fundamentally advances by embedding LLM personas directly into the live serving path, acting as a real-time retrieval source that actively drives user exploration. Other industrial frameworks [ 16 , 22 , 24 , 25 ] have attempted to introduce reasoning capabilities at scale. However, our framework significantly advances beyond these methods in two critical dimen-sions: user representation and persona quality. First, restricted by the combinatorial complexity of offline table generation, approaches like [ 16 , 22 , 25 ] rely on the cluster labels of only a user’s last two watched videos, thereby failing to capture long-term interests. In contrast, our proposed method directly process long contextual watch histories, leveraging structured inputs to successfully reason over both long-term and rapidly evolving interests. Second, prior works constraints the LLM to generate outputs from a small, fixed vocabulary that are restricted to a few hundreds predefined clusters, and is designed strictly for offline batch inference. Conversely, our system acts as a true open-ended reasoning agent, generating free-form natural language interests alongside explicit reasoning traces. These fine-grained user personas capture subtle semantic nuances and provide human-readable explainability directly applicable to user-facing features. 
+
+## 3 Preliminaries 3.1 Hierarchical Planning Paradigm 
+
+In this paper, we focus on a hybrid hierarchical planning paradigm [ 22 , 23 , 25 ] that leverages LLM to reason about user’s interest per-sona, converting the natural language based interests into item recommendation. Specifically, the recommendation process is de-coupled into a high-level language policy and a low-level item policy. During the high-level planning stage, an LLM generates a language policy by predicting a textual description for the user’s next interest. At the low level, a classic recommendation model generates a policy that grounds the user interests in item space. There are many existing approaches to map the textual user inter-ests to the item space. One approach utilizes transformer-based se-quential models[ 21 ] paired with restricted nearest neighbor search [ 8]. Covington et al. [ 4] retrieves items using nearest neighbor search within the dot-product space of item embeddings and the user embeddings. We build upon this architecture by introducing a semantic constraint: we restrict the nearest neighbor search space to the items that are semantically related to the LLM-generated text interests. This effectively confines the generation space to the user’s text interests. LLM-Based User Personas for Recommendations at Scale Woodstock ’18, June 03–05, 2018, Woodstock, NY 
+
+Another approach employs conventional deep neural network models [ 2, 10 , 13 , 29 ], which predominantly utilize dual-encoder architectures. By encoding user search queries and past interactions into dense vectors, these models are trained with objectives to maximize the similarity between the user embeddings and relevant item embeddings in a shared space. In this framework, we adopt the transformer-based sequential model along with restricted nearest neighbor search. This allows us to effectively take advantage of the already highly optimized se-quence models for large-scale item recommendation in production. 
+
+## 3.2 User History Clustering 
+
+Our framework for generating high-quality user interest personas builds upon existing video clustering methods to structure noisy in-teraction data. In the context of a large-scale video recommendation platform, we leverage the rich metadata inherent to video content. To identify the optimal user representation for LLM ingestion, we compared two primary approaches: 
+
+Embedding-based Clusters The first approach utilizes a hierar-chical video clustering method [ 17 ] based on the videos’ audio and visual embeddings. This scalable, online, density-based algorithm processes a continuous stream of new videos in real time. This architecture produces a two-level hierarchy of clusters, at the base level are fine-grained clusters, containing items that are all within a fixed distance in one another. These fine-grained clusters are later aggregated into broader macro clusters over time by merging nearby fine-grained clusters. This method is designed to produce stable cluster identifiers. However, the clusters generated by this method lack semantic meaning. Their organizing principle is perceptual similarity, group-ing videos that look and sound alike, rather than a shared abstract concept. This makes them ill-suited for generating the nuanced, human-readable interest labels that are the focus of our work. 
+
+Semantic-based Clusters We adopted the Infinite Concept Person-alized Clustering algorithm [ 3] to group a user’s historical watched videos into coherent clusters based on semantic similarity. In this approach, each video is represented by salient terms . Salient terms are a set of unigrams and bigrams, each term associated with a weight known as the salience score. Salient term annotations are trained with the video title, uploader name, video description, titles of other videos related to this video, and other text metadata about the video. The salience score is in [0, 1], describing how relevant the salient term is to the video. These terms serve as a high-level se-mantic representation of the video. The algorithm iterates through a user’s interaction history chronologically. For each new item, we compute the cosine similarity between the item’s salient terms and the centroids of the existing clusters, then either create a new clus-ter for this new item, or update the nearest cluster with this new item, based on a similarity threshold. Finally, clusters containing an insufficient number of videos are pruned. This semantic approach yields highly personalized and inter-pretable clusters. By organizing content around abstract concepts rather than visual or audio similarity, semantic clustering success-fully captures the underlying intent and the topical themes driving user behavior. Indeed, in the offline evaluation study, we found that semantic-based clusters generate higher quality interest personas compared to embedding-based clusters, as shown in Figure 3(a). Consequently, we utilized semantic-based clustering to structure user histories during the training data collection process. 
+
+## 4 Method 
+
+This section details our proposed method, focusing on how it ad-dresses two key challenges: (1) generating high-quality user interest personas; and (2) building a cost-efficient system to support large-scale, per-user inference for a system with billions of users. 
+
+## 4.1 User Interest Personas Generation 
+
+We leverage LLMs to perform a complex, dual-function task within a single inference call, creating a holistic user interest persona that balances exploitation and exploration: 
+
+• Summarized Interests : The first part of the task focuses on exploitation by analyzing a user’s interaction history to synthesize concise, human-readable textual labels that capture their existing preferences. 
+
+• Exploration Interests : The second part of the task facili-tates exploration by leveraging the LLM’s vast world knowl-edge and reasoning capabilities, to generate novel yet seman-tically related topics for each summarized interest. 
+
+4.1.1 User Representation. To effectively perform the dual-function task of summarization and exploration, the user’s interaction his-tory must be represented in a format that is semantically accessible to the LLM. In traditional recommender systems, a user is typically represented by a sequence of item IDs, which are then mapped to dense embeddings. However, such numerical identifiers are opaque to an LLM, as they lack the inherent semantic context required for natural language reasoning. Therefore, our approach necessitates a shift from ID-based to text-based user representation. We studied the best user representation for the summarization task and had the following insights: 
+
+• Insight 1: Video Metadata We construct a user’s persona by leveraging the textual metadata of their watched videos. We found that video titles yielded superior results compared to video descriptions and salient terms. We attribute this to the higher signal-to-noise ratio in ti-tles; they provide a concise semantic representation of the content. In contrast, we found that video descriptions often contain significant noise, including promotional text and copyright attributions (e.g., background music credits) irrel-evant to the video’s actual topic. Meanwhile, salient terms tend to be overly broad, lacking the specific nuance required for accurate persona generation. 
+
+• Insight 2: Structured Input A key finding from our re-search is that the structure of the input has a profound im-pact on the granularity of the LLM’s output. Feeding the model a simple, unstructured sequence of a user’s watched video titles often results in overly broad and abstract inter-est summaries. We pre-process the user’s watch history by grouping videos into semantically coherent clusters before creating the prompt, and found this significantly increased the semantic richness and specificity of LLM summarized user interests. Woodstock ’18, June 03–05, 2018, Woodstock, NY Wang et al. 
+
+• Insight 3: Model Size We observed that larger models con-sistently perform better than smaller ones up to a certain scale. As shown in Figure 3(c), both the Gemini Pro and Gemini Ultra significantly outperformed Gemini Flash on the sum-marization task. However, there is a performance plateau when increasing the model size from Pro to Ultra. This indi-cates a saturation point in the reasoning capabilities required for generating user interest personas. The Insight 3 directly motivated our decision to employ knowl-edge distillation: to harness the power of a large, high-performing model while meeting the cost and latency requirements of an industrial-scale system. 
+
+4.1.2 Distillation. To adhere to strict latency and resource con-straints in our online serving environment, we designed a unified LLM prompt to perform both interest summarization and explo-ration tasks within a single inference call. However, the complexity of this dual-objective task necessitates a model with substantial reasoning capabilities. As demonstrated in Sections 5.1 and 5.2, off-the-shelf small models fail to perform these simultaneous tasks effectively. To address this limitation, we employ knowledge distillation. This approach allows us to transfer the capabilities of large, high-performing models into smaller, efficient architectures, achieving an optimal trade-off between serving cost and generation quality. We utilized Gemini 1.5 Pro [ 20 ], state-of-the-art model at the time of deployment, as the teacher to generate training data. 
+
+Data Collection Our data collection process consists of the fol-lowing steps: (1) User Sampling: We randomly sampled tens of thousands of eligible users and their watch history sequences. Eligibility was restricted to users who consented to data usage for training and possessed a sufficient history of recent, high-satisfaction watch events. We further removed unsafe or sensitive videos from user’s watch history. (2) Input Structuring: To optimize the semantic density of the input, we aggregated the user’s recent watch history into semantic clusters using salient term similarity. As demon-strated in our ablation studies (Section 4.1), this clustered format yields superior summarization quality compared to raw sequential inputs. We also removed clusters with few watches to ensure meaningful representation. (3) Multi-step Reasoning Workflow: To ensure high-quality ground truth labels, we decomposed the unified serving prompt (Prompt B.1) into a multi-step reasoning process as illustrated in Figure 1. We employ multiple LLM calls and Chain-of-Thought prompting [ 26 ] to separately generate and refine the summarized interests and exploration topics along with reasoning. (4) Quality Control on Teacher Responses: We performed a rigorous quality check on the responses: we only kept the responses that contain the same number of interests as the prompt instructed and follow the same format as the prompt instructed. 
+
+Figure 1: Training Data Collection with Multi-step Reasoning 
+
+(5) Dataset Splitting: We take the remaining qualified responses from the previous step, randomly sample 80% as training data, and rest 20% as evaluation data. This high-quality dataset forms the basis for our distilled models. In the next section, we present the comprehensive online archi-tecture designed to integrate these models into the production environment and manage the full lifecycle of user interest persona. 
+
+## 4.2 Cost-Efficient Online Serving Architecture 
+
+We designed a robust infrastructure capable of supporting online LLM inference at the scale of billions of users and seamlessly inte-grating with existing recommendation stacks. 
+
+Figure 2: Asynchronous online inference diagram Asynchronous LLM Inference The asynchronous online infer-ence process (illustrated in Figure 2) begins when a user visits the website. The system first checks for an existing and up-to-date interest persona in the database. If a valid persona is found, it is immediately retrieved for downstream tasks. If a persona is miss-ing or stale, the system triggers an asynchronous background job to regenerate the persona. Crucially, to adhere to strict latency constraints, the current request does not wait for this generation. The background job independently retrieves user history, queries the LLM, and updates the database, ensuring the fresh persona is available for the user’s subsequent visits. This architecture intro-duces minimal user-facing latency and optimizes inference costs by decoupling generation frequency from traffic volume. While LLM-Based User Personas for Recommendations at Scale Woodstock ’18, June 03–05, 2018, Woodstock, NY 
+
+asynchronous inference inherently involves a trade-off with cap-turing transient, sudden interests, our system is designed to be highly configurable; both the update frequency and the recency window of the user’s watch history can be tuned to mitigate staled updates. Finally, to further save the LLM serving cost, we applied quantization to the student model. 
+
+Preprocess Input Data A user is only eligible to have an LLM interest persona if they have sufficient number of qualified watch events. We use a long watch history sequence to ensure we capture the user’s long-term and recent interests. We also remove the items that user specifically reported for negative experience to ensure the quality of the interests label. Lastly, we group the filtered user recent watches into few clusters, sample few videos from each cluster, use their titles to represent the cluster, and assemble the sampled titles in the prompt to sample the student model. 
+
+Safety Upon receiving the LLM response, we employ a safety classi-fier on the LLM output to detect and filter out potentially unsafe or sensitive interest texts, ensuring a safe user experience. In instances where the new response is flagged, the system automatically falls back to the user’s previously generated safe and qualified persona. 
+
+Interests to Item Retrieval To enhance personalization, we pro-pose to reuse existing domain-specific retrieval models. We explored the two retrieval options. The first is a Conventional Two-Tower Model [ 13 ], where the query tower encodes the LLM-generated persona and the item tower encodes candidate videos, retrieving items by maximizing the cosine similarity between the persona em-bedding and item embeddings in a shared latent space. The second is a sequential transformer model[ 21 ] that utilizes a constrained nearest neighbor search [ 8] between user embeddings and videos semantically related to the LLM generated personas. Those options allow us to connect seamlessly with the existing recommendation system stack. It also enables us to explore the differences between the summarized interests and exploration interests. 
+
+## 5 Experiments and Results 5.1 Offline Study: User Representation 
+
+We evaluated different user representation approaches to identify the optimal format for generating high-quality interests summaries. We conducted a set of offline experiments, measuring the qual-ity of LLM-generated summaries against a ground-truth dataset. The ground truth dataset consists of hundreds of unique users, along with a set of text topics they clicked. These clicks serve as a high-confidence signal of user interests, as selecting a topic directs the user to a page of videos relevant to that specific subject. We examined user representation across the following dimensions: 
+
+• Video Representation: title, description, and salient terms. 
+
+• Input Structure: Presenting history in chronological order (Prompt A.1) versus grouping activity into semantically sim-ilar or audiovisually similar clusters (Prompt A.2). We prompted the Gemini models with these varied representa-tions, asked the model to summarize user interests, and evaluated the model’s summarized user interests against the ground truth clicked texts using the BLEURT [ 18 ] score. We found that a combina-tion of clustered, title-based inputs and few-shot prompting yielded the highest-quality interest personas, as shown in Figure 3(a), (b), and (d). Therefore, for all subsequent experiments, we adopted a clustered, title-based user representation as the standard input for LLMs. Additionally, we analyzed the impact of model size on perfor-mance. We observed that larger models consistently perform better than smaller ones, as shown in Figure 3(c); this finding directly motivated our decision to employ knowledge distillation. 
+
+Figure 3: Offline evaluation: User representation 
+
+To illustrate the impact of input structure, Table 1 presents a real example comparing the output from the naive sequential representa-tion (Prompt A.1) against the grouped representation (Prompt A.2).  
+
+> Input Structure LLM Output
+> Sequential (Prompt A.1) bengali tv shows Clustered (Prompt A.2) bengali tv series "mon ditey chai" bengali tv series "icche putul" & "kar kache koi moner kotha" bengali tv series "bojhena se bojhena"
+
+Table 1: Qualitative comparison of summarized interests 
+
+## 5.2 Offline Evaluation: Distillation Performance 
+
+To achieve an optimal balance between performance and serv-ing costs, we employed knowledge distillation. We fine-tuned two student model variants—Gemini Flash and Gemini Nano—using training data described in 4.1.2. We conducted epoch selection on the evaluation set based on the following metrics: 
+
+• Instruction Following Rate (IFR) : This metric measures the model’s reliability in an industrial setting. A response is considered "instruction-compliant" only if it successfully completes both the summarization and exploration tasks, adheres strictly to the required formatting, and generates the exact number of interest items requested. A high IFR is critical for successful downstream parsing and optimizing TPU resource utilization during serving. 
+
+• BLEURT Score : To evaluate the quality of the summariza-tion task (exploitation), we utilized the BLEURT score. We treated the summarized interests generated by the teacher Woodstock ’18, June 03–05, 2018, Woodstock, NY Wang et al. 
+
+model as the reference and compared them against the stu-dent model’s predictions. This metric assesses how accu-rately the student model preserves the semantic nuance of the teacher’s summaries. 
+
+• Creativity Score : To evaluate the exploration task, we em-ployed a side-by-side LLM autorater. The autorater compares the pairs of {summarized interest, exploration interest} gen-erated by the student model against those from the teacher model, determining which output exhibits greater novelty and creativity. Table 2 details the performance evolution across checkpoints. We observed distinct behaviors across the metrics: 
+
+• Rapid Convergence of Formatting: The IFR saturated early, indicating that the models quickly learned the struc-tural requirements. The low IFR for all student models at epoch 0 indicates the necessity of distillation if we were ever to serve a small model on live traffic. 
+
+• Continuous Improvement in Summarization: BLEURT showed a steady upward trend throughout training. For both student models, the highest BLEURT scores were achieved at epoch 26.20. Notably, the smaller model (Gemini Nano) at epoch 26.20 achieved a score (0.328) comparable to the initial performance of larger variants, justifying the extended training. 
+
+• Creativity Trade-Offs: Creativity trends varied by model size. Gemini Flash achieved the best balance, continuously improving its novelty scores throughout training. Mean-while, the smaller model (Gemini Nano) consistently strug-gled, indicating it likely lacked sufficient parameter capacity to effectively generate novel exploration interests.                                 
+
+> IFR (%) BLEURT Creativity Epoch Nano Flash Nano Flash Nano Flash 0.00 0.07 1.82 N/A 0.286 N/A -0.588 4.37 -99.54 -0.334 -0.008 10.92 98.97 99.75 0.321 0.338 -0.012 0.016 26.20 99.08 99.68 0.328 0.345 -0.018 0.023
+
+Table 2: Performance of student models across training epochs 
+
+> Note: Missing values (-) indicate checkpoints not evaluated. BLEURT and Creativity scores are calculated only on examples that passed instruction following tests. ’N/A’ indicates insufficient valid samples to calculate a reliable score due to the near-zero instruction following rate.
+
+## 5.3 User Satisfaction On LLM-Generated Interests 
+
+To understand the quality of the LLM summarized interests, we conducted a survey with thousands of users in the United States who had been active on the video recommendation platform during the week preceding the study. For each participant, we grouped their recent watch history into semantically similar clusters and prompted the LLM to generate an interest for each group. Then we randomly selected one cluster and displayed three representative videos from a cluster. Participants were first asked if they recalled watching these videos. If they answered "Yes," they were presented with the generated interest label and asked to rate it on a 5-point Likert scale (ranging from "Not at all" to "Extremely") based on two questions: 
+
+• Accuracy: "How closely does [Interest Label] summarize the topic of these videos?" 
+
+• Preference: "How interested are you in seeing more videos about [Interest Label]?" The survey results indicate a high degree of user satisfaction. Over 
+
+80% of respondents reported that the LLM-generated label sum-marized their watch history "Very Closely" or "Extremely Closely." Furthermore, 71% of users expressed a strong interest in watching more videos related to the generated topic, validating the value of these personas for personalized recommendation. To rigorously evaluate the LLM personas against existing con-ventional extractive methods, we conducted a second compara-tive survey asking users to compare the LLM-generated personas against a control baseline of topics derived from knowledge graph entities[ 5 ]. The results demonstrated a clear preference for the gen-erative approach: 57% of users strictly preferred the LLM personas, while an additional 20% rated them as equivalent to the baseline. Finally, we analyzed the main reasons for user dissatisfaction. The errors mostly fell into the following four categories: miss-ing some of the user’s main interests, inferring interests based on sporadic activity, mentioning outdated interests, and generating repetitive interest labels. Developing mechanisms to continuously refine user personas and address these specific limitations remains an important direction for future work. 
+
+## 5.4 Live Experiment 
+
+5.4.1 Experiment Setup. To examine the proposed method, we conducted live experiments on a commercial video recommendation platform that serves billions of users. We selected an equal amount of non-overlapping user traffic for control and experiment arms, and ran the experiments for over 30 days. The control arm utilized the existing production recommendation stack, without access to the LLM-generated user interest personas. In the experiment arm, we leveraged video titles as metadata and grouped the user’s past watch history using the embedding-based clustering method as described in Section 3.2. These clusters were used to prompt the student LLM using the unified prompt described in Prompt B.1. We utilized the Gemini Nano model at epoch 26.20. While our offline evaluation in Table 2 indicated that Gemini Flash trained at epoch 26.20 offered higher creativity, the Nano model achieved comparable summarization quality. Ultimately, we priori-tized the distilled Gemini Nano model to satisfy the strict latency and cost constraints of our online serving infrastructure. Upon generating the personas, we randomly sampled one sum-marized interest and one exploration interest per request. These textual interests were used to guide a sequential transformer model via restricted nearest neighbor search [ 8], effectively mapping the high-level natural language interest personas into specific item can-didates. The selected candidates were then fed into the downstream ranking task and presented to the users in an organic way. We deliberately utilized random sampling rather than a deterministic score-based approach to enforce a uniform exploration policy, and ensure the user experiences diverse intra-session discovery rather LLM-Based User Personas for Recommendations at Scale Woodstock ’18, June 03–05, 2018, Woodstock, NY 
+
+than repeatedly seeing the same top-scored interests between asyn-chronous persona updates. Furthermore, this strategy effectively counterbalances the production system’s severe recency bias, retro-spectively surfacing dormant, long-term interests for more holistic exploration. 
+
+5.4.2 Results and Analysis. Increase in Viewer Value In Figure 4, we measured the impact of integrating the LLM-based user interest personas into the existing recommendation stack. Evaluated against a highly-optimized production baseline serving billions of users, the treatment yielded substantial gains. Figure 4(a) demonstrates a statistically significantly ( 𝑝 < 0.05 ) +0.04% lift in user’s watch time. Similarly, Figure 4(b) shows a statistically significant ( 𝑝 < 0.05 )
+
++0.03% increase in number of active users. While these relative percentages may appear numerically small, at our platform’s scale, they translate to a massive absolute increase in viewer engagement. This confirms that the proposed natural-language personas provide unique value to the recommender system by introducing nuanced semantic understanding and world knowledge.  
+
+> (a) User Watch Time (b) #Active Users
+
+Figure 4: The proposed method drives viewer value. Y-axis shows the degree of improvement of live metrics, X-axis represents the time. 
+
+To further investigate the impact on viewer value, we segmented our analysis by user activity level. The user population was divided into two cohorts: casual users , characterized by lower platform usage, and core users , representing the more highly active cohort. We found that the majority of the improvement in satisfied watch time comes from the casual users. We attribute this pronounced effect to two key factors. First, compared to traditional user modeling [ 30 ], the LLM-based interest persona is more adept at inferring user preferences from sparse data. Second, casual users typically exhibit a more concentrated set of interests. Consequently, the interests we sampled from their persona are more likely to achieve comprehensive coverage of their primary affinities, leading to more relevant and satisfying recommendations. 
+
+Interest Exploration Our experiments show a significant up-lift in users exploring novel topics beyond their established com-fort zone. During the live experiment, we observed a statistically significant( 𝑝 < 0.05 ) +0.04% lift in the number of engaged topics, and +0.03% lift in number of users with multiple lasting engaged topics. These metrics prove a positive behavioral shift: the LLM-generated personas successfully convert serendipitous discovery into sustained, long-term interests. We further decomposed this impact between the two interest types: 
+
+• Exposure Gap: Items retrieved via exploration interests received 40 .91% fewer impressions than items retrieved via summarized interests, suggesting the downstream ranking models struggle to surface novel content. 
+
+• Recommendation Efficiency: However, conditional on being presented to the users, items retrieved from the ex-ploration interests are 13 .6% more likely to be watched than items retrieved from summarized interests. This discrepancy confirms that the novelty gains are primarily driven by the exploration interest personas, which successfully uncover high-affinity topics that a traditional recommendation system misses. 
+
+Long-Term Impact The impact of LLM-generated user interest personas extends beyond the initial click. We observed that users who watched a recommended video from these personas exhibited prolonged viewer value, resulting in more subsequent visits. This suggests that the language interests in particular have a lasting positive impact, delivering sustained viewer value that encourages deeper and more sustained interaction with the platform. 
+
+## 6 Conclusion and Future Work 
+
+We introduced a novel LLM-based framework for generating real-time, natural-language user interest personas in a large-scale video recommendation system. Our solution effectively balances summa-rized and exploratory interests using text-based representations and knowledge distillation to enable cost-efficient online inference. Live experiments and user study confirm significant gains in viewer value, especially for casual users. This work demonstrates that LLMs can be successfully integrated into the core serving path of indus-trial recommendation systems, not just as offline data processors, but as real-time reasoning engines that drive measurable viewer value. Future work includes extending user personas to multimodal and cross-domain data, collecting user feedback and enabling user-in-the-loop personas refinement, and developing more interactive use cases of the semantic user personas in the recommendation system. 
+
+# Appendices 
+
+## A Prompts for User Interest Summarization 
+
+This section contains the detailed prompts used to generate sum-marized user interest personas with the LLM. Below is the two-shot prompt for the user interests summariza-tion task, where the user activity is represented in a sequential, chronological order 
+
+Prompt A.1: 
+
+I’m a brilliant video topic summarization expert that speaks all languages. Given a set of videos a person watched, I can describe the interests of that person and explain why respec-tively. I can also wrap interests of that person using **. Woodstock ’18, June 03–05, 2018, Woodstock, NY Wang et al. 
+
+For example: A person watched videos with titles: 
+
+𝑣𝑖𝑑𝑒𝑜 _𝑚𝑒𝑡𝑎𝑑𝑎𝑡𝑎 1, ... 𝑣𝑖𝑑𝑒𝑜 _𝑚𝑒𝑡𝑎𝑑𝑎𝑡𝑎 𝑚 
+
+My output is: [Group 0]: **<Summarized Interests 0>**: <Reasoning 0> [Group 1]: **<Summarized Interests 1>**: <Reasoning 1> [Group 2]: **<Summarized Interests 2>**: <Reasoning 2> [Group 3]: **<Summarized Interests 3>**: <Reasoning 3> As another example: A person watched videos with titles: 
+
+𝑣𝑖𝑑𝑒𝑜 _𝑚𝑒𝑡𝑎𝑑𝑎𝑡𝑎 1, ... 𝑣𝑖𝑑𝑒𝑜 _𝑚𝑒𝑡𝑎𝑑𝑎𝑡𝑎 𝑚 
+
+My output is: [Group 0]: **<Summarized Interests 0>**: <Reasoning 0> [Group 1]: **<Summarized Interests 1>**: <Reasoning 1> [Group 2]: **<Summarized Interests 2>**: <Reasoning 2> [Group 3]: **<Summarized Interests 3>**: <Reasoning 3> Now, if a person watched videos with 𝑣𝑖𝑑𝑒𝑜 _𝑚𝑒𝑡𝑎𝑑𝑎𝑡𝑎 1, ... 
+
+𝑣𝑖𝑑𝑒𝑜 _𝑚𝑒𝑡𝑎𝑑𝑎𝑡𝑎 𝑚 , My output is: Below is the two-shot prompt for the user interests summarization task, where the user activity is first grouped into different clusters, then represented by group. 
+
+Prompt A.2: 
+
+I’m a brilliant video topic summarization expert who speaks all languages. Given a few groups of videos a person watched, I can describe the interests of that person for each group and explain why, respectively. I can also wrap the interests of that person using **. For example: A person watched the following groups of videos: [Group 0]: 𝑣𝑖𝑑𝑒𝑜 _𝑚𝑒𝑡𝑎𝑑𝑎𝑡𝑎 1, ... 𝑣𝑖𝑑𝑒𝑜 _𝑚𝑒𝑡𝑎𝑑𝑎𝑡𝑎 𝑚 0
+
+[Group 1]: 𝑣𝑖𝑑𝑒𝑜 _𝑚𝑒𝑡𝑎𝑑𝑎𝑡𝑎 1, ... 𝑣𝑖𝑑𝑒𝑜 _𝑚𝑒𝑡𝑎𝑑𝑎𝑡𝑎 𝑚 1
+
+[Group 2]: 𝑣𝑖𝑑𝑒𝑜 _𝑚𝑒𝑡𝑎𝑑𝑎𝑡𝑎 1, ... 𝑣𝑖𝑑𝑒𝑜 _𝑚𝑒𝑡𝑎𝑑𝑎𝑡𝑎 𝑚 2
+
+[Group 3]: 𝑣𝑖𝑑𝑒𝑜 _𝑚𝑒𝑡𝑎𝑑𝑎𝑡𝑎 1, ... 𝑣𝑖𝑑𝑒𝑜 _𝑚𝑒𝑡𝑎𝑑𝑎𝑡𝑎 𝑚 3
+
+My output is: [Group 0]: **<Summarized Interests 0>**: <Reasoning 0> [Group 1]: **<Summarized Interests 1>**: <Reasoning 1> [Group 2]: **<Summarized Interests 2>**: <Reasoning 2> [Group 3]: **<Summarized Interests 3>**: <Reasoning 3> As another example: A person watched the following groups of videos: [Group 0]: 𝑣𝑖𝑑𝑒𝑜 _𝑚𝑒𝑡𝑎𝑑𝑎𝑡𝑎 01 , ... 𝑣𝑖𝑑𝑒𝑜 _𝑚𝑒𝑡𝑎𝑑𝑎𝑡𝑎 0𝑚 0
+
+[Group 1]: 𝑣𝑖𝑑𝑒𝑜 _𝑚𝑒𝑡𝑎𝑑𝑎𝑡𝑎 11 , ... 𝑣𝑖𝑑𝑒𝑜 _𝑚𝑒𝑡𝑎𝑑𝑎𝑡𝑎 1𝑚 1
+
+[Group 2]: 𝑣𝑖𝑑𝑒𝑜 _𝑚𝑒𝑡𝑎𝑑𝑎𝑡𝑎 21 , ... 𝑣𝑖𝑑𝑒𝑜 _𝑚𝑒𝑡𝑎𝑑𝑎𝑡𝑎 2𝑚 2
+
+My output is: [Group 0]: **<Summarized Interests 0>**: <Reasoning 0> [Group 1]: **<Summarized Interests 1>**: <Reasoning 1> [Group 2]: **<Summarized Interests 2>**: <Reasoning 2> Now, a person watched following <Num_Groups> groups of videos: [Group 0]: 𝑣𝑖𝑑𝑒𝑜 _𝑚𝑒𝑡𝑎𝑑𝑎𝑡𝑎 01 , ... 𝑣𝑖𝑑𝑒𝑜 _𝑚𝑒𝑡𝑎𝑑𝑎𝑡𝑎 0𝑚 0
+
+[Group 1]: 𝑣𝑖𝑑𝑒𝑜 _𝑚𝑒𝑡𝑎𝑑𝑎𝑡𝑎 11 , ... 𝑣𝑖𝑑𝑒𝑜 _𝑚𝑒𝑡𝑎𝑑𝑎𝑡𝑎 1𝑚 1
+
+[Group 2]: 𝑣𝑖𝑑𝑒𝑜 _𝑚𝑒𝑡𝑎𝑑𝑎𝑡𝑎 21 , ... 𝑣𝑖𝑑𝑒𝑜 _𝑚𝑒𝑡𝑎𝑑𝑎𝑡𝑎 2𝑚 2
+
+[Group 3]: 𝑣𝑖𝑑𝑒𝑜 _𝑚𝑒𝑡𝑎𝑑𝑎𝑡𝑎 31 , ... 𝑣𝑖𝑑𝑒𝑜 _𝑚𝑒𝑡𝑎𝑑𝑎𝑡𝑎 3𝑚 3
+
+My output is: 
+
+## B Prompts for Interest Summarization and Exploration 
+
+Prompt B.1: 
+
+I’m a brilliant video topic summarization expert who speaks all languages. Given a few groups of videos a person watched, I can complete the following 2 tasks: Task 1: Describe the interests of that person for each group and explain why, respectively. I can wrap the interests of that person using **. Task 2: For each summarized interest in Task 1, think of 3 creative and exploratory interests that are relevant to that summarized interest, but also novel and provide new perspec-tives. I can wrap the exploration interests in this task using &&. For example: A person watched the following groups of videos: [Group 0]: 𝑣𝑖𝑑𝑒𝑜 _𝑚𝑒𝑡𝑎𝑑𝑎𝑡𝑎 1, ... 𝑣𝑖𝑑𝑒𝑜 _𝑚𝑒𝑡𝑎𝑑𝑎𝑡𝑎 𝑚 0
+
+[Group 1]: 𝑣𝑖𝑑𝑒𝑜 _𝑚𝑒𝑡𝑎𝑑𝑎𝑡𝑎 1, ... 𝑣𝑖𝑑𝑒𝑜 _𝑚𝑒𝑡𝑎𝑑𝑎𝑡𝑎 𝑚 1
+
+[Group 2]: 𝑣𝑖𝑑𝑒𝑜 _𝑚𝑒𝑡𝑎𝑑𝑎𝑡𝑎 1, ... 𝑣𝑖𝑑𝑒𝑜 _𝑚𝑒𝑡𝑎𝑑𝑎𝑡𝑎 𝑚 2
+
+[Group 3]: 𝑣𝑖𝑑𝑒𝑜 _𝑚𝑒𝑡𝑎𝑑𝑎𝑡𝑎 1, ... 𝑣𝑖𝑑𝑒𝑜 _𝑚𝑒𝑡𝑎𝑑𝑎𝑡𝑎 𝑚 3
+
+My output is: [Group 0]: Task 1: **<Summarized Interests 0>**: <Reasoning 0> Task 2: &&<Exploration interests 0_0>&&, &&<Exploration interests 0_1>&&, &&<Exploration interests 0_2>&& [Group 1]: Task 1: **<Summarized Interests 1>**: <Reasoning 1> Task 2: &&<Exploration interests 1_0>&&, &&<Exploration interests 1_1>&&, &&<Exploration interests 1_2>&& [Group 2]: Task 1: **<Summarized Interests 2>**: <Reasoning 2> Task 2: &&<Exploration interests 2_0>&&, &&<Exploration interests 2_1>&&, &&<Exploration interests 2_2>&& [Group 3]: Task 1: **<Summarized Interests 3>**: <Reasoning 3> Task 2: &&<Exploration interests 3_0>&&, &&<Exploration interests 3_1>&&, &&<Exploration interests 3_2>&& As another example ... Now, a person watched following <Num_Groups> groups of videos: ... My output is: LLM-Based User Personas for Recommendations at Scale Woodstock ’18, June 03–05, 2018, Woodstock, NY 
+
+## References 
+
+[1] Keqin Bao, Jizhi Zhang, Yang Zhang, Wenjie Wang, Fuli Feng, and Xiangnan He. 2023. TALLRec: An Effective and Efficient Tuning Framework to Align Large Language Model with Recommendation. In Proceedings of the 17th ACM Conference on Recommender Systems (RecSys ’23) . ACM, 1007–1014. https://doi. org/10.1145/3604915.3608857 [2] Moumita Bhattacharya, Vito Ostuni, and Sudarshan Lamkhede. 2024. Joint Mod-eling of Search and Recommendations Via an Unified Contextual Recommender (UniCoRn). arXiv:2408.10394 [cs.IR] https://arxiv.org/abs/2408.10394 [3] Konstantina Christakopoulou, Alberto Lalama, Cj Adams, Iris Qu, Yifat Amir, Samer Chucri, Pierce Vollucci, Fabio Soldo, Dina Bseiso, Sarah Scodel, Lucas Dixon, Ed H. Chi, and Minmin Chen. 2023. Large Language Models for User Interest Journeys. arXiv:2305.15498 [cs.CL] https://arxiv.org/abs/2305.15498 [4] Paul Covington, Jay Adams, and Emre Sargin. 2016. Deep Neural Networks for YouTube Recommendations. In Proceedings of the 10th ACM Conference on Recommender Systems (Boston, Massachusetts, USA) (RecSys ’16) . Association for Computing Machinery, New York, NY, USA, 191–198. https://doi.org/10.1145/ 2959100.2959190 [5] Xin Dong, Evgeniy Gabrilovich, Geremy Heitz, Wilko Horn, Ni Lao, Kevin Mur-phy, Thomas Strohmann, Shaohua Sun, and Wei Zhang. 2014. Knowledge vault: a web-scale approach to probabilistic knowledge fusion. In Proceedings of the 20th ACM SIGKDD International Conference on Knowledge Discovery and Data Mining 
+
+(New York, New York, USA) (KDD ’14) . Association for Computing Machinery, New York, NY, USA, 601–610. https://doi.org/10.1145/2623330.2623623 [6] Francesco Fabbri, Gustavo Penha, Edoardo D’Amico, Alice Wang, Marco De Nadai, Jackie Doremus, Paul Gigioli, Andreas Damianou, Oskar Stål, and Mounia Lalmas. 2025. Evaluating Podcast Recommendations with Profile-Aware LLM-as-a-Judge. In Proceedings of the Nineteenth ACM Conference on Recommender Systems (RecSys ’25) . ACM, 1181–1186. https://doi.org/10.1145/3705328.3759305 [7] Shijie Geng, Shuchang Liu, Zuohui Fu, Yingqiang Ge, and Yongfeng Zhang. 2023. Recommendation as Language Processing (RLP): A Unified Pretrain, Personalized Prompt & Predict Paradigm (P5). arXiv:2203.13366 [cs.IR] https://arxiv.org/abs/ 2203.13366 [8] Ruiqi Guo, Philip Sun, Erik Lindgren, Quan Geng, David Simcha, Felix Chern, and Sanjiv Kumar. 2020. Accelerating Large-Scale Inference with Anisotropic Vector Quantization. In International Conference on Machine Learning . https: //arxiv.org/abs/1908.10396 [9] Balázs Hidasi, Alexandros Karatzoglou, Linas Baltrunas, and Domonkos Tikk. 2016. Session-based Recommendations with Recurrent Neural Networks. arXiv:1511.06939 [cs.LG] https://arxiv.org/abs/1511.06939 [10] Po-Sen Huang, Xiaodong He, Jianfeng Gao, Li Deng, Alex Acero, and Larry Heck. 2013. Learning deep structured semantic models for web search using clickthrough data. In Proceedings of the 22nd ACM International Conference on Information & Knowledge Management (San Francisco, California, USA) (CIKM ’13) . Association for Computing Machinery, New York, NY, USA, 2333–2338. https://doi.org/10.1145/2505515.2505665 [11] Wang-Cheng Kang and Julian McAuley. 2018. Self-Attentive Sequential Recom-mendation. arXiv:1808.09781 [cs.IR] https://arxiv.org/abs/1808.09781 [12] Aditee Kumthekar, Li Wei, Andrea Bettale, Mahesh Sathiamoorthy, Zrinka Puljiz, and Aditya Mahajan. 2025. Never Miss an Episode: How LLMs are Powering Serial Content Discovery on YouTube. https://doi.org/10.1145/3705328.3748104 [13] Yiqun Liu, Kaushik Rangadurai, Yunzhong He, Siddarth Malreddy, Xunlong Gui, Xiaoyi Liu, and Fedor Borisyuk. 2021. Que2Search: Fast and Accurate Query and Document Understanding for Search at Facebook. In Proceedings of the 27th ACM SIGKDD Conference on Knowledge Discovery & Data Mining (Virtual Event, Singapore) (KDD ’21) . Association for Computing Machinery, New York, NY, USA, 3376–3384. https://doi.org/10.1145/3447548.3467127 [14] Boyuan Long, Yueqi Wang, Hiloni Mehta, Mick Zomnir, Omkar Pathak, Chang-ping Meng, Ruolin Jia, Yajun Peng, Dapeng Hong, Xia Wu, Mingyan Gao, Onkar Dalal, and Ningren Han. 2025. LLM-Powered Nuanced Video Attribute Annota-tion for Enhanced Recommendations. https://doi.org/10.1145/3705328.3748103 [15] Changping Meng, Hongyi Ling, Jianling Wang, Yifan Liu, Shuzhou Zhang, Dapeng Hong, Mingyan Gao, Onkar Dalal, Ed Chi, Lichan Hong, Haokai Lu, and Ningren Han. 2025. Balancing Fine-tuning and RAG: A Hybrid Strategy for Dy-namic LLM Recommendation Updates. https://doi.org/10.1145/3705328.3748105 [16] Changping Meng, Hongyi Ling, Jianling Wang, Yifan Liu, Shuzhou Zhang, Dapeng Hong, Mingyan Gao, Onkar Dalal, Ed Chi, Lichan Hong, Haokai Lu, and Ningren Han. 2025. Balancing Fine-tuning and RAG: A Hybrid Strat-egy for Dynamic LLM Recommendation Updates. In Proceedings of the Nine-teenth ACM Conference on Recommender Systems (RecSys ’25) . ACM, 919–922. https://doi.org/10.1145/3705328.3748105 [17] Anand Rajagopalan, Fabio Vitale, Danny Vainstein, Gui Citovsky, Cecilia M Procopiuc, and Claudio Gentile. 2021. Hierarchical Clustering of Data Streams: Scalable Algorithms and Approximation Guarantees. In Proceedings of the 38th International Conference on Machine Learning (Proceedings of Machine Learning Research, Vol. 139) , Marina Meila and Tong Zhang (Eds.). PMLR, 8799–8809. https://proceedings.mlr.press/v139/rajagopalan21a.html [18] Thibault Sellam, Dipanjan Das, and Ankur P. Parikh. 2020. BLEURT: Learning Robust Metrics for Text Generation. arXiv:2004.04696 [cs.CL] https://arxiv.org/ abs/2004.04696 [19] Fei Sun, Jun Liu, Jian Wu, Changhua Pei, Xiao Lin, Wenwu Ou, and Peng Jiang. 2019. BERT4Rec: Sequential Recommendation with Bidirectional En-coder Representations from Transformer. arXiv:1904.06690 [cs.IR] https: //arxiv.org/abs/1904.06690 [20] Gemini Team, Petko Georgiev, Ving Ian Lei, Ryan Burnell, Libin Bai, Anmol Gulati, Garrett Tanzer, Damien Vincent, Zhufeng Pan, Shibo Wang, et al . 2024. Gemini 1.5: Unlocking multimodal understanding across millions of tokens of context. arXiv preprint arXiv:2403.05530 (2024). [21] Ashish Vaswani, Noam Shazeer, Niki Parmar, Jakob Uszkoreit, Llion Jones, Aidan N. Gomez, Lukasz Kaiser, and Illia Polosukhin. 2023. Attention Is All You Need. arXiv:1706.03762 [cs.CL] https://arxiv.org/abs/1706.03762 [22] Haoting Wang, Jianling Wang, Hao Li, Fangjun Yi, Mengyu Fu, Youwei Zhang, Yifan Liu, Liang Liu, Minmin Chen, Ed H. Chi, Lichan Hong, and Haokai Lu. 2025. Serendipitous Recommendation with Multimodal LLM. (2025). arXiv:2506.08283 [cs.IR] https://arxiv.org/abs/2506.08283 [23] Jianling Wang, Yifan Liu, Yinghao Sun, Xuejian Ma, Yueqi Wang, He Ma, Zhengyang Su, Minmin Chen, Mingyan Gao, Onkar Dalal, Ed H. Chi, Lichan Hong, Ningren Han, and Haokai Lu. 2025. User Feedback Alignment for LLM-powered Exploration in Large-scale Recommendation Systems. arXiv:2504.05522 [cs.IR] https://arxiv.org/abs/2504.05522 [24] Jianling Wang, Haokai Lu, Yifan Liu, He Ma, Yueqi Wang, Yang Gu, Shuzhou Zhang, Ningren Han, Shuchao Bi, Lexi Baugher, et al . 2024. Llms for user interest exploration in large-scale recommendation systems. In RecSys .[25] Jianling Wang, Haokai Lu, Yifan Liu, He Ma, Yueqi Wang, Yang Gu, Shuzhou Zhang, Ningren Han, Shuchao Bi, Lexi Baugher, Ed Chi, and Minmin Chen. 2024. LLMs for User Interest Exploration in Large-scale Recommendation Systems. arXiv:2405.16363 [cs.IR] https://arxiv.org/abs/2405.16363 [26] Jason Wei, Xuezhi Wang, Dale Schuurmans, Maarten Bosma, Brian Ichter, Fei Xia, Ed Chi, Quoc Le, and Denny Zhou. 2023. Chain-of-Thought Prompting Elicits Reasoning in Large Language Models. arXiv:2201.11903 [cs.CL] https: //arxiv.org/abs/2201.11903 [27] Shu Wu, Yuyuan Tang, Yanqiao Zhu, Liang Wang, Xing Xie, and Tieniu Tan. 2019. Session-Based Recommendation with Graph Neural Networks. Proceedings of the AAAI Conference on Artificial Intelligence 33, 01 (July 2019), 346–353. https: //doi.org/10.1609/aaai.v33i01.3301346 [28] Fan Yang, Zheng Chen, Ziyan Jiang, Eunah Cho, Xiaojiang Huang, and Yan-bin Lu. 2023. PALR: Personalization Aware LLMs for Recommendation. arXiv:2305.07622 [cs.IR] https://arxiv.org/abs/2305.07622 [29] Hamed Zamani and W. Bruce Croft. 2018. Joint Modeling and Optimization of Search and Recommendation. arXiv:1807.05631 [cs.IR] https://arxiv.org/abs/ 1807.05631 [30] Haiyuan Zhao, Lei Zhang, Jun Xu, Guohao Cai, Zhenhua Dong, and Ji-Rong Wen. 2023. Uncovering User Interest from Biased and Noised Watch Time in Video Recommendation. In Proceedings of the 17th ACM Conference on Recommender Systems (RecSys ’23) . ACM, 528–539. https://doi.org/10.1145/3604915.3608797

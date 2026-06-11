@@ -1,0 +1,94 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2606.05429v1/fig-001.webp",
+      "caption": "Figure 8: Extended evaluation of SAGE-PTQ versus BiLLM under a lookup table constraint of NLUT = 4 bits across multiple model families (OPT, LLaMA-1, LLaMA-2, and instruction-tuned Vicuna) ranging from 13B to 70B parameters. The bar plots report perplexity on WikiText2, PTB, and C4 datasets. SAGE-PTQ consistently outperforms BiLLM across all models, achieving an average precision of 1.03–1.07 bits per weight.",
+      "page": 15,
+      "index": 1,
+      "width": 726,
+      "height": 432
+    },
+    {
+      "url": "assets/figures/arxiv/2606.05429v1/fig-002.webp",
+      "caption": "Figure 7: Self-Attention Weight Distributions in DeepSeek-7B of selected layers (0,15,29): NonGaussian Patterns with Widespread High-Magnitude Outliers.",
+      "page": 15,
+      "index": 2,
+      "width": 790,
+      "height": 464
+    },
+    {
+      "url": "assets/figures/arxiv/2606.05429v1/fig-003.webp",
+      "caption": "Figure 1: Illustration of the SAGE-PTQ quantization pipeline. The framework input is the weight matrix and outputs quantized matrix with minimal scale overhead and minimal lookup metadata",
+      "page": 2,
+      "index": 3,
+      "width": 814,
+      "height": 265
+    },
+    {
+      "url": "assets/figures/arxiv/2606.05429v1/fig-004.webp",
+      "caption": "Table 1: Perplexity results on WikiText2 for the OPT family. We compare FP16 baselines, 3-bit PTQ methods (GPTQ, AWQ), sub-2-bit methods (GPTQ-2bit, PB-LLM (10%), BiLLM), and SAGE-PTQ. SAGE-PTQ consistently achieves competitive or lower perplexity.",
+      "page": 7,
+      "index": 4,
+      "width": 822,
+      "height": 217
+    },
+    {
+      "url": "assets/figures/arxiv/2606.05429v1/fig-005.webp",
+      "caption": "Table 2: WikiText2 perplexity results of GPTQ, PB-LLM (10%), BiLLM and SAGE-PTQ on LLaMA-1-2-3, SAGE-PTQ consistently achieves lower perplexity. *: LLaMA has a (7B,65B) variants; LLaMA-2 has (7B,70B) variants and LLaMA-3 has a (8B,70B) variants.",
+      "page": 7,
+      "index": 5,
+      "width": 814,
+      "height": 280
+    },
+    {
+      "url": "assets/figures/arxiv/2606.05429v1/fig-006.webp",
+      "caption": "Figure 5: Distribution of self-attention projection layer weights in OPT-6.7B across selected layers (0,15,30). All layers follow a near-Gaussian trend with low KL divergence, except for the out_proj matrix in the first layer, which shows significant deviation.",
+      "page": 14,
+      "index": 6,
+      "width": 790,
+      "height": 464
+    },
+    {
+      "url": "assets/figures/arxiv/2606.05429v1/fig-007.webp",
+      "caption": "Figure 6: Distribution of self-attention projection layer weights in LLaMa-1 7B across Self-Attention selected layers (0,15,30). Observed Gaussian Trends with Sparse High-Magnitude Outliers.",
+      "page": 14,
+      "index": 7,
+      "width": 790,
+      "height": 465
+    },
+    {
+      "url": "assets/figures/arxiv/2606.05429v1/fig-008.webp",
+      "caption": "Table 4: Zero-shot accuracy comparison of FP16, BiLLM, and SAGE-PTQ across language understanding benchmarks. SAGE-PTQ achieves higher accuracy than BiLLM across all benchmarks",
+      "page": 8,
+      "index": 8,
+      "width": 818,
+      "height": 246
+    },
+    {
+      "url": "assets/figures/arxiv/2606.05429v1/fig-009.webp",
+      "caption": "Figure 9: SAGE-PTQ Ablation study on saliency metrics across three model families (OPT-6.7B, LLaMA-7B, DeepSeek-7B) and three datasets (WikiText2, PTB, C4). We compare perplexity results under three conditions: (1) magnitude-based saliency, (2) Hessian-based saliency, and (3) uniform binarization of all weights without saliency distinction. Magnitude-based saliency consistently yields the lowest perplexity, demonstrating its effectiveness and efficiency for SAGE-PTQ method",
+      "page": 17,
+      "index": 9,
+      "width": 727,
+      "height": 497
+    },
+    {
+      "url": "assets/figures/arxiv/2606.05429v1/fig-010.webp",
+      "caption": "Figure 10: Perplexity impact of varying lookup table (LUT) sizes in SAGE-PTQ across OPT (1.3B–66B), LLaMA-1/2 (7B–70B), and Vicuna (7B, 13B) on WikiText2, PTB, and C4. While OPT performs well with 3-bit LUTs, LLaMA and Vicuna benefit from 4+ bits. A 4-bit LUT offers an effective trade-off between accuracy and storage.",
+      "page": 17,
+      "index": 10,
+      "width": 651,
+      "height": 496
+    },
+    {
+      "url": "assets/figures/arxiv/2606.05429v1/fig-011.webp",
+      "caption": "Table 7: Comparison of quantization methods across three large-scale models. SAGE-PTQ achieves the lowest GPU occupancy and perplexity despite using binary weights and negligible scaling overhead.",
+      "page": 16,
+      "index": 11,
+      "width": 832,
+      "height": 411
+    }
+  ]
+}

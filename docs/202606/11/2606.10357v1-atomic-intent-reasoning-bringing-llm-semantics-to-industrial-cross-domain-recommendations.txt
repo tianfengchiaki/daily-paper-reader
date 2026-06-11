@@ -1,0 +1,624 @@
+Title: Atomic Intent Reasoning: Bringing LLM Semantics to Industrial Cross-Domain Recommendations
+
+URL Source: https://arxiv.org/pdf/2606.10357v1
+
+Published Time: Wed, 10 Jun 2026 00:28:52 GMT
+
+Number of Pages: 10
+
+Markdown Content:
+# Atomic Intent Reasoning: Bringing LLM Semantics to Industrial Cross-Domain Recommendations 
+
+## Zhuohang Jiang ∗† 
+
+The Hong Kong Polytechnic University Hong Kong SAR, China zhuohang.jiang@connect.polyu.hk 
+
+## Yuxin Chen †
+
+Kuaishou Technology Beijing, China chenyuxin06@kuaishou.com 
+
+## Shijie Wang 
+
+The Hong Kong Polytechnic University Hong Kong SAR, China shijie.wang@connect.polyu.hk 
+
+## Haohao Qu 
+
+The Hong Kong Polytechnic University Hong Kong SAR, China haohao.qu@connect.polyu.hk 
+
+## Jindong Zhou 
+
+Kuaishou Technology Beijing, China zhoujindong@kuaishou.com 
+
+## Wenqi Fan ‡
+
+The Hong Kong Polytechnic University Hong Kong SAR, China wenqifan03@gmail.com 
+
+## Qing Li ‡
+
+The Hong Kong Polytechnic University Hong Kong SAR, China csqli@comp.polyu.edu.hk 
+
+## Dongxu Liang 
+
+Kuaishou Technology Beijing, China liangdongxu@kuaishou.com 
+
+## Jun Wang ‡
+
+Kuaishou Technology Beijing, China wangjun03@kuaishou.com 
+
+## Abstract 
+
+Cross-domain recommendation is an essential problem in content-to-merchant platforms. Its objective is to leverage user interactions with content to infer potential purchasing intent on the merchant side, thereby enhancing conversion rates and commercial value. However, in real industrial scenarios, cross-domain recommen-dation faces multiple challenges: significant semantic gaps exist between different domains, and user cross-domain behavior se-quences are often massive in scale and rich in noise. Although large language models (LLMs) offer powerful semantic understanding and reasoning capabilities to alleviate semantic gap issues, their inference costs remain prohibitive under critical online inference latency constraints. To address these issues, this paper introduces 
+
+AIR (Atomic Intent Reasoning), an LLM-driven cross-domain rec-ommendation framework designed for industrial-grade deployment. By migrating LLM inference to the offline phase and dynamically constructing user intent representations via efficient retrieval and composition during online operations, it achieves a 400 × through-put gain over real-time LLM invocation while preserving semantic consistency. Also performing structured modeling and goal-aware compression on lengthy, heterogeneous cross-domain behavior sequences, transforming into compact evidence representations highly relevant to candidate products for CTR prediction and re-fined ranking. Experimental results across multiple public datasets  
+
+> ∗Work done during an internship at Kuaishou Technology.
+> †Authors contributed equally to this research.
+> ‡Corresponding Author.
+> This work is licensed under a Creative Commons Attribution 4.0 International License.
+> KDD ’26, Jeju Island, Republic of Korea
+> ©2026 Copyright held by the owner/author(s). ACM ISBN 979-8-4007-2259-2/2026/08 https://doi.org/10.1145/3770855.3818320
+
+demonstrate that our method achieves state-of-the-art performance in cross-domain recommendation tasks. Furthermore, large-scale online A/B testing conducted in Kuaishou E-commerce’s real-world business scenarios shows that our approach delivers stable and significant improvements across multiple core business metrics, in-cluding a +3.446% increase in GMV, fully validating its effectiveness and practical value in industrial-scale recommendation systems. 
+
+## CCS Concepts 
+
+• Information systems → Recommender systems .
+
+## Keywords 
+
+Cross-Domain Recommendation, Large Language Models, User Intent Modeling. 
+
+ACM Reference Format: 
+
+Zhuohang Jiang, Yuxin Chen, Shijie Wang, Haohao Qu, Jindong Zhou, Wenqi Fan, Qing Li, Dongxu Liang, and Jun Wang. 2026. Atomic Intent Reasoning: Bringing LLM Semantics to Industrial Cross-Domain Recommendations. In 
+
+Proceedings of the 32nd ACM SIGKDD Conference on Knowledge Discovery and Data Mining V.2 (KDD ’26), August 09–13, 2026, Jeju Island, Republic of Korea. 
+
+ACM, New York, NY, USA, 10 pages. https://doi.org/10.1145/3770855.3818320 
+
+## 1 Introduction 
+
+Driven by the rapid proliferation of internet services and mobile applications, recommender systems [ 9, 10 , 17 , 28 , 46 ] have become a pivotal component in alleviating information overload and influ-encing users’ decision-making (e.g., clicks, add-to-cart actions, pur-chases) across various online platforms, such as Kuaishou, Taobao, and Xiaohongshu. For example, on platforms like Kuaishou and TikTok, users’ online behaviors increasingly span multiple scenar-ios, such as watching live streams on the content side and browsing or purchasing products on the e-commerce side, thereby forming  
+
+> arXiv:2606.10357v1 [cs.IR] 9 Jun 2026 KDD ’26, August 09–13, 2026, Jeju Island, Republic of Korea Zhuohang Jiang et al.
+
+a tightly coupled content-to-commerce loop. This coupling moti-vates cross-domain recommendation (CDR), which leverages users’ content-side online behaviors to capture their personalized pref-erences for items (i.e., products) and predict users’ intent for the next item, thereby increasing Gross Merchandise Value (GMV) on the e-commerce side. As Figure 1 (a) shows, most existing cross-domain recommendation methods rely on ID-level collaborative transfer [ 45 ] (e.g., shared embeddings [ 3, 47 ] or GNNs [ 11 , 12 , 38 ,40 ]) to connect entities across scenarios, facilitating the learning of users’ personalized preferences for the next item (i.e., user intent modeling). While effective at capturing co-occurrence correlations to understand users’ preferences, these approaches provide limited semantic grounding and thus often struggle to capture fine-grained intent transitions and accurately infer purchase-oriented prefer-ences from content-side behaviors. Large language models (LLMs) [ 25 , 26 , 29 , 42 ] have recently demonstrated strong semantic understanding and contextual rea-soning [ 18 ], making them a natural candidate to bridge the semantic shift between content engagement and commerce conversion. Con-sequently, an increasing number of studies have incorporated LLMs to inject semantic signals into user modeling, such as interpreting behaviors in natural language, transferring preference cues across domains, or leveraging LLM-derived representations as auxiliary supervision [ 22 , 30 , 41 ], as illustrated in Figure 1 (b). However, their effectiveness in real-world content-to-commerce systems remains limited. Performance gains on academic benchmarks do not reli-ably transfer to industrial traffic with highly heterogeneous, rapidly evolving behaviors. Additionally, industrial systems typically have massive multi-scenario logs, where the core bottleneck is filtering intent-bearing behaviors from extremely long and noisy histories. Satisfying these requirements in real-world content-to-commerce systems presents significant challenges. First , online LLM infer-ence is prohibitively expensive under critical online inferece latency constrains (milliseconds), and periodic offline updates of user pro-files fail to capture rapidly evolving user interests, compromising recommendation timeliness. Second , user behavior histories are typically extensive, heterogeneous, and noisy; among numerous cross-scenario events, merely a limited subset provides direct evi-dence for a given target item. Feeding raw sequences into the model not only amplifies semantic noise but also incurs substantial com-putation, making efficient target-aware behavior selection essential for scalable and accurate prediction. To address these industrial challenges, we propose AIR (Atomic 
+
+Intent Reasoning), a cross-domain recommendation framework for short-video and e-commerce scenarios, facilitating LLM-level se-mantic reasoning under critical latency online serving constraints. As illustrated in Figure 1 (c), the proposed AIR follows an offline to online pipeline. In the offline stage, AIR leverages LLMs to trans-form user events, together with user attributes and object descrip-tions, into atomic behavior intent units, which are subsequently or-ganized in an intent knowledge base for high-throughput retrieval. During online inference stage, the system retrieves and composes these cached atomic intents from the user’s recent behaviors to con-struct an up-to-date intent representation without invoking LLMs, thereby substantially reducing serving latency while retaining se-mantic signals. To further address the challenges posed by lengthy Timestamp 
+
+> …
+
+T1
+
+T2 …
+
+… …
+
+Tk                                            
+
+> …
+> Context
+> Context Context
+> Context Context
+> Context
+> Local
+> Life Live
+> Live
+> E-shop
+> E-shop E-shop
+> User Action Sequence
+> Based on my
+> behaviors across
+> multi -domains,
+> what am Imost
+> likely to purchase?
+> (a) Traditional CDR Model
+> (b) Other LLMCDR Model
+> (c) Our Model
+> Cute Toy
+> Story Book
+> Traditional
+> Gift
+> Beer
+> Beer
+> CTR:
+> 0.8
+> Based on your interests,
+> you might like the
+> following products :Cute
+> pet toys or pet supplies …
+> Iam 25 years old
+> man, Ilove watch
+> cute pet video …
+> What would Ilike? Pet Toy
+> CTR:
+> 0.8
+> Target Item:
+> Badminton
+> …
+> Pet Toys x 1
+> Badminton x 2
+> Books x 1
+> Badminton
+> CTR:
+> 0.8
+> Unacceptable
+> Time Cost
+> Not Real
+> Time
+> Relevant
+> Behavior
+> Limit
+> Semantic
+> Grounding
+> Noisy
+> Sequence
+> 400 x
+> Faster
+> Target
+> Item -
+> Based
+> Retrieve
+> …
+> Weak
+> Reasoning
+> Capability
+
+Figure 1: Kuaishou spans multiple heterogeneous domains, making cross-domain recommendation crucial for intent transfer, but facing two key challenges: (1) Prohibitive Real-Time Inference Expanse of Large Language Models, and (2) Large-Scale and Noisy User Behavior Sequences. 
+
+and noisy multi-scenario behavior histories, AIR constructs a uni-fied user intent tree and conducts target-aware semantic retrieval with respect to the current target item, yielding a compact set of highly relevant and evidential intents for prediction. Finally, a multi-head attention module fuses the retrieved target-related in-tents with complementary user-interest cues, enabling fine-grained preference modeling for more accurate and robust personalized recommendations. In this paper, our proposed AIR maintain the semantic under-standing advantages of large language models while achieving the high efficiency, high concurrency, and low latency required for in-dustrial deployment through structural reconstruction and process decoupling. Specifically, when validated in Kuaishou E-commerce’s real-world operations 1, our approach significantly outperforms traditional cross-domain recommendation methods across multiple core metrics, including Paid Order Count, GPM, OPM, and GMV, validating its practical value in large-scale industrial systems. The main contributions of this work are summarized as follows: 
+
+• We propose AIR (Atomic Intent Reasoning), an LLM-powered cross-domain recommendation framework for content-to-commerce systems, which achieves effectiveness comparable to real-time LLM calls while maintaining millisecond-level serving latency, and delivers SOTA performance on public benchmarks. 
+
+• We design an atomic intent caching and composition 
+
+mechanism: user events are distilled into atomic behavior– intent units offline and served via a high-throughput intent knowledge base, yielding an approximately 400 × through-put gain over real-time LLM invocation.  
+
+> 1https://www.kuaishou.com/ Atomic Intent Reasoning: Bringing LLM Semantics to Industrial Cross-Domain Recommendations KDD ’26, August 09–13, 2026, Jeju Island, Republic of Korea
+
+• We propose target-aware intent retrieval to extract com-pact, high-evidence intents from long and noisy multi-scenario histories, and use multi-head attention to fuse target-related intents with other user-interest signals for fine-grained preference modeling. 
+
+• Extensive experiments on public benchmarks show the effec-tiveness of the proposed framework, and an industrial A/B test further demonstrates consistent online gains of +3.446% 
+
+on GMV .
+
+## 2 Related Works 
+
+LLM-based Recommendation. Large language models (LLMs) [ 18 ]scaled to billions of parameters demonstrate exceptional capabil-ities in language understanding, generation, and reasoning, ex-hibiting strong generalization to downstream tasks and domains [ 6, 27 , 35 , 44 ]. Leveraging these advancements, LLM-empowered recommender systems have attracted significant research interest, offering novel opportunities to advance the field [ 37 ]. To effec-tively adapt LLMs for recommendation, current research primar-ily explores several paradigms—such as pre-training, fine-tuning, prompting, retrieval, and reinforcement learning [ 13 , 19 , 20 ]. These paradigms aim to bridge the semantic understanding capabilities of LLMs with the personalized preference modeling requirements of recommender systems. Representative approaches include P5 [ 14 ]and TokenRec [ 31 , 32 ], which employ prompt-based learning to unify diverse recommendation tasks under a language modeling framework and achieve notable zero-shot generalization through personalized prompting [ 20 ]. However, despite their promise, these pioneering methods remain difficult to deploy at an industrial scale, especially under critical online inference latency constraints, owing to their inadequate computational efficiency [ 36 ] and limited ability to model cross-domain user intent [45]. 
+
+Cross-Domain Recommendation. Cross-domain Recommenda-tion (CDR) models [ 5] capture user preferences by leveraging users’ interaction behaviors across multiple domains. Traditional recom-mendation methods [ 2, 15 ], typically designed for single-domain behaviors, struggle with data sparsity and fail to capture interest transfer across different and heterogeneous scenarios. Existing CDR approaches incorporate cross-domain information through shared representations, alignment mechanisms [ 2 ], and graph-based mod-eling [ 15 ]. However, these methods primarily capture shallow co-occurrence patterns and lack the capacity to model the underlying semantic and logical dependencies among user behaviors. Recently, Large Language Models (LLMs) [ 1, 25 ] have been increasingly ex-plored for cross-domain recommendation, due to their remark-able abilities in semantic representation and reasoning. Representa-tive methods, such as LLM4CDSR [ 41 ] and LLMCDSR [ 23 ], lever-age LLMs to unify item representations or generate cross-domain pseudo-interactions, thereby alleviating overlap and knowledge-transfer issues. However, existing LLM-based approaches primarily operate at a coarse-grained semantic level, which limits their abil-ity to capture fine-grained sequential dependencies and dynamic interest evolution, especially in industrial settings characterized by large-scale, heterogeneous, and highly complex user behavior data. 
+
+## 3 Method 3.1 Overall Architecture 
+
+To operationalize LLM-derived semantic understanding under in-dustrial latency constraints, we design AIR as a decoupled offline-to-online framework that transforms raw cross-domain behaviors into target-relevant intent representations. As illustrated in Fig-ure 2, the proposed AIR includes four stages: 1) Atomic Intent Pair Generation for offline semantic grounding; 2) Real-time Unified User Intent Tree Construction for behavior sequence structuring; 3) Target-aware Intent Retrieval for relevance re-finement; and 4) MHA-based Intent Extraction for holistic pref-erence fusion, which together enable fine-grained user preference modeling. Specifically, the offline stage leverages LLMs to construct atomic behavior-intent pairs that encode fine-grained user seman-tics and stores them in a high-concurrency intent knowledge base. During online serving, these atomic behavior-intent pairs are effi-ciently retrieved and dynamically assembled into a real-time unified user intent tree, transforming massive, heterogeneous behavior se-quences into structured semantic representations. Conditioned on the target item, the framework further performs target-aware re-trieval over the intent tree to distill compact and high-evidence behavioral subsequences that are most informative for downstream prediction. A multi-head attention module integrates target-related intent representations with complementary user-interest signals for fine-grained preference modeling. This four-stage framework fully decouples LLM inference from online serving while preserv-ing real-time semantic awareness, thereby enabling low-latency, high-throughput recommendation in industrial-scale systems. 
+
+## 3.2 Atomic Intent Pair Generation 
+
+To address the prohibitive real-time inference expense of LLMs , we propose an offline generation method for atomic user intent pairs , which decouples LLM reasoning from the online recom-mendation pipeline. Notably, the latent intent underlying complex multi-behavior sequences can be effectively approximated by com-posing single-behavior atomic intents. As illustrated in Stage 1 of Figure 2, cross-domain user interaction sequences are decomposed into atomic behavioral units, each mapped to a fine-grained intent representation. By composing these atomic intents, the framework constructs a unified semantic representation of the user’s latent preference evolution, which serves as an efficient approximation to holistic sequence-level semantic reasoning. Such a design enables real-time emulation of LLM-driven inference through offline intent caching and lightweight online retrieval. Mathematically, we define each user event as: 𝑒 = (𝑎, 𝑜, 𝑢 ),where 𝑎 denotes the action type (e.g., click , long-view , and pur-chase ), 𝑜 is the behavior object (e.g., video or product), and 𝑢 =
+
+(gender , age , location ) denotes the user profile attributes. The user event (𝑎, 𝑜, 𝑢 ) is fed into an LLM prompt that combines (i) user context, (ii) behavioral semantics, and (iii) object description. The LLM outputs a set of hierarchical intent paths: 
+
+P ( 𝑒 ) = {𝑝 1, . . . , 𝑝 𝑚 }, ∀𝑝 = [𝑐 1 → 𝑐 2 → · · · → 𝑐 𝑘 ], (1) where 𝑚 and 𝑘 denote the potential number of user intents and their category number, respectively. Each 𝑐 ℓ represents an intent category at depth ℓ, forming a coarse-to-fine intent trajectory. KDD ’26, August 09–13, 2026, Jeju Island, Republic of Korea Zhuohang Jiang et al. Stage 3: Target -aware Intent Retrieval Stage 1: Atomic Intent Pairs Generation 
+
+Object: 
+
+Action:  Long View  Long View Purchase  Click                         
+
+> Cat Video Car Video Cat Food Cat Tree
+> Cross Domain User Behavior History
+> Intent Tree Generation
+> Car Cat User Intent
+> Tree
+> Cat Live
+> Cat Food
+> Cat Home
+> Fish
+> Wiper Fluid Car Clean
+> Mobility
+> device
+> Weight: 0.8
+> Weight : 0.6 Weight : 0.6
+> Weight : 0.2 Weight : 0.5
+> Weight: 0.8
+> Weight: 0.5 Weight: 0.3
+> Weight: 0.7
+> Weight: 0.3
+> wu,i=log (1+αNclick +βNorder +γNvideo )෍
+> k=1
+> exp (−λ∆tk)
+> Intent Weight: Bike
+> Intent
+> Info
+> Searched
+> Sequence
+
++  
+
+> pCTR :0.8
+> Intent Tree
+
+Cat        
+
+> Cat Tree
+> Cat Food
+> Cat Home
+> Fish
+> Step 1: Intent Tree Path Finding
+> Step 2: Intent Sequence Searching
+> Cat Cat Tree Cat Home
+> User Intent Chain
+> Remove Noise
+> Behavior
+> Intent Sequence Searching
+
+Stage 2: Real -time Unified User Intent Tree Construction                      
+
+> User Base Information
+> Amiddle -aged man from Beijing
+> had a long view on a cat video .
+> What product does he like?
+> He may like cat food ,cat home ,
+> cat tree , or other animal -
+> themed consumer goods.
+> Intent
+> Agent
+> Gender Location Age
+> middle -aged +
+> man +Beijing +
+> long view +cat
+> video
+> Cat food
+> Cat home
+> …
+> Action -Intent Pair
+> Name:
+> Cute Cat Room
+> Category:
+> Cat Home
+> Target Item
+> User
+> Action
+> (Long view, Cat Video)
+> (Click, Cat Tree)
+> (Order, Cat Food)…
+> Pid/Uid/… Other
+> Info
+
+Embedding Layer 
+
+Multi -head Attention 
+
+Concat & Flatten 
+
+XTR 
+
+Tower 
+
+Stage 4: MHA -Based Intent 
+
+Extraction     
+
+> Semantic Similarity
+> Cat
+> Home
+> Intent
+> Node
+> BAAI
+> Embed
+> Target
+> Item
+> BAAI
+> Embed
+> Similarity
+> Calculation
+> Intent
+> Database
+> User
+> ++
+> Purchase Cat Food
+> Search
+> Key
+> Intent
+> Database
+> Intent Querying
+
+Offline   
+
+> Weight: 0.8 Weight : 0.6 Weight : 0.6
+> Similarity: 0.8
+
+MMoE 
+
+Online 
+
+Online  Online          
+
+> Intent Sequence
+> Cute Cat
+> Room
+> Cat
+> Cat Live
+> Cat Food
+> Cat Home
+> Fish
+> Weight: 0.8
+> Weight : 0.6 Weight : 0.6
+> Weight : 0.2 Weight : 0.5
+> User Intent Tree Host Product
+
+Figure 2: Our proposed AIR (Atomic Intent Reasoning) tackles cross-domain recommendation via a four-stage pipeline: (1) Atomic Intent Pair Generation, (2) Real-time Unified User Intent Tree Construction, (3) Target-aware Intent Retrieval, and (4) MHA-based Intent Extraction. 
+
+To support scalable real-time inference, we construct action-specific intent caches: 
+
+P𝑎 =
+
+Ø
+
+𝑒 : 𝑎 𝑒 =𝑎 
+
+P ( 𝑒 ), (2) allowing heterogeneous action types to contribute with differen-tiated importance in downstream modeling. A comprehensive set of atomic intent pairs is thus derived and subsequently utilized for retrieval and intent tree construction, as detailed in the next section. 
+
+## 3.3 Real-time Unified User Intent Tree Construction 
+
+To more effectively characterize the multi-level structure of user intent and the differentiated importance of heterogeneous behavior types, the cached action-specific intent paths are aggregated into a unified action-related Intent Tree . This hierarchical structure captures both the layered organization of user interests and the varying strengths of cross-behavior signals, yielding a semantically expressive and discriminative representation for downstream target-aware retrieval and ranking. Within the intent tree, each node denotes an intent concept at a particular level of abstraction, while edges encode the corresponding hierarchical parent-child relations. Notably, each node maintains action-specific statistics , enabling differentiated weighting over heterogeneous behavior types. For a node 𝑢 (an intent category), we compute its preference weight 𝑤 𝑢 
+
+by combining multi-action counts with temporal decay: 
+
+𝑤 𝑢 = log (1 + 𝑁 (𝑢 )) ∑︁ 𝑛 𝑢 
+
+𝑘 =1 exp (− 𝜆 Δ𝑡 𝑘 ), (3) 
+
+𝑁 (𝑢 ) = 𝛼𝑁 click (𝑢 ) + 𝛽𝑁 order (𝑢 ) + 𝛾𝑁 view (𝑢 ), (4) where 𝑁 click (𝑢 ), 𝑁 order (𝑢 ), and 𝑁 view (𝑢 ) are the node hit counts from click/order/video (or long-view) evidence, respectively, and 
+
+𝛼 , 𝛽 , and 𝛾 are the corresponding coefficients that balance their contributions. Δ𝑡 𝑘 is the time gap between the 𝑘 -th supporting event and the current time, and 𝜆 controls the decay strength. The logarithmic term stabilizes heavy-tailed frequency, while the de-cay term emphasizes recent behaviors (i.e., stronger short-term intent). In addition to the preference weight 𝑤 𝑢 , each node stores its supporting behavior object IDs per action type: 
+
+I𝑎 (𝑢 ) = {𝑜 𝑖 | 𝑒 𝑖 = (𝑎, 𝑜 𝑖 , 𝑢 𝑖 ), 𝑝 ∈ P ( 𝑒 𝑖 ), 𝑢 ∈ 𝑝 }, (5) where I𝑎 (𝑢 ) denotes the set of behavior object IDs (e.g., videos or items) that contribute to node 𝑢 under action type 𝑎 . These will serve as explicit evidence for target-aware retrieval in later stages. This intent tree is constructed online via lightweight aggregation over cached intent paths, supporting efficient real-time serving while preserving rich multi-level user preferences. During serving, the user-level intent representation is dynami-cally assembled by merging intents from the user’s recent behavior history Huser corresponding to Eq. (2): 
+
+Puser =
+
+Ø
+
+𝑒 ∈ H user 
+
+P ( 𝑒 ). (6) This design eliminates costly online LLM inference while retain-ing fine-grained intent signals, thereby supporting personalized recommendations in industrial-scale settings. 
+
+## 3.4 Target-aware Intent Retrieval 
+
+Since user behavior sequences typically span multiple domains and exhibit substantial scale and noise, directly encoding the full life-time history in online models is both computationally prohibitive Atomic Intent Reasoning: Bringing LLM Semantics to Industrial Cross-Domain Recommendations KDD ’26, August 09–13, 2026, Jeju Island, Republic of Korea Logs                 
+
+> Preprocessor Train Model Infer Model
+> Merchant
+> Feature
+> User ID +
+> Product 1
+> Product 2
+> …
+> Parallel Parallel
+> Local
+> Index
+> Real -time
+> Unified User
+> Intent Tree
+> Construction
+> Search
+> Query
+> Processor
+> Domain 1
+> Domain 2
+> Domain k
+> User Behavior Sequence
+> …
+> …
+> …
+> ……Target -
+> aware
+> Intent
+> Retrieval
+> Related Behavior Sequence
+> User Base Information
+> User Profile
+> Flatten Search
+> Query List
+> Query 1
+> Query 2
+> …
+> Query n
+> User Domain Action
+> Intent Index List
+> Index List 1
+> Index List 2
+> …
+> Index List n
+> …
+> …
+> …
+> …
+> Unified User Intent Tree
+> Intent Context:
+> Intent Weight: 1.79
+> From Action Seq:
+> Node Information
+> …Target Item Information
+> Product Info
+> Offline
+> Processor
+> All Search Query List
+> Query 1
+> Query 2
+> …
+> Query n
+> User Domain Action
+> Domain 1
+> Domain 2
+> Domain k
+> All Atomic User Behavior
+> …
+> …
+> …
+> ……
+> All User Base Information
+> …
+> LLM
+
+Stage 1 
+
+Stage 2  Stage 3 
+
+Stage 4 
+
+Offline 
+
+System 
+
+> …
+> Atomic Intent Pair
+> Generation
+
+Figure 3: Online serving in AIR with separated offline/online serving stages. Offline, LLMs generate and index atomic behav-ior–intent pairs. Online, user behaviors are decomposed into parallel intent queries and efficiently retrieved to summarize user intent, achieving an effect equivalent to real-time LLM inference while supporting low-latency, high-QPS recommendation. 
+
+and susceptible to semantic interference from behaviors irrelevant to the current recommendation target. Accordingly, target-aware sequence retrieval conditioned on a given candidate item 𝑣 is in-troduced to derive a compact and precise representation of user intent. Motivated by this observation, target-aware reasoning search 
+
+is conducted over the intent tree to identify intent representations relevant to the target item and compress the user’s behavioral his-tory into a concise user intent chain tailored to 𝑣 . Specifically, the retrieval framework encompasses the following three critical pro-cesses: namely Semantic Representation Construction, Intent Chain Finding, and Intent Sequence Searching. 
+
+Semantic Representation Construction. Semantic representa-tions are constructed for both the target item and the user intent nodes. Let e𝑣 denote the embedding of 𝑣 , derived from its title, cat-egory, and attributes, optionally incorporating multimodal signals; let e𝑢 denote the embedding of intent node 𝑢 , derived from its canon-ical name and semantic expansions. Target-to-intent relevance is measured using semantic similarity: 
+
+𝑠 (𝑢, 𝑣 ) = cos (e𝑢 , e𝑣 ). (7) Based on this relevance score, a small candidate set of intent nodes is selected from the intent tree T :
+
+U𝑣 = Top-𝑀 𝑢 ∈ T 𝑠 (𝑢, 𝑣 ). (8) For each candidate node 𝑢 , a hierarchical intent chain is constructed by recursively tracing its ancestors to the root, thereby forming a depth-ordered path that preserves the semantic abstraction process from coarse-grained to fine-grained levels. 
+
+Intent Chain Finding. Candidate intent chains are scored by jointly considering target relevance and user preference strength. A simple yet effective scoring function is defined as score (𝑢 ; 𝑣 ) = 𝑠 (𝑢, 𝑣 ) · 𝑔 (𝑤 𝑢 ), (9) where 𝑤 𝑢 denotes the accumulated user preference weight on intent node 𝑢 , and 𝑔 (·) is a monotonic mapping function such as 𝑔 (𝑤 ) =
+
+log (1 + 𝑤 ). The top-ranked chains are retained and merged with de-duplication to obtain a short, hierarchical user intent chain 
+
+C𝑣 . This representation exhibits strong interpretability, as each node is semantically aligned with the target item and grounded in preference-aware user behavioral evidence. 
+
+Intent Sequence Searching. Given the chain skeleton, supporting evidence is subsequently retrieved from cached behavior-specific sources. Specifically, for each node in the chain, a compact set of supporting behavioral instances, such as clicks, orders, or video in-teractions, is retrieved, followed where appropriate by lightweight denoising to suppress irrelevant signals. Such denoising may in-clude (i) discarding evidence with low semantic similarity to the tar-get item, (ii) filtering temporally stale evidence through time-decay mechanisms, and (iii) constraining the evidence budget associated with each node. A compact sequence of intent tokens, together with their associated supporting evidence, is thereby derived to provide highly informative conditioning signals for downstream CTR prediction and fine-grained ranking, while ensuring bounded online computational complexity. 
+
+## 3.5 MHA-based Intent Extraction 
+
+The retrieved intent chain is further transformed into a target-aware interest representation via multi-head attention . Let q𝑣 be the target item embedding, and let X = [x1; . . . ; x𝐿 ] be the embed-dings of the 𝐿 retrieved intent-chain tokens (optionally fused with action/source and time features). Multi-head attention produces a target-conditioned summary: 
+
+z𝑣 = MHA (q𝑣 , X, X). (10) This mechanism enables different attention heads to capture com-plementary facets of user intent, such as coarse-grained category alignment, fine-grained preference patterns, and heterogeneous evidence sources. The resulting representation z𝑣 is subsequently integrated with standard user and item features and fed into the KDD ’26, August 09–13, 2026, Jeju Island, Republic of Korea Zhuohang Jiang et al. 
+
+downstream CTR prediction or ranking model. Accordingly, LLM-driven semantic transfer is realized through retrieval, while serving-time computation remains lightweight and scalable. 
+
+## 4 Deployment 
+
+Industrial-scale recommender and advertising systems must serve massive request volumes under strict latency budgets, typically within tens to hundreds of milliseconds, making direct deployment of LLM-based user intent modeling highly challenging. On plat-forms such as Kuaishou, user behaviors span multiple domains, yielding long and heterogeneous cross-domain sequences that are costly and noisy for direct LLM processing. More importantly, second-level inference latency and the enormous overhead of large-scale offline updates render such approaches impractical for real-time industrial serving. As depicted in Figure 3, AIR facilitates the integration of the LLM’s reasoning capabilities into an industrial online recommender system by decoupling slow semantic inference from real-time serv-ing, thereby enabling equivalent execution within the system. During offline serving, AIR constructs an industrial-grade LLM-based semantic generation pipeline that extracts latent intent se-mantics from cross-domain user behaviors. The pipeline processes user profile attributes (e.g., age, gender, region) and diverse histori-cal behaviors through the LLM to infer behavior–intent relation-ships, which are then atomized into stable, reusable fine-grained intent units for efficient downstream utilization. These atomic in-tents are subsequently structured, indexed, and stored in a compact key–value format within local retrieval structures, effectively of-floading the computationally intensive LLM inference to the offline stage. This architecture enables efficient retrieval and reduces the real-time processing burden on the online serving pipeline. During online serving, the Search Query Processor decomposes large, heterogeneous behavior sequences into lightweight intent queries, which are executed in parallel across local intent indices, enabling the retrieval of multiple intent signals with millisecond-level latency. The retrieved atomic intents are dynamically aggre-gated into a hierarchical Unified User Intent Tree, which maintains multi-level semantic structures while incorporating action-specific weights and contextual information. To further align user intent with CTR prediction, the system conducts target-item–aware se-quence retrieval, extracting high-evidence behavioral subsequences pertinent to the candidate item, thereby effectively mitigating noise from large-scale, cross-domain user histories. Consequently, online inference relies solely on lightweight retrieval, parallel aggregation, and tree-based intent composition, bypassing direct LLM execution. This approach ensures the online process is functionally equivalent to real-time LLM reasoning, while fully satisfying the stringent latency, scalability, and high-QPS requirements of industrial-scale recommendation systems. 
+
+## 5 Experiments 5.1 Experimental Settings 
+
+5.1.1 Datasets . Comprehensive experiments were conducted on three benchmark datasets to thoroughly evaluate the effectiveness of the proposed AIR framework and its key components. Following prior work, two CDSR datasets were constructed from the publicly 
+
+Table 1: Dataset Statistics. Dataset Domain Users Items Ave. Seq Length                  
+
+> Movie-Book Movie 9,485 12,875 9.01 Book 52,908 93,860 Food-Kitchen Food 10,822 8,661 8.22 Kitchen 41,670 27,637 Industrial Merchant 0.4 billion billions thousands Content tens of billions
+
+available Amazon dataset 2. To assess the performance of AIR un-der different degrees of domain relatedness, four domains were selected to form two cross-domain pairs, namely Movie–Book and 
+
+Food–Kitchen . In addition, the industrial dataset was collected from 
+
+Kuaishou ’s e-commerce platform 3, which serves over 400 million active users worldwide. This dataset comprises merchant short videos and live-stream photos, with both photo-level and item-level e-commerce data spanning tens to hundreds of billions of records. For the online A/B test, 5.08% of the platform traffic was allocated to compare the proposed model with the existing production baseline. Detailed dataset statistics are reported in Table 1. 
+
+5.1.2 Competitors . To assess the performance of our proposed model, we conduct comparisons with two categories of baseline models: (i) six single-domain sequential recommendation (SR) mod-els and (ii) five cross-domain sequential recommendation (CDSR) models. The baseline single-domain sequential recommendation models considered in this study include FPMC [ 33 ], which factorizes per-sonalized Markov chains to model sequential transition patterns; 
+
+Caser [34 ], which transforms item sequences into image-like rep-resentations and applies convolutional filters to capture sequential dependencies; GRU4Rec [16 ], which employs recurrent neural net-works to model session-based sequential interactions; SRGNN [39 ], which utilizes graph neural networks to capture item transition structures in session sequences and adopts an attention mechanism to integrate global preference with current interest; FEARec [ 8], which models both low- and high-frequency information through a ramp structure and an attention mechanism for periodic pattern learning; and SASRec [ 21 ], a self-attention-based model that cap-tures long-range sequential dependencies for next-item prediction. The compared cross-domain sequential recommendation mod-els include TPUF [ 7], which transfers pre-trained user features from the source domain via a feature mapping and aggregation framework; 𝜋 -Net [24 ], which employs gating mechanisms to filter and transfer information across domains with overlapping users; C2DSR [ 2 ], which combines graph neural networks and self-attention to model intra- and inter-sequence dependencies, while adopting contrastive infomax for cross-domain representa-tion learning; MGCL [43 ], which applies contrastive learning to capture dynamic sequential patterns and complementary prefer-ences across domains; and LLMCDSR [ 41 ], which leverages LLM-generated and filtered pseudo cross-domain interactions, together with collaborative signals and meta-learning, to alleviate sparse user overlap and enhance cross-domain sequential recommendation performance.  
+
+> 2https://jmcauley.ucsd.edu/data/amazon/index_2014.html
+> 3https://www.kuaishou.com/ Atomic Intent Reasoning: Bringing LLM Semantics to Industrial Cross-Domain Recommendations KDD ’26, August 09–13, 2026, Jeju Island, Republic of Korea
+
+Table 2: The Overall Recommendation Performance on the Amazon Dataset. 
+
+Method Movie Book Food Kitchen NDCG@10 HR@10 NDCG@10 HR@10 NDCG@10 HR@10 NDCG@10 HR@10 TPUF 0.035 0.068 0.029 0.059 0.017 0.040 0.012 0.025 
+
+𝜋 -Net 0.039 0.077 0.044 0.089 0.032 0.063 0.036 0.078 C2DSR 0.035 0.064 0.014 0.031 0.069 0.131 0.023 0.046 MGCL 0.047 0.097 0.036 0.071 0.041 0.085 0.041 0.082 LLMCDSR 0.055 0.107 0.117 0.214 0.221 0.433 0.252 0.439 FPMC 0.031 0.062 0.061 0.108 0.126 0.229 0.086 0.153 Caser 0.031 0.057 0.053 0.102 0.058 0.133 0.085 0.166 FEARec 0.030 0.062 0.063 0.109 0.052 0.107 0.068 0.125 GRU4Rec 0.034 0.070 0.068 0.126 0.118 0.232 0.130 0.247 SRGNN 0.037 0.073 0.042 0.080 0.108 0.207 0.100 0.181 SASRec 0.032 0.065 0.102 0.189 0.213 0.400 0.249 0.450 
+
+AIR 0.072 0.151 0.127 0.215 0.263 0.437 0.285 0.452 
+
+5.1.3 Configurations . Following prior studies, recommendation performance is evaluated under the leave-one-out protocol. For each validation and test instance, 999 negative items are randomly sampled from the corresponding domain-specific item pool and ranked together with the ground-truth positive item. Performance is evaluated using Hit Ratio (HR@k) and NDCG@k. To enable LLM-based generation of open cross-domain interactions from textual descriptions, items lacking textual metadata are excluded. To en-sure data quality, users and items with fewer than 10 interactions are removed for Movie–Book, while the threshold is set to 5 for Food–Kitchen. Both overlapped and non-overlapped users are re-tained. To preserve temporal and sequential characteristics, user interactions are chronologically ordered and segmented into shorter subsequences using fixed temporal windows, i.e., one month for Movie–Book and one year for Food–Kitchen. Each cross-domain subsequence is required to contain at least two items from each domain, whereas each single-domain subsequence must contain at least five items. The resulting subsequences are partitioned into training, validation, and test sets with a ratio of 80%/10%/10%, while enforcing chronological ordering to ensure that validation and test subsequences occur after the corresponding training subsequences of the same user, thereby preventing information leakage. The final interacted item in each subsequence is used as the ground-truth target. For cross-domain intent reasoning, our Action Intent Pair Generation framework uses the Qwen3-4b model 4 [ 1] to infer cross-domain intents, which are then mapped to e-commerce tags using the BAAI/bge-m3 5 text embedding model [ 4], facilitating the transfer of intents across domains. 
+
+## 5.2 Results on Public Datasets 
+
+Table 2 presents the experimental results on the Movie–Book and Food–Kitchen cross-domain sequential recommendation scenarios, which were used to comprehensively assess the effectiveness of the proposed AIR framework. The experimental results indicate that the proposed AIR consistently achieves superior recommendation performance across all evaluated Amazon dataset categories. In 
+
+> 4https://huggingface.co/Qwen/Qwen3-4B
+> 5https://huggingface.co/BAAI/bge-m3
+
+both the Movie–Book and Food–Kitchen cross-domain recommen-dation scenarios, AIR substantially outperforms all baseline meth-ods with respect to the two key metrics, NDCG@10 and HR@10. Specifically, in the Movie-Book scenario, our method achieves HR@10 scores of 0.151 (Movie) and 0.215 (Book), representing improvements of 41.31% and 0.65% over the second-best method LLMCDSR, respectively. The performance gains are even more pro-nounced in the Food-Kitchen scenario, where HR@10 reaches 0.437 (Food) and 0.452 (Kitchen), surpassing LLMCDSR by 0.78% and 3.07%, respectively. These results convincingly validate the effec-tiveness of our approach for cross-domain recommendation tasks, particularly in realistic scenarios with substantial proportions of non-overlapping users. Comparative analysis reveals two key findings. Conventional CDSR methods, including TPUF, 𝜋 -Net, C2DSR, and MGCL, gener-ally show limited effectiveness and may even underperform single-domain recommendation models, highlighting their reliance on overlapping users and insufficient utilization of single-domain sig-nals. Although LLMCDSR achieves competitive performance in Food–Kitchen, its advantage is less evident in Movie–Book, whereas 
+
+AIR consistently maintains superior performance across both sce-narios, demonstrating stronger robustness and generalization. 
+
+## 5.3 Ablation Study 
+
+Table 3 presents the ablation results, which demonstrate the effec-tiveness of each component in the AIR framework. While removing the multi-head attention mechanism (w/o MHA) causes only a slight performance decline, the Intent Retrieval and Intent Tree prove to be critical: their individual removal leads to HR@10 drops of 21-27% and 17-23% in Food and Kitchen domains, respectively. Most strikingly, simultaneously removing both components (w/o Intent 
+
+Table 3: Ablation Study on the Food-Kitchen Scenario. Method Food Kitchen NDCG@10 HR@10 NDCG@10 HR@10                      
+
+> AIR 0.2630 0.4367 0.2850 0.4521
+> w/o MHA 0.2626 0.4200 0.2457 0.3705 w/o Intent Retrieval 0.1637 0.3200 0.1950 0.3564 w/o Intent Tree 0.1735 0.3633 0.1892 0.3469 w/o Intent Tree + Intent Retrieval 0.1590 0.2900 0.1031 0.1821 KDD ’26, August 09–13, 2026, Jeju Island, Republic of Korea Zhuohang Jiang et al.
+
+Table 4: Category HHI Sparsity Comparison across Levels. Model Level 1 Level 2 Level 3 All 
+
+Base 0.3762 0.0758 0.4434 0.1223 
+
+AIR 0.3769 0.0749 0.4168 0.1201 Decrease Rate +0.19% −1.20% −5.99% −1.80% 
+
+> *Lower is better, a lower HHI indicates less concentration.
+
+Tree + Intent Retrieval) causes catastrophic performance collapse, with NDCG@10 and HR@10 plummeting by 40-64% and 34-60% across domains. This pronounced degradation further suggests that Intent Retrieval and Intent Tree function not as isolated additive modules, but as strongly coupled and indispensable components of AIR . Intent Retrieval supports cross-domain knowledge trans-fer for alleviating data sparsity, while Intent Tree organizes and integrates such knowledge via hierarchical intent modeling. The synergy between the two is central to the effectiveness of AIR ,allowing it to consistently outperform existing methods in realistic non-overlapping user scenarios. 
+
+## 5.4 Latency Analysis 
+
+The analysis shows that direct invocation of Qwen3-4B leads to an inference latency of approximately 8 seconds . In contrast, by atom-izing and discretizing user behavioral intent pairs, AIR preserves an effect comparable to real-time large-model reasoning while re-ducing latency to 20.134 ms , achieving an approximately 400 ×
+
+throughput gain. This substantial reduction in inference cost is critical for real-time serving and industrial-scale recommendation deployment. 
+
+## 5.5 Futher Analysis 
+
+5.5.1 Product Category Analysis . An in-depth analysis of user data from the Kuaishou platform was conducted to investigate cat-egory sparsity across different hierarchical levels, as reported in Table 4. The Herfindahl–Hirschman Index (HHI) is employed to measure category concentration, with lower values reflecting a more balanced distribution of user interactions and consequently greater category diversity. As evidenced by the results, AIR consis-tently reduces HHI across multiple hierarchical levels, with partic-ularly pronounced improvements at Level 2 and Level 3, where the reductions reach 1.20% and 5.99%, respectively. These substantial reductions indicate that the proposed approach effectively allevi-ates category over-concentration and promotes broader category coverage, thereby enhancing category diversity, particularly at fine-grained and intermediate hierarchical levels. 
+
+5.5.2 User Activity Analysis . User activity level is closely as-sociated with both the quantity and quality of available historical behavioral signals. To further examine model effectiveness under different levels of behavioral richness, users are stratified into four groups according to activity level, and performance is evaluated 
+
+Table 5: GMV Uplift by User Activity Level. 
+
+Activity Level Low Mid High Ultra Lift rate +4.32% +2.46% +8.04% +7.21% 
+
+Table 6: Industry Online A/B Test Results. 
+
+Metric Paid Order Count GMV GPM OPM Lift rate +1.043% +3.446% +3.662% +1.254% separately for each group, as reported in Table 5. The results in Ta-ble 5 show that AIR consistently delivers performance gains across all user activity levels, with relative improvements ranging from +4.32% to +8.04%, thereby demonstrating its robustness and broad effectiveness. Notably, for low-activity users, the observed +4.32% improvement indicates that the LLM-generated user behavior in-tent tree effectively alleviates the cold-start issue by transforming sparse cross-domain interaction signals into more comprehensive behavioral representations, thereby compensating for limited his-torical data. For high-activity and ultra-activity users (+8.04% and +7.21%, respectively), the pronounced gains further verify the ef-fectiveness of the target-item-conditioned reasoning compression mechanism in modeling long behavioral sequences. By selectively suppressing irrelevant noise and retaining be-haviorally salient signals from ultra-long interaction histories, the proposed approach enables the model to capture fine-grained and context-dependent user preferences without being hindered by the excessive volume of historical behaviors. 
+
+## 5.6 Online A/B Test 
+
+The proposed AIR framework has been deployed in the e-commerce short-video scenario on the Kuaishou platform. Rigorous online A/B tests were conducted during a online deployment to validate the effectiveness of the proposed model. As reported in Table 6, 
+
+AIR achieves significant improvements over the previous online baseline in this setting. Substantial and consistent improvements are observed across several core business metrics. Specifically, Paid Order Count increases by +1.043%, indicating enhanced conversion performance; GMV and GPM improve by +3.446% and +3.662%, respectively, demonstrating stronger monetization capacity; and OPM rises by +1.254%, suggesting improved overall profit efficiency. Collectively, these results provide strong evidence for the practical utility of AIR in real-world industrial recommendation scenarios. 
+
+## 6 Conclusion 
+
+AIR is a novel LLM-driven framework for cross-domain intent modeling and reasoning-oriented retrieval, specifically designed to address the challenges posed by noisy, massive, and heteroge-neous multi-domain user behavior sequences in industrial-scale e-commerce recommendation systems. By jointly integrating user attributes and cross-domain interaction logs, AIR constructs struc-tured Action-Intent Pairs and dynamically builds a preference-aware, weighted Intent Tree, enabling fine-grained semantic reason-ing and target-aware retrieval to extract high-evidence User Intent Chains for more accurate CTR prediction and ranking. Notably, we adopt an offline-online hybrid strategy that pre-generates atomic intents offline using large language models and assembles them dy-namically during online serving. This design achieves functionality equivalent to real-time LLM reasoning while eliminating the prohib-itive latency of online LLM inference, resulting in millisecond-level Atomic Intent Reasoning: Bringing LLM Semantics to Industrial Cross-Domain Recommendations KDD ’26, August 09–13, 2026, Jeju Island, Republic of Korea 
+
+serving latency and an approximately 400 × inference throughput gain compared to direct model invocation. Through effective noise filtering, behavior sequence compression, and efficient intent aggre-gation, AIR significantly improves both modeling efficiency and recommendation quality. Extensive experiments on public bench-marks, together with large-scale industrial A/B tests, demonstrate the effectiveness and real-world applicability of our framework, yielding consistent online gains in key business metrics, including 
+
+GMV (+3.446%) and GPM (+3.662%) .
+
+## Acknowledgments 
+
+This work is supported by Kuaishou Technology. The research described in this paper has been partially supported by the Gen-eral Research Funds from the Hong Kong Research Grants Council (project No. PolyU 15200023, 15206024, and 15224524), Hong Kong Research Grants Council’s Theme-based Research Scheme (No. T43-513/23-N), Hong Kong Research Grants Council’s Research Impact Fund (No. R1015-23), Hong Kong Research Grants Coun-cil’s Collaborative Research Fund (No. C1043-24GF), and Internal research funds from Hong Kong Polytechnic University (project no. P0059586, P0042693, P0048625, and P0051361). This work was supported by computational resources provided by The Centre for Large AI Models (CLAIM) of The Hong Kong Polytechnic Univer-sity. 
+
+## References 
+
+[1] Jinze Bai, Shuai Bai, Yunfei Chu, Zeyu Cui, Kai Dang, Xiaodong Deng, Yang Fan, Wenbin Ge, Yu Han, Fei Huang, Binyuan Hui, Luo Ji, Mei Li, Junyang Lin, Runji Lin, Dayiheng Liu, Gao Liu, Chengqiang Lu, Keming Lu, Jianxin Ma, Rui Men, Xingzhang Ren, Xuancheng Ren, Chuanqi Tan, Sinan Tan, Jianhong Tu, Peng Wang, Shijie Wang, Wei Wang, Shengguang Wu, Benfeng Xu, Jin Xu, An Yang, Hao Yang, Jian Yang, Shusheng Yang, Yang Yao, Bowen Yu, Hongyi Yuan, Zheng Yuan, Jianwei Zhang, Xingxuan Zhang, Yichang Zhang, Zhenru Zhang, Chang Zhou, Jingren Zhou, Xiaohuan Zhou, and Tianhang Zhu. 2023. Qwen Technical Report. arXiv (2023). arXiv:2309.16609 doi:10.48550/arxiv.2309.16609 [2] Jiangxia Cao, Xin Cong, Jiawei Sheng, Tingwen Liu, and Bin Wang. 2022. Con-trastive cross-domain sequential recommendation. In Proceedings of the 31st ACM International Conference on Information & Knowledge Management . 138–147. [3] Jiangxia Cao, Shaoshuai Li, Bowen Yu, Xiaobo Guo, Tingwen Liu, and Bin Wang. 2023. Towards universal cross-domain recommendation. In Proceedings of the Sixteenth ACM International Conference on web search and data mining . 78–86. [4] Jianlv Chen, Shitao Xiao, Peitian Zhang, Kun Luo, Defu Lian, and Zheng Liu. 2024. BGE M3-Embedding: Multi-Lingual, Multi-Functionality, Multi-Granularity Text Embeddings Through Self-Knowledge Distillation. arXiv:2402.03216 [cs.CL] [5] Shu Chen, Zitao Xu, Weike Pan, Qiang Yang, and Zhong Ming. 2024. A survey on cross-domain sequential recommendation. arXiv preprint arXiv:2401.04971 
+
+(2024). [6] Yuchuan Deng, Qijie Wei, Kaiheng Qian, Jiazhen Liu, Zijie Xin, Bangxiang Lan, Jingyu Liu, Jianfeng Dong, and Xirong Li. 2026. Fundus-R1: Training a Fundus-Reading MLLM with Knowledge-Aware Reasoning on Public Data. arXiv preprint arXiv:2604.08322 (2026). [7] Yujia Ding, Huan Li, Ke Chen, and Lidan Shou. 2023. Tpuf: Enhancing cross-domain sequential recommendation via transferring pre-trained user features. In 
+
+Proceedings of the 32nd ACM international conference on information and knowl-edge management . 410–419. [8] Xinyu Du, Huanhuan Yuan, Pengpeng Zhao, Jianfeng Qu, Fuzhen Zhuang, Guan-feng Liu, Yanchi Liu, and Victor S Sheng. 2023. Frequency enhanced hybrid attention network for sequential recommendation. In Proceedings of the 46th international ACM SIGIR conference on research and development in information retrieval . 78–88. [9] Wenqi Fan, Qing Li, and Min Cheng. 2018. Deep modeling of social relations for recommendation. In Proceedings of the AAAI Conference on Artificial Intelligence ,Vol. 32. [10] Wenqi Fan, Xiaorui Liu, Wei Jin, Xiangyu Zhao, Jiliang Tang, and Qing Li. 2022. Graph Trend Filtering Networks for Recommendation. In Proceedings of the 45th International ACM SIGIR Conference on Research and Development in Information Retrieval . 112–121. [11] Wenqi Fan, Yao Ma, Qing Li, Yuan He, Eric Zhao, Jiliang Tang, and Dawei Yin. 2019. Graph neural networks for social recommendation. In The world wide web conference . 417–426. [12] Wenqi Fan, Yao Ma, Qing Li, Jianping Wang, Guoyong Cai, Jiliang Tang, and Dawei Yin. 2020. A graph neural network framework for social recommendations. 
+
+IEEE Transactions on Knowledge and Data Engineering (2020). [13] Wenqi Fan, Pangjing Wu, Yujuan Ding, Liangbo Ning, Shijie Wang, and Qing Li. 2025. Towards Retrieval-Augmented Large Language Models: Data Management and System Design. In 2025 IEEE 41st International Conference on Data Engineering (ICDE) . IEEE, 4509–4512. [14] Shijie Geng, Shuchang Liu, Zuohui Fu, Yingqiang Ge, and Yongfeng Zhang. 2022. Recommendation as language processing (rlp): A unified pretrain, personalized prompt & predict paradigm (p5). In Proceedings of the 16th ACM Conference on Recommender Systems . 299–315. [15] Lei Guo, Li Tang, Tong Chen, Lei Zhu, Quoc Viet Hung Nguyen, and Hongzhi Yin. 2021. DA-GCN: A domain-aware attentive graph convolution network for shared-account cross-domain sequential recommendation. arXiv preprint arXiv:2105.03300 (2021). [16] Balázs Hidasi, Alexandros Karatzoglou, Linas Baltrunas, and Domonkos Tikk. 2015. Session-based recommendations with recurrent neural networks. arXiv preprint arXiv:1511.06939 (2015). [17] Zheng Hu, Yuxin Chen, Yongsen Pan, Xu Yuan, Yuting Yin, Daoyuan Wang, Boyang Xia, Zefei Luo, Hongyang Wang, Songhao Ni, et al . 2026. Stop Treating Collisions Equally: Qualification-Aware Semantic ID Learning for Recommenda-tion at Industrial Scale. arXiv preprint arXiv:2603.00632 (2026). [18] Zhuohang Jiang, Pangjing Wu, Ziran Liang, Peter Q Chen, Xu Yuan, Ye Jia, Jiancheng Tu, Chen Li, Peter HF Ng, and Qing Li. 2025. Hibench: Benchmarking llms capability on hierarchical structure reasoning. In Proceedings of the 31st ACM SIGKDD Conference on Knowledge Discovery and Data Mining V. 2 . 5505–5515. [19] Zhuohang Jiang, Pangjing Wu, Xu Yuan, Wenqi Fan, and Qing Li. 2025. QA-Dragon: Query-Aware Dynamic RAG System for Knowledge-Intensive Visual Question Answering. arXiv preprint arXiv:2508.05197 (2025). [20] Zhuohang Jiang, Xu Yuan, Haohao Qu, Shanru Lin, Kanglong Liu, Wenqi Fan, and Qing Li. 2026. SUPERGLASSES: Benchmarking Vision Language Models as Intelligent Agents for AI Smart Glasses. arXiv preprint arXiv:2602.22683 (2026). [21] Wang-Cheng Kang and Julian McAuley. 2018. Self-attentive sequential recom-mendation. In 2018 IEEE international conference on data mining (ICDM) . IEEE, 197–206. [22] Kuan Liu, Ke Wang, Ji Zhang, and Gang Zhou. 2025. LLM-Grounded Diffusion for Cross-Domain Recommendation. In Proceedings of the 33rd ACM International Conference on Multimedia (Dublin, Ireland) (MM ’25) . Association for Computing Machinery, New York, NY, USA, 6103–6112. doi:10.1145/3746027.3755347 [23] Qidong Liu, Xiangyu Zhao, Yejing Wang, Zijian Zhang, Howard Zhong, Chong Chen, Xiang Li, Wei Huang, and Feng Tian. 2025. Bridge the domains: Large language models enhanced cross-domain sequential recommendation. In Proceed-ings of the 48th International ACM SIGIR Conference on Research and Development in Information Retrieval . 1582–1592. [24] Muyang Ma, Pengjie Ren, Yujie Lin, Zhumin Chen, Jun Ma, and Maarten de Rijke. 2019. 𝜋 -net: A parallel information-sharing network for shared-account cross-domain sequential recommendations. In Proceedings of the 42nd international ACM SIGIR conference on research and development in information retrieval . 685– 694. [25] Shervin Minaee, Tomas Mikolov, Narjes Nikzad, Meysam Chenaghlu, Richard Socher, Xavier Amatriain, and Jianfeng Gao. 2024. Large Language Models: A Survey. arXiv (2024). arXiv:2402.06196 doi:10.48550/arxiv.2402.06196 [26] Juntong Ni, Shiyu Wang, Qi He, Ming Jin, and Wei Jin. 2026. Streasoner: Em-powering LLMs for Spatio-Temporal Reasoning in Time Series via Spatial-Aware Reinforcement Learning. In Proceedings of the 64th Annual Meeting of the Associ-ation for Computational Linguistics .[27] Liangbo Ning, Ziran Liang, Zhuohang Jiang, Haohao Qu, Yujuan Ding, Wenqi Fan, Xiao-yong Wei, Shanru Lin, Hui Liu, Philip S Yu, et al . 2025. A survey of webagents: Towards next-generation ai agents for web automation with large foundation models. In Proceedings of the 31st ACM SIGKDD Conference on Knowl-edge Discovery and Data Mining V. 2 . 6140–6150. [28] Yongsen Pan, Yuxin Chen, Zheng Hu, Xu Yuan, Daoyuan Wang, Yuting Yin, Song-hao Ni, Hongyang Wang, Jun Wang, Fuji Ren, et al . 2026. Beyond Static Collision Handling: Adaptive Semantic ID Learning for Multimodal Recommendation at Industrial Scale. arXiv preprint arXiv:2604.23522 (2026). [29] Rajvardhan Patil and Venkat Gudivada. 2024. A review of current trends, tech-niques, and challenges in large language models (llms). Applied Sciences 14, 5 (2024), 2074. [30] Alessandro Petruzzelli, Cataldo Musto, Lucrezia Laraspata, Ivan Rinaldi, Marco de Gemmis, Pasquale Lops, and Giovanni Semeraro. 2024. Instructing and prompt-ing large language models for explainable cross-domain recommendations. In 
+
+Proceedings of the 18th ACM Conference on Recommender Systems . 298–308. [31] Haohao Qu, Wenqi Fan, and Shanru Lin. 2025. Generative Recommendation with Continuous-Token Diffusion. arXiv preprint arXiv:2504.12007 (2025). [32] Haohao Qu, Wenqi Fan, Zihuai Zhao, and Qing Li. 2025. TokenRec: Learning to Tokenize ID for LLM-Based Generative Recommendations. IEEE Transactions on KDD ’26, August 09–13, 2026, Jeju Island, Republic of Korea Zhuohang Jiang et al. 
+
+Knowledge and Data Engineering 37, 10 (2025), 6216–6231. [33] Steffen Rendle, Christoph Freudenthaler, and Lars Schmidt-Thieme. 2010. Factor-izing personalized markov chains for next-basket recommendation. In Proceedings of the 19th international conference on World wide web . 811–820. [34] Jiaxi Tang and Ke Wang. 2018. Personalized top-n sequential recommenda-tion via convolutional sequence embedding. In Proceedings of the eleventh ACM international conference on web search and data mining . 565–573. [35] GuangJian Team. 2026. Venus-DeFakerOne: Unified Fake Image Detection & Localization. arXiv preprint arXiv:2605.14091 (2026). [36] Hanbing Wang, Xiaorui Liu, Wenqi Fan, Xiangyu Zhao, Venkataramana Kini, Devendra Pratap Yadav, Fei Wang, Zhen Wen, and Hui Liu. 2025. Rethinking large language model architectures for sequential recommendations. In Proceedings of the 14th International Joint Conference on Natural Language Processing and the 4th Conference of the Asia-Pacific Chapter of the Association for Computational Linguistics . 3376–3391. [37] Shijie Wang, Wenqi Fan, Yue Feng, Lin Shanru, Xinyu Ma, Shuaiqiang Wang, and Dawei Yin. 2025. Knowledge graph retrieval-augmented generation for llm-based recommendation. In Proceedings of the 63rd Annual Meeting of the Association for Computational Linguistics (Volume 1: Long Papers) . 27152–27168. [38] Shijie Wang, Jiani Huang, Zhikai Chen, Yu Song, Wenzhuo Tang, Haitao Mao, Wenqi Fan, Hui Liu, Xiaorui Liu, Dawei Yin, et al . 2025. Graph machine learning in the era of large language models (llms). ACM Transactions on Intelligent Systems and Technology 16, 5 (2025), 1–40. [39] Shu Wu, Yuyuan Tang, Yanqiao Zhu, Liang Wang, Xing Xie, and Tieniu Tan. 2019. Session-based recommendation with graph neural networks. In Proceedings of the AAAI conference on artificial intelligence , Vol. 33. 346–353. [40] Ruobing Xie, Qi Liu, Liangdong Wang, Shukai Liu, Bo Zhang, and Leyu Lin. 2022. Contrastive cross-domain recommendation in matching. In Proceedings of the 28th ACM SIGKDD conference on knowledge discovery and data mining .4226–4236. [41] Haoran Xin, Ying Sun, Chao Wang, and Hui Xiong. 2025. Llmcdsr: Enhancing cross-domain sequential recommendation with large language models. ACM Transactions on Information Systems (2025). [42] Gelei Xu, Xueyang Li, Yixiong Chen, Yuying Duan, Shuqing Wu, Haoxinran Yu, Ching-Hao Chiu, Juntong Ni, Ningzhi Tang, Toby Jia-Jun Li, et al . 2026. A comprehensive survey of AI Agents in Healthcare. Journal of Biomedical Informatics (2026), 105045. [43] Zitao Xu, Shu Chen, Weike Pan, and Zhong Ming. 2025. A multi-view graph contrastive learning framework for cross-domain sequential recommendation. 
+
+ACM Transactions on Recommender Systems 3, 4 (2025), 1–28. [44] Xu Yuan, Liangbo Ning, Wenqi Fan, and Qing Li. 2025. mKG-RAG: Multimodal Knowledge Graph-Enhanced RAG for Visual Question Answering. arXiv preprint arXiv:2508.05318 (2025). [45] Tianzi Zang, Yanmin Zhu, Haobing Liu, Ruohan Zhang, and Jiadi Yu. 2022. A survey on cross-domain recommendation: taxonomies, methods, and future directions. ACM Transactions on Information Systems 41, 2 (2022), 1–39. [46] Jiahao Zhang, Rui Xue, Wenqi Fan, Xin Xu, Qing Li, Jian Pei, and Xiaorui Liu. 2024. Linear-Time Graph Neural Networks for Scalable Recommendations. In 
+
+Proceedings of the ACM on Web Conference 2024 . 3533–3544. [47] Chuang Zhao, Hongke Zhao, Ming He, Jian Zhang, and Jianping Fan. 2023. Cross-domain recommendation via user interest alignment. In Proceedings of the ACM web conference 2023 . 887–896.

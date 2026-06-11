@@ -1,0 +1,54 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2606.11023v1/fig-001.webp",
+      "caption": "Table 2: Overall performance comparisons between competing baselines and our GenAIR across different backbones on three datasets. Bolded values indicate the best results, showing statistically significant improvements (𝑝 < 0.05, two-sided t-test) compared to the second-best (underlined) baseline.",
+      "page": 6,
+      "index": 1,
+      "width": 1014,
+      "height": 485
+    },
+    {
+      "url": "assets/figures/arxiv/2606.11023v1/fig-002.webp",
+      "caption": "Figure 1: A brief comparison of different representation enhancement strategies, where 𝑝𝜃 denotes a projector module. The enhanced item representations are then fed into sequential recommendation models.",
+      "page": 2,
+      "index": 2,
+      "width": 499,
+      "height": 304
+    },
+    {
+      "url": "assets/figures/arxiv/2606.11023v1/fig-003.webp",
+      "caption": "Table 1: Prompt Template.",
+      "page": 3,
+      "index": 3,
+      "width": 506,
+      "height": 346
+    },
+    {
+      "url": "assets/figures/arxiv/2606.11023v1/fig-004.webp",
+      "caption": "Figure 5: The visualization of embeddings and group entropy.",
+      "page": 8,
+      "index": 4,
+      "width": 1013,
+      "height": 284
+    },
+    {
+      "url": "assets/figures/arxiv/2606.11023v1/fig-005.webp",
+      "caption": "Figure 3: The overview of GenAIR. (a) Sequence Modeling: The item representations are organized into sequences and processed by the sequence model for sequential recommendation. (b) Archetype Generation: Partial words are shown for illustration, and for simplicity, we assume that each word corresponds to a token, with 𝐻𝑖 denoting the hidden state of the LLM’s last layer for the 𝑖-th token. (c) Behavioral Calibration: The projector 𝑝𝜃 is optimized using an enhanced association-based objective.",
+      "page": 4,
+      "index": 5,
+      "width": 1029,
+      "height": 364
+    },
+    {
+      "url": "assets/figures/arxiv/2606.11023v1/fig-006.webp",
+      "caption": "Table 7: An Example of Latent User Archetype Generation",
+      "page": 12,
+      "index": 6,
+      "width": 1056,
+      "height": 1094
+    }
+  ]
+}

@@ -1,0 +1,78 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2606.05537v1/fig-001.webp",
+      "caption": "Figure 3: PHKT first generates three types of embeddings based on the user’s historical interaction information: item, location,",
+      "page": 6,
+      "index": 1,
+      "width": 1018,
+      "height": 479
+    },
+    {
+      "url": "assets/figures/arxiv/2606.05537v1/fig-002.webp",
+      "caption": "Figure 4: The impact of feature dimensionality on model performance",
+      "page": 11,
+      "index": 2,
+      "width": 817,
+      "height": 334
+    },
+    {
+      "url": "assets/figures/arxiv/2606.05537v1/fig-003.webp",
+      "caption": "Figure 5: The impact of the number of KAN network layers on model performance",
+      "page": 11,
+      "index": 3,
+      "width": 819,
+      "height": 336
+    },
+    {
+      "url": "assets/figures/arxiv/2606.05537v1/fig-004.webp",
+      "caption": "Table 4",
+      "page": 10,
+      "index": 4,
+      "width": 497,
+      "height": 276
+    },
+    {
+      "url": "assets/figures/arxiv/2606.05537v1/fig-005.webp",
+      "caption": "Table 5",
+      "page": 10,
+      "index": 5,
+      "width": 497,
+      "height": 277
+    },
+    {
+      "url": "assets/figures/arxiv/2606.05537v1/fig-006.webp",
+      "caption": "Table 3",
+      "page": 10,
+      "index": 6,
+      "width": 497,
+      "height": 276
+    },
+    {
+      "url": "assets/figures/arxiv/2606.05537v1/fig-007.webp",
+      "caption": "Figure 6: The impact of behavior weight combinations on",
+      "page": 12,
+      "index": 7,
+      "width": 402,
+      "height": 856
+    },
+    {
+      "url": "assets/figures/arxiv/2606.05537v1/fig-008.webp",
+      "caption": "Table 6",
+      "page": 12,
+      "index": 8,
+      "width": 497,
+      "height": 568
+    },
+    {
+      "url": "assets/figures/arxiv/2606.05537v1/fig-009.webp",
+      "caption": "Table 1",
+      "page": 5,
+      "index": 9,
+      "width": 498,
+      "height": 465
+    }
+  ]
+}

@@ -1,0 +1,30 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2606.10078v1/fig-001.webp",
+      "caption": "Figure 2: Left: Mult-DPO loss and exact marginalized PL-DPO loss; Right: NDCG on the Goodreads dataset of Mult-DPO with SPRec-style epoch-level dynamic hard negatives.",
+      "page": 9,
+      "index": 1,
+      "width": 742,
+      "height": 227
+    },
+    {
+      "url": "assets/figures/arxiv/2606.10078v1/fig-002.webp",
+      "caption": "Table 1: Comparison between Mult-DPO and DPO-style baselines on the test sets of Goodreads, MovieLens-10M, and Reddit-V2. Evaluation is conducted with the entire catalog as the candidates. Most results are significant as standard error is between 0.0020-0.0035 for N@5, N@15 and N@20.",
+      "page": 8,
+      "index": 2,
+      "width": 750,
+      "height": 481
+    },
+    {
+      "url": "assets/figures/arxiv/2606.10078v1/fig-003.webp",
+      "caption": "Figure 1: Validation NDCG@5 (solid) and NDCG@20 (dashed) versus the regularization strength β.",
+      "page": 7,
+      "index": 3,
+      "width": 810,
+      "height": 227
+    }
+  ]
+}

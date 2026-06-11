@@ -1,0 +1,70 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2606.05713v1/fig-001.webp",
+      "caption": "Figure 1: Architecture of the proposed discriminative regressor. The Qwen2.5-Omni-7B Thinker encodes text, video frames, and (optionally) audio into a unified token sequence. The Talker (speechgeneration head) is discarded. The hidden state of the last non-padding token at the final layer is passed through a lightweight MLP head to predict ŷ ∈ [−3,+3] in one forward pass. Trainable components (LoRA adapters and the head, ≈103M parameters, ≈1.14% of the total) are shown in green; the base is frozen and 4-bit NF4 quantized. The audio path is active only in the full-modal and ablation configurations.",
+      "page": 6,
+      "index": 1,
+      "width": 864,
+      "height": 431
+    },
+    {
+      "url": "assets/figures/arxiv/2606.05713v1/fig-002.webp",
+      "caption": "Table 3: Stability of the discriminative readout on CMU-MOSI across four random seeds. Acc-2 and F1 use the non-zero convention. The best single run is the one reported in Table 2.",
+      "page": 11,
+      "index": 2,
+      "width": 768,
+      "height": 188
+    },
+    {
+      "url": "assets/figures/arxiv/2606.05713v1/fig-003.webp",
+      "caption": "Table 2: Comparison with state-of-the-art methods on CMU-MOSI. Higher is better except for MAE. Acc-2 and F1 use the non-zero (negative/positive) convention. Best results in bold. Our model uses the full-modal discriminative readout under the best training configuration. Classical baselines are taken from the unified MMSA benchmark [20]; more recent methods are quoted from their original papers.",
+      "page": 11,
+      "index": 3,
+      "width": 636,
+      "height": 363
+    },
+    {
+      "url": "assets/figures/arxiv/2606.05713v1/fig-004.webp",
+      "caption": "Figure 4: Two-dimensional (a) PCA and (b) t-SNE projections of the last-token hidden states of the discriminative model on the CMU-MOSI test set (600 clips), coloured by ground-truth sentiment (−3 to +3). Both projections show a smooth negative-to-positive gradient, with polarity already well separated under the linear PCA projection. The kNN label-smoothness statistic (0.950 vs. 1.896 for permuted labels) confirms quantitatively that the representation is organized by sentiment intensity.",
+      "page": 15,
+      "index": 4,
+      "width": 877,
+      "height": 384
+    },
+    {
+      "url": "assets/figures/arxiv/2606.05713v1/fig-005.webp",
+      "caption": "Table 1: Comparison with state-of-the-art methods on CMU-MOSEI. Higher is better except for MAE; “–” denotes a value not reported in the source. Acc-2 and F1 use the non-zero (negative/positive) convention. Best results in bold. Our model uses the full-modal discriminative readout under the best training configuration. Classical baselines are taken from the unified MMSA benchmark [20]; more recent methods are quoted from their original papers.",
+      "page": 10,
+      "index": 5,
+      "width": 636,
+      "height": 438
+    },
+    {
+      "url": "assets/figures/arxiv/2606.05713v1/fig-006.webp",
+      "caption": "Figure 3: Visual summary of the controlled readout comparison on CMU-MOSI (Table 4). Across accuracy (MAE, correlation, Acc-2) and output reliability (unparsable rate), the discriminative readout consistently and substantially outperforms both the zero-shot and the trained generative readout. All axes start at zero. Additional training does not help the generative readout—its correlation degrades—while the discriminative head incurs no unparsable outputs by construction.",
+      "page": 13,
+      "index": 6,
+      "width": 942,
+      "height": 215
+    },
+    {
+      "url": "assets/figures/arxiv/2606.05713v1/fig-007.webp",
+      "caption": "Figure 2: The two readout strategies, sharing an identical Qwen2.5-Omni Thinker backbone and QLoRA adaptation. (a) Our discriminative readout pools the last non-padding token and projects it to a bounded score in one forward pass, with a scale-aware regression gradient. (b) The conventional generative readout autoregressively decodes a text string that must then be parsed, which can be unparsable or out of range. Isolating the readout as the single controlled variable enables the likefor-like comparison of Section 4.5.",
+      "page": 8,
+      "index": 7,
+      "width": 864,
+      "height": 418
+    },
+    {
+      "url": "assets/figures/arxiv/2606.05713v1/fig-008.webp",
+      "caption": "Table 4: Controlled comparison of readout strategies under an identical backbone, data, and LoRA configuration (common training budget). Unparsable and OOB (out-of-range) are reliability metrics intrinsic to generative decoding; they are zero by construction for the discriminative head. “–” denotes a configuration we did not run. Best values in bold.",
+      "page": 12,
+      "index": 8,
+      "width": 577,
+      "height": 335
+    }
+  ]
+}

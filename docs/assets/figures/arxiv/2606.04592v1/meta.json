@@ -1,0 +1,94 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2606.04592v1/fig-001.webp",
+      "caption": "Figure 5. Personalized accuracy by information depth (Qwen 3 Dialog Non-Thinking, n = 500 participants, 183 heldout items), split by difficulty tercile with 95 % confidence bands. Difficulty is defined by empty-persona accuracy at the 100 % Quartile. The hard tercile (red) absorbed 3.9× the lift of the easy tercile (blue) over the depth range.",
+      "page": 25,
+      "index": 1,
+      "width": 771,
+      "height": 428
+    },
+    {
+      "url": "assets/figures/arxiv/2606.04592v1/fig-002.webp",
+      "caption": "Table 2 Accuracy and correlation by construction method and model (n=500 participants).",
+      "page": 21,
+      "index": 2,
+      "width": 941,
+      "height": 759
+    },
+    {
+      "url": "assets/figures/arxiv/2606.04592v1/fig-003.webp",
+      "caption": "Figure 9. Non-Thinking (left endpoint) versus Thinking (right endpoint) per model, pooled across embedding methods and information depths. Left: accuracy. Right: Fisher-z correlation.",
+      "page": 30,
+      "index": 3,
+      "width": 966,
+      "height": 398
+    },
+    {
+      "url": "assets/figures/arxiv/2606.04592v1/fig-004.webp",
+      "caption": "Figure 8. Persona summary (left endpoint) versus Dialog input (right endpoint) per model, pooled across reasoning modes and information depths. Left: accuracy. Center: Fisher-z correlation. Right: variance ratio.",
+      "page": 29,
+      "index": 4,
+      "width": 970,
+      "height": 262
+    },
+    {
+      "url": "assets/figures/arxiv/2606.04592v1/fig-005.webp",
+      "caption": "Figure 2. Accuracy (left) and Fisher-z correlation (right) by information depth, with ±1 standard-error bands per model computed across the four construction cells (embedding × reasoning) at each depth.",
+      "page": 22,
+      "index": 5,
+      "width": 953,
+      "height": 257
+    },
+    {
+      "url": "assets/figures/arxiv/2606.04592v1/fig-006.webp",
+      "caption": "Table 1 Dataset overview: distribution of 949 usable datapoints across SOEP thematic categories, data splits, and scale types. Values show column-wise percentages within each split.",
+      "page": 14,
+      "index": 6,
+      "width": 1013,
+      "height": 702
+    },
+    {
+      "url": "assets/figures/arxiv/2606.04592v1/fig-007.webp",
+      "caption": "Figure 1. Cumulative distribution of normalized Shannon entropy across the 728 persona-context questions, sorted by descending entropy. Dashed vertical lines mark the boundaries of the four cumulative information depth levels. The dashed diagonal represents perfect equality (uniform entropy contribution).",
+      "page": 18,
+      "index": 7,
+      "width": 963,
+      "height": 475
+    },
+    {
+      "url": "assets/figures/arxiv/2606.04592v1/fig-008.webp",
+      "caption": "Figure 3. Per-model accuracy by information depth, with all four construction methods overlaid.",
+      "page": 23,
+      "index": 8,
+      "width": 976,
+      "height": 681
+    },
+    {
+      "url": "assets/figures/arxiv/2606.04592v1/fig-009.webp",
+      "caption": "Figure 7. Per-question variance-ratio distribution σtwin/σhuman by model on a log x-axis. Each per-(model, question) value is the mean across the 20 construction cells per model of the per-cell winsorised SD ratio on that question; per-cell ratios are capped at 5 before averaging. Restricted to ordinal- and metric-scale items. Dashed grey line at ratio=1; solid black line at the per-model median.",
+      "page": 28,
+      "index": 9,
+      "width": 956,
+      "height": 759
+    },
+    {
+      "url": "assets/figures/arxiv/2606.04592v1/fig-010.webp",
+      "caption": "Figure 6. Z-scored composite fingerprint for the three models across the three twin-quality metrics. Each cell is the across-model z-score of the model’s per-cell-averaged metric value (accuracy / Fisher-z correlation / closeness to human variance, encoded as −|σtwin/σhuman −1| so higher = closer to parity = better). Higher and greener = better on all three columns.",
+      "page": 27,
+      "index": 10,
+      "width": 803,
+      "height": 458
+    },
+    {
+      "url": "assets/figures/arxiv/2606.04592v1/fig-011.webp",
+      "caption": "Figure 4. Empty-persona ablation. Personalized versus empty-persona accuracy by information depth on Qwen 3 Dialog Non-Thinking (n = 500 participants, 183 held-out questions). Empty-persona accuracy is depth-flat at 0.65– 0.66; the personalization delta widens from +4.2 pp at Basic Demographic to +10.8 pp at the 100 % Quartile.",
+      "page": 24,
+      "index": 11,
+      "width": 770,
+      "height": 414
+    }
+  ]
+}

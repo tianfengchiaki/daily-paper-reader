@@ -1,0 +1,62 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2606.07972v1/fig-001.webp",
+      "caption": "Figure 2: SID-Query semantic alignment with contrastive learning.",
+      "page": 6,
+      "index": 1,
+      "width": 757,
+      "height": 290
+    },
+    {
+      "url": "assets/figures/arxiv/2606.07972v1/fig-002.webp",
+      "caption": "Table 6: Case study template for qualitative analysis.",
+      "page": 11,
+      "index": 2,
+      "width": 932,
+      "height": 253
+    },
+    {
+      "url": "assets/figures/arxiv/2606.07972v1/fig-003.webp",
+      "caption": "Figure 3: Training and inference pipeline of OneFeed.",
+      "page": 7,
+      "index": 3,
+      "width": 810,
+      "height": 343
+    },
+    {
+      "url": "assets/figures/arxiv/2606.07972v1/fig-004.webp",
+      "caption": "Table 4: Expected ablation study of OneFeed components. The full model is expected to outperform each ablated variant.",
+      "page": 10,
+      "index": 4,
+      "width": 844,
+      "height": 227
+    },
+    {
+      "url": "assets/figures/arxiv/2606.07972v1/fig-005.webp",
+      "caption": "Figure 1: Overall architecture of OneFeed. A shared behavior encoder supports both Feed SID generation and intent query generation.",
+      "page": 4,
+      "index": 5,
+      "width": 756,
+      "height": 471
+    },
+    {
+      "url": "assets/figures/arxiv/2606.07972v1/fig-006.webp",
+      "caption": "Table 1: Expected recommendation performance on Amazon Reviews. Numbers marked with † are based on established method baselines and synthetic sanity checks; final results depend on full public-dataset training. Higher values indicate better performance.",
+      "page": 9,
+      "index": 6,
+      "width": 694,
+      "height": 225
+    },
+    {
+      "url": "assets/figures/arxiv/2606.07972v1/fig-007.webp",
+      "caption": "Table 2: Expected query generation performance. † indicates baseline reference values obtained from standard model configurations. Retrievability is measured as the fraction of generated queries that retrieve at least one valid candidate.",
+      "page": 9,
+      "index": 7,
+      "width": 864,
+      "height": 225
+    }
+  ]
+}

@@ -1,0 +1,283 @@
+Title: Bridging the Semantic-Collaborative Gap: An Asymmetric Graph Architecture for Cold-Start Item Recommendation
+
+URL Source: https://arxiv.org/pdf/2606.06225v1
+
+Published Time: Fri, 05 Jun 2026 01:16:19 GMT
+
+Number of Pages: 8
+
+Markdown Content:
+# Bridging the Semantic-Collaborative Gap: An Asymmetric Graph Architecture for Cold-Start Item Recommendation 
+
+# Anh Truong 
+
+Tubi San Francisco, USA atruong@tubi.tv 
+
+# John Trenkle 
+
+Tubi San Francisco, USA jtrenkle@tubi.tv 
+
+# Yuanbo Chen 
+
+Tubi San Francisco, USA yuanbochen@tubitv.com 
+
+# Honghong Zhao 
+
+Tubi San Francisco, USA honghongzhao@tubitv.com 
+
+# Abdullah Alchihabi 
+
+Kumo AI San Francisco, USA abdullah.alchihabi@kumo.ai 
+
+# Effy Fang 
+
+Kumo AI San Francisco, USA effy@kumo.ai 
+
+# Michael Tamir 
+
+Tubi San Francisco, USA mtamir@tubi.tv 
+
+## Abstract 
+
+Collaborative filtering and graph-based recommendation models are highly effective because they leverage observed user interac-tions, but this dependence creates a fundamental cold-start chal-lenge when newly added content has no interaction history. In Tubi’s production retrieval system, this challenge is further con-strained by the serving interface: new content must be assigned a standalone embedding immediately, and the model must also pro-duce device embeddings suitable for approximate nearest-neighbor retrieval. We address this setting by formulating cold-start recom-mendation as an inductive graph-completion problem on a tem-poral bipartite device–content graph. We propose Shallow-RHS, an asymmetric link-prediction architecture in which the left-hand side (LHS) device tower leverages temporally valid watch-history message passing to capture collaborative signals, while the right-hand side (RHS) content tower is intentionally shallow with respect to the graph and encodes content solely from intrinsic features. The RHS tower does not use ID-based embeddings, content-side subgraphs, neighbor aggregation, or interaction-derived represen-tations, forcing the content encoder to map intrinsic features into a collaborative-filtering-aware embedding space. After training, the learned content encoder generates embeddings for both warm and newly ingested content, enabling implicit graph completion through retrieval of warm surrogate neighbors. We further extend the same representation-completion principle to device cold-start by constructing cohort-based embeddings from demographic features. Large-scale online experiments demonstrate consistent relative im-provements in content cold-start engagement, promotion speed, impression acquisition, and device cold-start engagement. 
+
+## CCS Concepts 
+
+• Information systems → Recommender systems ; • Comput-ing methodologies → Neural networks . 
+
+> Permission to make digital or hard copies of all or part of this work for personal or classroom use is granted without fee provided that copies are not made or distributed for profit or commercial advantage and that copies bear this notice and the full citation on the first page. Copyrights for components of this work owned by others than the author(s) must be honored. Abstracting with credit is permitted. To copy otherwise, or republish, to post on servers or to redistribute to lists, requires prior specific permission and/or a fee. Request permissions from permissions@acm.org.
+> RecSys ’20, Minneapolis, MN
+> ©2018 Copyright held by the owner/author(s). Publication rights licensed to ACM. ACM ISBN 978-1-4503-XXXX-X/2018/06 https://doi.org/XXXXXXX.XXXXXXX
+
+## Keywords 
+
+recommender systems, cold-start problem, graph neural networks 
+
+ACM Reference Format: 
+
+Anh Truong, John Trenkle, Yuanbo Chen, Honghong Zhao, Abdullah Alchi-habi, Effy Fang, and Michael Tamir. 2018. Bridging the Semantic-Collaborative Gap: An Asymmetric Graph Architecture for Cold-Start Item Recommenda-tion. In Proceedings of Make sure to enter the correct conference title from your rights confirmation email (RecSys ’20). ACM, New York, NY, USA, 8 pages. https://doi.org/XXXXXXX.XXXXXXX 
+
+## 1 Introduction 
+
+Modern recommendation systems rely heavily on collaborative fil-tering (CF) signals extracted from user-content interactions. Graph-based models are particularly effective in this setting because they propagate behavioral information over interaction graphs and learn representations that capture high-order audience preference pat-terns. The cold-start problem arises because collaborative structure is missing for newly added nodes. In a streaming platform, this issue is acute: new titles must be surfaced before meaningful watch history accumulates, and newly activated devices must receive rec-ommendations before personalized behavior is observed. This work is developed and deployed within Tubi, a large-scale ad-supported streaming platform serving hundreds of millions of users and a large catalog of content items, using the Kumo GNN platform as the graph modeling backbone. The production setting imposes additional constraints beyond standard cold-start recommendation. The serving system requires both content and device embeddings that can be indexed, retrieved, and compared efficiently using approximate nearest-neighbor search. As a result, a solution cannot rely solely on pairwise device–content similarity scoring, nor can it construct embeddings for cold content through interaction-derived subgraphs on the target side. Newly ingested content has no watch-history edges, so the model must compute its embedding directly from intrinsic features, while en-suring that the resulting representation remains aligned with the collaborative structure of the embedding space. We formulate this task as a representation-completion problem on a temporal bipartite graph of devices and content. For content cold-start, the goal is to learn an inductive function that maps metadata, taxonomy, and LLM-based semantic features into a CF-aware content embedding, even when the content node has zero observed edges. For device recommendation, the model also learns  
+
+> arXiv:2606.06225v1 [cs.IR] 4 Jun 2026 RecSys ’20, September 28 - October 02, 2026, Minneapolis, MN Truong et al.
+
+a device representation from device features and temporally valid watch history. For device cold-start, where no such history exists, we approximate the missing representation using demographic and contextual cohort priors. In this view, cold-start recommendation is an extreme form of graph completion: the node exists and its side information is available, but the interaction structure around it is missing. To address the content side of this problem, we propose Shallow-RHS, an asymmetric architecture for temporal link prediction. The left-hand side (LHS) encodes the querying device using device fea-tures and message passing over its historical watch context, allow-ing the model to learn collaborative structure from interaction-rich neighborhoods. The right-hand side (RHS) encodes target content using only intrinsic content features. This asymmetry prevents the target tower from memorizing warm titles and forces the content encoder to explain future device-content links from content features alone. As a result, the learned content encoder maps both warm and newly ingested zero-history titles into a shared CF-aware embed-ding space. We further apply the same representation-completion principle to device cold-start by assigning newly activated de-vices to demographic cohorts and using the cohort-level average of learned warm-device embeddings for retrieval. Together, these mechanisms provide a practical framework for reconstructing miss-ing representations on both sides of the device-content graph. The main contributions of this work are: 
+
+• We formulate content cold-start as an inductive graph-completion problem, where zero-edge content nodes require feature-based representation inference beyond observed graph struc-ture. 
+
+• We propose Shallow-RHS, an asymmetric temporal link-prediction architecture that produces device and content embeddings while keeping the RHS content tower free of content-side subgraphs and interaction-derived representa-tions. 
+
+• We introduce an implicit graph-completion procedure that embeds newly ingested content with the learned content encoder and retrieves warm surrogate neighbors in the CF-aware content space. 
+
+• We extend the same representation-completion principle to device cold-start using demographic cohort priors and CF-aware retrieval. 
+
+• We validate the approach through large-scale online experi-ments demonstrating gains in total view time, cold-content promotion speed, impression acquisition, and first-touch device engagement. 
+
+## 2 Related Work 2.1 Cold-start Recommendation 
+
+The cold-start problem arises when a recommender model needs to rank new users or new items with little or no historical interaction data. This setting is especially challenging for collaborative filter-ing methods, since matrix factorization and related latent-factor models infer user and item representations primarily from observed user-item co-occurrence. When an item has no interactions, its col-laborative representation is either undefined or poorly estimated, which prevents the recommendation model from generating mean-ingful representations for it in the learned embedding space [ 2, 4]. A common class of solution methods uses content-based rec-ommendation, where item metadata, text, audio, images, or other intrinsic features are used to represent new items [ 3, 6]. These methods naturally support item cold-start because they do not require historical user-item interactions. However, purely content-based similarity often reflects semantic-level similarity rather than audience preference. This creates a semantic-collaborative gap: con-tent features provide generalization, but do not directly encode the behavioral signals captured by collaborative filtering methods. Hybrid methods combine collaborative filtering with semantic in-formation. Early approaches include probabilistic content-CF mod-els for cold-start recommendation [ 4 ], collective matrix factoriza-tion over multiple relations [ 5], and collaborative topic regression, which combines topic models with collaborative filtering for rec-ommending newly published articles [ 7 ]. While these approaches improve over pure content-based recommendation methods, many still assume either partial interaction history, support examples, auxiliary relations, or warm item embeddings that can be directly reconstructed. Our work focuses on the strict item cold-start setting for newly added content with zero observed user-content interac-tions. 
+
+## 2.2 GNN-based Recommendation Systems 
+
+Item recommendation problem can be naturally represented as a graph learning task, where user (device) nodes and item (con-tent) nodes form a bipartite interaction graph, where the recom-mendation task is formulated as a link prediction problem. This formulation offers several advantages as the multi-hop graph struc-ture naturally captures collaborative filtering signals. Furthermore, Graph Neural Networks (GNNs) are well suited to this problem set-ting where message passing aggregates information from local and higher-order neighborhoods while incorporating node and edge features. Popular GNN methods include PinSage which scales graph convolutional networks to web-scale graphs by combining random-walk-based neighborhood construction with localized graph convo-lutions [ 9 ]. NGCF explicitly propagates user and item embeddings over the user-item interaction graph to encode high-order collab-orative signals [ 8]. ContextGNN frames recommendation task as a link prediction problem and combines local graph context with two-tower retrieval to improve ranking beyond pair-agnostic em-beddings [10]. 
+
+## 3 Methodology 3.1 Problem Formulation 
+
+We formulate the cold-start content recommendation problem as a temporal link prediction task on a bipartite interaction graph. Let G≤𝑡 = (D ∪ C , E≤𝑡 , XD, XC ) denote the temporal graph ob-served up to timestamp 𝑡 . The node set is bipartite: D denotes devices, or equivalently user identities in the streaming platform, and C denotes content nodes, also referred to as programs or titles. Edges only occur between device and content nodes. Each edge is a timestamped watch event defined as follows: 
+
+𝑒 = (𝑑, 𝑐, 𝜏, TVT 𝑑,𝑐,𝜏 ), 𝑑 ∈ D , 𝑐 ∈ C , 𝜏 ≤ 𝑡, (1) RecSys ’20, September 28 - October 02, 2026, Minneapolis, MN 
+
+where TVT 𝑑,𝑐,𝜏 is an edge feature corresponding to the total viewing time of device 𝑑 on content 𝑐 at timestamp 𝜏 . Thus, the edge set 
+
+E≤𝑡 is defined as: 
+
+E≤𝑡 ⊆ D × C × R+ × R+. (2) We distinguish between warm and cold content nodes based on the graph connectivity at timestamp 𝑡 . Warm content nodes are content nodes with observed watch edges: 
+
+C𝑤𝑎𝑟𝑚 (𝑡 ) = {𝑐 ∈ C | ∃ 𝑑, 𝜏 ≤ 𝑡 such that (𝑑, 𝑐, 𝜏, ·) ∈ E} , (3) On the other hand, cold content nodes correspond to content nodes with no observed watch event edges in the graph: 
+
+C𝑐𝑜𝑙𝑑 = {𝑐 | ( 𝑑, 𝑐, 𝜏, ·) ∉ E, ∀𝑑, 𝜏 }. (4) As a result, such nodes cannot receive collaborative signals through standard graph message passing, and their representations are un-defined under conventional graph-based recommendation models. Each node in the graph is associated with heterogeneous fea-tures. A device feature vector x𝑑 ∈ XD may include device type, country, platform join time, and available demographic or account-level attributes such as age and gender. A content feature vector 
+
+x𝑐 ∈ XC may include title text, content type, language, produc-tion year, duration, genre, structured metadata, and dense semantic embeddings derived from metadata, synopsis, or program scripts using pre-trained large language models. For a device 𝑑 , we define its historical context up to timestamp 𝑡 
+
+as follows: 
+
+N <𝑡 (𝑑 ) = {( 𝑐, 𝜏, TVT 𝑑,𝑐,𝜏 ) | ( 𝑑, 𝑐, 𝜏, TVT 𝑑,𝑐,𝜏 ) ∈ E , 𝜏 < 𝑡 }. (5) By extending the historical context N <𝑡 (𝑑 ) to include the multi-hop neighborhood of device 𝑑 , we capture the viewing patterns from other users with overlapping watch histories, i.e. which programs did other users with similar watch histories also watch. The cen-tral learning problem is to infer a collaborative-filtering-consistent representation for zero-edge content nodes using only their intrin-sic features. To do so, we need to learn two embedding functions defined as follows: 
+
+z𝑑 (𝑡 ) = 𝑓 𝜃 𝑑 (x𝑑 , N <𝑡 (𝑑 )) z𝑐 = 𝑓 𝜃 𝑐 (x𝑐 ) (6) The device embedding z𝑑 (𝑡 ) depends on the device’s historical watch subgraph N <𝑡 (𝑑 ) as well as the device input features. In contrast, the content embedding z𝑐 is constrained to depend only on intrinsic content features. This asymmetric constraint is critical as the content function 𝑓 𝜃 𝑐 must be applicable to both warm and cold content, including newly ingested titles with no historical watch edges. We therefore formulate the cold-start recommendation task as an extreme graph completion problem: the cold content node exists, but the interaction subgraph around it is absent. Given a device’s historical context, the task is to rank the content items that the device will watch during a future window (𝑡, 𝑡 + Δ]. The set of positive labels for this task is defined as: 
+
+P𝑡, Δ 
+
+> 𝑑
+
+= {𝑐 ∈ C 𝑤𝑎𝑟𝑚 (𝑡 ) | ∃ 𝜏 ∈ ( 𝑡, 𝑡 + Δ] ∧ ( 𝑑, 𝑐, 𝜏, ·) ∈ E} , (7) where C𝑤𝑎𝑟𝑚 (𝑡 ) is the set of warm content nodes available at times-tamp 𝑡 . The temporal link-prediction score is defined as follows: 
+
+𝑠 (𝑑, 𝑐, 𝑡 ) = cos (z𝑑 (𝑡 ), z𝑐 ) = z𝑑 (𝑡 )⊤z𝑐 
+
+∥z𝑑 (𝑡 )∥ 2 ∥z𝑐 ∥2
+
+. (8) Although supervision labels are derived from interaction edges between devices and warm content nodes, the design of 𝑓 𝜃 𝑐 forces it to learn to explain collaborative behavior from content features alone. As a result, the learned content encoder acts as a semantic-to-collaborative bridge: it maps zero-history items into an embedding space shaped by historical user behavior. This formulation turns cold-start recommendation into an inductive graph-completion problem, where rather than requiring observed edges for every new item, we learn a feature-based embedding function into a col-laborative space, allowing cold content to be encoded immediately upon being incorporated into the graph. 
+
+## 3.2 Shallow-RHS Architecture 
+
+In this section, we introduce our proposed Shallow-RHS architec-ture, which is specifically designed to tackle the item cold-start task formalized above, where newly added content nodes have intrinsic feature vectors ( x𝑐 ) available but no watch-history edges. The pro-posed Shallow-RHS also satisfies the requirement of our serving system that an embedding z𝑐 can be retrieved immediately and used to promote the corresponding new content on the platform. The Shallow-RHS model therefore must learn not only to predict temporal device-content links, but also to output representative embedding functions for devices and content, with the content-side function remaining valid for zero-history titles. In the proposed Shallow-RHS, we adopt an asymmetric two-tower architecture for temporal link prediction. The left-hand side (LHS) encodes the querying device using device features and tem-porally valid watch-history message passing over N <𝑡 (𝑑 ), allowing it to capture collaborative filtering signals from interaction-rich neighborhoods. In contrast, the right-hand side (RHS) is intention-ally shallow with respect to the graph: it encodes target content using only intrinsic content features, without access to interaction-derived information. As a result, the learned content encoder is an inductive mapping from intrinsic content features to a collaborative-filtering-aware embedding space. Both towers encode raw heterogeneous features with a HeteroTF-style tabular encoder built using PyTorch Frame’s FTTransformer [ 1]. Semantic-type-specific encoders map numerical, categorical, timestamp, text, and precomputed embedding columns into shared column embeddings; FT-Transformer self-attention then mixes in-formation across columns before pooling the result into a node representation. The RHS content representation is shallow with respect to the graph and is defined as follows: 
+
+z𝑐 = 𝑓 𝜃 𝑐 (x𝑐 ) = HeteroTF 𝐶 (x𝑐 ) (9) No message passing is applied from devices into content nodes on the RHS, and the content embedding used for scoring is not computed from the users or devices connected to that content. This is central to the cold-start generalization requirement where the same function 𝑓 𝜃 𝑐 can be applied to warm and cold content as it depends solely on intrinsic content features. On the other hand, the LHS device representation combines device features with temporally valid historical watch events. At first, we compute an initial embedding of the device node intrinsic RecSys ’20, September 28 - October 02, 2026, Minneapolis, MN Truong et al. 
+
+features as follows: 
+
+h(0) 
+
+> 𝑑
+
+= HeteroTF 𝐷 (x𝑑 ). (10) Then, for each historical edge (𝑑, 𝑐, 𝜏, TVT 𝑑,𝑐,𝜏 ) with 𝜏 < 𝑡 , the model constructs a content-to-device message using the content encoder output and edge features: 
+
+m(ℓ ) 
+
+> 𝑑 ←𝑐,𝜏
+
+= 𝜓 (ℓ )  z𝑐 , 𝛾 (TVT 𝑑,𝑐,𝜏 ), 𝜂 (𝑡 − 𝜏 ) , (11) where 𝛾 (·) encodes total viewing time and 𝜂 (·) encodes temporal recency. Given a message multiset M<𝑡 𝑑 , we use an aggregation block: 
+
+Aggr (M <𝑡 𝑑 ) = MLP  Concat  Aggr 1 (M <𝑡 𝑑 ), . . . , Aggr 𝑅 (M <𝑡 𝑑 ) 
+
+(12) where each Aggr 𝑟 (·) denotes a permutation-invariant aggregator over the message multiset, such as mean or max operators. The device representation is then updated by one or more heterogeneous aggregation layers: 
+
+h(ℓ+1) 
+
+> 𝑑
+
+= MLP (ℓ ) 
+
+Concat 
+
+
+
+h(ℓ ) 
+
+> 𝑑
+
+, Aggr (M <𝑡 𝑑 )
+
+ 
+
+. (13) Finally, the output of the last aggregation layer 𝐿 represents the final device embedding z𝑑 (𝑡 ) = h(𝐿 ) 
+
+> 𝑑
+
+.The training process utilizes temporal softmax link prediction loss where for each device-timestamp pair (𝑑, 𝑡 ), the positives cor-respond to future watched content in P𝑡, Δ 
+
+> 𝑑
+
+. On the other hand, the negatives N𝑡, Δ 
+
+> 𝑑
+
+are candidate content nodes not watched by 𝑑 in the prediction window. In particular, the loss function is defined as follows: 
+
+L = −∑︁  
+
+> (𝑑,𝑡 )
+
+∑︁ 𝑐 + ∈ P 𝑡, Δ
+
+> 𝑑
+
+log exp (𝑠 (𝑑, 𝑐 +, 𝑡 )/ 𝜏 𝑠 )
+
+exp (𝑠 (𝑑, 𝑐 +, 𝑡 )/ 𝜏 𝑠 ) + Í  
+
+> 𝑐 −∈ N 𝑡, Δ
+> 𝑑
+
+exp (𝑠 (𝑑, 𝑐 −, 𝑡 )/ 𝜏 𝑠 ) ,
+
+(14) where 𝜏 𝑠 is a temperature hyper-parameter. The inputs to the device tower are restricted to edges with timestamps 𝜏 < 𝑡 , while labels are drawn only from (𝑡, 𝑡 + Δ]. This prevents label leakage during the message-passing process. The entire model is trained end-to-end to minimize loss L.
+
+## 3.3 Implicit Graph Completion via Surrogate Neighbors 
+
+After the training of the Shallow-RHS model is complete, the learned content encoder is used to generate embeddings for all warm or newly added cold content nodes as follows: 
+
+z𝑐 = 𝑓 𝜃 𝑐 (x𝑐 ). (15) Subsequently, we build an approximate nearest-neighbor index over warm content embeddings Z𝑤𝑎𝑟𝑚 = {z𝑤 | 𝑤 ∈ C 𝑤𝑎𝑟𝑚 }. Then, for each cold content node 𝑐 ∈ C 𝑐𝑜𝑙𝑑 , we retrieve its top-𝑀 warm surrogate neighbors as follows: 
+
+S𝑀 (𝑐 ) = TopM 𝑤 ∈ C 𝑤𝑎𝑟𝑚 cos (z𝑐 , z𝑤 ). (16) This implicitly completes the graph around cold content nodes. Rather than adding synthetic device-content edges, this approach connects cold content to nearby warm content in the learned em-bedding space. The surrogate neighbor set S𝑀 (𝑐 ) provides an inter-pretable bridge from cold content to the existing interaction-rich warm content catalog, allowing cold titles to be promoted alongside warm titles. In production, these surrogate neighbors are not treated as ground-truth watch edges. Instead, they are used as serving-time behavioral proxies: a cold title inherits evidence from nearby warm titles in the CF-aware space for promotion, retrieval, or calibration decisions. Thus, surrogate completion operationalizes the missing neighbor-hood of a cold item without modifying the observed interaction graph. 
+
+## 3.4 Cold-Start Device Representation via Demographic Priors 
+
+The previous sections address the content side of the cold-start problem by generating item representations from semantic priors. The same principle can be applied to the query (device) side of the bipartite graph. New devices also correspond to nodes with missing graph structure: they have no watch-history neighborhood and, therefore, cannot be embedded through the LHS graph encoder. Instead of semantic priors, device cold-start relies on demographic and contextual priors. We cluster warm devices into approximately 𝐾 𝐷 demographic cohorts based on available device and account-level attributes. For each cohort 𝑔 , we compute a representative embedding by averaging the learned device embeddings of warm devices assigned to that cohort: 
+
+z𝑔 = 1
+
+|D 𝑔 |∑︁ 𝑑 ∈ D 𝑔 
+
+z𝑑 . (17) For each newly activated device 𝑑 𝑛𝑒𝑤 , we infer its cohort assignment 
+
+𝑔 (𝑑 𝑛𝑒𝑤 ) from demographic features and use z𝑔 (𝑑 𝑛𝑒𝑤 ) as its initial device representation: 
+
+z𝑑 𝑛𝑒𝑤 = z𝑔 (𝑑 𝑛𝑒𝑤 ) . (18) This enables immediate retrieval by performing an approximate nearest-neighbor search between the cohort-based device embed-ding and the CF-aware content embeddings learned by the Shallow-RHS model. Thus, item cold-start and device cold-start share the same underlying methodology: missing graph representations are reconstructed from side-information priors and then used in the collaborative embedding space. 
+
+## 4 Experimental Results 4.1 Graph Construction from Relational Data 
+
+The proposed Shallow-RHS architecture is implemented within the Kumo GNN platform and adapted for Tubi’s production cold-start recommendation setting. We construct the temporal bipartite graph using one year of watch history logs from Tubi’s viewership. Let 
+
+𝑡 0 denote the graph construction cutoff time, 𝑇 = 365 days denote the historical lookback window, and 𝑟 min denote the minimum total viewing time threshold. We retain only watch events with sufficient viewing duration: 
+
+Etrain = {( 𝑑, 𝑐, 𝜏, 𝑟 ) ∈ E | 𝑡 0 − 𝑇 ≤ 𝜏 ≤ 𝑡 0, 𝑟 ≥ 𝑟 min } , (19) where 𝑑 ∈ D is a device node, 𝑐 ∈ C is a content node, 𝜏 is the watch timestamp, and 𝑟 = TVT 𝑑,𝑐,𝜏 is the total viewing time. Fil-tering short views removes weak or accidental interactions and discards noisy edges in the graph. We construct the temporal bipar-tite graph from production-scale watch-history logs collected from RecSys ’20, September 28 - October 02, 2026, Minneapolis, MN 
+
+Tubi’s recommendation system. The resulting graph contains hun-dreds of millions of device nodes, hundreds of thousands of content nodes, and billions of temporal watch edges. Multiple watch events between the same device and content nodes are preserved as tem-poral edges rather than collapsed into a single static edge, allowing the model to condition on recency and repeated engagement. We separate historical context construction from supervision signal. The full one-year graph is used to construct temporal device watch histories, but link-prediction labels are sampled only from the last K-many days before 𝑡 0 defined as Tsup = [𝑡 0 −𝐾 days , 𝑡 0]. For each training anchor time 𝑡 ∈ T sup , the device tower observes only historical events with 𝜏 < 𝑡 , while positives are future watch events in (𝑡, 𝑡 + Δ]. This enables the model to use long-range behavioral context while emphasizing recent catalog trends and recent device preferences. Device features capture geography, platform, and available account-level attributes. In particular, x𝑑 may include country or region, device type and application platform. Content features capture intrinsic and external title information, including title text, con-tent type, genre taxonomy, language, release or production year, duration, maturity rating, cast and director metadata, popularity or quality signals such as external ratings and vote counts, and LLM-based semantic embeddings derived from program scripts or metadata. Feature coverage is a critical empirical constraint. In the initial system, pre-trained LLM-based embeddings covered only a small portion of content nodes, and several external metadata fields such as ratings, vote counts, budget, and box-office signals had partial coverage. We treat this limited coverage as a representation quality issue: if critical content features are absent, the learned mapping 
+
+𝑓 𝜃 𝑐 (x𝑐 ) has less information with which to align semantic content representations to collaborative behavior. This observation moti-vates the progressive feature-enrichment experiments described in the following sections. Given the size of the temporal graph, to ensure training scalabil-ity, we sample a bounded temporal device history for each training instance retaining only the most recent 𝐾 content interactions. The initial September experiment used 𝐷 -dimensional output em-beddings. After content-side feature enrichment in the October experiment, we doubled the output embedding dimension to im-prove representation capacity for richer program metadata and script-derived semantic features. 
+
+## 4.2 Evaluation Setup 
+
+All experiments are conducted as randomized online A/B tests within Tubi’s production recommendation system. The primary objective is to measure improvements in user engagement and cold-start content exposure under real serving conditions. We report the following key engagement metrics: 
+
+• Total View Time (TVT): The average daily viewing time per device, which reflects overall user engagement with rec-ommended content. 
+
+• Qualified View Days: The number of days on which a device achieves a minimum engagement threshold (e.g., at least K minutes of viewing), capturing sustained user activity. 
+
+• Conversion Metrics: Short-term engagement signals such as homepage 5-minute conversion, measuring whether users quickly engage with recommended content. In each A/B test, treatment variants are compared against a production baseline. The metrics are aggregated over sufficiently long evaluation windows to ensure statistical stability. The evalu-ation focuses on both global performance and cold-start-specific behavior, including promotion speed and early exposure of newly ingested content. This evaluation setup allows us to measure not only the quality of offline embedding but also the real-world impact on recommendation performance under cold-start conditions. 
+
+## 4.3 Progressive Bootstrapping and Ablation Analysis of Content Cold-Start 
+
+We evaluated the Shallow-RHS model through a sequence of online A/B experiments designed to progressively transfer collaborative-filtering signal into the content embedding space. Over multiple phases, the central mechanism is: improving content-side feature coverage and quality improves the learned content embedding which in turn improves the alignment between intrinsic content semantics and graph-derived collaborative behavior. 
+
+4.3.1 Phase 1: Semantic-to-CF Replacement. In the first experi-ment, we replaced the prior content-only semantic-based represen-tation (Control) with Shallow-RHS embeddings (Treatment). The Shallow-RHS model used content metadata, pre-trained LLM-based summary embeddings where available, and graph-derived device histories during training. Unlike raw semantic embeddings, the resulting content embeddings were optimized through temporal device-content link prediction and therefore reflected collaborative preference structure. This phase achieved a +0.10% global TVT lift and increased cold-title promotion speed by 13% . Given Tubi’s viewership scale, a lift of this magnitude represents a major win, es-pecially considering the historical difficulty of driving engagement gains through cold-start content optimizations. These results indi-cate that the CF-aware embedding space learned by Shallow-RHS is more effective for cold-start promotion than a purely semantic embedding space. 
+
+4.3.2 Phase 2: Metadata Coverage and Decision Calibration. In the second experiment, we improved both the input feature coverage and the promotion decision logic while retaining the same Shallow-RHS architecture. The content schema was enriched with higher-coverage genre features, budget metadata, box-office and popularity signals, and improved pre-trained LLM-based embedding coverage. We also replaced the previous coarse tier-score decision rule with a calibrated binary promotion-eligibility signal used by the serving system. This phase produced a +0.16% global TVT lift, suggesting that better metadata coverage increased the effectiveness of the semantic-to-CF alignment. 
+
+4.3.3 Phase 3: Content-Side Feature Completion. In the third exper-iment, we further expanded content feature coverage and reduced missing values across key content attributes. This phase achieved approximately 10% higher feature coverage across the catalog, with near-complete coverage for the most important semantic features. The resulting similarity distributions were smoother and better RecSys ’20, September 28 - October 02, 2026, Minneapolis, MN Truong et al. 
+
+Model GNN Semantic Calibration Feature Enhancement Surrogate TVT Lift V1 ✓ ✓ × × × +0.1% V2 ✓ ✓ ✓ × × +0.16% V3 ✓ ✓ ✓ ✓ × +0.42% V4 ✓ ✓ ✓ ✓ ✓ +0.17% 
+
+Table 1: Relative TVT lift across progressive system iterations (reported as percentage lift over baseline) 
+
+calibrated for cold-start retrieval, indicating that the learned con-tent space was less affected by missing feature artifacts. New titles reached key exposure milestones more quickly than the control group, and the experiment produced a +0.42% global TVT lift. This phase delivered the most pronounced improvement among the eval-uated rollout stages, highlighting the importance of content-side representation quality for zero-edge content generalization. 
+
+4.3.4 Phase 4: Surrogate Completion and Semantic Enrichment. 
+
+In the fourth experiment, we further enriched and expanded the content representation by introducing target-audience and demo-graphic descriptors, initialized with pre-trained OpenAI-based LLM embeddings. This provided richer contextual information, leading to more robust training for the Shadow-RHS model. Furthermore, to address the few long-tail titles where our primary strategy fell short, we utilized these pre-trained LLM embeddings to compute and fulfill their surrogate representations. This acted as a fallback mechanism to ensure comprehensive surrogate completion across all titles. Consequently, this joint strategy delivered a +0.17% lift in global TVT Overall, these experiments demonstrate that content cold-start performance depends jointly on the feature coverage and semantic quality of content-side features. The repeated performance gains support the hypothesis that cold-start recommendation can be treated as an implicit graph completion task: the model first learns a CF-aware semantic embedding function from warm temporal interactions, then applies that function to newly ingested content with no observed device edges. Table 1 summarizes the incremen-tal contribution of each major component introduced during the phased rollout. While the four variants are evaluated as successive online system iterations rather than isolated offline component removals, they provide a practical ablation of the cold-start pipeline under real serving conditions. 
+
+## 4.4 Similarity Distribution Analysis 
+
+To better understand how the proposed architecture reshapes the embedding space for cold-start content, we analyze the distribution of pairwise similarity scores under different embedding strategies. The reported similarity scores are normalized embedding similari-ties computed over aggregate cold-start evaluation cohorts. In traditional collaborative filtering (CF) embeddings, cold-start items lack interaction history and therefore fail to establish mean-ingful relationships with existing content. As a result, similarity scores involving cold items tend to concentrate in a low-similarity regime, effectively limiting their visibility in retrieval and ranking stages. In contrast, purely semantic embeddings (e.g., pre-trained LLM-based representations derived from metadata and scripts) produce a more centralized similarity distribution. While this provides gen-eralization and reasonable coverage, the scores remain relatively neutral, reflecting semantic closeness rather than true audience preference. Consequently, such embeddings lack the behavioral signals necessary for effective recommendation. The Shallow-RHS model produces a markedly different distribu-tion. As shown in Figure 1, similarity scores shift toward a higher-similarity regime, resulting in a right-skewed distribution. This shift indicates that the learned content embeddings no longer rep-resent purely semantic similarity, but instead capture collaborative filtering structure induced by historical user interactions. This distributional transformation provides direct evidence for our central hypothesis: the proposed architecture successfully aligns semantic representations with collaborative filtering behavior. As a result, cold-start content can be embedded into a CF-aware space, enabling it to connect meaningfully to the existing content catalog and be surfaced effectively in recommendation. 
+
+## 4.5 Device Cold-Start Evaluation 
+
+We also evaluated the proposed model on newly activated devices with little or no watch history. For these devices, the model used demographic cohort embeddings to retrieve candidate content from the CF-aware content embedding index. This allowed the retrieval layer to provide personalized content candidates before sufficient device-specific interactions are observed. In an online A/B test, this device cold-start retrieval strategy improved multiple engagement metrics. Qualified view days increased by +0.29% , capped daily total view time increased by +0.39% , and homepage five-minute conversion increased by +0.43% . These gains highlight that recon-structing missing device representations from demographic priors can improve first-touch recommendation quality, complementing the item-side cold-start improvements from semantic-to-CF align-ment. 
+
+## 5 Conclusion 
+
+We presented a production-scale approach to cold-start recommen-dation that treats cold-start as missing graph structure. In a tempo-ral bipartite device-content graph, newly added content and newly activated devices lack the interaction neighborhoods that collabora-tive filtering models normally use to construct representations. The central problem is therefore representation completion: producing useful embeddings for zero-edge nodes while keeping those embed-dings compatible with the collaborative space used by the retrieval system. For content cold-start, Shallow-RHS transfers collaborative signal from temporal device-content interactions into an inductive RecSys ’20, September 28 - October 02, 2026, Minneapolis, MN 
+
+Figure 1: Similarity Score Distribution Progress 
+
+content encoder. The LHS device tower uses graph-based historical context, while the RHS content tower remains feature-only and does not rely on a content-side subgraph or interaction-derived features. This asymmetric constraint allows the same content en-coder to generate CF-aware embeddings for both warm and newly ingested zero-history content. Surrogate-neighbor retrieval then op-erationalizes implicit graph completion by connecting cold content to nearby warm content in the learned embedding space. For device cold-start, demographic cohort embeddings extend the same prin-ciple to the query side of the graph. Online experiments show that the proposed framework improves both content and device cold-start performance, including global TVT gains, faster cold-content exposure, and improved first-touch device engagement. 
+
+## References 
+
+[1] Weihua Hu, Yiwen Yuan, Zecheng Zhang, Akihiro Nitta, Kaidi Cao, Vid Kocijan, Jinu Sunil, Jure Leskovec, and Matthias Fey. 2024. PyTorch Frame: A Modu-lar Framework for Multi-Modal Tabular Learning. In NeurIPS 2024 Third Table Representation Learning Workshop .[2] Yehuda Koren, Robert Bell, and Chris Volinsky. 2009. Matrix Factorization Tech-niques for Recommender Systems. Computer 42, 8 (2009), 30–37. doi:10.1109/ MC.2009.263 [3] Pasquale Lops, Marco de Gemmis, and Giovanni Semeraro. 2011. Content-Based Recommender Systems: State of the Art and Trends. In Recommender Systems Handbook , Francesco Ricci, Lior Rokach, Bracha Shapira, and Paul B. Kantor (Eds.). Springer, 73–105. doi:10.1007/978-0-387-85820-3_3 [4] Andrew I. Schein, Alexandrin Popescul, Lyle H. Ungar, and David M. Pennock. 2002. Methods and Metrics for Cold-Start Recommendations. In Proceedings of the 25th Annual International ACM SIGIR Conference on Research and Development in Information Retrieval (SIGIR ’02) . ACM, 253–260. doi:10.1145/564376.564421 [5] Ajit P. Singh and Geoffrey J. Gordon. 2008. Relational Learning via Collec-tive Matrix Factorization. In Proceedings of the 14th ACM SIGKDD International Conference on Knowledge Discovery and Data Mining (KDD ’08) . ACM, 650–658. doi:10.1145/1401890.1401969 [6] Aäron van den Oord, Sander Dieleman, and Benjamin Schrauwen. 2013. Deep Content-Based Music Recommendation. In Advances in Neural Information Pro-cessing Systems , Vol. 26. 2643–2651. [7] Chong Wang and David M. Blei. 2011. Collaborative Topic Modeling for Recom-mending Scientific Articles. In Proceedings of the 17th ACM SIGKDD International Conference on Knowledge Discovery and Data Mining (KDD ’11) . ACM, 448–456. doi:10.1145/2020408.2020480 [8] Xiang Wang, Xiangnan He, Meng Wang, Fuli Feng, and Tat-Seng Chua. 2019. Neural graph collaborative filtering. In Proceedings of the 42nd international ACM SIGIR conference on Research and development in Information Retrieval . 165–174. [9] Rex Ying, Ruining He, Kaifeng Chen, Pong Eksombatchai, William L Hamilton, and Jure Leskovec. 2018. Graph convolutional neural networks for web-scale recommender systems. In Proceedings of the 24th ACM SIGKDD international conference on knowledge discovery & data mining . 974–983. [10] Yiwen Yuan, Zecheng Zhang, Xinwei He, Akihiro Nitta, Weihua Hu, Manan Shah, Blaž Stojanovič, Shenyang Huang, Jan Eric Lenssen, Jure Leskovec, et al . 2025. ContextGNN: Beyond Two-Tower Recommendation Systems. In The Thirteenth International Conference on Learning Representations .
+
+## A Architecture Diagram RecSys ’20, September 28 - October 02, 2026, Minneapolis, MN Truong et al. 
+
+Figure 2: Overview of the Shallow-RHS architecture for content and device cold-start recommendation.

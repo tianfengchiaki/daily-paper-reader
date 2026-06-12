@@ -1,0 +1,38 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2606.09623v1/fig-001.webp",
+      "caption": "Table 1: Results across all datasets. Stochastic methods report mean ± 95% confidence intervals over 10 runs. Biclustering is deterministic and thus run once. Simulated Annealing is run once with a fixed random seed due to its high computational cost. The best values per dataset are shown in bold.",
+      "page": 7,
+      "index": 1,
+      "width": 684,
+      "height": 536
+    },
+    {
+      "url": "assets/figures/arxiv/2606.09623v1/fig-002.webp",
+      "caption": "Figure 8: Per-user affinity concentration: median fraction of total user affinity captured by top-k items (shaded band = IQR).",
+      "page": 18,
+      "index": 2,
+      "width": 484,
+      "height": 338
+    },
+    {
+      "url": "assets/figures/arxiv/2606.09623v1/fig-003.webp",
+      "caption": "Figure 2: Performance on synthetic data measured by AMI as a function of cluster variance and problem size. The campaigns are constrained to contain at most 1,500 users and 5 items.",
+      "page": 8,
+      "index": 3,
+      "width": 702,
+      "height": 256
+    },
+    {
+      "url": "assets/figures/arxiv/2606.09623v1/fig-004.webp",
+      "caption": "Figure 9: Quality progression of the Amazon baby products dataset over time.",
+      "page": 19,
+      "index": 4,
+      "width": 650,
+      "height": 482
+    }
+  ]
+}

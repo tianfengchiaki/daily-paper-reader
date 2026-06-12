@@ -1,0 +1,94 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2606.06474v1/fig-001.webp",
+      "caption": "Figure 3. Accuracy vs. throughput trade-off on 2WikiMultiHopQA and CofCA, traced by adjusting the commit threshold τc. Similar pareto patterns hold on HotpotQA and MuSiQue (Figure 6).",
+      "page": 6,
+      "index": 1,
+      "width": 995,
+      "height": 338
+    },
+    {
+      "url": "assets/figures/arxiv/2606.06474v1/fig-002.webp",
+      "caption": "Table 11. Query-threshold sweep, full numbers. EM (%) on the four datasets with τq sweeps, at commit thresholds τc ∈ {0.9, 0.95}.",
+      "page": 15,
+      "index": 2,
+      "width": 1017,
+      "height": 287
+    },
+    {
+      "url": "assets/figures/arxiv/2606.06474v1/fig-003.webp",
+      "caption": "Figure 1. Static question-only retrieval can fail on multi-hop QA when the question does not specify the bridge entity. Intermediate diffusion states often surface such entities early, enabling retrieval of later-hop evidence before the output is finalized.",
+      "page": 2,
+      "index": 3,
+      "width": 971,
+      "height": 336
+    },
+    {
+      "url": "assets/figures/arxiv/2606.06474v1/fig-004.webp",
+      "caption": "Figure 4. Sweep of the query threshold τq on 2WikiMultiHopQA (BM25, K=7), at the two commit thresholds τc ∈ {0.9, 0.95}. Similar trend holds on HotpotQA, MuSiQue, and SynthWorldsRM (Table 11).",
+      "page": 7,
+      "index": 4,
+      "width": 465,
+      "height": 304
+    },
+    {
+      "url": "assets/figures/arxiv/2606.06474v1/fig-005.webp",
+      "caption": "Figure 5. Per-query gold-document recall (fraction of gold passages in the current retrieved set) as generation progresses (K=7, BM25, 2WikiMQA). We restrict to methods that retrieve at every (or every-N th) token; agentic methods and FLARE issue specific targeted queries by design, so their per-query recall is low even though cumulative recall is comparable (Appendix D, Table 8).",
+      "page": 7,
+      "index": 5,
+      "width": 465,
+      "height": 339
+    },
+    {
+      "url": "assets/figures/arxiv/2606.06474v1/fig-006.webp",
+      "caption": "Table 9. Cumulative gold-document recall (×100, main number) and average number of unique documents retrieved per question (subscript). Cumulative recall measures the union of all gold documents surfaced at any point during generation, but is not directly comparable across methods that retrieve different total document counts: a method that issues many queries (e.g., SARDI, AR ret@1) trivially accumulates more docs than one that issues few (e.g., Search-R1). The subscripts let the reader normalize. Even controlling for total docs, SARDI remains competitive with the strongest baselines.",
+      "page": 14,
+      "index": 6,
+      "width": 1017,
+      "height": 233
+    },
+    {
+      "url": "assets/figures/arxiv/2606.06474v1/fig-007.webp",
+      "caption": "Figure 6. Accuracy vs. throughput trade-off across all four benchmarks, companion to Figure 3.",
+      "page": 14,
+      "index": 7,
+      "width": 796,
+      "height": 555
+    },
+    {
+      "url": "assets/figures/arxiv/2606.06474v1/fig-008.webp",
+      "caption": "Figure 2. Overview of self-augmenting retrieval for diffusion language models. At step t, the diffusion LM denoises the partially masked response. Tokens with confidence ci ≥ τq then form a query to refresh the retrieved evidence, while only the more confident tokens (ci ≥ τc) are committed to the next response xt−1. Speculative tokens can thus inform retrieval before they are stable enough to commit.",
+      "page": 3,
+      "index": 8,
+      "width": 1010,
+      "height": 425
+    },
+    {
+      "url": "assets/figures/arxiv/2606.06474v1/fig-009.webp",
+      "caption": "Table 8. Per-query gold-document recall at the final retrieval step (×100). Methods that issue specific targeted queries (AdaptiveRAG, ReAct, AR ret@adaptive/FLARE, Search-R1) retrieve few documents per query, so per-query recall is low by design even when their cumulative coverage (Table 9) is comparable. SARDI matches AR ret@1 across K and retrievers.",
+      "page": 13,
+      "index": 9,
+      "width": 1017,
+      "height": 234
+    },
+    {
+      "url": "assets/figures/arxiv/2606.06474v1/fig-010.webp",
+      "caption": "Table 7. Fine-tuning hyperparameters.",
+      "page": 12,
+      "index": 10,
+      "width": 487,
+      "height": 250
+    },
+    {
+      "url": "assets/figures/arxiv/2606.06474v1/fig-011.webp",
+      "caption": "Table 1. Main results on multi-hop QA benchmarks (Exact Match ×100). ± denotes bootstrap standard deviation; Time is mean wall-clock seconds per example. CofCA and SynthWorlds-RM use counterfactual corpora (made-up facts) to prevent data-leakage. Search-R1 is grayed as it requires additional RL training (see Section 5.3).",
+      "page": 5,
+      "index": 11,
+      "width": 1012,
+      "height": 419
+    }
+  ]
+}

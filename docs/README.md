@@ -6,103 +6,87 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-06-11
-- 运行时间：2026-06-11 22:23:24 UTC
+- 最新运行日期：2026-06-12
+- 运行时间：2026-06-12 22:04:11 UTC
 - 运行状态：成功
-- 本次总论文数：27
-- 精读区：15
+- 本次总论文数：21
+- 精读区：9
 - 速读区：12
 
 ### 今日简报（AI）
-今日精读2篇高分论文，聚焦流媒体广告决策校准与CTR预测的双流MLP创新。
-最值得关注《Decision-Calibrated Conformal Uncertainty》将校准不确定性引入广告出价，及《Dual-Stream MLP》以双流结构简化CTR模型。
-建议探索不确定性量化在广告系统的实用价值，并评估MLP架构替代复杂模型的效率收益。
-- 详情：[/202606/11/README](/202606/11/README)
+今日共处理21篇推荐论文，精读9篇、速读12篇，重点推荐QueryAgent-R1和Gated Bidirectional Linear Attention两篇高分工作。
+
+精读中电商查询推荐生成与生成式检索的线性注意力机制表现亮眼，速读的个性化动态超图与智能体噪声框架也值得关注。
+
+建议优先阅读上述高分论文，关注其如何用强化学习优化查询生成、以及双向线性注意力如何提升检索效率，后续可自行对比速读中的冷启动与多行为建模方案。
+- 详情：[/202606/12/README](/202606/12/README)
 
 ### 精读区论文标签
-1. [Decision-Calibrated Conformal Uncertainty for Pacing Decisions in Streaming Advertising](/202606/11/2606.10187v1-decision-calibrated-conformal-uncertainty-for-pacing-decisions-in-streaming-advertising)  
-   标签：评分：10.0/10、query:q2
-   evidence：面向流媒体广告节奏调节的决策校准共形不确定性
-2. [Dual-Stream MLP is All You Need for CTR Prediction](/202606/11/2606.04944v1-dual-stream-mlp-is-all-you-need-for-ctr-prediction)  
+1. [QueryAgent-R1: Bridging Query Generation and Product Retrieval for E-Commerce Query Recommendation](/202606/12/2606.05671v1-queryagent-r1-bridging-query-generation-and-product-retrieval-for-e-commerce-query-recommendation)  
    标签：评分：9.0/10、query:q1
-   evidence：在线广告点击率预测
-3. [PHKT:Personalized Dynamic Hypergraph-enhanced KAN-Transformer for Multi-behavior Sequential Recommendation](/202606/11/2606.05537v1-phktpersonalized-dynamic-hypergraph-enhanced-kan-transformer-for-multi-behavior-sequential-recommendation)  
+   evidence：使用LLM代理的电商查询推荐
+2. [Gated Bidirectional Linear Attention for Generative Retrieval](/202606/12/2606.07317v1-gated-bidirectional-linear-attention-for-generative-retrieval)  
+   标签：评分：9.0/10、query:llmapp
+   evidence：生成式检索用于推荐系统
+3. [Gryphon: A Unified Architecture for Semantic-ID Generation and Item-Level Scoring in Industrial Recommendations](/202606/12/2606.08604v2-gryphon-a-unified-architecture-for-semantic-id-generation-and-item-level-scoring-in-industrial-recommendations)  
    标签：评分：9.0/10、query:q1
-   evidence：多行为序列推荐
-4. [QueryAgent-R1: Bridging Query Generation and Product Retrieval for E-Commerce Query Recommendation](/202606/11/2606.05671v1-queryagent-r1-bridging-query-generation-and-product-retrieval-for-e-commerce-query-recommendation)  
+   evidence：工业推荐中语义ID生成和物品级评分的统一架构
+4. [Constrained user-item allocation for e-commerce marketing campaigns](/202606/12/2606.09623v1-constrained-user-item-allocation-for-e-commerce-marketing-campaigns)  
+   标签：评分：9.0/10、query:q5
+   evidence：营销活动中的联合用户-物品分配
+5. [HMAF: A Hierarchical Multi-Slot GD-RTB Allocation Framework](/202606/12/2606.09896v1-hmaf-a-hierarchical-multi-slot-gd-rtb-allocation-framework)  
    标签：评分：9.0/10、query:q1
-   evidence：用于电商查询推荐和产品检索的智能体框架
-5. [Gated Bidirectional Linear Attention for Generative Retrieval](/202606/11/2606.07317v2-gated-bidirectional-linear-attention-for-generative-retrieval)  
-   标签：评分：9.0/10、query:q1
-   evidence：推荐系统中的生成式检索
-6. [OneFeed: A Unified Generative Framework for Feed Content Enhancement and Query Generation](/202606/11/2606.07972v1-onefeed-a-unified-generative-framework-for-feed-content-enhancement-and-query-generation)  
-   标签：评分：9.0/10、query:q1
-   evidence：统一的生成框架用于feed推荐和查询生成
-7. [Unintended Consequences of Recommender System Interventions: Evidence from a Field Experiment](/202606/11/2606.08265v1-unintended-consequences-of-recommender-system-interventions-evidence-from-a-field-experiment)  
-   标签：评分：9.0/10、query:q7
-   evidence：短视频平台推荐干预的实地实验
-8. [HMAF: A Hierarchical Multi-Slot GD-RTB Allocation Framework](/202606/11/2606.09896v1-hmaf-a-hierarchical-multi-slot-gd-rtb-allocation-framework)  
+   evidence：GD-RTB广告的分层分配框架
+6. [$τ$-Rec: A Verifiable Benchmark for Agentic Recommender Systems](/202606/12/2606.10156v1--rec-a-verifiable-benchmark-for-agentic-recommender-systems)  
+   标签：评分：9.0/10、query:llmapp
+   evidence：智能体推荐系统基准测试
+7. [Decision-Calibrated Conformal Uncertainty for Pacing Decisions in Streaming Advertising](/202606/12/2606.10187v1-decision-calibrated-conformal-uncertainty-for-pacing-decisions-in-streaming-advertising)  
    标签：评分：9.0/10、query:q2
-   evidence：在线广告平台的GD-RTB分配框架
-9. [Mult-DPO: Multinomial Direct Preference Optimization for Recommender Systems](/202606/11/2606.10078v1-mult-dpo-multinomial-direct-preference-optimization-for-recommender-systems)  
-   标签：评分：9.0/10、query:llmapp
-   evidence：用于基于LLM的推荐系统的多项DPO
-10. [DUET -- Dual User Embedding Transformers for Offsite Conversion Prediction](/202606/11/2606.10243v1-duet----dual-user-embedding-transformers-for-offsite-conversion-prediction)  
+   evidence：用于流媒体广告节奏控制的决策校准共形框架
+8. [DUET -- Dual User Embedding Transformers for Offsite Conversion Prediction](/202606/12/2606.10243v1-duet----dual-user-embedding-transformers-for-offsite-conversion-prediction)  
    标签：评分：9.0/10、query:q1
-   evidence：计算推荐系统中的站外转化预测
-11. [Atomic Intent Reasoning: Bringing LLM Semantics to Industrial Cross-Domain Recommendations](/202606/11/2606.10357v1-atomic-intent-reasoning-bringing-llm-semantics-to-industrial-cross-domain-recommendations)  
-   标签：评分：9.0/10、query:llmapp
-   evidence：将LLM语义引入工业跨域推荐
-12. [From Prompt to Purchase: How AI Brand Recommendations Move Consumers on the Open Web](/202606/11/2606.10907v1-from-prompt-to-purchase-how-ai-brand-recommendations-move-consumers-on-the-open-web)  
-   标签：评分：9.0/10、query:q1
-   evidence：AI品牌推荐对用户搜索和网站访问的因果影响
-13. [Generative Archetype-Grounded Item Representations for Sequential Recommendation](/202606/11/2606.11023v1-generative-archetype-grounded-item-representations-for-sequential-recommendation)  
-   标签：评分：9.0/10、query:llmapp
-   evidence：使用大模型生成基于原型的项目表示用于序列推荐，直接涉及大模型在推荐中的应用
-14. [LLM-Based User Personas for Recommendations at Scale](/202606/11/2606.12198v1-llm-based-user-personas-for-recommendations-at-scale)  
-   标签：评分：9.0/10、query:llmapp
-   evidence：基于大模型的用户画像用于大规模推荐
-15. [DiffCold: A Diffusion-based Generative Model for Cold-Start Item Recommendation](/202606/11/2606.12245v1-diffcold-a-diffusion-based-generative-model-for-cold-start-item-recommendation)  
-   标签：评分：9.0/10、query:q1
-   evidence：使用扩散模型的冷启动物品推荐
+   evidence：双编码器预测推荐中的站外转化
+9. [From Prompt to Purchase: How AI Brand Recommendations Move Consumers on the Open Web](/202606/12/2606.10907v1-from-prompt-to-purchase-how-ai-brand-recommendations-move-consumers-on-the-open-web)  
+   标签：评分：9.0/10、query:q7
+   evidence：衡量AI品牌推荐对消费者搜索和网站访问的真实世界影响
 
 ### 速读区论文标签
-1. [Trading Engagement for Sustainability: Carbon-Aware Re-ranking for E-commerce Recommendations](/202606/11/2606.04550v1-trading-engagement-for-sustainability-carbon-aware-re-ranking-for-e-commerce-recommendations)  
-   标签：评分：8.0/10、query:llmapp
-   evidence：使用few-shot LLM提示进行电商推荐重排序，直接应用于广告和个性化营销
-2. [Distributional Approximate Nearest Neighbour Search for Uncertainty-Aware Retrieval](/202606/11/2606.04603v1-distributional-approximate-nearest-neighbour-search-for-uncertainty-aware-retrieval)  
+1. [PHKT:Personalized Dynamic Hypergraph-enhanced KAN-Transformer for Multi-behavior Sequential Recommendation](/202606/12/2606.05537v1-phktpersonalized-dynamic-hypergraph-enhanced-kan-transformer-for-multi-behavior-sequential-recommendation)  
    标签：评分：8.0/10、query:q1
-   evidence：面向推荐系统的不确定性感知检索
-3. [Improving the Efficiency and Effectiveness of LLM Knowledge Distillation for Conversational Search](/202606/11/2606.04650v1-improving-the-efficiency-and-effectiveness-of-llm-knowledge-distillation-for-conversational-search)  
+   evidence：多行为序列推荐
+2. [ANCHOR: Agentic Noise Creation Framework for Human Simulation and Denoising Recommendation](/202606/12/2606.05621v1-anchor-agentic-noise-creation-framework-for-human-simulation-and-denoising-recommendation)  
+   标签：评分：8.0/10、query:q1
+   evidence：通过代理框架进行推荐去噪
+3. [Bridging the Semantic-Collaborative Gap: An Asymmetric Graph Architecture for Cold-Start Item Recommendation](/202606/12/2606.06225v1-bridging-the-semantic-collaborative-gap-an-asymmetric-graph-architecture-for-cold-start-item-recommendation)  
+   标签：评分：8.0/10、query:q1
+   evidence：非对称图解决生产环境冷启动物品推荐
+4. [HARP: Efficient Data Selection for Finetuning Large Language Models](/202606/12/2606.07690v1-harp-efficient-data-selection-for-finetuning-large-language-models)  
    标签：评分：8.0/10、query:llmapp
-   evidence：大语言模型知识蒸馏用于对话搜索
-4. [Bridging the Semantic-Collaborative Gap: An Asymmetric Graph Architecture for Cold-Start Item Recommendation](/202606/11/2606.06225v1-bridging-the-semantic-collaborative-gap-an-asymmetric-graph-architecture-for-cold-start-item-recommendation)  
-   标签：评分：8.0/10、query:profile-1
-   evidence：来自Tubi生产系统的冷启动推荐系统
-5. [DSIRM: Learning Query-Bridged Discrete Semantic Identifiers for E-commerce Relevance Modeling](/202606/11/2606.04374v1-dsirm-learning-query-bridged-discrete-semantic-identifiers-for-e-commerce-relevance-modeling)  
-   标签：评分：7.0/10、query:q2
-   evidence：面向电商相关性建模的离散语义标识符
-6. [Synthetic Personalities: How Well Can LLMs Mimic Individual Respondents Using Socio-Economic Microdata?](/202606/11/2606.04592v1-synthetic-personalities-how-well-can-llms-mimic-individual-respondents-using-socio-economic-microdata)  
+   evidence：微调大语言模型的高效数据选择
+5. [PerceptUI: LLM Agents as Human-Aligned Synthetic Users for UI/UX Evaluation](/202606/12/2606.05697v1-perceptui-llm-agents-as-human-aligned-synthetic-users-for-uiux-evaluation)  
    标签：评分：7.0/10、query:llmapp
-   evidence：使用社会经济数据构建LLM数字孪生进行市场研究
-7. [Minimizing the Hidden Cost of Scales: Graph-Guided Ultra-Low-Bit Quantization for Large Language Models](/202606/11/2606.05429v1-minimizing-the-hidden-cost-of-scales-graph-guided-ultra-low-bit-quantization-for-large-language-models)  
+   evidence：多模态大模型代理用于UI/UX评估
+6. [Domain-Adapted Small Language Models with Hybrid Post-Processing: Achieving Cost-Efficient, Low-Latency Multi-Label Structured Prediction via LoRA Fine-Tuning on Scarce Data](/202606/12/2606.05781v2-domain-adapted-small-language-models-with-hybrid-post-processing-achieving-cost-efficient-low-latency-multi-label-structured-prediction-via-lora-fine-tuning-on-scarce-data)  
    标签：评分：7.0/10、query:llmapp
-   evidence：大型语言模型量化高效部署
-8. [ANCHOR: Agentic Noise Creation Framework for Human Simulation and Denoising Recommendation](/202606/11/2606.05621v1-anchor-agentic-noise-creation-framework-for-human-simulation-and-denoising-recommendation)  
-   标签：评分：7.0/10、query:profile-1
-   evidence：推荐去噪方法可迁移至广告场景
-9. [BEATS: Bootstrapping E-commerce Attribute Taxonomies for Search through Iterative Human-AI Collaboration](/202606/11/2606.04909v1-beats-bootstrapping-e-commerce-attribute-taxonomies-for-search-through-iterative-human-ai-collaboration)  
-   标签：评分：6.0/10、query:q2
-   evidence：LLM框架用于构建产品属性分类以改进电商搜索，与广告技术相关
-10. [LLM-Guided ANN Index Optimization for Human-Object Interaction Retrieval](/202606/11/2606.05489v1-llm-guided-ann-index-optimization-for-human-object-interaction-retrieval)  
+   evidence：LoRA微调用于结构化预测
+7. [Mechanistic Insights into Functional Sparsity in Multimodal LLMs via CoRe Heads](/202606/12/2606.05843v1-mechanistic-insights-into-functional-sparsity-in-multimodal-llms-via-core-heads)  
+   标签：评分：7.0/10、query:llmapp
+   evidence：多模态大模型的可解释性
+8. [Self-Augmenting Retrieval for Diffusion Language Models](/202606/12/2606.06474v1-self-augmenting-retrieval-for-diffusion-language-models)  
+   标签：评分：7.0/10、query:llmapp
+   evidence：无训练RAG用于扩散语言模型
+9. [Multilingual Fine-Tuning via Localized Gradient Conflict Resolution](/202606/12/2606.05613v1-multilingual-fine-tuning-via-localized-gradient-conflict-resolution)  
    标签：评分：6.0/10、query:llmapp
-   evidence：LLM引导的ANN索引优化，用于包括推荐在内的检索系统
-11. [Beyond Generative Decoding: Discriminative Hidden-State Readout from a Native Omni-Modal LLM for Multimodal Sentiment Analysis](/202606/11/2606.05713v1-beyond-generative-decoding-discriminative-hidden-state-readout-from-a-native-omni-modal-llm-for-multimodal-sentiment-analysis)  
+   evidence：通过梯度冲突解决微调大模型
+10. [Learning to Route LLMs from Implicit Cost-Performance Preferences via Meta-Learning](/202606/12/2606.06178v1-learning-to-route-llms-from-implicit-cost-performance-preferences-via-meta-learning)  
    标签：评分：6.0/10、query:llmapp
-   evidence：从全模态LLM中判别式读出进行多模态情感分析
-12. [DataEvolver: Automatic Data Preparation for Large Language Models through Multi-Level Self-Evolving](/202606/11/2606.07001v1-dataevolver-automatic-data-preparation-for-large-language-models-through-multi-level-self-evolving)  
+   evidence：元学习LLM路由以优化成本性能
+11. [GRAMformer: Any-Order Modality Interactions via Volumetric Multimodal Cross-Attention](/202606/12/2606.06249v1-gramformer-any-order-modality-interactions-via-volumetric-multimodal-cross-attention)  
    标签：评分：6.0/10、query:llmapp
-   evidence：自演化的数据准备流水线用于大模型
+   evidence：体积多模态交叉注意力用于任意顺序交互
+12. [DataEvolver: Automatic Data Preparation for Large Language Models through Multi-Level Self-Evolving](/202606/12/2606.07001v2-dataevolver-automatic-data-preparation-for-large-language-models-through-multi-level-self-evolving)  
+   标签：评分：6.0/10、query:llmapp
+   evidence：自动为LLM准备数据
 
 
 <div class="dpr-home-promo-card">

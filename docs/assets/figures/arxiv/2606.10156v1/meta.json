@@ -1,0 +1,14 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2606.10156v1/fig-001.webp",
+      "caption": "Figure 1: Capability vs latency Pareto frontier. Latency = median agent step latency. Suffix +T = thinking enabled; (hi)/(max) = DeepSeek thinking budgets. DS-V4F = DeepSeek V4 Flash; Gem-2.5F = Gemini 2.5 Flash.",
+      "page": 4,
+      "index": 1,
+      "width": 444,
+      "height": 315
+    }
+  ]
+}

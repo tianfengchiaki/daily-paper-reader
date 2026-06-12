@@ -1,0 +1,62 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2606.07690v1/fig-001.webp",
+      "caption": "Figure 5: Left two: experiments on the minimum proxy size M . Right two: experiments on proxy evaluation set sampling strategy.",
+      "page": 21,
+      "index": 1,
+      "width": 933,
+      "height": 213
+    },
+    {
+      "url": "assets/figures/arxiv/2606.07690v1/fig-002.webp",
+      "caption": "Figure 6: Pipeline FLOPs across the L, R, and M ablations.",
+      "page": 21,
+      "index": 2,
+      "width": 931,
+      "height": 212
+    },
+    {
+      "url": "assets/figures/arxiv/2606.07690v1/fig-003.webp",
+      "caption": "Figure 2: Experiments on leaf size L.",
+      "page": 8,
+      "index": 3,
+      "width": 928,
+      "height": 214
+    },
+    {
+      "url": "assets/figures/arxiv/2606.07690v1/fig-004.webp",
+      "caption": "Figure 3: Experiments on representatives per node R.",
+      "page": 8,
+      "index": 4,
+      "width": 928,
+      "height": 215
+    },
+    {
+      "url": "assets/figures/arxiv/2606.07690v1/fig-005.webp",
+      "caption": "Table 3: Shared hyperparameters used by HARP and all baselines.",
+      "page": 19,
+      "index": 5,
+      "width": 444,
+      "height": 719
+    },
+    {
+      "url": "assets/figures/arxiv/2606.07690v1/fig-006.webp",
+      "caption": "Table 2: Universal notation table for HARP.",
+      "page": 12,
+      "index": 6,
+      "width": 941,
+      "height": 1144
+    },
+    {
+      "url": "assets/figures/arxiv/2606.07690v1/fig-007.webp",
+      "caption": "Table 4: HARP-specific hyperparameters.",
+      "page": 20,
+      "index": 7,
+      "width": 411,
+      "height": 446
+    }
+  ]
+}

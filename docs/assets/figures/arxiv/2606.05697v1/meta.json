@@ -1,0 +1,70 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2606.05697v1/fig-001.webp",
+      "caption": "Figure 1: Overview of PERCEPTUI, a framework for persona-conditioned UI/UX evaluation.",
+      "page": 1,
+      "index": 1,
+      "width": 458,
+      "height": 314
+    },
+    {
+      "url": "assets/figures/arxiv/2606.05697v1/fig-002.webp",
+      "caption": "Figure 2: UX question answering on UXcar. We report macro-F1 across four groups of questions.",
+      "page": 6,
+      "index": 2,
+      "width": 713,
+      "height": 308
+    },
+    {
+      "url": "assets/figures/arxiv/2606.05697v1/fig-003.webp",
+      "caption": "Table 6: Implementation details for contrastive reflection fine-tuning and reflective prompt evolution.",
+      "page": 11,
+      "index": 3,
+      "width": 456,
+      "height": 283
+    },
+    {
+      "url": "assets/figures/arxiv/2606.05697v1/fig-004.webp",
+      "caption": "Figure 4: Reflective prompt evolution.",
+      "page": 10,
+      "index": 4,
+      "width": 458,
+      "height": 319
+    },
+    {
+      "url": "assets/figures/arxiv/2606.05697v1/fig-005.webp",
+      "caption": "Figure 3: Contrastive reflection fine-tuning.",
+      "page": 10,
+      "index": 5,
+      "width": 461,
+      "height": 317
+    },
+    {
+      "url": "assets/figures/arxiv/2606.05697v1/fig-006.webp",
+      "caption": "Table 1: UI/UX selection on WiserUI-Bench. All metrics are accuracy-based; higher is better. FA and SA measure accuracy when the A/B-test winner appears first or second, AA is their average, and CA measures order-consistent correctness. Best and second-best scores are highlighted in blue and yellow.",
+      "page": 4,
+      "index": 6,
+      "width": 456,
+      "height": 346
+    },
+    {
+      "url": "assets/figures/arxiv/2606.05697v1/fig-007.webp",
+      "caption": "Table 8: Persona availability across evaluation datasets.",
+      "page": 16,
+      "index": 7,
+      "width": 461,
+      "height": 737
+    },
+    {
+      "url": "assets/figures/arxiv/2606.05697v1/fig-008.webp",
+      "caption": "Table 9: Rationale alignment on WiserUI-Bench. Interp. Recall measures recovery of expert-written interpretations, while Inst. Recall measures whether at least one expert interpretation is recovered for each UI pair.",
+      "page": 16,
+      "index": 8,
+      "width": 431,
+      "height": 304
+    }
+  ]
+}

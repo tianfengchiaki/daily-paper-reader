@@ -1,0 +1,1263 @@
+Title: Multilingual Fine-Tuning via Localized Gradient Conflict Resolution
+
+URL Source: https://arxiv.org/pdf/2606.05613v1
+
+Published Time: Fri, 05 Jun 2026 00:37:35 GMT
+
+Number of Pages: 19
+
+Markdown Content:
+# Multilingual Fine-Tuning via Localized Gradient Conflict Resolution 
+
+Long P. Hoang 1 Yiran Zhao 2 Wei Lu 3 Wenxuan Zhang 1
+
+> 1
+
+Singapore University of Technology and Design 
+
+> 2
+
+Salesforce AI Research 3Nanyang Technological University 
+
+long_hoang@mymail.sutd.edu.sg yiran.zhao@salesforce.com wei.lu@ntu.edu.sg wxzhang@sutd.edu.sg 
+
+Abstract 
+
+The rapid evolution of Large Language Models (LLMs) has established cross-lingual versatility as a defining feature of modern systems. However, fine-tuning these models frequently induces negative interference across languages. To address this, we reformulate multilingual fine-tuning as a multi-objective optimization (MOO) problem. Specifically, we introduce Bucket-Level MOO , a scalable dis-tributed framework that applies gradient-based MOO algorithms locally on param-eter buckets. This enables conflict-aware updates without the prohibitive commu-nication overhead of reconstructing full gradient vectors. Theoretically, we prove this localized resolution natively enforces Refined Pareto Stationarity , a strictly tighter necessary condition for Pareto optimality. Empirically, Bucket-Level MOO mitigates interference by driving LLMs to construct distinct language-specific dimensions, improving representational separability. Extensive experiments across four base LLMs demonstrate that our method significantly improves both seen and unseen multilingual performance over standard fine-tuning paradigms. 1
+
+1 Introduction 
+
+The multilingual capabilities of Large Language Models (LLMs) have advanced rapidly, driven largely by data-centric strategies such as translating English corpora or distilling knowledge from high-resource languages (Muennighoff et al., 2023; Pan et al., 2024; Chen et al., 2024). While these approaches improve average cross-lingual performance, they implicitly assume that a single set of shared parameters can accommodate diverse and often incompatible linguistic patterns. In practice, this assumption frequently breaks down during fine-tuning: updates that benefit one language can adversely affect others, leading to negative interference , a phenomenon where optimizing for one language degrades performance on another (Conneau et al., 2020; Wang et al., 2020). As multilingual training scales to more languages and tasks, mitigating such interference becomes a central challenge for achieving robust and balanced cross-lingual performance. From an optimization perspective, negative interference is fundamentally driven by conflict-ing gradients across language-specific objectives (Sener and Koltun, 2018; Yu et al., 2020; Shi et al., 2023). As illustrated in Figure 1 (Left), models with limited initial multilingual align-ment (e.g., Meta-Llama-3-8B ) exhibit severe, sustained gradient volatility throughout fine-tuning. Their pairwise cosine similarities frequently plunge into negative regimes with massive variance, severely constraining downstream progress. Conversely, stronger base multilingual models (e.g., 
+
+Qwen3-8B-Base ) are significantly more stable and maintain a largely positive average alignment. However, they still experience occasional, sharp gradient conflicts. These observations suggest the inherent instability of optimizing for diverse languages simultaneously.        
+
+> 1Our code is publicly available at https://github.com/iNLP-Lab/BK-MOO .Preprint.
+> arXiv:2606.05613v1 [cs.AI] 4 Jun 2026 050 100 150 200 250 300
+> Training Step
+> 1.00
+> 0.75
+> 0.50
+> 0.25
+> 0.00
+> 0.25
+> 0.50
+> 0.75
+> 1.00
+> Gradient Pairwise Cosine Similarity
+> Meta-Llama-3-8B (Grad Cos)
+> Qwen3-8B-Base (Grad Cos)
+> Meta-Llama-3-8B (MMLU)
+> Qwen3-8B-Base (MMLU)
+> 20
+> 30
+> 40
+> 50
+> 60
+> 70
+> Global-MMLU Accuracy
+> Gradient Conflict (mean ± std) & MMLU Lyr 0
+> Lyr 5
+> Lyr 10
+> Lyr 15
+> Lyr 20
+> Lyr 25
+> Lyr 30 0
+> 20
+> 40
+> 60
+> 80
+> 100
+> Frequency
+> Gradient Conflict at Layers (Meta-Llama-3-8B)
+> Embedding
+> Transformer Blocks
+> Final Norm
+> LM Head Lyr 0
+> Lyr 5
+> Lyr 10
+> Lyr 15
+> Lyr 20
+> Lyr 25
+> Lyr 30
+> Lyr 35 0
+> 20
+> 40
+> 60
+> 80
+> 100
+> Frequency
+> Gradient Conflict at Layers (Qwen3-8B-Base)
+> Embedding
+> Transformer Blocks
+> Final Norm
+> LM Head
+
+Figure 1: Gradient conflict during multilingual fine-tuning with two base models on eight languages (en, zh, it, ar, ko, id, bn, sw ). Left: Mean ± standard deviation of pairwise gradient cosine similarity across all language pairs, with accuracy scores on Global-MMLU dataset. Right: 
+
+Per-layer frequency of conflicts, defined as the fraction of training steps where at least one language pair exhibits a negative gradient cosine similarity. A natural approach to mitigating such conflicts is to cast multilingual fine-tuning as a Multi-Objective Optimization (MOO) problem (Wang et al., 2021; Mao et al., 2022). In this framework, each language defines a separate objective, and the ultimate goal is to achieve Pareto optimality —a state where no language’s performance can be improved without degrading another’s. To move toward this optimal state, conventional MOO algorithms seek a common descent direction that guarantees Pareto stationarity , the widely accepted first-order necessary condition for optimality. However, directly applying these standard methods (e.g., MGDA (Sener and Koltun, 2018) and CAGrad (Liu et al., 2021), which ensure Pareto stationarity, or heuristics like PCGrad (Yu et al., 2020)) to LLMs is challenging. These methods require access to full gradient vectors across all objectives, incurring substantial communication and memory overhead in distributed training settings. Beyond scalability, they also treat the model as a monolithic parameter space, implicitly assuming conflicts are globally uniform. In practice, linguistic processing within LLMs is structurally heterogeneous, e.g., various layers perform distinct roles (Zhao et al., 2024; Bandarkar et al., 2026). As shown in Figure 1 (Right), gradient conflicts are highly localized, often concentrating in specific layers (e.g., early or late layers). This mismatch implies that global gradient aggregation can obscure severe local conflicts, motivating the need for more fine-grained, structure-aware optimization strategies. To address these challenges, we introduce Bucket-Level MOO , a scalable framework that applies gradient-based MOO at the level of parameter partitions. Concretely, instead of forming and manipu-lating full-model gradients, we intercept the backward pass in distributed training (e.g., ZeRO (Rajb-handari et al., 2020) or FSDP (Zhao et al., 2023)) and apply MOO algorithms independently within each parameter bucket before gradient reduction between GPUs. This design enables conflict-aware updates using only locally available gradients, avoiding the need for expensive global aggregation. By resolving conflicts at the same granularity at which gradients are partitioned and communicated, our method aligns naturally with the structural and systems properties of modern LLM training. Theoretically, we show that this localized optimization is not merely a heuristic approximation: it enforces Refined Pareto Stationarity (Hu and Yu, 2025), a stricter necessary condition than standard Pareto stationarity, thereby providing stronger guarantees on the quality of the obtained solutions. Our main contributions are summarized as follows: • Practically, we reveal the layer-wise heterogeneity of negative interference in modern LLMs, motivating the critical need for localized, rather than global, conflict resolution. • Methodologically, we propose Bucket-Level MOO , an optimization framework that seam-lessly integrates into distributed training paradigms, enabling structure-aware conflict resolu-tion while maintaining memory and communication efficiency during large-scale fine-tuning. • Empirically , we demonstrate through extensive experiments that Bucket-Level MOO sig-nificantly improves both in-distribution and out-of-distribution multilingual capabilities, successfully carving out highly separable, language-specific representation dimensions. 2a) Avg. GD b) MGDA d) PCGrad c) CAGrad Figure 2: Illustration of how multi-task update rules handle conflicting objectives. Averaged Gradients risks negative interference by strictly following the mean, potentially degrading one loss to improve another. MGDA finds a common descent direction via the minimum-norm point in the gradients’ convex hull. CAGrad resolves conflicts by optimizing within a trust region bounded around the average gradient. PCGrad neutralizes conflicts by projecting gradients onto the orthogonal planes of competing tasks. 
+
+2 Preliminaries 
+
+This section frames multilingual fine-tuning as a multi-objective optimization problem and discusses conventional training approaches. Formal definitions and theorems are introduced in Appendix A. 
+
+2.1 Negative Interference in Multilingual Fine-Tuning 
+
+Given a set of target languages denoted by T := {1, 2, . . . , T }, we formulate the multilingual fine-tuning of a language model parameterized by θ as a Multi-Objective Optimization (MOO) problem. Specifically, the goal is to simultaneously minimize potentially conflicting objectives across all languages. This is formally expressed as: 
+
+min  
+
+> θ
+
+L(θ), where L(θ) = [ L1(θ), . . . , LT (θ)] ⊤ , (1) where Lt(θ) denotes the loss for language t ∈ T when trained on its corresponding dataset Dt.However, when optimizing the objective defined in Equation 1, a prevalent challenge is the emergence of conflicting gradients . Specifically, two gradients ∇θ Li and ∇θ Lj are considered conflicting if their cosine similarity is negative, or equivalently, if their inner product is negative: ⟨∇ θ Li, ∇θ Lj ⟩ < 0.This conflict leads to negative interference. Consider the first-order Taylor expansion approximating the change in loss Lj following a gradient update for language i:
+
+∆Lj ≈ L j (θ − η∇θ Li) − L j (θ) ≈ − η⟨∇ θ Lj , ∇θ Li⟩, (2) where η denotes the learning rate. As shown, negative interference ( ∆Lj > 0) occurs precisely when the gradients conflict ( ⟨∇ θ Lj , ∇θ Li⟩ < 0), meaning that an update step for language i inadvertently degrades the performance on language j.Consequently, naive optimization via minimizing the average loss ( 1
+
+> T
+
+P 
+
+> t
+
+Lt) risks improving domi-nant languages at the expense of others, as illustrated in Figure 2 (a). 
+
+2.2 Gradient-Based Conflict Resolution 
+
+To mitigate negative interference, various gradient manipulation algorithms identify an optimal descent direction that balances competing objectives better than naive averaging. 
+
+Multiple Gradient Descent Algorithm (MGDA). MGDA (Fliege and Svaiter, 2000; Désidéri, 2012) seeks the minimum-norm vector within the convex hull of the language-specific gradients by solving a quadratic program for combination weights α:
+
+min 
+
+> α1,...,α T
+
+
+
+> T
+
+X
+
+> t=1
+
+αt∇θ Lt(θ)
+
+> 22
+> T
+
+X
+
+> t=1
+
+αt = 1 , α t ≥ 0 ∀t
+
+ . (3) The resulting update vector ensures a common descent direction that decreases the loss for all objectives simultaneously, preventing negative interference. 3Conflict-Averse Gradient Descent (CAGrad). CAGrad (Liu et al., 2021) bridges the gap between the strict conflict avoidance of MGDA and the fast convergence of average gradient descent. It maximizes the worst-case local improvement among all objectives, constrained within a trust region around the average gradient gavg :
+
+dCAGrad = arg max 
+
+> d
+
+min  
+
+> t∈{ 1,...,T }
+
+⟨∇ θ Lt, d⟩ s.t. ∥d − gavg ∥ ≤ c∥gavg ∥, (4) where c ∈ [0 , 1) controls the degree of conflict aversion. 
+
+Projected Conflicting Gradients (PCGrad). PCGrad (Yu et al., 2020) uses direct “gradient surgery”. For conflicting gradients gi = ∇θ Li(θ) and gj = ∇θ Lj (θ) (i.e., ⟨gi, g j ⟩ < 0), PCGrad replaces gi with its projection gP C i onto the orthogonal complement of gj :
+
+dPCGrad =
+
+> T
+
+X
+
+> t=1
+
+gP C t , gP C i = gi − ⟨gi, g j ⟩∥gj ∥2 gj . (5) This neutralizes the conflict by ensuring ⟨gP C i , g j ⟩ = 0 .
+
+3 Bucket-Level Multi-Objective Optimization 
+
+3.1 Motivation 
+
+In multilingual fine-tuning, we seek Pareto optimality (PO), where no language improves without degrading another. Since exact optimality is computationally intractable, conventional algorithms target Pareto stationarity (PS), a necessary condition where the zero vector lies within the global convex hull of task gradients: 
+
+0 ∈ conv {∇ θ L1(θ∗), . . . , ∇θ LT (θ∗)} . (6) This implies a global weight α ∈ ∆ exists such that PTt=1 αt∇θ Lt(θ∗) = 0, where ∆ is a T -dimensional simplex. Moreover, Hu and Yu (2025) show that exploiting network structure yields a tighter criterion. By partitioning θ into K disjoint blocks P = {θ(1) , . . . , θ(K)}, a solution θ∗
+
+achieves Refined Pareto stationarity (RPS) if: 
+
+0 ∈
+
+> K
+
+Y
+
+> k=1
+
+conv ∇θ(k) L(θ∗) . (7) Equivalently, each block k has a local weight αk ∈ ∆ satisfying PTt=1 αkt ∇θ(k) Lt(θ∗) = 0.PS PO RPS 
+
+Figure 3: RPS is a stronger candidate for PO than PS. As established by Hu and Yu (2025), refined Pareto stationarity is a strictly tighter necessary condition for Pareto optimality (Figure 3). Indeed, relying strictly on global Pareto stationarity can obscure valid descent directions within specific layers. As shown in Figure 1, this occurs because aggregating gradients across the entire model frequently dilutes and hides severe localized conflicts, particularly within the early and late layers during multilingual fine-tuning. Beyond the aforementioned theoretical limitations, applying global multi-objective optimization to LLMs introduces severe scalability bottlenecks. In distributed training frameworks such as DeepSpeed ZeRO (Rajbhandari et al., 2020), gradients are partitioned across multiple GPUs, meaning that a single device never holds the complete gradient vector ∇θ Lt. Consequently, applying standard global MOO becomes computationally prohibitive due to both communication and memory constraints. First, computing global optimization objectives incurs substantial communication overhead, as it requires gathering full gradient vectors via expensive All-Gather operations at every training step, effectively undermining ZeRO’s communication efficiency. Second, the approach imposes severe memory limitations, because storing T distinct copies of the full parameter gradient to compute the optimal update direction easily exceeds the memory capacity of individual accelerators. 4Bucket -Level MOO     
+
+> •Average Gradient
+> •MGDA, CAGrad, PCGrad
+> Backpropagation from the last
+> parameter bucket.
+> 500 M
+> 500M
+> 250M
+> 250M
+> All -Gather
+> Bucket
+> Gradients
+> Reduce
+> Scatter
+> Gradients
+> GPUs only keep their assigned
+> gradient slice.
+> GPU 1
+> Lang 1
+> GPU 2
+> Lang 2
+
+Figure 4: An illustration of the Bucket-Level MOO pipeline for a two-language setup. In distributed training, gradients are sequentially partitioned into fixed-size memory buckets (typically 500M parameters) during the backward pass. Starting from the last parameter bucket, our method intercepts this process by gathering the local gradients, applying gradient-based MOO algorithms (e.g., MGDA, CAGrad, PCGrad) locally to resolve conflicts, and then immediately reducing and scattering the resolved updates across GPUs to preserve memory efficiency. 
+
+3.2 Bucket-Level Multi-Objective Optimization 
+
+Inspired by the motivations above, we offer localized gradient conflict resolution . Rather than treating the model as a monolithic entity where global aggregation obscures distinct, layer-wise gradient interference, we apply gradient-based MOO directly at the bucket level—resolving conflicts strictly locally where they occur. Let the global parameters θ be partitioned into K disjoint buckets 
+
+{θ(k)}Kk=1 . In a distributed setup with T GPUs, assume each GPU t ∈ { 1, . . . , T } processes a language-specific micro-batch for the corresponding language t.During the backward pass, before the standard gradient reduction occurs, each GPU t computes the local gradients of bucket k with respect to its assigned language objective Lt, denoted as ∇θ(k) Lt.We then aggregate these bucket-level gradients across all T GPUs to form a local gradient set: 
+
+G(k) = ∇θ(k) L1, . . . , ∇θ(k) LT ,
+
+and apply the multi-objective optimization algorithm locally to G(k). By resolving conflicts within each bucket independently, we achieve a refined optimization trajectory while seamlessly integrating with modern distributed training systems. 
+
+Bucket-Level MGDA. We solve the local quadratic program for each bucket k:
+
+min 
+
+> α(k)
+> T
+
+X
+
+> t=1
+
+α(k) 
+
+> t
+
+∇θ(k) Lt
+
+> 22
+
+s.t. X α(k) 
+
+> t
+
+= 1 . (8) This yields local weights α(k) and the corresponding update dMGDA  
+
+> (k)
+
+specific to bucket k.
+
+Bucket-Level CAGrad. We locally solve Equation 4. With gavg  
+
+> (k)
+
+as the local average gradient, we maximize the worst local improvement: 
+
+dCAGrad  
+
+> (k)
+
+= arg max 
+
+> d(k)
+
+min  
+
+> t
+
+⟨∇ θ(k) Lt, d(k)⟩ s.t. ∥d(k) − gavg  
+
+> (k)
+
+∥ ≤ c∥gavg  
+
+> (k)
+
+∥. (9) This enforces "Conflict Aversion" per bucket, keeping updates close to the local average while resolving resident conflicts. 
+
+Bucket-Level PCGrad. Conflict detection and projection rely solely on local inner products: if ⟨∇ θ(k) Li, ∇θ(k) Lj ⟩ < 0 = ⇒ Project locally on rank k. (10) The final global update d = [ d(1) , . . . , d(K)] concatenates the resolved local gradients. The illustra-tion and pseudocode for Bucket-Level MOO are shown in Figure 4 and Appendix D, respectively. 53.3 Bucket-Level MOO Achieves Refined Pareto Stationarity 
+
+Crucially, this distributed implementation is not merely a heuristic designed for computational efficiency; it provides a stricter theoretical condition for the optimization process. Conventional global MOO algorithms, such as Global MGDA and Global CAGrad, are mathematically guaranteed to converge only to standard Pareto stationarity (Theorems A.6, A.7). As discussed in Section 3.1, this global equilibrium may be suboptimal for heterogeneous networks, as it can obscure localized gradient conflicts across different layers. In contrast, our proposed Bucket-Level variants naturally align with the structural framework of 
+
+Refined Pareto Stationarity . By enforcing multi-objective optimization conditions independently on each bucket θ(k) defined by the distributed partition P = {θ(1) , . . . , θ(K)}, the algorithm enforces Pareto stationarity strictly at the local level. Because this local equilibrium must be satisfied across all disjoint buckets simultaneously, the model inherently achieves Refined Pareto Stationarity. Conse-quently, Bucket-Level MOO enforces a strictly tighter necessary condition for Pareto optimality than conventional global MOO. This allows the optimizer to uncover valid common descent directions and exert fine-grained, layer-specific control over language interference. 
+
+Theorem 3.1 (Bucket-Level MGDA Convergence) . Let α(k) be the solution to the MGDA problem (Equation 8) solved locally on bucket k, and let dMGDA  
+
+> (k)
+
+= PTt=1 α(k) 
+
+> t
+
+∇θ(k) Lt be the local update vector. Define the global update as dMGDA = [ dMGDA  
+
+> (1)
+
+, . . . , dMGDA  
+
+> (K)
+
+]. Then, one of the following holds: (a) ∥dMGDA ∥2 = 0 , implying ∥dMGDA  
+
+> (k)
+
+∥2 = 0 for all k, and the current parameters are Refined Pareto Stationary with respect to partition P.(b) −dMGDA is a valid descent direction that decreases all objectives simultaneously (i.e., 
+
+⟨∇ θ Lt, dMGDA ⟩ > 0 for all t where dMGDA ̸ = 0 ). 
+
+Theorem 3.1 guarantees that Bucket-Level MGDA preserves rigorous optimization dynamics. Con-catenating locally resolved vectors produces a global update that decreases the loss for all languages simultaneously, ultimately converging to the superior candidate of Refined Pareto Stationarity. 
+
+Theorem 3.2 (Bucket-Level CAGrad Convergence) . Let dCAGrad  
+
+> (k)
+
+be the solution to the CAGrad problem solved locally on bucket k with conflict parameter 0 ≤ c < 1 and local average gradient 
+
+gavg  
+
+> (k)
+
+. Define the global update as dCAGrad = [ dCAGrad  
+
+> (1)
+
+, . . . , dCAGrad  
+
+> (K)
+
+]. Then: (a) Global Descent: The global update −dCAGrad is a descent direction for the global average loss Lavg , satisfying: ⟨∇ θ Lavg , dCAGrad ⟩ ≥ 1−c2 
+
+> 2
+
+∥∇ θ Lavg ∥22.
+
+(b) Stationarity: If ∥dCAGrad ∥2 = 0 , the current parameters satisfy Refined Pareto Stationarity 
+
+with uniform weights (i.e., 1
+
+> T
+
+P ∇θ(k) Lt = 0 for all k). 
+
+Similarly, Theorem 3.2 extends this theoretical safety to Bucket-Level CAGrad. While CAGrad relaxes MGDA for faster convergence, the bucket-wise application still guarantees descent for the average loss, bounded by c. Crucially, optimization halts strictly when the average gradient within every single bucket vanishes, safely resolving local cross-lingual interference while driving the model toward an average-loss minimum that satisfies the refined stationarity criterion. 
+
+4 Experiments 
+
+4.1 Experimental Setup Training Data Preparation We construct an English corpus comprising 1,000 LIMA conversa-tional pairs (Zhou et al., 2023) and 630 s1k-1.1 reasoning samples (Muennighoff et al., 2025) distilled from DeepSeek-R1. 2 Gemini 2.0 Flash is employed to translate this corpus into eight diverse languages ( en, zh, it, ar, ko, id, bn, sw ) covering the high- to low-resource spectrum. 
+
+> 2We filter s1k-1.1 to include only samples marked as correctly distilled from DeepSeek-R1.
+
+6Table 1: Main results (Subscripts denote difference from Vanilla SFT). 
+
+Method 8 Seen Languages 5 Unseen Languages 
+
+BELE ARC-E PolyMath MMLU Avg. BELE ARC-E PolyMath MMLU Avg. Meta-Llama-3-8B 
+
+Base 51 .8 54 .2 12 .0 37 .2 38 .8 55 .9 65 .2 13 .5 42 .6 44 .3
+
+V. SFT 53 .5 61 .5 18 .3 42 .5 44 .0 60 .7 71 .5 21 .5 48 .9 50 .7
+
+MGDA 56 .4+2 .9 63 .7+2 .2 21 .6+3 .3 45 .5+3 .0 46 .8+2 .8 63 .4+2 .7 72 .7+1 .2 24 .3+2 .8 50 .6+1 .7 52 .8+2 .1
+
+CAGrad 56 .6+3 .1 63 .9+2 .4 20 .2+1 .9 43 .9+1 .4 46 .2+2 .2 62 .4+1 .7 72 .8+1 .3 23 .8+2 .3 50 .5+1 .6 52 .4+1 .7
+
+PCGrad 56 .8+3 .3 64 .3+2 .8 21 .4+3 .1 45 .2+2 .7 46 .9+2 .9 63 .7+3 .0 73 .6+2 .1 24 .5+3 .0 49 .0+0 .1 52 .7+2 .0
+
+Llama-3.1-8B 
+
+Base 59 .1 60 .0 13 .2 41 .8 43 .5 67 .8 70 .0 13 .8 48 .9 50 .1
+
+V. SFT 53 .1 61 .3 20 .3 44 .2 44 .7 61 .3 72 .6 22 .8 50 .5 51 .8
+
+MGDA 57 .1+4 .0 63 .9+2 .6 22 .4+2 .1 45 .2+1 .0 47 .2+2 .5 65 .0+3 .7 74 .1+1 .5 25 .8+3 .0 51 .7+1 .2 54 .2+2 .4
+
+CAGrad 57 .2+4 .1 63 .7+2 .4 22 .9+2 .6 45 .6+1 .4 47 .3+2 .6 63 .9+2 .6 74 .4+1 .8 26 .6+3 .8 52 .1+1 .6 54 .3+2 .5
+
+PCGrad 57 .0+3 .9 63 .5+2 .2 22 .4+2 .1 44 .8+0 .6 46 .9+2 .2 63 .2+1 .9 74 .4+1 .8 26 .1+3 .3 52 .6+2 .1 54 .1+2 .3
+
+Qwen3-4B-Base 
+
+Base 75 .5 81 .7 39 .4 56 .9 63 .4 83 .8 93 .3 44 .0 63 .6 71 .2
+
+V. SFT 69 .8 78 .9 43 .4 55 .9 62 .0 76 .0 88 .8 45 .8 62 .3 68 .2
+
+MGDA 72 .8+3 .0 80 .2+1 .3 44 .7+1 .3 58 .1+2 .2 63 .9+1 .9 79 .6+3 .6 90 .8+2 .0 47 .4+1 .6 66 .0+3 .7 70 .9+2 .7
+
+CAGrad 72 .6+2 .8 80 .7+1 .8 44 .9+1 .5 58 .0+2 .1 64 .0+2 .0 79 .4+3 .4 90 .6+1 .8 47 .2+1 .4 65 .5+3 .2 70 .7+2 .5
+
+PCGrad 73 .0+3 .2 80 .1+1 .2 44 .6+1 .2 58 .4+2 .5 64 .0+2 .0 79 .4+3 .4 90 .6+1 .8 46 .1+0 .3 64 .0+1 .7 70 .0+1 .8
+
+Qwen3-8B-Base 
+
+Base 81 .8 85 .7 44 .5 61 .7 68 .4 85 .0 95 .1 47 .6 70 .0 74 .4
+
+V. SFT 75 .3 84 .8 46 .8 63 .4 67 .6 80 .6 93 .4 49 .0 69 .1 73 .0
+
+MGDA 77 .9+2 .6 85 .3+0 .5 50 .0+3 .2 64 .8+1 .4 69 .5+1 .9 83 .9+3 .3 94 .0+0 .6 51 .3+2 .3 71 .0+1 .9 75 .1+2 .1
+
+CAGrad 78 .4+3 .1 85 .2+0 .4 49 .0+2 .2 65 .2+1 .8 69 .5+1 .9 83 .6+3 .0 94 .0+0 .6 49 .8+0 .8 71 .9+2 .8 74 .8+1 .8
+
+PCGrad 78 .2+2 .9 85 .4+0 .6 48 .4+1 .6 64 .6+1 .2 69 .2+1 .6 83 .8+3 .2 94 .0+0 .6 49 .1+0 .1 70 .3+1 .2 74 .3+1 .3
+
+Evaluation We assess model performance using a comprehensive suite of benchmarks covering three core competencies: • Natural Language Understanding: We use BELEBELE (Bandarkar et al., 2024) to evaluate parallel machine reading comprehension capabilities. • Technical Reasoning: We employ Multilingual ARC-E (Han et al., 2025) and PolyMath 
+
+(low and medium subsets) (Wang et al., 2025) to assess reasoning skills. • Knowledge-Based QA: We utilize Global-MMLU -Lite Singh et al. (2024) to measure world knowledge retention and transfer. To ensure a standardized comparison across all tasks, we evaluate the models on the 13 languages that intersect across these four benchmarks. These are categorized into the 8 seen languages from our train-ing phase and 5 unseen languages ( de, es, fr, ja, pt ) to evaluate cross-lingual generalization. Further implementation and computational details are in Appendices E and F, respectively. 
+
+4.2 Main Results Performance on Seen Languages Table 1 demonstrates that reformulating MLF as an MOO problem systematically and comprehensively mitigates negative interference. Unlike conventional fine-tuning, which forces compromises between languages, all Bucket-Level MOO strategies yield strictly positive improvements over Vanilla SFT across all four base models. The gains are substantial, increasing the average seen performance by robust margins of +1.6 to +2.9. These improvements span both reading comprehension (e.g., CAGrad drives a +4.1 BELE improvement on Llama-3.1-8B )and complex technical reasoning (e.g., MGDA yields a +3.2 PolyMath boost on Qwen3-8B-Base ). 
+
+Generalization to Unseen Languages The structural advantages of gradient-based MOO are even more pronounced under zero-shot cross-lingual transfer to the 5 unseen languages. By resolving conflicts locally, the model is prevented from severely overfitting to the dominant distributions 7of the 8 seen languages. Consequently, Bucket-Level MOO achieves massive out-of-distribution average gains, reaching up to +2.5 on Llama-3.1-8B (CAGrad) and +2.7 on Qwen3-4B-Base 
+
+(MGDA). These improvements showcase robust boosts in both world knowledge (MMLU +3.7 on 
+
+Qwen3-4B-Base ) and reasoning (PolyMath +3.8 on Llama-3.1-8B ). This confirms that mitigating gradient conflicts fosters a highly generalized cross-lingual representation space. 
+
+Mitigating Catastrophic Forgetting Our results reveal a systematic “alignment tax” where Vanilla SFT aggressively overwrites and degrades specific base-model capabilities. This is particularly evident in the BELE benchmark, where standard fine-tuning collapses the model’s pre-trained reading comprehension capacity. Crucially, gradient-based MOO acts as a powerful implicit regularizer that buffers this catastrophic forgetting across both seen and unseen distributions. On seen BELE, Vanilla SFT drastically drops Llama-3.1-8B from 59.1 down to 53.1; however, Bucket-Level CAGrad successfully recovers it to 57.2. Similarly, on unseen BELE, Vanilla SFT induces a severe drop for 
+
+Qwen3-8B-Base (falling from 85.0 down to 80.6), which MGDA systematically limits by recovering the score to 83.9. Furthermore, while Vanilla SFT drags the overall average performance of inherently strong models below their pre-trained baselines (e.g., the Qwen3-8B-Base seen average drops from 68.4 to 67.6), MOO methods completely arrest this decline and propel the models to new peaks (e.g., MGDA reaching 69.5). This structural preservation confirms that resolving gradient conflicts directly prevents the destructive overwriting of shared pre-trained representations. 
+
+4.3 Conventional MOO vs. Bucket-Level MOO 
+
+Theoretically, Bucket-Level MOO naturally generalizes conventional MOO (the trivial global par-tition P = {θ}). However, as established in Section 3.1, applying MOO globally across an LLM introduces prohibitive memory and communication bottlenecks. We empirically validate this by post-training Qwen3-4B-Base on 8 NVIDIA H200 GPUs. Systemically, conventional MOO requires materializing full global gradient vectors, driving peak VRAM consumption to an unsustainable 123 GB . Conversely, Bucket-Level MOO seamlessly leverages distributed memory partitioning, strictly operating within the highly efficient 72 GB footprint of Vanilla SFT. Table 2: Performance comparison between conventional MOO (w/o BK) and Bucket-Level MOO (w/ BK) on Qwen3-4B-Base .                    
+
+> Metric MGDA CAGrad PCGrad
+> w/o BK w/ BK w/o BK w/ BK w/o BK w/ BK
+> Seen Avg. 63.7 63.9 63.1 64.0 63.6 64.0
+> Unseen Avg. 70.6 70.9 70.0 70.7 70.8 70.0
+
+Beyond hardware efficiency, Table 2 demonstrates that Bucket-Level MOO yields superior representa-tion quality. Across nearly all con-figurations, bucket-level gradient manipulation drives stronger per-formance, prominently seen with CAGrad securing a +0.9 improve-ment on seen languages (63.1 to 64.0) and a +0.7 gain on unseen generalization (70.0 to 70.7). Similarly, Bucket-Level MGDA con-sistently edges out its global counterpart. This empirical advantage corroborates our core theoretical claim: by enforcing Refined Pareto Stationarity, Bucket-Level MOO natively isolates and resolves the severe, layer-wise gradient conflicts that are otherwise diluted during global aggregation, ultimately producing a more refined cross-lingual alignment. 
+
+4.4 Mechanistic Interpretation 
+
+To evaluate how Bucket-Level MOO reshapes the internal representation space, we extract the hidden states of the final input tokens 3 across all 13,040 post-training samples of the 8 seen languages. We utilize the Silhouette score (Rousseeuw, 1987) to quantify the clustering quality of these embeddings with respect to their source languages. This metric penalizes high intra-class variance and rewards large inter-class margins, making it ideal for evaluating language separability. Furthermore, following recent interpretability studies (Wei et al., 2024; Chen et al., 2025; Leng and Xiong, 2025), we identify critical neurons activated during language processing to calculate the ratio of language-specific neurons —those highly specialized to process a single language (details in Appendix H). As shown in Figure 5 (Left), Bucket-Level MOO methods induce significantly higher Silhouette scores than Vanilla SFT, particularly in the earlier or later layers of the network. This divergence     
+
+> 3For instance, the ‘<|im_start|>assistant\n’ token in Qwen models.
+
+80 10 20 30    
+
+> Layer
+> 0.0
+> 0.1
+> 0.2
+> 0.3
+> 0.4
+> 0.5
+> Silhouette Score
+> Qwen3-8B-Base
+> V. SFT
+> MGDA
+> CAGrad
+> PC Meta-Llama-3-8B Llama-3.1-8B Qwen3-4B-Base Qwen3-8B-Base
+> 0.0
+> 0.5
+> 1.0
+> 1.5
+> 2.0
+> 2.5
+> 3.0
+> 3.5
+> 4.0
+> Specific Neuron Ratio (%)
+> Language-Specific Neuron Ratio Across Models
+> V. SFT
+> MGDA
+> CAGrad
+> PC
+
+Figure 5: How Bucket-Level MOO affects the internal structure of LLMs. Left: Layer-wise Silhouette scores measuring the representational clustering of languages in Qwen3-8B-Base 5. Right: 
+
+The percentage of language-specific neurons (neurons activated solely by a single language) across different model architectures. indicates a much more compact and separable clustering of languages. Furthermore, Figure 5 (Right) reveals that gradient-based MOO consistently increases the proportion of language-specific neurons across all evaluated models. Notably, inherently stronger multilingual models (e.g., the Qwen3 family) naturally allocate a higher baseline ratio of these specialized neurons ( ∼3-4%), a capacity that MOO methods further expand. This structural shift implies that mitigating gradient conflicts actively drives the model to carve out orthogonal, language-specific dimensions. By isolating these linguistic properties rather than forcing competing features into a shared representation bottleneck, the model disentangles the representation space. Consequently, it can safely project language-agnostic semantics into shared subspaces without incurring negative interference, ultimately yielding a more refined and capable multilingual representation. 
+
+5 Related Work 
+
+Multilingual LLMs and Negative Interference Modern LLMs project diverse languages into a shared parameter space (Chen et al., 2025; Yang et al., 2025), where these languages occupy distinct representational regions (Chang et al., 2022; Xu and Zhang, 2026). Structurally, models often exhibit a division of labor: early and late layers handle multilingual specializations, while middle layers serve as language-universal mechanisms (Zhao et al., 2024; Bandarkar et al., 2026). While targeted activation interventions improve reasoning (Zhao et al., 2026), cross-lingual generalization is predominantly driven by data-centric strategies like translating instruction corpora (Pan et al., 2024; Chen et al., 2024), self-distillation (Zhang et al., 2024), and multi-task tuning (Muennighoff et al., 2023). However, forcing disparate linguistic distributions into a static parameter space inherently triggers negative interference , where optimizing for one language disproportionately degrades others (Conneau et al., 2020; Wang et al., 2020). 
+
+Gradient Conflicts and Scalable Optimization in Distributed LLMs From an optimization perspective, negative interference fundamentally stems from conflicting gradients across language-specific objectives (Wang et al., 2021; Shi et al., 2023). Beyond architectural modifications (Zhang et al., 2025) or multi-stage fine-tuning (Ye et al., 2025), gradient-based Multi-Objective Optimization (MOO)—such as MGDA (Désidéri, 2012; Sener and Koltun, 2018), PCGrad (Yu et al., 2020), and CAGrad (Liu et al., 2021)—offers a principled solution. MOO mitigates conflicts by guaranteeing a common descent direction without altering the underlying model architecture (Wang et al., 2021; Mao et al., 2022). However, applying global MOO to large-scale LLMs is severely bottlenecked by dis-tributed training frameworks like FSDP (Zhao et al., 2023) and DeepSpeed ZeRO (Rajbhandari et al., 2020). Because these paradigms partition gradients across GPUs to conserve memory, reconstructing the full global gradient vector at every step introduces prohibitive All-Gather communication overhead, rendering standard global MOO computationally unscalable. 
+
+> 5Similar patterns in other models are provided in Appendix G.
+
+96 Conclusion 
+
+In this work, we addressed the pervasive issue of negative interference in multilingual LLM fine-tuning by reformulating it as an MOO problem. Recognizing that global gradient aggregation both obscures layer-specific linguistic conflicts and introduces prohibitive communication overhead in distributed training, we introduced Bucket-Level MOO. By intercepting and resolving gradient conflicts locally within parameter memory buckets, our framework bypasses the scalability bottlenecks of conventional algorithms like MGDA, CAGrad, and PCGrad to modern architectures with billions of parameters. Theoretically, we prove this method natively enforces Refined Pareto Stationarity, a strictly tighter necessary condition for Pareto optimality. Empirically, by disentangling language-specific dimensions, Bucket-Level MOO curbs negative interference and drives robust cross-lingual generalization across both seen and unseen distributions. Ultimately, this work bridges the gap between theoretical optimization and practical systems engineering, demonstrating that structural awareness of distributed training paradigms can unlock highly scalable and interference-free multilingual alignment. 
+
+References 
+
+Bandarkar, L., Liang, D., Muller, B., Artetxe, M., Shukla, S. N., Husa, D., Goyal, N., Krishnan, A., Zettlemoyer, L., and Khabsa, M. (2024). The belebele benchmark: a parallel reading compre-hension dataset in 122 language variants. In Ku, L.-W., Martins, A., and Srikumar, V., editors, 
+
+Proceedings of the 62nd Annual Meeting of the Association for Computational Linguistics (Volume 1: Long Papers) , pages 749–775, Bangkok, Thailand. Association for Computational Linguistics. Bandarkar, L., Yang, C., Fayyaz, M., Hu, J., and Peng, N. (2026). Multilingual routing in mixture-of-experts. In The Fourteenth International Conference on Learning Representations .Chang, T. A., Tu, Z., and Bergen, B. K. (2022). The geometry of multilingual language model representations. In Goldberg, Y., Kozareva, Z., and Zhang, Y., editors, Proceedings of the 2022 Conference on Empirical Methods in Natural Language Processing , pages 119–136, Abu Dhabi, United Arab Emirates. Association for Computational Linguistics. Chen, P., Ji, S., Bogoychev, N., Kutuzov, A., Haddow, B., and Heafield, K. (2024). Monolingual or multilingual instruction tuning: Which makes a better alpaca. In Graham, Y. and Purver, M., editors, Findings of the Association for Computational Linguistics: EACL 2024 , pages 1347–1356, St. Julian’s, Malta. Association for Computational Linguistics. Chen, Y., Zhao, Y., Zhang, Y., Zhang, A., Kawaguchi, K., Joty, S., Li, J., Chua, T.-S., Shieh, M. Q., and Zhang, W. (2025). The emergence of abstract thought in large language models beyond any language. In Advances in Neural Information Processing Systems 38 .Conneau, A., Khandelwal, K., Goyal, N., Chaudhary, V., Wenzek, G., Guzmán, F., Grave, E., Ott, M., Zettlemoyer, L., and Stoyanov, V. (2020). Unsupervised cross-lingual representation learning at scale. In Jurafsky, D., Chai, J., Schluter, N., and Tetreault, J., editors, Proceedings of the 58th Annual Meeting of the Association for Computational Linguistics , pages 8440–8451, Online. Association for Computational Linguistics. Désidéri, J.-A. (2012). Multiple-gradient descent algorithm (mgda) for multiobjective optimization. 
+
+Comptes Rendus Mathematique , 350(5-6):313–318. Fliege, J. and Svaiter, B. F. (2000). Steepest descent methods for multicriteria optimization. Mathe-matical methods of operations research , 51(3):479–494. Han, W., Zhang, Y., Chen, Z., Liu, B., Lin, H., Zhang, B., Wang, T., Pechenizkiy, M., Fang, M., and Zheng, Y. (2025). Mubench: Assessment of multilingual capabilities of large language models across 61 languages. Hu, Z. and Yu, Y. (2025). Leveraging variable sparsity to refine pareto stationarity in multi-objective optimization. In The Thirteenth International Conference on Learning Representations .Leng, Y. and Xiong, D. (2025). Towards understanding multi-task learning (generalization) of LLMs via detecting and exploring task-specific neurons. In Rambow, O., Wanner, L., Apidianaki, M., 10 Al-Khalifa, H., Eugenio, B. D., and Schockaert, S., editors, Proceedings of the 31st International Conference on Computational Linguistics , pages 2969–2987, Abu Dhabi, UAE. Association for Computational Linguistics. Liu, B., Liu, X., Jin, X., Stone, P., and Liu, Q. (2021). Conflict-averse gradient descent for multi-task learning. In Ranzato, M., Beygelzimer, A., Dauphin, Y., Liang, P., and Vaughan, J. W., editors, 
+
+Advances in Neural Information Processing Systems , volume 34, pages 18878–18890. Curran Associates, Inc. Mao, Y., Liang, Y., Duan, N., Wang, H., Wang, K., Chen, L., and Gao, Y. (2022). Less-forgetting multi-lingual fine-tuning. In Oh, A. H., Agarwal, A., Belgrave, D., and Cho, K., editors, Advances in Neural Information Processing Systems .Muennighoff, N., Wang, T., Sutawika, L., Roberts, A., Biderman, S., Le Scao, T., Bari, M. S., Shen, S., Yong, Z. X., Schoelkopf, H., Tang, X., Radev, D., Aji, A. F., Almubarak, K., Albanie, S., Alyafeai, Z., Webson, A., Raff, E., and Raffel, C. (2023). Crosslingual generalization through multitask finetuning. In Rogers, A., Boyd-Graber, J., and Okazaki, N., editors, Proceedings of the 61st Annual Meeting of the Association for Computational Linguistics (Volume 1: Long Papers) ,pages 15991–16111, Toronto, Canada. Association for Computational Linguistics. Muennighoff, N., Yang, Z., Shi, W., Li, X. L., Fei-Fei, L., Hajishirzi, H., Zettlemoyer, L., Liang, P., Candes, E., and Hashimoto, T. (2025). s1: Simple test-time scaling. In Christodoulopoulos, C., Chakraborty, T., Rose, C., and Peng, V., editors, Proceedings of the 2025 Conference on Empirical Methods in Natural Language Processing , pages 20275–20321, Suzhou, China. Association for Computational Linguistics. Pan, X., Huang, L., Kang, L., Liu, Z., Lu, Y., and Cheng, S. (2024). G-DIG: Towards gradient-based DIverse and hiGh-quality instruction data selection for machine translation. In Ku, L.-W., Martins, A., and Srikumar, V., editors, Proceedings of the 62nd Annual Meeting of the Association for Computational Linguistics (Volume 1: Long Papers) , pages 15395–15406, Bangkok, Thailand. Association for Computational Linguistics. Rajbhandari, S., Rasley, J., Ruwase, O., and He, Y. (2020). Zero: Memory optimizations toward training trillion parameter models. Rousseeuw, P. J. (1987). Silhouettes: A graphical aid to the interpretation and validation of cluster analysis. Journal of Computational and Applied Mathematics , 20:53–65. Sener, O. and Koltun, V. (2018). Multi-task learning as multi-objective optimization. In Bengio, S., Wallach, H., Larochelle, H., Grauman, K., Cesa-Bianchi, N., and Garnett, R., editors, Advances in Neural Information Processing Systems 31 , pages 525–536. Curran Associates, Inc. Shi, G., Li, Q., Zhang, W., Chen, J., and Wu, X.-M. (2023). Recon: Reducing conflicting gradients from the root for multi-task learning. In The Eleventh International Conference on Learning Representations .Singh, S., Romanou, A., Fourrier, C., Adelani, D. I., Ngui, J. G., Vila-Suero, D., Limkonchotiwat, P., Marchisio, K., Leong, W. Q., Susanto, Y., Ng, R., Longpre, S., Ko, W.-Y., Smith, M., Bosselut, A., Oh, A., Martins, A. F. T., Choshen, L., Ippolito, D., Ferrante, E., Fadaee, M., Ermis, B., and Hooker, S. (2024). Global mmlu: Understanding and addressing cultural and linguistic biases in multilingual evaluation. Wang, Y., Zhang, P., Tang, J., Wei, H.-R., Yang, B., Wang, R., Sun, C., Sun, F., Zhang, J., Wu, J., Cang, Q., Zhang, Y., Huang, F., Lin, J., Huang, F., and Zhou, J. (2025). Polymath: Evaluating mathematical reasoning in multilingual contexts. In The Thirty-ninth Annual Conference on Neural Information Processing Systems Datasets and Benchmarks Track .Wang, Z., Lipton, Z. C., and Tsvetkov, Y. (2020). On negative interference in multilingual models: Findings and a meta-learning treatment. In Webber, B., Cohn, T., He, Y., and Liu, Y., editors, 
+
+Proceedings of the 2020 Conference on Empirical Methods in Natural Language Processing (EMNLP) , pages 4438–4450, Online. Association for Computational Linguistics. 11 Wang, Z., Tsvetkov, Y., Firat, O., and Cao, Y. (2021). Gradient vaccine: Investigating and improving multi-task optimization in massively multilingual models. In International Conference on Learning Representations .Wei, B., Huang, K., Huang, Y., Xie, T., Qi, X., Xia, M., Mittal, P., Wang, M., and Henderson, P. (2024). Assessing the brittleness of safety alignment via pruning and low-rank modifications. In 
+
+Forty-first International Conference on Machine Learning .Xu, S. and Zhang, W. (2026). Language of thought shapes output diversity in large language models. Yang, A., Li, A., Yang, B., Zhang, B., Hui, B., Zheng, B., Yu, B., Gao, C., Huang, C., Lv, C., Zheng, C., Liu, D., Zhou, F., Huang, F., Hu, F., Ge, H., Wei, H., Lin, H., Tang, J., Yang, J., Tu, J., Zhang, J., Yang, J., Yang, J., Zhou, J., Zhou, J., Lin, J., Dang, K., Bao, K., Yang, K., Yu, L., Deng, L., Li, M., Xue, M., Li, M., Zhang, P., Wang, P., Zhu, Q., Men, R., Gao, R., Liu, S., Luo, S., Li, T., Tang, T., Yin, W., Ren, X., Wang, X., Zhang, X., Ren, X., Fan, Y., Su, Y., Zhang, Y., Zhang, Y., Wan, Y., Liu, Y., Wang, Z., Cui, Z., Zhang, Z., Zhou, Z., and Qiu, Z. (2025). Qwen3 technical report. Ye, H., Chen, S., Zhang, H., Luo, W., Li, Y., and Zhang, X. (2025). Synergy over discrepancy: A partition-based approach to multi-domain LLM fine-tuning. In The Thirty-ninth Annual Conference on Neural Information Processing Systems .Yu, T., Kumar, S., Gupta, A., Levine, S., Hausman, K., and Finn, C. (2020). Gradient surgery for multi-task learning. In Larochelle, H., Ranzato, M., Hadsell, R., Balcan, M., and Lin, H., editors, Advances in Neural Information Processing Systems , volume 33, pages 5824–5836. Curran Associates, Inc. Zhang, X., Liang, Y., Meng, F., Zhang, S., Chen, Y., Xu, J., and Zhou, J. (2025). Less, but better: Efficient multilingual expansion for LLMs via layer-wise mixture-of-experts. In Che, W., Nabende, J., Shutova, E., and Pilehvar, M. T., editors, Proceedings of the 63rd Annual Meeting of the Association for Computational Linguistics (Volume 1: Long Papers) , pages 17948–17963, Vienna, Austria. Association for Computational Linguistics. Zhang, Y., Wang, Y., Liu, Z., Wang, S., Wang, X., Li, P., Sun, M., and Liu, Y. (2024). Enhancing multilingual capabilities of large language models through self-distillation from resource-rich languages. In Ku, L.-W., Martins, A., and Srikumar, V., editors, Proceedings of the 62nd Annual Meeting of the Association for Computational Linguistics (Volume 1: Long Papers) , pages 11189– 11204, Bangkok, Thailand. Association for Computational Linguistics. Zhao, W., Guo, J., Deng, Y., Wu, T., Zhang, W., Hu, Y., Sui, X., Zhao, Y., Che, W., Qin, B., Chua, T.-S., and Liu, T. (2026). When less language is more: Language-reasoning disentanglement makes LLMs better multilingual reasoners. In The Thirty-ninth Annual Conference on Neural Information Processing Systems .Zhao, Y., Gu, A., Varma, R., Luo, L., Huang, C.-C., Xu, M., Wright, L., Shojanazeri, H., Ott, M., Shleifer, S., Desmaison, A., Balioglu, C., Damania, P., Nguyen, B., Chauhan, G., Hao, Y., Mathews, A., and Li, S. (2023). Pytorch fsdp: Experiences on scaling fully sharded data parallel. Zhao, Y., Zhang, W., Chen, G., Kawaguchi, K., and Bing, L. (2024). How do large language models handle multilingualism? In Globerson, A., Mackey, L., Belgrave, D., Fan, A., Paquet, U., Tomczak, J., and Zhang, C., editors, Advances in Neural Information Processing Systems , volume 37, pages 15296–15319. Curran Associates, Inc. Zhou, C., Liu, P., Xu, P., Iyer, S., Sun, J., Mao, Y., Ma, X., Efrat, A., Yu, P., YU, L., Zhang, S., Ghosh, G., Lewis, M., Zettlemoyer, L., and Levy, O. (2023). Lima: Less is more for alignment. In Oh, A., Naumann, T., Globerson, A., Saenko, K., Hardt, M., and Levine, S., editors, Advances in Neural Information Processing Systems , volume 36, pages 55006–55021. Curran Associates, Inc. 12 A Formal Definitions and Theorems for Related MOO Concepts 
+
+Definition A.1 (Pareto Optimality) . A solution θ∗ is termed Pareto optimal if there does not exist any θ such that Lt(θ) ≤ L t(θ∗) for all t ∈ { 1, . . . , T }, and L(θ)̸ = L(θ∗).
+
+Definition A.2 (Pareto Stationarity) . A solution θ∗ is Pareto stationary if and only if: 
+
+0 ∈ conv {∇ θ L1(θ∗), . . . , ∇θ LT (θ∗)} , (11) meaning there exists a vector α ∈ ∆ such that PTt=1 αt∇θ Lt(θ∗) = 0.Here, ∆ = 
+
+n
+
+α ∈ RT | α ≥ 0, PTt=1 αt = 1 
+
+o
+
+denotes the standard simplex in T -dimensional space. 
+
+Refined Pareto Stationarity. While standard stationarity treats θ globally, exploiting variable structure yields tighter optimality criteria (Hu and Yu, 2025). Assume θ is partitioned into K disjoint blocks P = θ(1) , . . . , θ(K) (e.g., layers). Let ∇θ(k) L(θ) be the collection of objective gradients with respect to block θ(k).
+
+Definition A.3 (Refined Pareto Stationarity) . A solution θ∗ is refined Pareto stationary with respect to partition P if and only if: 
+
+0 ∈
+
+> K
+
+Y
+
+> k=1
+
+conv ∇θ(k) L(θ∗) (Cartesian product) , (12) i.e., for all blocks k ∈ [K], there exists a local weight αk ∈ ∆ such that PTt=1 αkt ∇θ(k) Lt(θ∗) = 0.For the trivial partition P = {θ}, this reduces to standard Pareto stationarity. 
+
+Theorem A.4 (Hu and Yu (2025)) . Any Pareto optimal solution is a refined Pareto stationary solution. Furthermore, any refined Pareto stationary solution is a Pareto stationary solution. 
+
+Definition A.5 (Conflicting Gradients) . Two gradients ∇θ Li and ∇θ Lj are defined as conflicting if their cosine similarity is negative, i.e., cos ( ∇θ Li, ∇θ Lj ) < 0, or equivalently, ⟨∇ θ Li, ∇θ Lj ⟩ < 0.
+
+Theorem A.6 (Désidéri (2012)) . Let α1, . . . , α T be the solution to Problem 3, and let dMGDA =
+
+PTt=1 αt∇θ Lt be the resulting update vector. Then, one of the following is true: (a) ∥dMGDA ∥2 = 0 and the current parameters are Pareto stationary. (b) −dMGDA is a descent direction that decreases all objectives. 
+
+Theorem A.7 (Liu et al. (2021)) . Assume the loss functions Lt are differentiable and have Lipschitz continuous gradients. If the step size η is sufficiently small, the CAGrad update direction dCAGrad 
+
+ensures monotonic decrease of the average loss Lavg = 1
+
+> T
+
+PTt=1 Lt. Specifically, the algorithm converges to a Pareto stationary point θ∗ such that ∥∇L avg (θ∗)∥ = 0 .
+
+B Proof of Theorem 3.1 
+
+In this section, we provide the formal proof that applying Multiple Gradient Descent Algorithm (MGDA) at the shard level guarantees a global descent direction that satisfies the stricter condition of Refined Pareto Stationarity. 
+
+Theorem 3.1 Let the model parameters θ be partitioned into K disjoint buckets {θ(k)}Kk=1 . Let α(k)
+
+be the solution to the local MGDA problem on bucket k:
+
+min 
+
+> α(k)∈∆
+> T
+
+X
+
+> t=1
+
+α(k) 
+
+> t
+
+∇θ(k) Lt(θ)
+
+> 22
+
+, (13) and let dMGDA  
+
+> (k)
+
+= PTt=1 α(k) 
+
+> t
+
+∇θ(k) Lt(θ) be the resulting local update direction. Define the global update direction as the concatenation dMGDA = [ dMGDA  
+
+> (1)
+
+, . . . , dMGDA  
+
+> (K)
+
+]. Then: 13 1. If dMGDA = 0, the solution is Refined Pareto Stationary .2. If dMGDA ̸ = 0, then −dMGDA is a common descent direction for all objectives, i.e., 
+
+⟨∇ θ Lt, dMGDA ⟩ ≥ 0 for all t = 1 , . . . , T .
+
+Proof. The proof relies on the decomposition of the global inner product over the parameter buckets and the properties of the minimum-norm element in a convex hull. 
+
+1. Decomposition of Directional Derivatives. Consider the directional derivative of the loss Lt
+
+with respect to the global parameter vector θ along the direction dMGDA . Since the parameter space is the Cartesian product of the buckets, the inner product decomposes additively: 
+
+⟨∇ θ Lt, dMGDA ⟩ =
+
+> K
+
+X
+
+> k=1
+
+⟨∇ θ(k) Lt, dMGDA  
+
+> (k)
+
+⟩. (14) 
+
+2. Local Descent Property. On each bucket k, the update direction dMGDA  
+
+> (k)
+
+is derived from the minimum-norm point within the convex hull of the local gradients. According to the properties of the minimum-norm point in convex geometry (Désidéri, 2012), the following inequality holds for every constituent vector in the convex hull: 
+
+∀t ∈ { 1, . . . , T } : ⟨∇ θ(k) Lt, dMGDA  
+
+> (k)
+
+⟩ ≥ ∥ dMGDA  
+
+> (k)
+
+∥22. (15) This inequality guarantees that for a specific bucket, the MGDA direction is a descent direction for all 
+
+tasks simultaneously, unless the bucket is already at a stationary point (in which case ∥dMGDA  
+
+> (k)
+
+∥ = 0 ). 
+
+3. Aggregation. Substituting the local inequality (15) into the global decomposition (14): 
+
+⟨∇ θ Lt, dMGDA ⟩ =
+
+> K
+
+X
+
+> k=1
+
+⟨∇ θ(k) Lt, dMGDA  
+
+> (k)
+
+⟩ ≥ 
+
+> K
+
+X
+
+> k=1
+
+∥dMGDA  
+
+> (k)
+
+∥22 = ∥dMGDA ∥22. (16) Thus, for every task t, the directional derivative is upper-bounded by the negative squared norm of the global update vector: 
+
+⟨∇ θ Lt, dMGDA ⟩ ≥ ∥ dMGDA ∥22. (17) 
+
+4. Case Analysis. We now analyze the two possible cases for the value of ∥dMGDA ∥22:
+
+Case (a): dMGDA = 0.
+
+If the global update vector is zero, then ∥dMGDA ∥22 = PKk=1 ∥dMGDA  
+
+> (k)
+
+∥22 = 0 . Since norms are non-negative, this implies ∥dMGDA  
+
+> (k)
+
+∥2 = 0 for all k = 1 , . . . , K . By the definition of MGDA, 
+
+∥dMGDA  
+
+> (k)
+
+∥2 = 0 implies that 0 lies within the convex hull of the local gradients for shard k:
+
+0 ∈ conv ∇θ(k) L1, . . . , ∇θ(k) LT ∀k. (18) Therefore: 
+
+0 ∈
+
+> K
+
+Y
+
+> k=1
+
+conv ∇θ(k) L(θ) . (19) This is precisely the definition of Refined Pareto Stationarity with respect to the partition P =
+
+{θ(1) , . . . , θ(K)}.
+
+Case (b): dMGDA ̸ = 0.
+
+If the update vector is non-zero, then ∥dMGDA ∥22 > 0. From inequality (16), we have: 
+
+⟨∇ θ Lt, dMGDA ⟩ ≥ ∥ dMGDA ∥22 > 0 ∀t. (20) Since the directional derivative is strictly negative for all t, −dMGDA is a valid descent direction that simultaneously decreases the loss for all languages. 14 C Proof of Theorem 3.2 
+
+In this section, we provide the formal proof that applying Conflict-Averse Gradient Descent (CAGrad) at the bucket level guarantees a global descent direction for the average loss function, satisfying the condition of Refined Pareto Stationarity under convergence. 
+
+Theorem 3.2. Let the model parameters θ be partitioned into K disjoint buckets {θ(k)}Kk=1 . Let 
+
+gavg  
+
+> (k)
+
+= 1
+
+> T
+
+PTt=1 ∇θ(k) Lt denote the local average gradient on bucket k. Let dCAGrad  
+
+> (k)
+
+be the solution to the local CAGrad optimization problem: 
+
+dCAGrad  
+
+> (k)
+
+= arg max 
+
+> d(k)
+
+min  
+
+> t
+
+⟨∇ θ(k) Lt, d(k)⟩ s.t. ∥d(k) − gavg  
+
+> (k)
+
+∥ ≤ c∥gavg  
+
+> (k)
+
+∥, (21) where 0 ≤ c < 1. Define the global update direction as dCAGrad = [ dCAGrad  
+
+> (1)
+
+, . . . , dCAGrad  
+
+> (K)
+
+]. Then: (a) The global update −dCAGrad is a descent direction for the global average loss Lavg (θ) = 
+
+> 1
+> T
+
+P Lt(θ), satisfying: 
+
+⟨∇ θ Lavg , d⟩ ≥ 1 − c2
+
+2 ∥∇ θ Lavg ∥22. (22) (b) If ∥dCAGrad ∥2 = 0 , the current parameters satisfy Refined Pareto Stationarity with uniform weights (i.e., gavg  
+
+> (k)
+
+= 0 for all k). 
+
+Proof. The proof relies on the decomposition of the global inner product over disjoint parameter shards and the geometric properties of the Euclidean ball constraint used in CAGrad. 
+
+1. Decomposition of the Average Gradient. Let gavg = ∇θ Lavg (θ) be the global average gradient. Since the parameter space is the Cartesian product of the shards, the global gradient is the concatenation of local average gradients: gavg = [( gavg  
+
+> (1)
+
+), . . . , (gavg  
+
+> (k)
+
+)] . Consequently, the inner product between the global average gradient and the global update direction d decomposes additively: 
+
+⟨∇ θ Lavg , dCAGrad ⟩ =
+
+> K
+
+X
+
+> k=1
+
+⟨gavg  
+
+> (k)
+
+, dCAGrad  
+
+> (k)
+
+⟩. (23) 
+
+2. Local Descent Property. Consider the optimization problem on a specific bucket k. The constraint requires the update direction dCAGrad  
+
+> (k)
+
+to lie within a ball of radius c∥gavg  
+
+> (k)
+
+∥ centered at 
+
+gavg  
+
+> (k)
+
+:
+
+∥dCAGrad  
+
+> (k)
+
+− gavg  
+
+> (k)
+
+∥2 ≤ c2∥gavg  
+
+> (k)
+
+∥2. (24) Expanding the squared norm on the left-hand side: 
+
+∥dCAGrad  
+
+> (k)
+
+∥2 − 2⟨dCAGrad  
+
+> (k)
+
+, gavg  
+
+> (k)
+
+⟩ + ∥gavg  
+
+> (k)
+
+∥2 ≤ c2∥gavg  
+
+> (k)
+
+∥2. (25) Rearranging terms to isolate the inner product ⟨dCAGrad  
+
+> (k)
+
+, gavg  
+
+> (k)
+
+⟩:
+
+2⟨dCAGrad  
+
+> (k)
+
+, gavg  
+
+> (k)
+
+⟩ ≥ ∥ dCAGrad  
+
+> (k)
+
+∥2 + (1 − c2)∥gavg  
+
+> (k)
+
+∥2. (26) Since ∥dCAGrad  
+
+> (k)
+
+∥2 ≥ 0, we can lower bound the inner product as: 
+
+⟨dCAGrad  
+
+> (k)
+
+, gavg  
+
+> (k)
+
+⟩ ≥ 1 − c2
+
+2 ∥gavg  
+
+> (k)
+
+∥2. (27) This inequality ensures that as long as c < 1 and the local gradient is non-zero, the update direction 
+
+dCAGrad  
+
+> (k)
+
+always has a positive projection onto the local average gradient gavg  
+
+> (k)
+
+.15 3. Global Aggregation (Proof of Part a). Substituting the local bound (27) into the global decomposition (23): 
+
+⟨∇ θ Lavg , dCAGrad ⟩ =
+
+> K
+
+X
+
+> k=1
+
+⟨gavg  
+
+> (k)
+
+, dCAGrad  
+
+> (k)
+
+⟩ (28) 
+
+≥
+
+> K
+
+X
+
+> k=1
+
+1 − c2
+
+2 ∥gavg  
+
+> (k)
+
+∥2 = 1 − c2
+
+2
+
+> K
+
+X
+
+> k=1
+
+∥gavg  
+
+> (k)
+
+∥2 = 1 − c2
+
+2 ∥gavg ∥22. (29) Given that 0 ≤ c < 1, the term 1−c2 
+
+> 2
+
+is strictly positive. Thus, −d is a valid descent direction for the average loss. 
+
+4. Stationarity (Proof of Part b). Assume the global update vector is zero, i.e., ∥dCAGrad ∥2 = 0 .This implies ∥dCAGrad  
+
+> (k)
+
+∥2 = 0 for all buckets k = 1 , . . . , K . Substituting dCAGrad  
+
+> (k)
+
+= 0 into the local constraint inequality: 
+
+∥0 − gavg  
+
+> (k)
+
+∥ ≤ c∥gavg  
+
+> (k)
+
+∥ (30) 
+
+∥gavg  
+
+> (k)
+
+∥ ≤ c∥gavg  
+
+> (k)
+
+∥ (31) 
+
+(1 − c)∥gavg  
+
+> (k)
+
+∥ ≤ 0. (32) Since c < 1, the term (1 − c) is strictly positive. Therefore, the only solution to this inequality is 
+
+∥gavg  
+
+> (k)
+
+∥ = 0 , which implies: 
+
+gavg  
+
+> (k)
+
+=
+
+> T
+
+X
+
+> t=1
+
+1
+
+T ∇θ(k) Lt = 0. (33) This holds for all k. In the context of Refined Pareto Stationarity, this corresponds to the specific case where the weighting vector αk is uniform ( αt = 1 /T ) for all buckets. Thus, the parameters satisfy the condition: 
+
+0 ∈
+
+> K
+
+Y
+
+> k=1
+
+conv ∇θ(k) L(θ) , (34) confirming Refined Pareto Stationarity. 
+
+D Algorithm: Bucket-Level Multi-Objective Optimization for Distributed LLM Fine-Tuning 
+
+The core innovation of Algorithm 1 lies in intercepting the standard distributed backward pass to resolve cross-lingual gradient conflicts locally within memory buckets. By doing so, it com-pletely bypasses the need to materialize the full global gradient vector, preserving the memory and communication efficiency of distributed training. The execution flow proceeds as follows: • Language-Specific Forward Pass: Training begins with T distributed GPUs, each exclu-sively assigned to process a micro-batch from a distinct language dataset Dt. During the forward pass, each GPU computes a language-specific loss Lt(θ).• Bucket-Level Backward Interception: During the backward pass, gradients are not imme-diately accumulated globally. Instead, the algorithm intercepts the gradients sequentially as fixed-size parameter memory buckets ( k = 1 , 2, . . . , K ) are populated. • Localized Synchronization ( All-Gather ): The moment bucket k is filled with local gradients, an All-Gather operation is triggered. This synchronizes the bucket across the distributed group, providing every GPU with the complete set of language-specific gradients for that specific bucket, denoted as G(k) = {g(k),1, . . . , g (k),T }.• In-Place Conflict Resolution: With the local gradients gathered, each GPU independently applies the selected MOO strategy (MGDA, CAGrad, or PCGrad) strictly to the parameters within bucket k. This mathematical resolution yields a single, conflict-free update direction 
+
+d(k) that serves the competing language objectives simultaneously. 16 Algorithm 1 Bucket-Level Multi-Objective Optimization for Distributed LLM Fine-Tuning 
+
+Require: Global parameters θ partitioned into K gradient buckets {θ(1) , . . . , θ(K)}
+
+Require: T GPUs, each assigned to a language dataset Dt for t ∈ { 1, . . . , T }
+
+Require: Learning rate η, MOO strategy M ∈ { MGDA , CAGrad , PCGrad }
+
+Require: Conflict aversion parameter c (for CAGrad)  
+
+> 1:
+
+for each training step do  
+
+> 2:
+
+Sample a micro-batch (xt, y t) ∼ D t on each GPU t 
+
+> 3:
+
+Compute language-specific loss Lt(θ) on GPU t▷ Intercept the backward pass at the bucket level  
+
+> 4:
+
+for bucket k = 1 , 2, . . . , K (triggered when bucket k is full) do  
+
+> 5:
+
+Compute local gradient segment g(k),t = ∇θ(k) Lt on GPU t▷ Synchronize bucket k across GPUs to form local gradient set  
+
+> 6:
+
+All-Gather gradients to form G(k) = {g(k),1, . . . , g (k),T } on all GPUs  
+
+> 7:
+
+if M == MGDA then  
+
+> 8:
+
+Solve local weights: α∗ = arg min α∈∆
+
+PTt=1 αtg(k),t  
+
+> 22
+> 9:
+
+Compute resolved update: d(k) = PTt=1 α∗ 
+
+> t
+
+g(k),t  
+
+> 10:
+
+else if M == CAGrad then  
+
+> 11:
+
+Compute local average gradient: gavg  
+
+> (k)
+
+= 1
+
+> T
+
+PTt=1 g(k),t  
+
+> 12:
+
+Solve for local update:  
+
+> 13:
+
+d(k) = arg max d min t⟨g(k),t , d⟩ s.t. ∥d − gavg  
+
+> (k)
+
+∥ ≤ c∥gavg  
+
+> (k)
+
+∥ 
+
+> 14:
+
+else if M == PCGrad then  
+
+> 15:
+
+Initialize task updates: d(k),t = g(k),t for all t ∈ [T ] 
+
+> 16:
+
+for each task t ∈ { 1, . . . , T } do  
+
+> 17:
+
+Sample other tasks j̸ = t in a random order  
+
+> 18:
+
+if ⟨d(k),t , g (k),j ⟩ < 0 then  
+
+> 19:
+
+d(k),t ← d(k),t − ⟨d(k),t ,g (k),j ⟩∥g(k),j ∥22
+
+g(k),j  
+
+> 20:
+
+end if  
+
+> 21:
+
+end for  
+
+> 22:
+
+Compute resolved update: d(k) = PTt=1 d(k),t  
+
+> 23:
+
+end if 
+
+▷ Standard ZeRO-2 Partitioning  
+
+> 24:
+
+Reduce-Scatter d(k) so each GPU keeps only its assigned partition of bucket k 
+
+> 25:
+
+Free G(k) from GPU memory to prevent Out-Of-Memory (OOM)  
+
+> 26:
+
+end for 
+
+▷ Optimizer Step  
+
+> 27:
+
+d = [ d(1) , . . . , d(K)] 
+
+> 28:
+
+Update local parameter partitions: θ ← θ − ηd 
+
+> 29:
+
+end for 
+
+• ZeRO-2 Partitioning and Memory Recovery: To strictly adhere to ZeRO-2 memory partitioning, the algorithm immediately performs a Reduce-Scatter on the newly resolved update d(k). Consequently, each GPU retains only its explicitly assigned partition of the bucket. Crucially, the full multi-language gradient set G(k) is then flushed from GPU memory to prevent Out-Of-Memory (OOM) failures. • Global Optimizer Step: Once all K buckets have been sequentially intercepted, resolved, scattered, and freed, each GPU holds a safely partitioned, conflict-resolved gradient vector for its assigned parameters. The optimizer then executes a standard step to update the local parameter partitions ( θ ← θ − ηd). 
+
+E Experiment Details 
+
+All fine-tuning experiments are implemented using the TRL 6 library with a maximum sequence length of 2,048 tokens, and batch size 128. Training is conducted in bfloat16 precision using the AdamW 
+
+> 6https://github.com/huggingface/trl
+
+17 Table 3: Training time (hours) of Meta-Llama-3-8B on 8 H200 GPUS. Method V. SFT MGDA CAGrad PCGrad Run-time 0.6 0.8 0.7 0.80 10 20 30       
+
+> Layer
+> 0.0
+> 0.1
+> 0.2
+> 0.3
+> 0.4
+> 0.5
+> Silhouette Score
+> Meta-Llama-3-8B
+> V. SFT
+> MGDA
+> CAGrad
+> PC 010 20 30
+> Layer
+> 0.0
+> 0.1
+> 0.2
+> 0.3
+> 0.4
+> Silhouette Score
+> Llama-3.1-8B
+> V. SFT
+> MGDA
+> CAGrad
+> PC 010 20 30
+> Layer
+> 0.0
+> 0.1
+> 0.2
+> 0.3
+> 0.4
+> 0.5
+> 0.6
+> Silhouette Score
+> Qwen3-4B-Base
+> V. SFT
+> MGDA
+> CAGrad
+> PC
+
+Figure 6: Layer-wise Silhouette scores measuring the representational clustering of languages. optimizer. We apply a weight decay of 0.1, a cosine learning rate schedule with a warmup ratio of 
+
+0.03 . We applied a weight decay of 0.1 and a peak learning rate of 2e-5 for the Qwen 3 models, mirroring the 0.04 and 4e-6 used for Llama 3. Models are trained for 3 epochs during the post-training phase. All experiments were executed on a single compute node equipped with 8 NVIDIA H200 GPUs. Furthermore, for Bucket-Level CAGrad, the conflict aversion hyperparameter c ∈ [0 , 1) is set to 0.5 across all applicable runs. 
+
+F Training Time 
+
+Table 3 compares the computational cost of Vanilla SFT against the gradient-based MOO methods on 8 H200 GPUs. In the Post-Training phase, the absolute time increase is minimal: MGDA and PCGrad require 0.8 hours compared to the baseline’s 0.6 hours, while CAGrad introduces minimal time overhead (0.7 hours). These results demonstrate that the Bucket-Level MOO framework maintains high computational efficiency, incurring only a modest time tradeoff in exchange for the significant gains achieved in multilingual and cross-lingual performance. 
+
+G Multilingual Representation Analysis 
+
+In this section, we provide the extended layer-wise Silhouette score analysis for the remaining base models evaluated in our study: Meta-Llama-3-8B, Llama-3.1-8B, and Qwen3-4B-Base. These results expand upon the representational clustering findings discussed in Section 4.4. Consistent with the behavior observed in Qwen3-8B-Base, all three architectures exhibit a distinct, wave-like clustering trajectory across their depth. The internal representations are relatively segregated by language in the earliest layers, become heavily entangled (yielding near-zero Silhouette scores) in the middle computational layers where shared semantic reasoning likely occurs, and finally separate into highly distinct, language-specific clusters in the terminal layers. Crucially, these plots confirm that Bucket-Level MOO methods (MGDA, CAGrad, and PCGrad) consistently enhance language separability over Vanilla SFT across all architectures. This divergence is particularly pronounced in the final third of the network. For instance, in Llama-3.1-8B, the MOO methods open a substantial gap over the baseline in the final 10 layers. Furthermore, while the Qwen3 models naturally exhibit stronger baseline multilingual capabili-ties—evidenced by their higher peak Silhouette scores (approaching 0.60 compared to Llama’s 0.45)—our localized conflict resolution still consistently elevates their clustering quality. This demon-strates that mitigating gradient conflicts universally aids in carving out orthogonal, language-specific representation dimensions, regardless of the base model’s inherent multilingual capacity. 18 H Language-Critical Neurons 
+
+Drawing on recent interpretability and network pruning methodologies (Wei et al., 2024; Chen et al., 2025; Leng and Xiong, 2025), we quantify the degree of language specialization within the model by identifying critical neurons. Let θi denote an individual neuron (e.g., a specific row or column within a weight matrix). To evaluate its functional importance for a given language t ∈ T , we approximate the expected change in the loss function L over a language-specific dataset Dt if θi were to be deactivated (i.e., pruned to 0). Using a first-order Taylor expansion, this impact score It(θi) can be efficiently estimated as: 
+
+It(θi) = |L (θi, Dt) − L (0 , Dt)| ≈ | θi∇θi L(θi, Dt)| (35) Let Nt denote the set of the top-p most critical neurons for language t based on their impact score It(θi). In our analysis, we set the threshold to p = 1% and evaluate across the language set T = {en, zh, it, ar, ko, id, bn, sw }. From these language-specific sets, we define the following structural partitions: • Activated Neurons ( Nall ): The union of all critical neurons across the evaluated languages, 
+
+Nall = S 
+
+> t∈T
+
+Nt.• Language-Shared Neurons ( Nshared ): The intersection of critical neurons deemed essential to every language, Nshared = T 
+
+> t∈T
+
+Nt.• Total Neurons ( Ntotal ): The complete set of neurons (weight columns) within the evaluated model layers. To evaluate the structural disentanglement of the model, we calculate the ratio of strictly language-specific neurons to the total network capacity. This ratio is defined as: 
+
+Rspecific = |N all \ N shared ||N total | (36) A higher ratio indicates that the model constructs highly orthogonal, language-specific dimensions, effectively isolating linguistic representations to mitigate negative interference. Conversely, a lower ratio indicates a highly shared representation space. While extensive parameter sharing is widely recognized as beneficial for transferring universal semantics and enabling cross-lingual generalization, it simultaneously acts as a structural bottleneck. When fine-tuning across diverse languages, forcing competing linguistic constraints into this shared capacity frequently precipitates the gradient conflicts and negative interference observed in standard training paradigms. 19

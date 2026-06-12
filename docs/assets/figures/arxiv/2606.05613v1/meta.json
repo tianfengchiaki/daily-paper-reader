@@ -1,0 +1,38 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2606.05613v1/fig-001.webp",
+      "caption": "Figure 1: Gradient conflict during multilingual fine-tuning with two base models on eight languages (en, zh, it, ar, ko, id, bn, sw). Left: Mean ± standard deviation of pairwise gradient cosine similarity across all language pairs, with accuracy scores on Global-MMLU dataset. Right: Per-layer frequency of conflicts, defined as the fraction of training steps where at least one language pair exhibits a negative gradient cosine similarity.",
+      "page": 2,
+      "index": 1,
+      "width": 812,
+      "height": 251
+    },
+    {
+      "url": "assets/figures/arxiv/2606.05613v1/fig-002.webp",
+      "caption": "Table 1: Main results (Subscripts denote difference from Vanilla SFT).",
+      "page": 7,
+      "index": 2,
+      "width": 818,
+      "height": 633
+    },
+    {
+      "url": "assets/figures/arxiv/2606.05613v1/fig-003.webp",
+      "caption": "Figure 2: Illustration of how multi-task update rules handle conflicting objectives. Averaged Gradients risks negative interference by strictly following the mean, potentially degrading one loss to improve another. MGDA finds a common descent direction via the minimum-norm point in the gradients’ convex hull. CAGrad resolves conflicts by optimizing within a trust region bounded around the average gradient. PCGrad neutralizes conflicts by projecting gradients onto the orthogonal planes of competing tasks.",
+      "page": 3,
+      "index": 3,
+      "width": 820,
+      "height": 185
+    },
+    {
+      "url": "assets/figures/arxiv/2606.05613v1/fig-004.webp",
+      "caption": "Figure 5: How Bucket-Level MOO affects the internal structure of LLMs. Left: Layer-wise Silhouette scores measuring the representational clustering of languages in Qwen3-8B-Base5. Right: The percentage of language-specific neurons (neurons activated solely by a single language) across different model architectures.",
+      "page": 9,
+      "index": 4,
+      "width": 810,
+      "height": 247
+    }
+  ]
+}

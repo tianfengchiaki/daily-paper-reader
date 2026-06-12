@@ -1,0 +1,30 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2606.06178v1/fig-001.webp",
+      "caption": "Table 1: Performance on in-distribution (ID) tasks. We highlight the best results in bold, and the second-best results with an underline. Note that AUC values are scaled by 100 (×10−2) for better readability.",
+      "page": 6,
+      "index": 1,
+      "width": 1052,
+      "height": 203
+    },
+    {
+      "url": "assets/figures/arxiv/2606.06178v1/fig-002.webp",
+      "caption": "Table 2: Performance on out-of-distribution (OOD) tasks. We highlight the best results in bold, and the second-best results with an underline. Note that AUC values are scaled by 100 (×10−2) for better readability.",
+      "page": 6,
+      "index": 2,
+      "width": 1052,
+      "height": 212
+    },
+    {
+      "url": "assets/figures/arxiv/2606.06178v1/fig-003.webp",
+      "caption": "Figure 2: Overview of MetaRouter. MetaRouter consists of two components: a context encoder Eϕ that learns user preferences from their interactions, and a policy network πθ that routes their queries based on those perceived preferences.",
+      "page": 4,
+      "index": 3,
+      "width": 948,
+      "height": 362
+    }
+  ]
+}

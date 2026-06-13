@@ -1,0 +1,916 @@
+Title: DREAM: Dynamic Refinement of Early Assignment Mappings
+
+URL Source: https://arxiv.org/pdf/2606.06947v1
+
+Published Time: Mon, 08 Jun 2026 00:31:09 GMT
+
+Number of Pages: 12
+
+Markdown Content:
+# DREAM: Dynamic Refinement of Early Assignment Mappings 
+
+# Liwei Guan Huanjie Wang Hongwei Zhang Linxun Chen † Zhaojie Liu 
+
+Kuaishou Technology Beijing, China {guanliwei,wanghuanjie,zhanghongwei08,chenxi36,zhaotianxing}@kuaishou.com 
+
+## Abstract 
+
+Generative recommendation advances item retrieval by reformulat-ing it as autoregressive generation of Semantic IDs (SIDs), compact token sequences that encode item semantics. While SIDs offer a strong semantic prior, current SID-based methods assign each item a single static identifier through offline tokenization before suffi-cient user feedback is observed. For cold-start items, this one-shot commitment produces poorly discriminative codes, generating mis-aligned paths that remain unrefined because the associated tokens are rarely sampled during training. We identify this early static commitment, not model capacity, as the fundamental cold-start bot-tleneck in SID-based generative recommendation. To overcome this bottleneck and bridge the disjoint objectives of tokenization and generation, we propose DREAM (Dynamic Refinement of Early 
+
+Assignment Mappings), a three-stage framework that resolves this flaw through progressive refinement. First, an intent-aware tok-enizer rebuilds the SID space through counterfactual contrastive learning, generating a diverse pool of behavior-aligned candidates per cold-start item. Second, the frozen recommendation backbone serves as an evaluator, selecting the most reliable candidate based on multi-context user support without retraining. Third, a dynamic beam mechanism maintains multiple weighted SID hypotheses throughout training and inference, preventing premature collapse to a single assignment. Extensive experiments on three Amazon benchmarks show that DREAM substantially outperforms state-of-the-art generative and sequential baselines on cold-start metrics. 
+
+## CCS Concepts 
+
+• Information systems → Recommender systems .
+
+## Keywords 
+
+Generative Recommendation, Item Cold-Start, LLMs for Recom-mendation, Item Tokenization 
+
+## 1 Introduction 
+
+Recommender systems have traditionally used cascaded recom-mender architectures that optimize candidate retrieval and ranking separately [ 3, 4 , 12 , 54 ]. Generative Recommendation (GR) instead trains recommendation as next-token prediction over item token sequences [ 10 , 32 , 36 , 39 , 44 ]. Each item is assigned a compact 
+
+Semantic Item ID (SID), a discrete token sequence produced by hierarchical quantization (e.g., RQ-VAE [ 20 ] or RQ-KMeans [ 29 ]) of multimodal item features [ 49 ]; an autoregressive Transformer backbone then generates the target item’s SID from the user’s interaction history. This formulation turns candidate generation into autoregressive decoding over a structured identifier space, en-ables semantic transfer through a shared token vocabulary, and has 
+
+> †Corresponding author.
+
+yielded strong results on both academic benchmarks and industrial deployments [5, 22, 23, 50, 53]. Despite these advances, cold-start failure differs qualitatively between SID-based generative recommendation and classical ID-based recommenders. In ID-based sequential models, a cold item usually remains in the candidate set: it keeps an item embedding and receives a relevance score, although that score may be unreliable when learned from few interactions [ 8, 16 , 21 , 41 , 48 , 55 ]. In SID-based generative recommendation, the same sparsity can make the item unreachable rather than merely weakly scored: the offline tokenizer commits each item to one SID path before user feedback is observed, and constrained decoding permits only registered paths. When a cold-start item’s assigned path is misaligned, the item is sampled too rarely during training to receive corrective gradient, and no alternative path is exposed to the decoder at inference. Better upstream embeddings can improve the initial SID quality, yet they do not by themselves remove this one-shot commitment. We dub this bottleneck early static single-path commitment and decompose it into three coupled factors that DREAM targets. The first factor is 
+
+unsupported assignment , where the SID is chosen from content or pre-trained signals alone, without observed interactions supporting its collaborative role. The second is premature commitment , where supervision is tied to the single assigned path while cold-start gradient remains too sparse to repair the choice. The third is the 
+
+inference-time single-path constraint , where constrained decoding registers only the assigned SID, so misaligned cold-start items offer no alternative at test time. Recent GR optimizations improve SID construction and align it with the recommender, but they are largely cold-start-agnostic: they target average tokenization or training quality rather than the commitment decisions required for sparse items. SID-based generative recommenders [ 32 , 43 , 51 ] treat the SID as a fixed input produced offline and focus on backbone training; cold behaviour is bounded by whatever the upstream tokenizer commits. Dedicated tokenizer designs improve offline quantization through collabora-tive coupling [ 45 , 46 ], learnable codebooks [ 43 ], unified Semantic ID representations [ 25 ], long parallel SIDs [ 15 ], or differentiable and drift-aware identifier learning [ 7 , 9 ]. End-to-end co-evolution approaches [ 1 , 27 , 42 ] offer an elegant alternative by jointly opti-mizing the tokenizer and the recommender in a single objective, enabling continuous mutual alignment. However, under cold-start conditions, joint objectives can still be dominated by warm items because their interactions provide much denser gradient signal, leaving cold SID assignments under-corrected. Moreover, making discrete SID sampling differentiable usually requires relaxations such as Gumbel-Softmax [ 18 ], which can be unstable when cold-start items provide only sparse interaction supervision. More im-portantly, these approaches still force each cold-start item toward a single committed SID: they do not explicitly support deferring 
+
+> arXiv:2606.06947v1 [cs.IR] 5 Jun 2026 Guan et al.
+
+the decision under insufficient interaction support, abstaining from unreliable updates, or preserving multiple valid paths for inference. No existing thread simultaneously (i) anchors cold SIDs to prior-supported alternatives, (ii) defers commitment under insufficient interaction support, and (iii) preserves multiple paths so that the de-coder can still reach the item at inference. This motivates an explicit 
+
+decoupling strategy: rather than asking one joint objective to both reconstruct the SID space and commit each cold-start item to a path, DREAM separates prior construction, support-gated commitment, and inference-time path preservation. We instantiate this decoupling as DREAM , a progressive re-finement framework that drives a cold-start item’s SID assignment through prior-support repair, conservative commitment, and multi-path recovery rather than three independent patches (Figure 1). 
+
+Stage 1 , Collaborative-Aware Refined Tokenization (CART), per-forms prior-support repair : it rebuilds the SID space with collabora-tive geometry supervision and, for each cold-start item, exposes a small prior-supported candidate pool of plausible SID paths, turning subsequent stages into a well-bounded selection-and-preservation problem. Stage 2 , User-Conditioned Candidate Condensation (UC3), performs conservative commitment : the frozen recommendation backbone serves as a zero-training-cost evaluator, and a cold-start item’s SID is updated only when confidence-weighted multi-context votes pass explicit support and margin gates; otherwise, the CART assignment is retained. Stage 3 , Cold-Preserved Dynamic Beam Evolution (CPDE), enables multi-path recovery : it retains the sur-viving SID alternatives, registers all of them in the constrained-decoding trie, and performs multi-path inference; gradient isolation via LoRA [ 17 ] keeps the sparse cold updates from disrupting warm-item training. Each stage operates on the stabilized output of the previous one, and conservative safeguards, including confidence gating in UC3 and momentum-damped beam updates in CPDE, structurally bound error propagation so that upstream impreci-sion does not compound. On three Amazon benchmarks, DREAM achieves the best score on all 18 cold-start metrics (improvements ranging from 4× to 12 × over the strongest baseline) while remain-ing competitive on overall metrics (Section 4). The main contributions of this paper are: 
+
+• Problem formulation. We identify early static single-path com-mitment, which induces path misalignment under the single-path assignment constraint, as a primary structural bottleneck of SID-based generative recommendation for cold-start items. We decompose it into three compounding factors (unsupported as-signment, premature commitment, and the inference-time single-path constraint) and show that no existing method addresses all three jointly. 
+
+• Conservative progressive refinement framework. We pro-pose DREAM, a three-stage system organized around prior-support repair, conservative commitment, and multi-path recov-ery. CART provides prior-supported SID candidates (Section 3.3), UC3 applies confidence-weighted voting with explicit support and margin gates (Section 3.4), and CPDE preserves multi-path recovery through dynamic beam decoding with gradient isola-tion (Section 3.5). These conservative mechanisms bound error propagation across stages and protect warm-item performance during cold-start refinement. 
+
+• Comprehensive empirical validation. DREAM achieves the best result on all 18 cold-start metrics across three Amazon benchmarks, with improvements of roughly 4× to 12 × over the strongest baselines, while remaining competitive on overall met-rics. Stage-wise mechanism diagnosis on Sports confirms each component’s causal contribution. 
+
+## 2 Related Work 
+
+SID-Based Generative Recommendation and Item Tokeniza-tion. Generative retrieval first showed that retrieval targets can be generated as identifiers: DSI [ 39 ] stores documents in a differen-tiable search index, and NCI [ 44 ] improves neural corpus indexing with document identifiers. In recommendation, P5 [ 10 ] formulates recommendation with textual prompts and item identifiers, while TIGER [ 32 ] introduces RQ-VAE semantic IDs (SIDs) for genera-tive recommendation. LC-Rec [ 51 ] and LETTER [ 43 ] further adapt LLM-based recommendation with collaborative semantics and rep-resentation alignment, and large-scale systems such as HSTU [ 50 ], OneRec and OneRec-V2 [ 5, 53 ], and QARM [ 29 ] demonstrate the practical value of generative recommendation and compact item tokenization. Recent work improves identifier construction and alignment from complementary directions. CCGen [ 45 ] and EAGER [ 46 ] in-ject collaborative or behavior-semantic signals into tokenization; LETTER [ 43 ], USID [ 25 ], DiscRec [ 26 ], and RPG [ 15 ] learn more adaptive, unified, disentangled, or parallel item identifiers; and ETEGRec [ 27 ], BLOGER [ 1], DIGER [ 9 ], DACT [ 7], and PIT [ 42 ]show that token assignments can be adapted with recommendation objectives, differentiable updates, continual refinement, or person-alized contexts. DREAM is inspired by the broader idea that SID assignment need not remain static, but it does not optimize the to-kenizer and recommender in a single end-to-end objective; instead, it isolates the cold-start commitment decision after prior-supported candidates have been constructed. Multi-view identifier methods such as MINDER [ 24 ], NOVO [ 47 ], Multi-DSI [ 28 ], and Pctx [ 52 ] fur-ther suggest that one target may benefit from more than one valid identifier. These methods improve identifier quality, alignment, or view diversity, but most still commit each item to one primary path before cold-start interaction support is available. DREAM instead treats cold-start SID assignment as a staged commitment problem: it constructs prior-supported candidates, commits only under suf-ficient interaction support, and preserves multiple valid paths for constrained decoding. 
+
+Cold-Start Recommendation and Inductive Generative Re-trieval. Classical cold-start methods mainly improve transferable representations while the item remains in a global candidate pool: MeLU [ 21 ] meta-learns preference estimators, DropoutNet [ 41 ] sim-ulates missing interactions, CLCRec [ 48 ] uses contrastive alignment, Heater [ 55 ] applies randomized training with mixture-of-experts transformation, and UniSRec [ 16 ] learns universal sequence rep-resentations for transfer. Inductive generative retrieval addresses a harder setting in which new items must be reached by a gener-ator; for example, SpecGR [ 6] uses speculative decoding to route unseen items in a plug-and-play generative recommendation frame-work, and GenRecEdit [ 34 ] adapts model editing to inject cold-start item knowledge without full retraining. Because the offline SID DREAM: Dynamic Refinement of Early Assignment Mappings 
+
+assignment is still treated as an input prior, inference-time specula-tion or model editing alone does not explicitly repair a poorly sup-ported cold-start path before commitment. However, these methods improve continuous representations, inductive routing, or model parameters rather than explicitly repairing the discrete SID com-mitment made by the tokenizer, deferring commitment under in-sufficient interaction support, and registering multiple cold-start paths in the decoding trie. 
+
+## 3 Methodology 3.1 Preliminaries 
+
+SID-Based Generative Recommendation. Let U and I denote the user and item sets. For a training instance, ℎ𝑢 = (𝑖 1, . . . , 𝑖 𝑚 )
+
+is the observed interaction history of user 𝑢 ∈ U , and 𝑖 ∗ ∈ I 
+
+is the ground-truth next item. Each item 𝑖 is associated with a content embedding e𝑖 ∈ R𝑑 𝑒 and assigned a length-𝐿 Semantic ID (SID). An SID index is a mapping Φ : I → Î𝐿 𝑙 =1 V𝑙 , where 
+
+V𝑙 is the token vocabulary at SID position 𝑙 and |V 𝑙 |=𝑉 𝑙 . Thus 
+
+Φ(𝑖 ) = 𝑠 𝑖 = [𝑡 𝑖 
+
+> 1
+
+, . . . , 𝑡 𝑖 𝐿 ] with 𝑡 𝑖 𝑙 ∈ V 𝑙 . Following [ 32 , 51 ], the initial static index Φ0 is produced offline by an RQ-VAE or RQ-KMeans quantizer [ 20 , 29 ] over these item embeddings. Given an index Φ,the history is represented in SID space as sℎ𝑢 = (Φ(𝑖 1), . . . , Φ(𝑖 𝑚 )) ,and a generative recommender M𝜃 is trained to maximize the autoregressive likelihood of the target SID Φ(𝑖 ∗):
+
+Lrec = −
+
+> 𝐿
+
+∑︁ 
+
+> 𝑙 =1
+
+log 𝑃 𝜃 
+
+
+
+𝑡 𝑖 ∗ 
+
+> 𝑙
+
+| sℎ𝑢 , 𝑡 𝑖 ∗ 
+
+> 1
+
+, . . . , 𝑡 𝑖 ∗ 
+
+> 𝑙 −1
+
+
+
+. (1) At inference, constrained decoding restricts generation to the reg-istered path set R ( Φ) = {Φ(𝑖 ) | 𝑖 ∈ I} , so Φ determines both the training targets and the reachable decoding space. 
+
+Problem Statement. Let 𝑓 𝑖 be the number of training interactions containing item 𝑖 . Given a cold-start threshold 𝑛 𝑐 (set to 5 in our experiments), we partition I into cold-start items I𝑐 = {𝑖 | 𝑓 𝑖 ≤
+
+𝑛 𝑐 } and warm items I𝑤 = I \ I 𝑐 . Under Φ0 every cold-start item is committed to one SID before sufficient interaction support is available, inducing the three coupled risks of early static single-path commitment introduced in §1. Given Φ0, item content embeddings 
+
+{e𝑖 }𝑖 ∈ I , and training interactions, our goal is to produce a refined single-path index ΦC for backward-compatible decoding and, for each cold-start item, a small alternative SID set B𝑖 for multi-path inference, while bounding warm-item perturbation. 
+
+## 3.2 Framework Overview 
+
+As illustrated in Figure 1, DREAM refines the initial index Φ0
+
+through three stages. CART (§3.3) rebuilds the SID space with collaborative supervision and outputs a CART-refined index ΦR
+
+together with a bounded prior-supported candidate pool P𝑖 for each cold-start item 𝑖 . UC3 (§3.4) treats the frozen bridge model as a zero-training-cost evaluator, converts each pool into confidence-weighted votes {𝑣 (𝑘 ) 
+
+> 𝑖
+
+}, and commits to a single-path index ΦC only when explicit support and margin gates pass; otherwise it abstains at the CART assignment. CPDE (§3.5) preserves the surviving SID alternatives as a dynamic beam B𝑖 , isolates cold gradients via LoRA [ 17 ], and registers all retained paths in the beam-aware constrained-decoding trie TBA for multi-path inference. To prevent upstream imprecision from compounding across stages, each stage is decoupled by an explicit gating step: UC3’s support and margin thresholds filter low-support rewrites before commitment, while CPDE updates beam weights through an exponential moving aver-age (EMA) update [ 13 , 38 ] that suppresses noisy single-step shifts (§4 reports the resulting stage-wise stability). 
+
+## 3.3 Collaborative-Aware Refined Tokenization 
+
+CART repairs the prior support of cold-start SID paths before the recommender is asked to make a final commitment. Its role is not to arbitrarily rewrite identifiers, but to replace a content-dominated top-1 assignment with a collaboration-aware local candidate pool. To make this prior useful under sparsity, CART combines collabora-tive item representations, intent-discriminative hard negatives, and diversity-aware quantization into a single tokenization objective. 
+
+Item Representation. CART starts from the pre-computed item embedding e𝑖 and augments it with a learnable per-item collabora-tive residual r𝑖 ∈ R𝑑 , initialized to zero: 
+
+z𝑖 = LN (𝑊 𝑐 e𝑖 + r𝑖 ) , (2) where 𝑊 𝑐 is a linear content projection and LN is layer normaliza-tion. The zero initialization keeps early training anchored in content geometry while r𝑖 gradually accumulates interaction-derived struc-ture. Even for cold-start items, r𝑖 receives gradient from two comple-mentary paths: collaborative geometry via Lcal and counterfactual hard-negative contrastive signal via LNCE (detailed below), so the representation remains discriminative under interaction sparsity. 
+
+Counterfactual Hard Negative Mining (CHN). Random nega-tives are too easy to teach intent-level discrimination, so we mine intent-discriminative hard negatives in two steps. 
+
+Step 1: Counterfactual generation. For each item 𝑖 , we prompt an LLM with a domain-specific template that keeps the product family unchanged but flips the core purchase intent along a seman-tically salient axis (e.g., hydrating → oil-control; trail-running →
+
+road-running). A rule-based fallback handles generation failures to maintain full coverage. 
+
+Step 2: Catalog grounding via sparse retrieval. The generated description is synthetic, so using it directly would introduce out-of-distribution embeddings. We instead use it as a query for BM25 [ 33 ], a standard sparse retrieval method, to retrieve the 𝐾 most lexically matched real items from the catalog: 
+
+N𝑖 = BM25 -top ( ˜x𝑖 , I \ { 𝑖 }, 𝐾 ) . (3) We choose BM25 because lexical overlap is the dominant source of confusability at the SID level. We apply CHN to all items: warm items supply dense comparative context that calibrates the geomet-ric boundary around cold-start items, while cold-start items receive hard-negative signal even when interactions are sparse. 
+
+SID Quantization with Diversity Regularization. We tokenize each item into an 𝐿 -position SID using codebooks C𝑙 ∈ R𝑉 𝑙 ×𝑑 . A projection 𝑓 𝑞 maps z𝑖 to per-position queries q𝑖,𝑙 , and the assign-ment logit is computed by cosine similarity scaled by a learnable temperature 𝜏 𝑠 :
+
+ℓ𝑖,𝑙,𝑘 = 𝜏 𝑠 · q⊤ 
+
+> 𝑖,𝑙
+
+c𝑙,𝑘 
+
+∥q𝑖,𝑙 ∥ ∥ c𝑙,𝑘 ∥ . (4) Cosine normalization prevents high-magnitude entries from domi-nating irrespective of semantic fit. We train with Gumbel-Softmax Guan et al. 
+
+Figure 1: Overview of the DREAM framework. The top trajectory shows SID evolution from the fragile static path Φ0 to CART candidate pool P𝑖 , UC3 primary SID ΦC, CPDE beam paths B𝑖 , and a union trie for cold-hit recovery. CART injects collaborative signal into SID refinement, UC3 selects reliable candidates through multi-context votes and conservative gates, and CPDE performs beam-aware inference over valid trie paths. 
+
+sampling [ 18 , 31 ] under an exponentially annealed temperature 
+
+𝜏 (𝑡 ) = 𝜏 0 · ( 𝜏 end /𝜏 0)𝑡 /𝑇 max , paired with a Straight-Through Estimator (STE) [ 2] so that the discrete one-hot assignment is used in the forward pass while the continuous soft assignment provides the backward gradient. To keep the candidate prior from collapsing into a small set of overused codes, we add a diversity regularizer that penalizes concentration in the batch-mean assignment distribution: 
+
+Ldiv = 1
+
+𝐿 
+
+> 𝐿
+
+∑︁ 
+
+> 𝑙 =1
+
+
+
+1 − 𝐻 (¯a𝑙 )
+
+> log 𝑉 𝑙
+
+
+
+, (5) where ¯a𝑙 = 1
+
+> | B |
+
+Í𝑖 softmax (ℓ𝑖,𝑙 ) and 𝐻 (·) is Shannon entropy. Ldiv 
+
+is a soft penalty weighted by 𝜆 div that suppresses batch-level code collapse, while the anchor loss introduced below preserves seman-tically meaningful token concentration. 
+
+Training Objectives. CART trains the item representations and quantizer with four terms. 
+
+Contrastive (NCE). A momentum encoder, updated as an EMA of 𝑊 𝑐 
+
+and {r𝑖 } with coefficient 𝑚 following standard momentum-encoder practice [ 13 ], produces consistent positive keys ˆz+ 
+
+> 𝑖
+
+. Combined with a FIFO negative queue Q and the CHN pool N𝑖 , the position-averaged InfoNCE loss is: 
+
+LNCE = − 1
+
+𝐿 
+
+> 𝐿
+
+∑︁ 
+
+> 𝑙 =1
+
+log 𝑒 ˆs⊤  
+
+> 𝑖,𝑙 ˆz+
+> 𝑖 /𝜏 𝑛
+
+𝑒 ˆs⊤   
+
+> 𝑖,𝑙 ˆz+
+> 𝑖 /𝜏 𝑛
+
++ Í𝑗 ∈ Q∪N 𝑖 𝑒 ˆs⊤  
+
+> 𝑖,𝑙 ˆz+
+> 𝑗 /𝜏 𝑛
+
+, (6) where ˆs𝑖,𝑙 is the normalized STE token embedding. 
+
+Collaborative alignment (CAL). To inject collaborative structure that contrastive learning alone does not capture, we add a target-conditioned CTR task. For each history item 𝑗 , we construct the interaction feature f𝑗 = [z𝑖 𝑗 ; z𝑖 ∗ ; z𝑖 𝑗 −z𝑖 ∗ ; z𝑖 𝑗 ⊙z𝑖 ∗ ] ∈ R4𝑑 and com-pute attention weights via a two-layer MLP 𝑎 : R4𝑑 → R:
+
+𝛼 𝑗 = exp  v⊤ 
+
+> 𝑎
+
+ReLU (𝑊 𝑎 f𝑗 + b𝑎 )Í𝑗 ′ exp  v⊤ 
+
+> 𝑎
+
+ReLU (𝑊 𝑎 f𝑗 ′ + b𝑎 ) , u = Í𝑗 𝛼 𝑗 sg (z𝑖 𝑗 ), (7) where 𝑊 𝑎 ∈ R𝑑 ℎ ×4𝑑 , v𝑎 ∈ R𝑑 ℎ , and 𝑑 ℎ is the hidden size. A prediction head 𝑔 : R3𝑑 → R (same architecture) takes [u; z; u⊙z] and outputs a logit for the BCE objective: 
+
+Lcal =BCE  𝜎 (𝑔 ([ u; z𝑖 ∗ ; u⊙z𝑖 ∗ ])) , 1
+
++ BCE  𝜎 (𝑔 ([ u; z𝑗 − ; u⊙z𝑗 − ])) , 0. (8) The stop-gradient on each history embedding z𝑖 𝑗 prevents the CTR task from modifying history representations through co-occurrence shortcuts, while the target z𝑖 ∗ still receives full gradient from LNCE 
+
+and Lcal .
+
+Static anchor. To keep the refined SID space compatible with the downstream token vocabulary, we regularize toward the existing static assignment 𝑠 0 
+
+> 𝑖
+
+:
+
+Lanc = 1
+
+𝐿 
+
+> 𝐿
+
+∑︁ 
+
+> 𝑙 =1
+
+CE (ℓ𝑖,𝑙 , 𝑡 0,𝑖 𝑙 ). (9) The full CART objective is: 
+
+LCART = LNCE + L cal + 𝜆 div Ldiv + 𝜆 anc Lanc , (10) DREAM: Dynamic Refinement of Early Assignment Mappings 
+
+where LNCE and Lcal are primary objectives with unit weight, and 
+
+𝜆 div , 𝜆 anc are hyperparameters controlling regularization strength. Because Lanc constrains the refined SIDs to stay close to the original static index, warm items undergo only minor adjustments rather than wholesale reassignment; the downstream adaptation cost is limited to a single bridge fine-tuning pass on the updated index, which is lightweight relative to the cold-start gains it enables. After training, CART scores a candidate SID 𝑠 = [𝑡 1, . . . , 𝑡 𝐿 ] by the average token log-probability induced by the learned quantizer: 
+
+𝑞 CART (𝑠 | 𝑖 ) = 1
+
+𝐿 
+
+> 𝐿
+
+∑︁ 
+
+> 𝑙 =1
+
+log softmax (ℓ𝑖,𝑙 )𝑡 𝑙 . (11) For each item, we decode the 𝐾 highest-scoring SID sequences from the learned quantizer. The top-ranked sequence becomes the new primary assignment (the refined index), and the full top-𝐾 set forms a bounded candidate pool that the next stage (UC3) will evaluate under observed user support: 
+
+ΦR (𝑖 ) = 𝑠 (1) 
+
+> 𝑖
+
+, P𝑖 = {( 𝑠 (𝑘 ) 
+
+> 𝑖
+
+, 𝑝 (𝑘 ) 
+
+> 𝑖
+
+)} 𝐾 𝑘 =1 = TopK 𝑠 𝑞 CART (𝑠 | 𝑖 ),
+
+(12) where 𝑝 (𝑘 ) 
+
+> 𝑖
+
+denotes the corresponding CART path score. For warm items, only ΦR is used as the updated single-path index; for cold-start items, the full candidate pool P𝑖 is passed to the downstream commitment and multi-path recovery stages. 
+
+## 3.4 User-Conditioned Candidate Condensation 
+
+CART equips each cold-start item with a prior-supported pool P𝑖 of 
+
+𝐾 ranked SID candidates, but the pool itself should not force an im-mediate commitment. The missing support signal is how each candi-date behaves when generated under real user histories. UC3 obtains this support signal from the frozen bridge model: for each candidate SID, it computes the teacher-forced negative log-likelihood (NLL), which measures how likely the model is to generate that candidate token-by-token given the user’s interaction history. This requires only 𝐾 forward passes per cold-start interaction with no parameter updates. Concretely, for each training interaction (𝑢, ℎ 𝑢 , 𝑖 ) with 𝑖 ∈ I 𝑐 ,UC3 evaluates every candidate 𝑠 (𝑘 ) 
+
+> 𝑖
+
+∈ P 𝑖 under the frozen model: 
+
+NLL (𝑠 (𝑘 ) 
+
+> 𝑖
+
+| 𝑢, ℎ 𝑢 ) = − 1
+
+𝐿 
+
+> 𝐿
+
+∑︁ 
+
+> 𝑙 =1
+
+log 𝑃 frozen 
+
+
+
+𝑡 (𝑘 ) 
+
+> 𝑖,𝑙
+
+| sℎ𝑢 , 𝑡 (𝑘 )
+
+> 𝑖, <𝑙
+
+
+
+. (13) UC3 first converts these losses into a per-context preference distri-bution: 
+
+𝑝 (𝑘 ) 
+
+> 𝑢,𝑖
+
+= 𝑒 −NLL (𝑠 (𝑘 )  
+
+> 𝑖 |𝑢,ℎ 𝑢 )/ 𝜏 𝑐
+
+Í𝑘 ′ 𝑒 −NLL (𝑠 (𝑘 ′ )  
+
+> 𝑖 |𝑢,ℎ 𝑢 )/ 𝜏 𝑐
+
+. (14) Here 𝜏 𝑐 is a fixed candidate-selection temperature. Intuitively, each user context casts a vote over the candidate SIDs. However, not every vote should count equally: when the frozen model assigns nearly uniform probability to all candidates, it is telling us that this context is not decisive. We therefore weight each vote by an entropy-based confidence: 
+
+𝜔 𝑢,𝑖 = 1 − 𝐻 (p𝑢,𝑖 )
+
+log 𝐾 , 𝐻 (p𝑢,𝑖 ) = −
+
+> 𝐾
+
+∑︁ 
+
+> 𝑘 =1
+
+𝑝 (𝑘 ) 
+
+> 𝑢,𝑖
+
+log 𝑝 (𝑘 ) 
+
+> 𝑢,𝑖
+
+. (15) The final candidate score is a confidence-weighted consensus: 
+
+𝑣 (𝑘 ) 
+
+> 𝑖
+
+=
+
+Í(𝑢,ℎ 𝑢 ) ∈ D 𝑖 𝜔 𝑢,𝑖 𝑝 (𝑘 )
+
+> 𝑢,𝑖
+
+Í(𝑢,ℎ 𝑢 ) ∈ D 𝑖 𝜔 𝑢,𝑖 + 𝜖 . (16) where 𝜖 is a small numerical stabilizer. Thus, contexts where the model is confident have larger influence, while ambiguous contexts contribute little. A candidate that scores well across heterogeneous, high-confidence user contexts reflects a SID that is broadly com-patible with the cold-start item’s diverse usage patterns, whereas a candidate that dominates only under a few specific contexts receives lower aggregate support. UC3 converts the vote scores into a commitment only when the support is both sufficient and decisive. Let 𝑘 ∗ = argmax 𝑘 𝑣 (𝑘 ) 
+
+> 𝑖
+
+, and let 𝑣 [1] 
+
+> 𝑖
+
+and 𝑣 [2] 
+
+> 𝑖
+
+denote the largest and second-largest vote scores. The refined index is 
+
+ΦC (𝑖 ) =
+
+(
+
+𝑠 (𝑘 ∗ ) 
+
+> 𝑖
+
+, |D 𝑖 | ≥ 𝜂 sup ∧ 𝑣 [1] 
+
+> 𝑖
+
+− 𝑣 [2] 
+
+> 𝑖
+
+≥ 𝜂 mar ,
+
+ΦR (𝑖 ), otherwise , (17) for cold-start items, while warm items keep ΦC (𝑖 ) = ΦR (𝑖 ). The fallback case is intentional abstention under weak support: UC3 updates a cold-start item only when multi-context votes consis-tently improve upon the CART prior, and otherwise retains the safer CART top-1 assignment. The resulting index ΦC and the per-candidate vote scores {𝑣 (𝑘 ) 
+
+> 𝑖
+
+} are passed to CPDE. 
+
+## 3.5 Cold-Preserved Dynamic Beam Evolution 
+
+Even after UC3 selects a stable single path, cold-start relevance may retain residual multi-path ambiguity. Different user contexts can support different plausible SIDs from the CART prior, and collapsing all of them into one top-1 path can remove recoverable routes from the constrained-decoding trie. At the same time, unrestricted fine-tuning is undesirable: sparse cold-start gradients carry high variance and can perturb warm-item generation, while dense warm gradients can dilute cold-specific adaptation. CPDE therefore treats 
+
+ΦC as the stable commitment point and preserves a small set of residual alternatives for training and decoding. To prevent sparse cold-start gradients from disrupting warm-item generation while still allowing cold-specific adaptation, CPDE employs cold-preserved gradient isolation . We inject rank-𝑟 LoRA adapters [ 17 ] into the query and value projections of every attention layer. When the model processes a cold-start sample, the entire backbone (including all non-LoRA parameters) is frozen and its contribution is stop-gradiented, so that gradients flow exclusively through the low-rank adapter matrices: 
+
+ocold = sg (𝑊 0x) + 𝛼 𝑟  
+
+> 𝑟
+
+BAx , (18) where sg (·) denotes stop-gradient. For warm-item samples, both the backbone weights 𝑊 0 and the adapter receive full gradient flow, preserving the model’s warm-item generation ability. For each cold-start item, CPDE maintains a dynamic beam B𝑖 =
+
+{( 𝑠 (𝑘 ) 
+
+> 𝑖
+
+, 𝑤 (𝑘 ) 
+
+> 𝑖
+
+)} 𝐵 𝑘 =1 of 𝐵 weighted SID hypotheses, initialised from 
+
+P𝑖 and ΦC. The model is trained with a soft multi-target objective weighted by the current beam distribution ˜𝑤 (𝑘 ) 
+
+> 𝑖
+
+∝ exp (𝑤 (𝑘 ) 
+
+> 𝑖
+
+/𝑇 ):
+
+Lsoft = −
+
+> 𝐵
+
+∑︁ 
+
+> 𝑘 =1
+
+˜𝑤 (𝑘 ) 
+
+> 𝑖
+
+· 1
+
+𝐿 
+
+> 𝐿
+
+∑︁ 
+
+> 𝑙 =1
+
+log 𝑝 𝜃 
+
+
+
+𝑡 (𝑘 ) 
+
+> 𝑖,𝑙
+
+| sℎ𝑢 , 𝑡 (𝑘 )
+
+> 𝑖, <𝑙
+
+
+
+. (19) Guan et al. 
+
+For warm items, generation ability is preserved via knowledge distillation from the frozen reference model (a copy of the UC3 bridge checkpoint), gated by the teacher’s own output entropy to suppress distillation on uncertain samples. The full training objective is: 
+
+LCPDE = 𝜆 𝑠 Lsoft + 𝜆 𝑐 L𝑐  
+
+> KL
+
++ 𝜆 𝑤 LKD , (20) where L𝑐  
+
+> KL
+
+= KL (𝑝 𝜃 ∥𝑝 ref ) is an asymmetric KL regulariser on SID-position logits that anchors the cold-start path to the reference model, and LKD is the entropy-gated warm-item distillation loss. After a short warm-up of 𝐸 0 epochs, CPDE periodically refreshes the beam weights every 𝐾 𝑒 optimization steps using the current student model. For each cold-start item observed in the recent optimization window W𝑖 , the score of candidate 𝑠 (𝑘 ) 
+
+> 𝑖
+
+is the average negative teacher-forced NLL: 
+
+score (𝑘 ) 
+
+> 𝑖
+
+= − 1
+
+|W 𝑖 |∑︁ (𝑢,ℎ 𝑢 ,𝑖 ) ∈ W 𝑖 
+
+NLL 𝜃 (𝑠 (𝑘 ) 
+
+> 𝑖
+
+| 𝑢, ℎ 𝑢 ). (21) CPDE then updates beam weights via momentum EMA [38]: 
+
+𝑤 (𝑘 ) 
+
+> 𝑖
+
+← 𝛾 𝑚 𝑤 (𝑘 ) 
+
+> 𝑖
+
++ ( 1 − 𝛾 𝑚 )( 𝛼 𝑏 + score (𝑘 ) 
+
+> 𝑖
+
+), (22) gated by a per-item confidence measure conf (𝑖 ) = 𝜎 (− NLL best (𝑖 ) + 
+
+𝛿 ), where 𝛿 is a threshold and 𝜎 is the sigmoid function. When 
+
+conf (𝑖 ) is low, the update is withheld so that the beam remains stable until the model accumulates stronger support. This design creates a mutual refinement loop: as the model improves at cold-start generation, beam weights are periodically refreshed to provide cleaner training targets, which in turn accelerates model adaptation. The initial warm-up period ( 𝐸 0 epochs) and the confidence gate together prevent premature beam collapse in early training. At deployment, the LoRA weights are merged into the backbone with no additional model-computation cost, and all 𝐵 retained beam paths per cold-start item are pre-registered in the constrained-decoding trie to enable multi-path inference (§3.6). Algorithm 1 summarizes the full DREAM pipeline. 
+
+## 3.6 Inference 
+
+For cold-start items, DREAM performs multi-path inference as its primary retrieval mechanism: all surviving beam SIDs are registered in the constrained-decoding trie so that the model can reach a cold-start item through any of its learned paths, increasing retrieval probability without additional scoring modules. At inference time, the merged model autoregressively generates the next item’s SID token by token: 
+
+ˆ𝑡 𝑙 = argmax  
+
+> 𝑣 ∈ V 𝑙
+
+𝑃 𝜃 
+
+ 𝑣 | ˆ𝑡 <𝑙 , sℎ𝑢 
+
+ , (23) where ˆ𝑡 <𝑙 denotes the previously generated prefix. Constrained gen-eration via a prefix trie [ 32 , 51 ] restricts each decoding step to valid continuations of registered SIDs. DREAM instantiates two trie con-figurations from the same CPDE state. Let 𝑠 † 
+
+> 𝑖
+
+= argmax 𝑘 ∈ { 1,...,𝐵 } 𝑤 (𝑘 )
+
+> 𝑖
+
+denote the highest-weight beam path for cold-start item 𝑖 . Compat-Top1 keeps one path per item for backward-compatible comparison with single-index baselines: 
+
+TC1 = {ΦC (𝑖 ) | 𝑖 ∈ I 𝑤 } ∪ { 𝑠 † 
+
+> 𝑖
+
+| 𝑖 ∈ I 𝑐 }. (24) 
+
+Algorithm 1 DREAM: Dynamic Assignment Refinement and Multi-Path Inference 
+
+Require: Static index Φ0, item embeddings {e𝑖 }, interaction data D, cold-start set I𝑐 
+
+Stage 1: CART — Prior-Support Repair (§3.3)  
+
+> 1:
+
+Build CHN pools N𝑖 via BM25-grounded retrieval (Eq. 3)  
+
+> 2:
+
+Train on all items with LCART (Eq. 10)  
+
+> 3:
+
+Decode refined index ΦR; export top-𝐾 prior P𝑖 for 𝑖 ∈ I 𝑐 (Eq. 12)  
+
+> 4:
+
+Fine-tune bridge model MR on ΦR
+
+Stage 2: UC3 — Conservative Commitment (§3.4)  
+
+> 5:
+
+for each 𝑖 ∈ I 𝑐 do  
+
+> 6:
+
+Score candidates via frozen-bridge NLL (Eq. 13)  
+
+> 7:
+
+Aggregate confidence-weighted votes 𝑣 (𝑘 ) 
+
+> 𝑖
+
+(Eq. 16)  
+
+> 8:
+
+Commit ΦC (𝑖 ) if support & margin gates pass (Eq. 17); else keep 
+
+ΦR (𝑖 ) 
+
+> 9:
+
+end for  
+
+> 10:
+
+Set ΦC (𝑖 ) ← ΦR (𝑖 ) for 𝑖 ∉ I𝑐 ; fine-tune MC on ΦC
+
+Stage 3: CPDE — Multi-Path Recovery (§3.5)  
+
+> 11:
+
+Init beam B𝑖 from ΦC (𝑖 ) and UC3-weighted P𝑖  
+
+> 12:
+
+for each training step 𝑡 do  
+
+> 13:
+
+Cold samples: LoRA-isolated gradient (Eq. 18), soft beam loss (Eq. 19)  
+
+> 14:
+
+Warm samples: entropy-gated distillation from frozen reference  
+
+> 15:
+
+if past warm-up and 𝑡 mod 𝐾 𝑒 = 0 then  
+
+> 16:
+
+Rescore beams (Eq. 21); momentum-update weights if confident (Eq. 22)  
+
+> 17:
+
+end if  
+
+> 18:
+
+end for 
+
+Deploy: Multi-Path Inference (§3.6)  
+
+> 19:
+
+Merge LoRA into backbone; build TC1 (Eq. 24) and TBA (Eq. 25)  
+
+> 20:
+
+return MDREAM , ΦC, { B 𝑖 }, TC1 , TBA 
+
+Beam-Aware registers all retained beam paths for each cold-start item, enabling multi-path retrieval: 
+
+TBA = {ΦC (𝑖 ) | 𝑖 ∈ I 𝑤 } ∪ 
+
+Ø 
+
+> 𝑖 ∈ I 𝑐
+
+{𝑠 (𝑘 ) 
+
+> 𝑖
+
+| ( 𝑠 (𝑘 ) 
+
+> 𝑖
+
+, 𝑤 (𝑘 ) 
+
+> 𝑖
+
+) ∈ B 𝑖 }. (25) A generated SID is resolved to the target if it matches any of that item’s registered paths. Beam-Aware is reported as DREAM’s pri-mary view, since it reflects the intended multi-path operational mode for cold-start items; Compat-Top1 is used in ablations to isolate single-path quality from multi-path recovery. 
+
+## 4 Experiments 
+
+We evaluate DREAM on three benchmark datasets and compare it against ten competitive baselines. Our experiments address the following research questions: (RQ1) How effective is DREAM in cold-start item recommendation? (RQ2) Do these cold-start gains translate into competitive overall utility? (RQ3) How do CART, UC3, and CPDE contribute to the final gains? (RQ4) What is the trade-off between cold-start gains and warm-item preservation? 
+
+## 4.1 Experimental Setup 
+
+Datasets. We conduct experiments on three Amazon product re-view categories: Beauty, Sports and Outdoors (Sports), and Toys and Games (Toys). We apply iterative core-5 filtering for users and core-3 filtering for items. For fair comparison, we uniformly employ a frozen Llama-3-8B [ 11 ] to extract item text embeddings for initial codebook construction in all SID-based methods (TIGER, LETTER, DREAM: Dynamic Refinement of Early Assignment Mappings 
+
+Table 1: Dataset statistics after iterative core filtering. Cold% :fraction of test targets with 𝑓 𝑖 ≤ 5.
+
+Dataset #Users #Items #Inters Avg.Len Cold% Beauty 32,106 26,595 283,907 8.8 20.6% Sports 49,133 37,602 412,439 8.4 19.1% Toys 31,261 29,840 271,242 8.7 23.8% LC-Rec, SpecGR, and DREAM), with a shared RQ-VAE [ 20 ] con-figuration of 𝐿 =4 codebooks and 𝑉 𝑙 =256 codes per position. For TIGER and LETTER, we adopt the implementation provided by LETTER [ 43 ]; for LC-Rec and DREAM, the backbone is fine-tuned using LLaMA-7B [ 40 ], consistent with the original LC-Rec design. An item is classified as cold if its total interaction count 𝑓 𝑖 ≤ 5 and as warm otherwise. Table 1 summarizes the dataset statistics. All three datasets exhibit extreme sparsity (interaction density below 
+
+0.04% ) and a substantial cold-start ratio ( 19 –24% of test targets), making them well suited for evaluating cold-start methods. 
+
+Baselines. We compare DREAM against ten methods from three categories: (1) ID-based sequential models , including GRU4Rec [ 14 ], a GRU-based session recommender; SASRec [ 19 ], a unidirectional self-attention model; BERT4Rec [ 35 ], a bidirectional masked Trans-former; HGN [30 ], a hierarchical gating network; and HSTU [ 50 ], a large-scale sequential transducer; (2) reasoning augmentation , repre-sented by ReaRec [37 ], which augments sequential recommenders with inference-time multi-step reasoning; and (3) SID-based gen-erative retrieval , including TIGER [ 32 ], the seminal RQ-VAE SID generative retriever; LETTER [ 43 ], which augments TIGER with alignment-based data augmentation and multi-task training; LC-Rec [ 51 ], which integrates collaborative signals into the SID-based LLM fine-tuning pipeline; and SpecGR [ 6], a plug-and-play induc-tive generative recommendation framework that uses a drafter– verifier design to propose and verify candidate items, including unseen items. 
+
+Evaluation Protocol. We follow the standard leave-one-out pro-tocol: for each user, the last interaction is used for testing, the second-to-last for validation, and the rest for training. We report 
+
+Recall@ 𝐾 (R@ 𝐾 ) and NDCG@ 𝐾 (N@ 𝐾 ) at 𝐾 ∈ { 5, 10 , 50 } with full-ranking over the entire item catalog, computed separately for 
+
+overall , cold , and warm subsets. For DREAM we report the Beam-Aware view (§3.5), which evaluates against the multi-path union trie containing all registered beam SIDs for each cold-start item and reduces to standard single-index evaluation for single-path meth-ods; the backward-compatible Compat-Top1 view is reported in the ablation study to isolate the contribution of multi-path decoding. 
+
+Implementation. DREAM follows the LC-Rec [ 51 ] LLaMA-7B setup, and all SID-based methods use the shared 𝐿 =4, 𝑉 𝑙 =256 con-figuration. CART (Stage 1) trains the tokenizer for 12 epochs (batch 64, AdamW lr 5×10 −4) with NCE, collaborative alignment, diversity (𝜆 div =0.1), and static-anchor ( 𝜆 anc =0.5) losses; it uses an 8,192 -entry FIFO queue, 𝐾 =8 counterfactual hard negatives, a 0.5 warm aug-mentation ratio, and 4 warm negatives per item, with counterfactual descriptions generated by Llama-3.1-8B [ 11 ] and BM25-grounded to the catalog. After CART and UC3 index replacement, the backbone is fine-tuned for 12 epochs at lr 2×10 −5 with a cosine schedule on 8 GPUs under DeepSpeed ZeRO-2. UC3 (Stage 2) scores the 𝐾 =8
+
+CART candidates with the frozen bridge at 𝜏 𝑐 =1.0 and changes the SID only if the support ( 𝜂 sup =3) and margin ( 𝜂 mar =0.05 ) gates both pass. CPDE (Stage 3) trains for 6 epochs at lr 2×10 −5 with rank-4 LoRA on attention 𝑄 /𝑉 , a beam width 𝐵 =4, and beam refresh every 
+
+𝐾 𝑒 =50 steps after 𝐸 0=2 warm-up epochs ( 𝛾 𝑚 =0.7). 
+
+## 4.2 Cold-Start Performance 
+
+Table 2 reports the cold-start recommendation performance, which is the central result of this paper. (1) DREAM is the best method on every cold-start metric we measure: all 18 cells across three datasets and six metrics. The lift over the strongest baseline ranges from 4.3× to 11 .5×: cold R@5 rises by 4.3× (Beauty), 9.0× (Sports), and 4.5× (Toys), while cold N@50 rises by 7.2×, 11 .1×, and 6.6× on the same datasets, all relative to the strongest baseline per metric. The gain is therefore consistent across datasets, metrics, and ranking depths, confirming that DREAM’s progressive refinement pipeline, rather than dataset-specific tuning, is what drives the improvement. (2) Static SIDs bottleneck cold-start items. Among baselines, HSTU and ReaRec—both ID-based sequential models—consistently provide the second-best cold performance, whereas SID-based gen-erative baselines rarely stay competitive on cold-start items. This pattern indicates that the main difficulty is not autoregressive rec-ommendation per se, but the quality of the static SID assignment cold-start items inherit before any user feedback is observed. (3) SID-based baselines collapse on cold-start items. TIGER, LET-TER, LC-Rec, and SpecGR remain near zero on cold R@10 across all three datasets. Even LC-Rec, which injects collaborative signals into backbone training, does not recover cold-start items, because that enhancement is applied after index construction and cannot repair deficient SID assignments upstream. Taken together, the cold table localizes the cold-start bottleneck to the static SID assignment pipeline, which is precisely where DREAM intervenes; correspond-ingly, DREAM’s overall gains in §4.3 are predominantly driven by improvements on cold-start items. 
+
+## 4.3 Overall Utility and Warm Trade-off 
+
+Table 3 shows that the cold-start gains translate into competitive overall utility rather than being offset by large population-level regressions. (1) Sports is the strongest overall success case. On Sports, DREAM outperforms all baselines across all six metrics, with gains of 17.2% (R@5), 25.7% (N@5), 15.7% (R@10), and 23.1% (N@10) over the strongest competitor. (2) Beauty remains competitive overall while benefiting sub-stantially on cold-start items. On Beauty, DREAM obtains the best N@10, R@50, and N@50, while staying within 3.2% of LC-Rec on R@5 and within 1.7% of TIGER on R@10. This pattern is consis-tent with DREAM’s target behavior: large cold-start improvements lift the overall metrics even though DREAM does not uniformly dominate every warm-favored metric. (3) Toys also shows strong overall performance together with large cold-start gains. On Toys, DREAM achieves the best result on 5/6 overall metrics and trails SpecGR only on R@50. At the same time, it reaches beam-aware cold N@10 = 0.0573 , showing Guan et al. 
+
+Table 2: Cold-start item recommendation performance. DREAM achieves the best result across all 18 cold-start metrics on three datasets, with 4.3× to 11 .5× improvements over the strongest per-metric baseline (peak: 11 .5× N@50 on Sports). 
+
+Method Beauty Sports Toys R@5 N@5 R@10 N@10 R@50 N@50 R@5 N@5 R@10 N@10 R@50 N@50 R@5 N@5 R@10 N@10 R@50 N@50 GRU4Rec 0.0015 0.0008 0.0027 0.0012 0.0086 0.0025 0.0002 0.0001 0.0006 0.0002 0.0017 0.0004 0.0016 0.0009 0.0036 0.0015 0.0154 0.0040 SASRec 0.0030 0.0016 0.0047 0.0021 0.0104 0.0034 0.0012 0.0006 0.0016 0.0008 0.0032 0.0011 0.0091 0.0046 0.0130 0.0059 0.0240 0.0083 BERT4Rec 0.0006 0.0004 0.0011 0.0005 0.0032 0.0010 0.0001 0.0001 0.0001 0.0001 0.0001 0.0001 0.0023 0.0017 0.0036 0.0021 0.0118 0.0039 HGN 0.0012 0.0008 0.0023 0.0011 0.0066 0.0020 0.0002 0.0001 0.0010 0.0003 0.0027 0.0007 0.0026 0.0013 0.0058 0.0023 0.0234 0.0062 HSTU 0.0053 0.0037 0.0079 0.0046 0.0140 0.0059 0.0031 0.0021 0.0037 0.0023 0.0052 0.0026 0.0125 0.0081 0.0175 0.0097 0.0279 0.0120 ReaRec 0.0059 0.0041 0.0068 0.0043 0.0116 0.0054 0.0031 0.0026 0.0038 0.0028 0.0066 0.0034 0.0109 0.0079 0.0130 0.0086 0.0226 0.0107 TIGER 0.0003 0.0001 0.0005 0.0002 0.0032 0.0007 0.0013 0.0007 0.0019 0.0009 0.0030 0.0012 0.0016 0.0011 0.0028 0.0014 0.0162 0.0042 LETTER 0.0003 0.0002 0.0009 0.0004 0.0036 0.0010 0.0006 0.0004 0.0009 0.0005 0.0036 0.0011 0.0005 0.0003 0.0013 0.0005 0.0136 0.0029 LC-Rec 0.0015 0.0007 0.0029 0.0012 0.0079 0.0022 0.0004 0.0002 0.0006 0.0003 0.0015 0.0005 0.0008 0.0005 0.0012 0.0007 0.0048 0.0014 SpecGR 0.0012 0.0009 0.0020 0.0012 0.0057 0.0020 0.0006 0.0003 0.0012 0.0005 0.0025 0.0008 0.0023 0.0014 0.0040 0.0019 0.0106 0.0033 
+
+DREAM (Ours) 0.0255 0.0222 0.0349 0.0271 0.0819 0.0424 0.0278 0.0207 0.0386 0.0252 0.0827 0.0379 0.0560 0.0483 0.0724 0.0573 0.1239 0.0796 Table 3: Overall recommendation performance. Bold: best; underline: second best. 
+
+Method Beauty Sports Toys R@5 N@5 R@10 N@10 R@50 N@50 R@5 N@5 R@10 N@10 R@50 N@50 R@5 N@5 R@10 N@10 R@50 N@50 GRU4Rec 0.0238 0.0146 0.0384 0.0194 0.0989 0.0325 0.0163 0.0102 0.0273 0.0137 0.0752 0.0241 0.0171 0.0106 0.0287 0.0143 0.0828 0.0259 SASRec 0.0163 0.0085 0.0294 0.0127 0.0814 0.0239 0.0111 0.0058 0.0193 0.0085 0.0570 0.0166 0.0221 0.0114 0.0361 0.0159 0.0853 0.0266 BERT4Rec 0.0156 0.0099 0.0280 0.0138 0.0778 0.0246 0.0109 0.0066 0.0174 0.0087 0.0529 0.0163 0.0112 0.0070 0.0190 0.0095 0.0556 0.0173 HGN 0.0257 0.0159 0.0442 0.0218 0.1194 0.0382 0.0203 0.0128 0.0337 0.0170 0.0890 0.0290 0.0247 0.0152 0.0426 0.0210 0.1088 0.0354 HSTU 0.0317 0.0217 0.0461 0.0263 0.0999 0.0379 0.0183 0.0122 0.0273 0.0150 0.0646 0.0231 0.0298 0.0203 0.0427 0.0245 0.0874 0.0342 ReaRec 0.0323 0.0214 0.0470 0.0261 0.1024 0.0381 0.0145 0.0095 0.0234 0.0123 0.0622 0.0207 0.0262 0.0180 0.0379 0.0218 0.0810 0.0311 TIGER 0.0344 0.0224 0.0540 0.0287 0.1305 0.0454 0.0238 0.0152 0.0378 0.0197 0.0959 0.0323 0.0292 0.0180 0.0446 0.0229 0.1144 0.0380 LETTER 0.0316 0.0199 0.0509 0.0261 0.1286 0.0430 0.0235 0.0152 0.0383 0.0199 0.0959 0.0324 0.0271 0.0173 0.0434 0.0225 0.1111 0.0372 LC-Rec 0.0347 0.0228 0.0532 0.0288 0.1255 0.0444 0.0191 0.0121 0.0316 0.0162 0.0832 0.0273 0.0190 0.0120 0.0301 0.0156 0.0723 0.0248 SpecGR 0.0290 0.0183 0.0494 0.0249 0.1281 0.0420 0.0217 0.0136 0.0347 0.0177 0.0954 0.0308 0.0289 0.0180 0.0476 0.0240 0.1225 0.0400 
+
+DREAM (Ours) 0.0336 0.0227 0.0531 0.0293 0.1317 0.0475 0.0279 0.0191 0.0443 0.0245 0.1094 0.0392 0.0363 0.0270 0.0527 0.0331 0.1123 0.0487 Table 4: Warm-item recommendation performance (R@10 / N@10). Bold: best; underline: second best. 
+
+Method Beauty Sports Toys R@10 N@10 R@10 N@10 R@10 N@10 GRU4Rec 0.0477 0.0241 0.0336 0.0169 0.0365 0.0183 SASRec 0.0358 0.0155 0.0235 0.0103 0.0433 0.0191 BERT4Rec 0.0350 0.0173 0.0214 0.0107 0.0239 0.0118 HGN 0.0551 0.0272 0.0414 0.0210 0.0541 0.0268 HSTU 0.0560 0.0319 0.0328 0.0180 0.0507 0.0291 ReaRec 0.0575 0.0318 0.0280 0.0146 0.0457 0.0259 TIGER 0.0679 0.0361 0.0462 0.0241 0.0577 0.0296 LETTER 0.0638 0.0328 0.0471 0.0245 0.0565 0.0294 LC-Rec 0.0663 0.0359 0.0389 0.0199 0.0391 0.0203 SpecGR 0.0618 0.0311 0.0426 0.0218 0.0612 0.0309 DREAM (Ours) 0.0579 0.0299 0.0457 0.0243 0.0465 0.0256 
+
+that strong cold-start gains are retained together with competitive overall utility on this dataset. Table 4 reports warm-item performance. DREAM does not aim to dominate warm metrics: static-index SID baselines such as TIGER, LETTER, and SpecGR retain fully optimized warm-item assign-ments, whereas CART rewrites the index and necessarily perturbs some warm SIDs. The trade-off remains controlled and dataset-dependent. On Sports, DREAM’s warm R@10 ( 0.0457 ) is within 
+
+3.0% of the strongest warm baseline LETTER ( 0.0471 ) while its cold R@10 is over 10 × higher than the strongest cold baseline. On Beauty, DREAM trails on warm R@10 yet lifts cold R@10 from 
+
+0.0005 (TIGER) to 0.0349 . On Toys, warm metrics still trail the strongest static-index SID baselines, but DREAM remains best on 5/6 overall metrics while reaching beam-aware cold N@10 = 0.0573 .Out of top-8 
+
+> 71.1%
+> Lower-rank
+> top-8
+> 16.9%
+> Already top-1
+> supported
+> 12.0%
+
+(a) CART prior support. 1 2 3 4 
+
+> Changed token positions
+> 0%
+> 10%
+> 20%
+> 30%
+> 40%
+> 50%
+> Share of rewritten cold items
+> n=4,209
+> 24.6%
+> n=5,699
+> 33.4%
+> n=6,069
+> 35.5%
+> n=1,104
+> 6.5%
+
+(b) Rewrite locality. 
+
+Figure 2: Sports CART-side diagnosis. CART moves unsup-ported cold SIDs toward better-supported candidates with mostly local token edits. Table 5: Ablation study. Each row removes one or more DREAM stages from the full system. Overall and Cold metrics are R@10 / N@10 ( ×100 ).                                       
+
+> Method Beauty Sports Toys Cold Overall Cold Overall Cold Overall DREAM 3.49 / 2.71 5.31 / 2.93 3.86 / 2.52 4.43 / 2.45 7.24 / 5.73 5.27 / 3.31
+> Compat-Top1 2.17 / 1.31 5.04 / 2.65 2.60 / 1.56 4.20 / 2.27 5.13 / 3.16 4.77 / 2.70 w/o CPDE 2.19 / 1.31 5.02 / 2.63 2.53 / 1.53 4.19 / 2.26 5.05 / 3.15 4.72 / 2.69 w/o UC3 & CPDE 1.93 / 1.18 5.04 / 2.65 1.98 / 1.20 4.09 / 2.22 4.35 / 2.73 4.82 / 2.68 LC-Rec (Backbone) .29 / .12 5.32 / 2.88 .06 / .03 3.16 / 1.62 .12 / .07 3.01 / 1.56
+
+Overall, these results indicate that DREAM substantially im-proves cold-start quality while preserving usable overall and warm-item performance. DREAM: Dynamic Refinement of Early Assignment Mappings 
+
+## 4.4 Ablation Study 
+
+Table 5 quantifies each stage’s contribution. All Cold and Overall metrics are R@10 / N@10 ( ×100 ). Removing all DREAM stages (LC-Rec backbone) yields near-zero cold performance, while adding CART alone (“w/o UC3 & CPDE”) already delivers the dominant first repair, with cold N@10 rising by ∼ 10 ×, 44 ×, and 22 × over the backbone on Beauty, Sports, and Toys respectively. UC3 further refines cold quality, and the full DREAM system with Beam-Aware multi-path decoding achieves the best results on all metrics. Notably, Compat-Top1 stays close to the “w/o CPDE” row across all datasets, confirming that the Beam-Aware gain is additive multi-path recov-ery rather than compensation for an upstream regression. 
+
+## 4.5 Mechanism Diagnosis 
+
+The diagnostics below trace the three compounding factors of early static commitment, namely unsupported assignment, premature commitment, and the inference-time single-path constraint, and show how each DREAM stage resolves the specific factor it targets. 
+
+Cold-start failure originates from the static SID commitment, not from insufficient model capacity. On Sports, the static baseline re-tains visible warm ranking signal across 𝑁 @5 /𝑁 @10 /𝑁 @50 (warm 
+
+𝑁 @10 =1.99 ), while the corresponding cold NDCG values stay near zero throughout (cold 𝑁 @10 = 0.03 , a ∼ 70 × gap at the same 𝐾 ). The backbone itself is not globally weak; it is the cold path that breaks before the backbone has any chance to accumulate behav-ioral support. The system commits each cold-start item to one top-1 SID under content-only signals, and once that path is registered, the cold-start item is sampled too rarely during training for the bridge to repair the choice. The remaining mechanism diagnostics explain how DREAM intervenes at exactly this commitment point. 
+
+CART provides the first and largest repair. CART delivers the decisive first correction because it rewrites the assignment space itself rather than only adapting the backbone after the index is fixed. CART exports a top-K candidate pool for each cold-start item (𝐾 = 8 here). We use this pool as a retrospective diagnostic view: the inherited static SID is top-8 supported if it appears anywhere in CART’s exported pool, and top-1 supported if it matches the highest-ranked candidate within the same pool. This diagnostic asks where the inherited static SID lands inside CART’s exported pool, while CART itself selects the pool’s highest-ranked candidate. Figure 2a shows that under this view, the inherited static SID is outside the top-8 pool for 71 .1% of cold items, only lower-ranked for another 16 .9% , and already top-1 supported for just 12 .0% . Ac-cordingly, CART rewrites 88 .0% of cold top-1 SIDs, and among those rewritten cold-start items, 80 .8% move from outside the top-8 pool toward the pool’s top-ranked candidate, while the remaining 
+
+19 .2% move from a lower-ranked top-8 candidate toward top-1, with median original rank = 3. Figure 2b further shows that this repair is mostly local rather than arbitrary, since 93 .5% of rewritten cold-start items modify only 1–3 token positions. Together, these di-agnostics indicate that the inherited static SID is often unsupported, CART rewrites 88 .0% of cold-start items, and most rewritten items are moved from out-of-top8 toward top-1, after which Sports cold N@10 rises from 0.03 to 1.20 (43 .9×). Figure 3 makes this repair pattern visually concrete by showing three Sports cold-start items whose static SID is absent from the CART top-8 pool, while CART rewrites each item back to the pool’s top-1 supported candidate after only 1–3 local token edits at the finer (later) SID positions. The three cards are selected deterministically from the 1-position, 2-position, and 3-position “out-of-top8 → top1” repair buckets, il-lustrating the same aggregate pattern reported above. These results confirm that the unsupported-assignment factor is the dominant upstream failure and that CART’s prior-support repair resolves it for the vast majority of cold-start items. 
+
+UC3 commits a new SID only when the support is decisive. On Sports, 89 .4% of cold-start items keep their CART SID, as Figure 4a traces this conservative behavior through a two-gate cascade. For each cold-start item, UC3 aggregates confidence-weighted votes from multiple user contexts and accepts a candidate—hereafter a 
+
+winner , defined as the candidate that survives both the support and the margin gate—only when the leading candidate is both sufficiently supported across contexts and decisively ahead of its runner-up. Of 18 ,548 Sports vote-summary items, 10 ,536 (56 .8% )fall back at the support gate and another 2,301 (12 .4% ) fall back at the margin gate; only 5,711 items reach winner status. Crucially, winner status does not imply an SID change: 3,739 winners reaffirm the current CART SID as the strongest well-supported option, and a direct diff between the CART and UC3 indices shows that only 
+
+1,972 items ( 10 .6% of vote items) actually switch away from the CART SID. Figure 4b further shows that winners have systemati-cally higher mean confidence than fallback items, consistent with the confidence-weighted interpretation. UC3 therefore alters a cold SID only when multi-context support is stable enough to justify an update, and otherwise structurally defers to the safer CART as-signment rather than amplifying weakly supported rewrites. This behavior directly addresses the premature-commitment factor: in-stead of locking every cold-start item into a single path at the first opportunity, UC3 gates commitment on sufficient and decisive support, so that under-supported items remain at the safer prior. 
+
+CPDE recovers cold-start items through multi-path inference within the constrained-decoding trie. Beam-Aware registers all surviving beam SIDs in the same prefix trie used at training time and accepts a generation as a hit when the produced SID maps to the target through any registered path; no post-hoc reranker, ensemble, or item-level scoring module is introduced beyond the standard gen-erative interface. Within this fixed inference interface, CPDE’s gain comes from preserving recoverable ambiguity rather than from sharpening the top-1 path: in Table 5, Compat-Top1 stays close to UC3 across all three datasets, confirming that the single-path deployment view is not damaged by CPDE. On Sports, Figure 4c shows that multi-path beam inference rescues 307 successful cold recommendations beyond the top-1 path, which account for 39 .66% 
+
+of all successful cold recommendations; the cumulative beam bud-get reaches 632 by Top-2 and 719 by Top-3, so the gain concentrates in early ranks rather than in a long tail of accidental matches. Corre-spondingly, Sports cold N@10 rises from 1.56 under Compat-Top1 to 2.52 under Beam-Aware. The Sports diagnostics therefore support the intended view of CPDE: its value lies in preserving alternative valid SID paths so the decoder can reach a cold-start item through any of them, not in turning inference into a stronger single-path Guan et al. Case A 
+
+Lodge Original Finish 
+
+Grill Press                           
+
+> 1-position repair | changed P4
+> Static: out of top-8 CART: top-1 supported
+> Static SID
+> (243, 155, 214, 68)
+> CART SID
+> (243, 155, 214, 86)
+> Top-3 CART pool candidates (NLL ↓)
+> 1. (243, 155, 214, 86) top-1 |-2.618
+> 2. (243, 155, 118, 86) |-2.984
+> 3. (243, 155, 245, 86) |-3.262
+> Case B
+
+Bowflex Sport Home Gym 
+
+[Discontinued]                           
+
+> 2-position repair | changed P3, P4
+> Static: out of top-8 CART: top-1 supported
+> Static SID
+> (20, 171, 33, 250)
+> CART SID
+> (20, 171, 182, 252)
+> Top-3 CART pool candidates (NLL ↓)
+> 1. (20, 171, 182, 252) top-1 |-0.930
+> 2. (20, 112, 182, 252) |-1.313
+> 3. (20, 171, 163, 252) |-1.626
+> Case C
+
+Garmin GPS III Waterproof 
+
+Hiking GPS                           
+
+> 3-position repair | changed P2, P3, P4
+> Static: out of top-8 CART: top-1 supported
+> Static SID
+> (187, 149, 26, 244)
+> CART SID
+> (187, 118, 129, 103)
+> Top-3 CART pool candidates (NLL ↓)
+> 1. (187, 118, 129, 103) top-1 |-3.510
+> 2. (187, 118, 157, 103) |-3.934
+> 3. (244, 118, 129, 103) |-3.938
+
+Figure 3: CART prior-support repair. Three deterministic Sports cold-start items whose static SID is absent from the CART top-8 pool are repaired to the top-1 supported candidate after 1–3 local token edits. 
+
+(a) UC3 gate cascade. Low-support 
+
+> fallback
+> Low-margin
+> fallback
+> Winner,
+> keep SID
+> Winner,
+> switch SID
+> 0.00
+> 0.25
+> 0.50
+> 0.75
+> 1.00
+> Mean item confidence
+
+n=10,536 
+
+n=2,301 
+
+n=3,739 n=1,972 (b) UC3 confidence separation. 0 200 400 600 800         
+
+> Successful cold recommendations (count)
+> Top-1
+> Top-2
+> Top-3
+> Top-4
+> Inference budget
+> 467 467
+> +165 632
+> +87 719
+> +55 774
+> Top-1 +Rank-2 +Rank-3 +Rank-4
+
+(c) CPDE multi-path recovery. 
+
+Figure 4: UC3 conservative gating and CPDE multi-path recovery (Sports). (a) Of 18,548 vote-summary items, 56 .8% fall back at the support gate, 12 .4% at the margin gate, and only 10 .6% actually switch SID; (b) winner items exhibit systematically higher mean confidence than fallback items, supporting the confidence-weighted gating interpretation; (c) multi-path beam inference rescues 307 additional cold hits beyond the top-1 path, lifting cold N@10 from 0.0156 to 0.0252 .
+
+scorer. This directly removes the inference-time single-path con-straint: cold items are no longer bound to one registered path, and the decoder can recover a target through whichever beam path best matches the user context. 
+
+Summary. Together, these three diagnostics close the loop on the static commitment story: each DREAM stage empirically resolves the factor it was designed to target, and the stage-wise ablation in Table 5 shows monotone cold-quality gains while preserving competitive overall utility. 
+
+## 5 Conclusion 
+
+Cold-start failures in SID-based generative recommendation are not only representation-learning failures, but also commitment-timing failures: static tokenizers bind sparsely observed items to a single SID path before sufficient behavioral support exists, and constrained decoding then makes poor paths difficult to train and difficult to recover. DREAM operationalizes this view by making the SID interface progressively revisable rather than fixed: CART repairs unsupported assignments with prior-supported candidates, UC3 commits only under decisive multi-context support, and CPDE keeps residual valid paths available for multi-path inference. Across three Amazon benchmarks, DREAM achieves the best result on all 18 cold-start metrics while preserving competitive overall utility, and the ablation study and mechanism diagnosis align the gains with the intended causal chain of prior-support repair, conserva-tive commitment, and additive multi-path recovery. Within the offline item cold-start setting studied here, these results suggest a broader principle for generative recommendation: semantic identi-fiers should be treated as support-conditioned retrieval interfaces whose reliability can improve as behavioral evidence accumulates, rather than as immutable item names fixed before learning be-gins. This perspective also points to a natural next step: extending progressive SID refinement to settings where item evidence, user interests, and catalog composition evolve continually after deploy-ment. DREAM: Dynamic Refinement of Early Assignment Mappings 
+
+## GenAI Usage Disclosure 
+
+The authors used ChatGPT to assist with English-language polish-ing and clarity-oriented wording revisions. OpenAI Codex was used to debug experiment-related code and diagnostic scripts. The au-thors reviewed and finalized all paper content, experimental results, and claims. 
+
+## References 
+
+[1] Yimeng Bai, Chang Liu, Yang Zhang, Dingxian Wang, Frank Yang, Andrew Rabinovich, Wenge Rong, and Fuli Feng. 2026. Bi-Level Optimization for Gener-ative Recommendation: Bridging Tokenization and Generation. In Proceedings of the 49th International ACM SIGIR Conference on Research and Development in Information Retrieval (Melbourne, VIC, Australia) (SIGIR ’26) . Association for Computing Machinery, Melbourne, VIC, Australia. doi:10.1145/3805712.3809632 [2] Yoshua Bengio, Nicholas Léonard, and Aaron Courville. 2013. Estimating or Propagating Gradients Through Stochastic Neurons for Conditional Computation .Technical Report. Université de Montréal. [3] Heng-Tze Cheng, Levent Koc, Jeremiah Harmsen, Tal Shaked, Tushar Chandra, Hrishi Aradhye, Glen Anderson, Greg Corrado, Wei Chai, Mustafa Ispir, Rohan Anil, Zakaria Haque, Lichan Hong, Vihan Jain, Xiaobing Liu, and Hemal Shah. 2016. Wide & Deep Learning for Recommender Systems. In Proceedings of the 1st Workshop on Deep Learning for Recommender Systems (DLRS 2016) . Association for Computing Machinery, New York, NY, USA, 7–10. doi:10.1145/2988450.2988454 [4] Paul Covington, Jay Adams, and Emre Sargin. 2016. Deep Neural Networks for YouTube Recommendations. In Proceedings of the 10th ACM Conference on Recommender Systems (Boston, Massachusetts, USA) (RecSys ’16) . Association for Computing Machinery, New York, NY, USA, 191–198. doi:10.1145/2959100. 2959190 [5] Jiaxin Deng, Shiyao Wang, Kuo Cai, Lejian Ren, Qigen Hu, Weifeng Ding, Qiang Luo, and Guorui Zhou. 2025. OneRec: Unifying Retrieve and Rank with Genera-tive Recommender and Iterative Preference Alignment. arXiv:2502.18965 [cs.IR] [6] Yijie Ding, Jiacheng Li, Julian McAuley, and Yupeng Hou. 2026. Inductive Generative Recommendation via Retrieval-based Speculation. Proceedings of the AAAI Conference on Artificial Intelligence 40, 17 (2026), 14675–14683. doi:10.1609/aaai.v40i17.38486 [7] Yuebo Feng, Jiahao Liu, Mingzhe Han, Dongsheng Li, Hansu Gu, Peng Zhang, Tun Lu, and Ning Gu. 2026. Drift-Aware Continual Tokenization for Generative Recommendation. arXiv preprint arXiv:2603.29705 (2026). [8] Chelsea Finn, Pieter Abbeel, and Sergey Levine. 2017. Model-Agnostic Meta-Learning for Fast Adaptation of Deep Networks. In Proceedings of the 34th In-ternational Conference on Machine Learning (Proceedings of Machine Learning Research, Vol. 70) , Doina Precup and Yee Whye Teh (Eds.). PMLR, Sydney, Aus-tralia, 1126–1135. [9] Junchen Fu, Xuri Ge, Alexandros Karatzoglou, Ioannis Arapakis, Suzan Ver-berne, Joemon M. Jose, and Zhaochun Ren. 2026. Differentiable Semantic ID for Generative Recommendation. arXiv preprint arXiv:2601.19711 (2026). [10] Shijie Geng, Shuchang Liu, Zuohui Fu, Yingqiang Ge, and Yongfeng Zhang. 2022. Recommendation as Language Processing (RLP): A Unified Pretrain, Personalized Prompt and Predict Paradigm (P5). In Proceedings of the 16th ACM Conference on Recommender Systems . Association for Computing Machinery, New York, NY, USA, 299–315. doi:10.1145/3523227.3546767 [11] Aaron Grattafiori et al . 2024. The Llama 3 Herd of Models. arXiv preprint arXiv:2407.21783 (2024). doi:10.48550/arXiv.2407.21783 [12] Huifeng Guo, Ruiming Tang, Yunming Ye, Zhenguo Li, and Xiuqiang He. 2017. DeepFM: A Factorization-Machine Based Neural Network for CTR Prediction. In Proceedings of the Twenty-Sixth International Joint Conference on Artificial Intelligence (IJCAI ’17) . International Joint Conferences on Artificial Intelligence Organization, Melbourne, Australia, 1725–1731. doi:10.24963/ijcai.2017/239 [13] Kaiming He, Haoqi Fan, Yuxin Wu, Saining Xie, and Ross Girshick. 2020. Momen-tum Contrast for Unsupervised Visual Representation Learning. In Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition . 9729–9738. doi:10.1109/CVPR42600.2020.00975 [14] Balázs Hidasi, Alexandros Karatzoglou, Linas Baltrunas, and Domonkos Tikk. 2016. Session-Based Recommendations with Recurrent Neural Networks. In 
+
+Proceedings of the International Conference on Learning Representations (ICLR ’16) .[15] Yupeng Hou, Jiacheng Li, Ashley Shin, Jinsung Jeon, Abhishek Santhanam, Wei Shao, Kaveh Hassani, Ning Yao, and Julian McAuley. 2025. Generating Long Semantic IDs in Parallel for Recommendation. In Proceedings of the 31st ACM SIGKDD Conference on Knowledge Discovery and Data Mining . Association for Computing Machinery, New York, NY, USA, 956–966. doi:10.1145/3711896. 3736979 [16] Yupeng Hou, Shanlei Mu, Wayne Xin Zhao, Yaliang Li, Bolin Ding, and Ji-Rong Wen. 2022. Towards Universal Sequence Representation Learning for Recom-mender Systems. In Proceedings of the 28th ACM SIGKDD Conference on Knowl-edge Discovery and Data Mining (KDD ’22) . Association for Computing Machinery, New York, NY, USA, 585–593. doi:10.1145/3534678.3539381 [17] Edward J. Hu, Yelong Shen, Phillip Wallis, Zeyuan Allen-Zhu, Yuanzhi Li, Shean Wang, Lu Wang, and Weizhu Chen. 2022. LoRA: Low-Rank Adaptation of Large Language Models. In Proceedings of the International Conference on Learning Representations .[18] Eric Jang, Shixiang Gu, and Ben Poole. 2017. Categorical Reparameterization with Gumbel-Softmax. In Proceedings of the International Conference on Learning Representations (ICLR ’17) .[19] Wang-Cheng Kang and Julian McAuley. 2018. Self-Attentive Sequential Recom-mendation. In Proceedings of the 2018 IEEE International Conference on Data Min-ing (ICDM ’18) . IEEE Computer Society, 197–206. doi:10.1109/ICDM.2018.00035 [20] Doyup Lee, Chiheon Kim, Saehoon Kim, Minsu Cho, and Wook-Shin Han. 2022. Autoregressive Image Generation Using Residual Quantization. In Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR ’22) .IEEE Computer Society, 11523–11532. [21] Hoyeop Lee, Jinbae Im, Seongwon Jang, Hyunsouk Cho, and Sehee Chung. 2019. MeLU: Meta-Learned User Preference Estimator for Cold-Start Recommendation. In Proceedings of the 25th ACM SIGKDD International Conference on Knowledge Discovery and Data Mining (KDD ’19) . Association for Computing Machinery, New York, NY, USA, 1073–1082. doi:10.1145/3292500.3330859 [22] Lei Li, Yongfeng Zhang, Dugang Liu, and Li Chen. 2024. Large Language Models for Generative Recommendation: A Survey and Visionary Discussions. In Pro-ceedings of the 2024 Joint International Conference on Computational Linguistics, Language Resources and Evaluation (LREC-COLING ’24) .[23] Xiaopeng Li, Bo Chen, Junda She, et al . 2025. A Survey of Generative Recom-mendation from a Tri-Decoupled Perspective: Tokenization, Architecture, and Optimization. Preprints (2025). doi:10.20944/preprints202512.0203.v1 [24] Yongqi Li, Nan Yang, Liang Wang, Furu Wei, and Wenjie Li. 2023. Multiview Identifiers Enhanced Generative Retrieval. In Proceedings of the 61st Annual Meeting of the Association for Computational Linguistics (ACL ’23) . Association for Computational Linguistics, 6636–6648. doi:10.18653/v1/2023.acl-long.366 [25] Guanyu Lin, Zhigang Hua, Tao Feng, Shuang Yang, Bo Long, and Jiaxuan You. 2025. Unified Semantic and ID Representation Learning for Deep Recommenders. 
+
+arXiv preprint arXiv:2502.16474 (2025). [26] Chang Liu, Yimeng Bai, Xiaoyan Zhao, Yang Zhang, Fuli Feng, and Wenge Rong. 2025. DiscRec: Disentangled Semantic-Collaborative Modeling for Generative Recommendation. arXiv preprint arXiv:2506.15576 (2025). [27] Enze Liu, Bowen Zheng, Cheng Ling, Lantao Hu, Han Li, and Wayne Xin Zhao. 2025. Generative Recommender with End-to-End Learnable Item Tokenization. In Proceedings of the 48th International ACM SIGIR Conference on Research and Development in Information Retrieval (SIGIR ’25) . Association for Computing Machinery, New York, NY, USA, 729–739. doi:10.1145/3726302.3729989 [28] Yu-Ze Liu, Jyun-Yu Jiang, and Pu-Jen Cheng. 2024. Multi-DSI: Non-Deterministic Identifier and Concept Alignment for Differentiable Search Index. In Proceedings of the 33rd ACM International Conference on Information and Knowledge Manage-ment (CIKM ’24) . Association for Computing Machinery, New York, NY, USA, 3917–3921. doi:10.1145/3627673.3679971 [29] Xinchen Luo, Jiangxia Cao, Tianyu Sun, Jinkai Yu, Rui Huang, Wei Yuan, Hezheng Lin, Yichen Zheng, Shiyao Wang, Qigen Hu, Changqing Qiu, Jiaqi Zhang, Xu Zhang, Zhiheng Yan, Jingming Zhang, Simin Zhang, Mingxing Wen, Zhaojie Liu, Kun Gai, and Guorui Zhou. 2025. QARM: Quantitative Alignment Multi-Modal Recommendation at Kuaishou. In Proceedings of the 34th ACM International Conference on Information and Knowledge Management (CIKM ’25) . Association for Computing Machinery, New York, NY, USA, 5915–5922. doi:10.1145/3746252. 3761502 [30] Chen Ma, Peng Kang, and Xue Liu. 2019. Hierarchical Gating Networks for Sequential Recommendation. In Proceedings of the 25th ACM SIGKDD Interna-tional Conference on Knowledge Discovery & Data Mining (KDD ’19) . Association for Computing Machinery, New York, NY, USA, 825–833. doi:10.1145/3292500. 3330984 [31] Chris J. Maddison, Andriy Mnih, and Yee Whye Teh. 2017. The Concrete Distri-bution: A Continuous Relaxation of Discrete Random Variables. In Proceedings of the 5th International Conference on Learning Representations (ICLR ’17) .[32] Shashank Rajput, Nikhil Mehta, Anima Singh, Raghunandan Hulikal Keshavan, Trung Vu, Lukasz Heldt, Lichan Hong, Yi Tay, Vinh Q. Tran, Jonah Samost, Maciej Kula, Ed H. Chi, and Maheswaran Sathiamoorthy. 2023. Recommender Systems with Generative Retrieval. In Advances in Neural Information Processing Systems (NeurIPS ’23, Vol. 36) .[33] Stephen E. Robertson and Hugo Zaragoza. 2009. The Probabilistic Relevance Framework: BM25 and Beyond. Foundations and Trends in Information Retrieval 
+
+3, 4 (2009), 333–389. doi:10.1561/1500000019 [34] Chenglei Shen, Teng Shi, Weijie Yu, Xiao Zhang, and Jun Xu. 2026. Bringing Model Editing to Generative Recommendation in Cold-Start Scenarios. arXiv preprint arXiv:2603.14259 (2026). Guan et al. 
+
+[35] Fei Sun, Jun Liu, Jian Wu, Changhua Pei, Xiao Lin, Wenwu Ou, and Peng Jiang. 2019. BERT4Rec: Sequential Recommendation with Bidirectional Encoder Repre-sentations from Transformer. In Proceedings of the 28th ACM International Confer-ence on Information and Knowledge Management (CIKM ’19) . Association for Com-puting Machinery, New York, NY, USA, 1441–1450. doi:10.1145/3357384.3357895 [36] Juntao Tan, Shuyuan Xu, Wenyue Hua, Yingqiang Ge, Zelong Li, and Yongfeng Zhang. 2024. IDGenRec: LLM-RecSys Alignment with Textual ID Learning. In Proceedings of the 47th International ACM SIGIR Conference on Research and Development in Information Retrieval (SIGIR ’24) . Association for Computing Machinery, New York, NY, USA, 355–364. doi:10.1145/3626772.3657821 [37] Jiakai Tang, Sunhao Dai, Teng Shi, Jun Xu, Xu Chen, Wen Chen, Jian Wu, and Yuning Jiang. 2025. Think Before Recommend: Unleashing the Latent Reasoning Power for Sequential Recommendation. arXiv preprint arXiv:2503.22675 (2025). doi:10.48550/arXiv.2503.22675 [38] Antti Tarvainen and Harri Valpola. 2017. Mean Teachers Are Better Role Models: Weight-Averaged Consistency Targets Improve Semi-Supervised Deep Learning Results. In Advances in Neural Information Processing Systems (NeurIPS ’17, Vol. 30) .1195–1204. [39] Yi Tay, Vinh Q. Tran, Mostafa Dehghani, Jianmo Ni, Dara Bahri, Harsh Mehta, Zhen Qin, Kai Hui, Zhe Zhao, Jai Gupta, Tal Schuster, William W. Cohen, and Donald Metzler. 2022. Transformer Memory as a Differentiable Search Index. In 
+
+Advances in Neural Information Processing Systems (NeurIPS ’22, Vol. 35) .[40] Hugo Touvron, Thibaut Lavril, Gautier Izacard, Xavier Martinet, Marie-Anne Lachaux, Timothée Lacroix, Baptiste Rozière, Naman Goyal, Eric Hambro, Faisal Azhar, Aurelien Rodriguez, Armand Joulin, Edouard Grave, and Guillaume Lam-ple. 2023. LLaMA: Open and Efficient Foundation Language Models. arXiv preprint arXiv:2302.13971 (2023). doi:10.48550/arXiv.2302.13971 [41] Maksims Volkovs, Guangwei Yu, and Tomi Poutanen. 2017. DropoutNet: Ad-dressing Cold Start in Recommender Systems. In Advances in Neural Information Processing Systems (NIPS ’17, Vol. 30) . 4957–4966. [42] Huanjie Wang, Xinchen Luo, Honghui Bao, Zixing Zhang, Lejian Ren, Yunfan Wu, Hongwei Zhang, Liwei Guan, and Guang Chen. 2026. PIT: A Dynamic Personalized Item Tokenizer for End-to-End Generative Recommendation. arXiv preprint arXiv:2602.08530 (2026). doi:10.48550/arXiv.2602.08530 [43] Wenjie Wang, Honghui Bao, Xinyu Lin, Jizhi Zhang, Yongqi Li, Fuli Feng, See-Kiong Ng, and Tat-Seng Chua. 2024. Learnable Item Tokenization for Generative Recommendation. In Proceedings of the 33rd ACM International Conference on Information and Knowledge Management (CIKM ’24) . Association for Computing Machinery, New York, NY, USA, 2400–2409. doi:10.1145/3627673.3679569 [44] Yujing Wang, Yingyan Hou, Haonan Wang, Ziming Miao, Shibin Wu, Hao Sun, Qi Chen, Yuqing Xia, Chengmin Chi, Guoshuai Zhao, Zheng Liu, Xing Xie, Hao Allen Sun, Weiwei Deng, Qi Zhang, and Mao Yang. 2022. A Neural Corpus Indexer for Document Retrieval. In Proceedings of the 36th International Conference on Neural Information Processing Systems (NeurIPS ’22) . Curran Associates Inc., Red Hook, NY, USA. [45] Yidan Wang, Zhaochun Ren, Weiwei Sun, Jiyuan Yang, Zhixiang Liang, Xin Chen, Ruobing Xie, Su Yan, Xu Zhang, Pengjie Ren, Zhumin Chen, and Xin Xin. 2024. Content-Based Collaborative Generation for Recommender Systems. In Proceedings of the 33rd ACM International Conference on Information and Knowledge Management (CIKM ’24) . Association for Computing Machinery, New York, NY, USA, 2420–2430. doi:10.1145/3627673.3679692 [46] Ye Wang, Jiahao Xun, Minjie Hong, Jieming Zhu, Tao Jin, Wang Lin, Haoyuan Li, Linjun Li, Yan Xia, Zhou Zhao, and Zhenhua Dong. 2024. EAGER: Two-Stream Generative Recommender with Behavior-Semantic Collaboration. In 
+
+Proceedings of the 30th ACM SIGKDD Conference on Knowledge Discovery and Data Mining (KDD ’24) . Association for Computing Machinery, New York, NY, USA, 3245–3254. [47] Zihan Wang, Yujia Zhou, Yiteng Tu, and Zhicheng Dou. 2023. NOVO: Learnable and Interpretable Document Identifiers for Model-Based IR. In Proceedings of the 32nd ACM International Conference on Information and Knowledge Management (CIKM ’23) . Association for Computing Machinery, New York, NY, USA, 2656– 2665. doi:10.1145/3583780.3614993 [48] Yinwei Wei, Xiang Wang, Qi Li, Liqiang Nie, Yan Li, Xuanping Li, and Tat-Seng Chua. 2021. Contrastive Learning for Cold-Start Recommendation. In Proceedings of the 29th ACM International Conference on Multimedia (MM ’21) . Association for Computing Machinery, New York, NY, USA, 5382–5390. doi:10.1145/3474085. 3475665 [49] Zheng Yuan, Fajie Yuan, Yu Song, Youhua Li, Junchen Fu, Fei Yang, Yunzhu Pan, and Yongxin Ni. 2023. Where to Go Next for Recommender Systems? ID-vs. Modality-based Recommender Models Revisited. In Proceedings of the 46th International ACM SIGIR Conference on Research and Development in Information Retrieval (SIGIR ’23) . Association for Computing Machinery, New York, NY, USA, 2639–2649. doi:10.1145/3539618.3591932 [50] Jiaqi Zhai, Lucy Liao, Xing Liu, Yueming Wang, Rui Li, Xuan Cao, Leon Gao, Zhaojie Gong, Fangda Gu, Jiayuan He, Yinghai Lu, and Yu Shi. 2024. Actions Speak Louder than Words: Trillion-Parameter Sequential Transducers for Gener-ative Recommendations. In Proceedings of the 41st International Conference on Machine Learning (Proceedings of Machine Learning Research, Vol. 235) . PMLR, Vienna, Austria, 58484–58509. [51] Bowen Zheng, Yupeng Hou, Hongyu Lu, Yu Chen, Wayne Xin Zhao, Ming Chen, and Ji-Rong Wen. 2024. Adapting Large Language Models by Integrating Collaborative Semantics for Recommendation. In Proceedings of the 2024 IEEE 40th International Conference on Data Engineering (ICDE ’24) . IEEE, Utrecht, The Netherlands, 1435–1448. [52] Qiyong Zhong, Jiajie Su, Yunshan Ma, Julian McAuley, and Yupeng Hou. 2025. Pctx: Tokenizing Personalized Context for Generative Recommendation. arXiv:2510.21276 [cs.IR] [53] Guorui Zhou, Hengrui Hu, Hongtao Cheng, Huanjie Wang, Jiaxin Deng, Jinghao Zhang, Kuo Cai, Lejian Ren, Lu Ren, Liao Yu, Pengfei Zheng, Qiang Luo, Qianqian Wang, Qigen Hu, Rui Huang, Ruiming Tang, Shiyao Wang, Shujie Yang, Tao Wu, Wuchao Li, Xinchen Luo, Xingmei Wang, et al . 2025. OneRec-V2 Technical Report. arXiv:2508.20900 [cs.IR] doi:10.48550/arXiv.2508.20900 [54] Guorui Zhou, Xiaoqiang Zhu, Chengru Song, Ying Fan, Han Zhu, Xiao Ma, Yanghui Yan, Junqi Jin, Han Li, and Kun Gai. 2018. Deep Interest Network for Click-Through Rate Prediction. In Proceedings of the 24th ACM SIGKDD International Conference on Knowledge Discovery and Data Mining (KDD ’18) .Association for Computing Machinery, New York, NY, USA, 1059–1068. doi:10. 1145/3219819.3219823 [55] Ziwei Zhu, Shahin Sefati, Parsa Saadatpanah, and James Caverlee. 2020. Rec-ommendation for New Users and New Items via Randomized Training and Mixture-of-Experts Transformation. In Proceedings of the 43rd International ACM SIGIR Conference on Research and Development in Information Retrieval (SIGIR ’20) . Association for Computing Machinery, New York, NY, USA, 1121–1130. doi:10.1145/3397271.3401178

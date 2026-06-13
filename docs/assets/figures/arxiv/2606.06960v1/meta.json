@@ -1,0 +1,102 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2606.06960v1/fig-001.webp",
+      "caption": "Figure 4: Industry distribution of the selected Shenwan Hongyuan first-level industry indices.",
+      "page": 11,
+      "index": 1,
+      "width": 440,
+      "height": 439
+    },
+    {
+      "url": "assets/figures/arxiv/2606.06960v1/fig-002.webp",
+      "caption": "Table 4: Online procedure of the experience-augmented self-evolution framework. The algorithm separates prediction-time experience selection and expansion from delayed feedback-based utility update, preserving temporal causality during evaluation.",
+      "page": 15,
+      "index": 2,
+      "width": 920,
+      "height": 423
+    },
+    {
+      "url": "assets/figures/arxiv/2606.06960v1/fig-003.webp",
+      "caption": "Table 5: Examples of structured experience in financial sentiment analysis. Impact horizons denote task-related utility estimates for different prediction horizons.",
+      "page": 15,
+      "index": 3,
+      "width": 929,
+      "height": 215
+    },
+    {
+      "url": "assets/figures/arxiv/2606.06960v1/fig-004.webp",
+      "caption": "Figure 1: Overview of FINEVOLVEBENCH. FINEVOLVEBENCH consists of a market environment dataset with implicit rewards and a workflow that converts a backbone LLM into an agent equipped with a general self-evolution mechanism.",
+      "page": 3,
+      "index": 4,
+      "width": 936,
+      "height": 302
+    },
+    {
+      "url": "assets/figures/arxiv/2606.06960v1/fig-005.webp",
+      "caption": "Figure 5: News corpus profile of FINEVOLVEBENCH, including monthly source distribution, major industry coverage, importance score distribution, and primary topic distribution.",
+      "page": 13,
+      "index": 5,
+      "width": 450,
+      "height": 298
+    },
+    {
+      "url": "assets/figures/arxiv/2606.06960v1/fig-006.webp",
+      "caption": "Figure 6: Industry-month news coverage heatmap. Colors indicate the number of tag assignments for each industry in each month. Since one article may contain multiple industry tags, the figure measures industry exposure intensity rather than deduplicated article counts.",
+      "page": 13,
+      "index": 6,
+      "width": 448,
+      "height": 284
+    },
+    {
+      "url": "assets/figures/arxiv/2606.06960v1/fig-007.webp",
+      "caption": "Figure 7: Market feedback profile of FINEVOLVEBENCH. Raw forward returns are computed from sector close prices, and adjusted feedback subtracts the same-horizon CSI1000 return. The distributions are continuous, noisy, and horizondependent, making feedback substantially weaker than explicit task labels.",
+      "page": 13,
+      "index": 7,
+      "width": 450,
+      "height": 297
+    },
+    {
+      "url": "assets/figures/arxiv/2606.06960v1/fig-008.webp",
+      "caption": "Table 1: Prediction-horizon ablation for tsIC across 1-, 5-, 10-, and 20-trading-day horizons.",
+      "page": 8,
+      "index": 8,
+      "width": 833,
+      "height": 238
+    },
+    {
+      "url": "assets/figures/arxiv/2606.06960v1/fig-009.webp",
+      "caption": "Table 2: Update-strategy ablation on the 20-trading-day prediction horizon. Pipe+formula is the formula-based weight update used in this paper, while Pipe+llm directly uses the LLM to update weights.",
+      "page": 8,
+      "index": 9,
+      "width": 434,
+      "height": 747
+    },
+    {
+      "url": "assets/figures/arxiv/2606.06960v1/fig-010.webp",
+      "caption": "Table 6: Prediction-horizon ablation for csIC across 1-, 5-, 10-, and 20-trading-day horizons.",
+      "page": 17,
+      "index": 10,
+      "width": 841,
+      "height": 238
+    },
+    {
+      "url": "assets/figures/arxiv/2606.06960v1/fig-011.webp",
+      "caption": "Table 3: Core statistics of FINEVOLVEBENCH.",
+      "page": 12,
+      "index": 11,
+      "width": 477,
+      "height": 283
+    },
+    {
+      "url": "assets/figures/arxiv/2606.06960v1/fig-012.webp",
+      "caption": "Figure 2: Overview of TREE-OF-EXPERIENCE. The upper panel shows the end-to-end learning workflow: given a task τt, the agent retrieves an experience context mctx from the experience memory E , generates the output yt, and updates the utility values Q of the retrieved experiences according to the environment reward R. The lower-left panel illustrates the two-stage experience query process, where a predefined experience selection algorithm first recalls candidate experiences, and an LLM-as-judge module then determines whether the recalled experiences are usable; usable experiences are reranked, while unusable cases trigger the creation of new experiences. The lower-right panel shows the utility update process, where environment feedback is used to update experience utilities Q. The right panel visualizes the tree-structured organization of the experience memory.",
+      "page": 5,
+      "index": 12,
+      "width": 950,
+      "height": 390
+    }
+  ]
+}

@@ -1,0 +1,30 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2606.11854v1/fig-001.webp",
+      "caption": "Figure 2: Evolution of the ART artifact during training on ToolMind (Qwen3.5-0.8B). Checkpoints shown at steps 5, 25, 50, 75, and 100. Learned information accumulates as high-frequency task-specific structure as training proceeds. Seed image from [11].",
+      "page": 8,
+      "index": 1,
+      "width": 952,
+      "height": 187
+    },
+    {
+      "url": "assets/figures/arxiv/2606.11854v1/fig-002.webp",
+      "caption": "Table 1: Model accuracy (%) for Qwen3.5-0.8B and Qwen3.5-2B across mathematics, graduate QA, and tool calling. Each cell reports the mean accuracy ± the half-width of a 95% bootstrap confidence interval (10,000 resamples). The best value per column is in bold. Sample counts (in brackets) are the held-out examples remaining after filtering prompts that exceed the token budget, and are therefore slightly below the raw dataset sizes.",
+      "page": 6,
+      "index": 2,
+      "width": 980,
+      "height": 204
+    },
+    {
+      "url": "assets/figures/arxiv/2606.11854v1/fig-003.webp",
+      "caption": "Figure 1: Optimized ART artifacts for Qwen3.5-0.8B fine-tuned via ART with DAPO loss from seed images: math book for GSM8K, brain for GPQA, tools for ToolMind. While the visually fine-tuning results resemble seed images, high-frequency task-specific structure is overlaid across them: making ART artifacts a form of steganography for AI. Steganography, from the Greek “covered writing\", is a technique for concealing data inside digital media [8]. Seed images: math [9], brain [10], tool [11].",
+      "page": 2,
+      "index": 3,
+      "width": 931,
+      "height": 322
+    }
+  ]
+}

@@ -1,0 +1,54 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2606.07988v1/fig-001.webp",
+      "caption": "Table 1: Performance comparison on Personal-LLM and DSP. We report utility metrics (↑, higher is better) and fairness metrics (↓, lower is better). Best results per row are in bold.",
+      "page": 7,
+      "index": 1,
+      "width": 830,
+      "height": 399
+    },
+    {
+      "url": "assets/figures/arxiv/2606.07988v1/fig-002.webp",
+      "caption": "Figure 2: Preliminary analysis on the Personal-LLM and DSP datasets across P-RLHF, VPL, and GPO methods, showing user-level unfairness in existing personalized RMs.",
+      "page": 3,
+      "index": 2,
+      "width": 746,
+      "height": 471
+    },
+    {
+      "url": "assets/figures/arxiv/2606.07988v1/fig-003.webp",
+      "caption": "Table 2: Ablation of PAFO. Min Only: minority specialist alone. Maj→Min: Maj to Min distillation. Min + SFT: SFT replacing margin distillation. RI: relative improvement (%) over Base.",
+      "page": 8,
+      "index": 3,
+      "width": 760,
+      "height": 197
+    },
+    {
+      "url": "assets/figures/arxiv/2606.07988v1/fig-004.webp",
+      "caption": "Figure 3: Overview of PAFO. (A) Imbalanced preference support leads to user-level unfairness in personalized reward modeling. (B) PAFO targets Pareto improvement, improving minority users without degrading majority users. (C) It trains group-specialized reward models and distills groupconditioned margin supervision into a single deployable personalized RM.",
+      "page": 4,
+      "index": 4,
+      "width": 758,
+      "height": 368
+    },
+    {
+      "url": "assets/figures/arxiv/2606.07988v1/fig-005.webp",
+      "caption": "Figure 8: PAFO’s performance with different numbers of historical examples on inputs.",
+      "page": 19,
+      "index": 5,
+      "width": 443,
+      "height": 310
+    },
+    {
+      "url": "assets/figures/arxiv/2606.07988v1/fig-006.webp",
+      "caption": "Figure 4: Sensitivity of PAFO to the minority ratio. P-RLHF is shown as a reference.",
+      "page": 9,
+      "index": 6,
+      "width": 801,
+      "height": 211
+    }
+  ]
+}

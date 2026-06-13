@@ -1,0 +1,190 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2606.07402v1/fig-001.webp",
+      "caption": "Figure 1: Overview of M3Exam.",
+      "page": 1,
+      "index": 1,
+      "width": 400,
+      "height": 464
+    },
+    {
+      "url": "assets/figures/arxiv/2606.07402v1/fig-002.webp",
+      "caption": "Table 2: Overall performance comparison on M3Exam. All memory systems are implemented with Qwen-2.5-VL-7B as the default backbone. Best and second-best are marked in bold and underline: Frontier MLLMs are ranked separately, while text-based and multimodal agentic-memory systems are ranked as a single group.",
+      "page": 6,
+      "index": 2,
+      "width": 950,
+      "height": 620
+    },
+    {
+      "url": "assets/figures/arxiv/2606.07402v1/fig-003.webp",
+      "caption": "Table 7: QA performance of M3Exam on Doubao-Seed-2.0-Pro. For each metric, the best and second-best scores are marked in bold and with underline, respectively.",
+      "page": 25,
+      "index": 3,
+      "width": 950,
+      "height": 979
+    },
+    {
+      "url": "assets/figures/arxiv/2606.07402v1/fig-004.webp",
+      "caption": "Table 8: Persona and core-event seeds for the fifteen subsets of M3Exam. The persona defines the user’s identity and the scope of their interactions; the core event defines the storyline that the multi-session timeline elaborates.",
+      "page": 26,
+      "index": 4,
+      "width": 968,
+      "height": 1314
+    },
+    {
+      "url": "assets/figures/arxiv/2606.07402v1/fig-005.webp",
+      "caption": "Figure 19: Prompt template for the cross-chunk dialogue self-check.",
+      "page": 30,
+      "index": 5,
+      "width": 950,
+      "height": 354
+    },
+    {
+      "url": "assets/figures/arxiv/2606.07402v1/fig-006.webp",
+      "caption": "Figure 18: Prompt template for the per-chunk dialogue self-check.",
+      "page": 30,
+      "index": 6,
+      "width": 950,
+      "height": 533
+    },
+    {
+      "url": "assets/figures/arxiv/2606.07402v1/fig-007.webp",
+      "caption": "Figure 20: Prompt template for per-round summarisation (cross-round memory).",
+      "page": 30,
+      "index": 7,
+      "width": 950,
+      "height": 241
+    },
+    {
+      "url": "assets/figures/arxiv/2606.07402v1/fig-008.webp",
+      "caption": "Table 1: Comparison of M3Exam with representative conversational-memory benchmarks. A. Round = average user–assistant rounds per session; A. File = average images and document files per session. MR = multimodal reasoning over visual evidence; SA = statistical analysis of multimodal graphs; FM = file management and retrieval; FR = file reasoning over document content. II = implicit information inference; TH = domain-specific thematic reasoning. ✓= supported; ✓✗ = partial / restricted; ✗ = not supported; ∼= N/A.",
+      "page": 2,
+      "index": 8,
+      "width": 950,
+      "height": 250
+    },
+    {
+      "url": "assets/figures/arxiv/2606.07402v1/fig-009.webp",
+      "caption": "Figure 15: Prompt template for the timeline self-check audit.",
+      "page": 29,
+      "index": 9,
+      "width": 950,
+      "height": 489
+    },
+    {
+      "url": "assets/figures/arxiv/2606.07402v1/fig-010.webp",
+      "caption": "Figure 16: Prompt template for the thematic user simulator (follow-up turn).",
+      "page": 29,
+      "index": 10,
+      "width": 950,
+      "height": 296
+    },
+    {
+      "url": "assets/figures/arxiv/2606.07402v1/fig-011.webp",
+      "caption": "Figure 17: Prompt template for the thematic assistant.",
+      "page": 29,
+      "index": 11,
+      "width": 950,
+      "height": 238
+    },
+    {
+      "url": "assets/figures/arxiv/2606.07402v1/fig-012.webp",
+      "caption": "Table 4: QA performance of M3Exam on Qwen-2.5-VL-7B. For each metric, the best and second-best scores are marked in bold and with underline, respectively.",
+      "page": 22,
+      "index": 12,
+      "width": 950,
+      "height": 979
+    },
+    {
+      "url": "assets/figures/arxiv/2606.07402v1/fig-013.webp",
+      "caption": "Figure 2: Overall pipeline of M3Exam, designed to evaluate multimodal memory ability in realistic scenarios.",
+      "page": 3,
+      "index": 13,
+      "width": 946,
+      "height": 463
+    },
+    {
+      "url": "assets/figures/arxiv/2606.07402v1/fig-014.webp",
+      "caption": "Figure 9: Frontier-MLLM arena on M3Exam. We evaluate eight frontier closed-source multimodal LLMs—GLM5.1, Qwen3.6-Plus, Claude-Opus-4.6, Doubao-Seed-2.0, GPT-5.4, Gemini-3.1-Pro, Kimi-k2.5 and Grok-4—as the answering model on M3Exam, scoring every model under the four metrics (EM, F1, BLEU-1 and LLM-J). Left: overall ranking, where each model is scored under a unified standard combining the four metrics. Right: per-metric breakdown, one radar per metric, where each hexagon spans the six question types that the metric is defined on and each model is drawn as one colored polygon.",
+      "page": 18,
+      "index": 14,
+      "width": 943,
+      "height": 372
+    },
+    {
+      "url": "assets/figures/arxiv/2606.07402v1/fig-015.webp",
+      "caption": "Table 5: QA performance of M3Exam on Qwen-2.5-VL-3B. For each metric, the best and second-best scores are marked in bold and with underline, respectively.",
+      "page": 23,
+      "index": 15,
+      "width": 950,
+      "height": 983
+    },
+    {
+      "url": "assets/figures/arxiv/2606.07402v1/fig-016.webp",
+      "caption": "Figure 14: Prompt template for distractor (side-event) generation.",
+      "page": 28,
+      "index": 16,
+      "width": 950,
+      "height": 548
+    },
+    {
+      "url": "assets/figures/arxiv/2606.07402v1/fig-017.webp",
+      "caption": "Figure 13: Prompt template for timeline generation. The event count <N> is set by the configuration.",
+      "page": 28,
+      "index": 17,
+      "width": 950,
+      "height": 519
+    },
+    {
+      "url": "assets/figures/arxiv/2606.07402v1/fig-018.webp",
+      "caption": "Figure 3: Overview of M3Proctor, designed to detect modality bias within queries and retrieve only on demand.",
+      "page": 4,
+      "index": 18,
+      "width": 941,
+      "height": 277
+    },
+    {
+      "url": "assets/figures/arxiv/2606.07402v1/fig-019.webp",
+      "caption": "Figure 10: Case study with Implicit Inference Example 1 (Alex, Veterinarian).",
+      "page": 19,
+      "index": 19,
+      "width": 456,
+      "height": 504
+    },
+    {
+      "url": "assets/figures/arxiv/2606.07402v1/fig-020.webp",
+      "caption": "Table 6: QA performance of M3Exam on GPT-5-Nano. For each metric, the best and second-best scores are marked in bold and with underline, respectively.",
+      "page": 24,
+      "index": 20,
+      "width": 950,
+      "height": 980
+    },
+    {
+      "url": "assets/figures/arxiv/2606.07402v1/fig-021.webp",
+      "caption": "Figure 22: Answering prompt used by M3Proctor. The base template (top) is shared by all question types; the part below the rule is appended only for find-matching-image (fm) questions.",
+      "page": 31,
+      "index": 21,
+      "width": 950,
+      "height": 523
+    },
+    {
+      "url": "assets/figures/arxiv/2606.07402v1/fig-022.webp",
+      "caption": "Figure 21: Prompt template for the LLM-as-a-Judge metric (five-level rubric).",
+      "page": 31,
+      "index": 22,
+      "width": 950,
+      "height": 747
+    },
+    {
+      "url": "assets/figures/arxiv/2606.07402v1/fig-023.webp",
+      "caption": "Figure 11: Case study with Implicit Inference Example 2 (Noah, Barista Apprentice).",
+      "page": 20,
+      "index": 23,
+      "width": 457,
+      "height": 504
+    }
+  ]
+}

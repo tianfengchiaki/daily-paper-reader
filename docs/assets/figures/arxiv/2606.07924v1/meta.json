@@ -1,0 +1,46 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2606.07924v1/fig-001.webp",
+      "caption": "Figure 3: Instructional skeleton for the Persona-Constrained Generator. This stage focuses on narrative synthesis, cross-lingual adaptability, and strict auditable grounding.",
+      "page": 11,
+      "index": 1,
+      "width": 962,
+      "height": 870
+    },
+    {
+      "url": "assets/figures/arxiv/2606.07924v1/fig-002.webp",
+      "caption": "Table 3: Comparative synthesis of the same video evidence under different persona lenses from our final submission. The system successfully bifurcates the narrative logic based on user background.",
+      "page": 7,
+      "index": 2,
+      "width": 950,
+      "height": 366
+    },
+    {
+      "url": "assets/figures/arxiv/2606.07924v1/fig-003.webp",
+      "caption": "Figure 2: Instructional skeleton for the Cognitive Filtering Agent. This stage focuses on logical pruning and score calibration.",
+      "page": 10,
+      "index": 3,
+      "width": 962,
+      "height": 828
+    },
+    {
+      "url": "assets/figures/arxiv/2606.07924v1/fig-004.webp",
+      "caption": "Figure 1: The overall architecture of the C2F-RAG pipeline. The system operates in three cascaded stages: (1) Coarse Stage: High-recall semantic pre-fetching utilizes BGE-M3 to retrieve a Top-1000 candidate pool from the 110K+ video corpus, based on decoupled global summaries and visual frames. (2) Fine Stage: Deep cognitive reranking re-integrates fine-grained modalities (OCR, ASR) into the Serial Multimodal Context (SMC). An adapted A.I.R. agent performs iterative, logic-gated filtering to distill a high-precision Golden Subset. (3) Generation Stage: Persona-constrained synthesis leverages the LLM to produce chunk-level temporally grounded responses.",
+      "page": 3,
+      "index": 4,
+      "width": 898,
+      "height": 455
+    },
+    {
+      "url": "assets/figures/arxiv/2606.07924v1/fig-005.webp",
+      "caption": "Table 4: Detailed topic-level evaluation results of our proposed C2F-RAG system for Information Generation (Info F1) and Temporal Grounding (Cite F1) under the Oracle setting using the CLUE framework.",
+      "page": 9,
+      "index": 5,
+      "width": 871,
+      "height": 658
+    }
+  ]
+}

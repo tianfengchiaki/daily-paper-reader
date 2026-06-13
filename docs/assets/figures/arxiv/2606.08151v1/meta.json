@@ -1,0 +1,46 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2606.08151v1/fig-001.webp",
+      "caption": "Table 8. RepoBench-R 100-task compression sweep (means across 100 tasks). Within each budget, rows are sorted by success and then F1.",
+      "page": 11,
+      "index": 1,
+      "width": 623,
+      "height": 322
+    },
+    {
+      "url": "assets/figures/arxiv/2606.08151v1/fig-002.webp",
+      "caption": "Fig. 1. CICL pipeline. The framework turns instance evidence into a graph, routes judge signals through a decision-utility engine, and packs memory cards for a budgeted agent. Opus, direct Qwen API calls, Codex, and a trained Qwen-QLoRA model used as an optional local surrogate are reported separately, so model-dependent signals are not collapsed into one score.",
+      "page": 2,
+      "index": 2,
+      "width": 725,
+      "height": 238
+    },
+    {
+      "url": "assets/figures/arxiv/2606.08151v1/fig-003.webp",
+      "caption": "Table 2. Dataset summary with scale, use, and evaluation scope.",
+      "page": 7,
+      "index": 3,
+      "width": 709,
+      "height": 256
+    },
+    {
+      "url": "assets/figures/arxiv/2606.08151v1/fig-004.webp",
+      "caption": "Table 7. Main 250-task evaluation at budget 120, sorted by average non-oracle F1 across v1/v3. v1 uses structural distractors; v3 uses semantic distractors. Bold = best non-oracle per metric.",
+      "page": 10,
+      "index": 4,
+      "width": 633,
+      "height": 343
+    },
+    {
+      "url": "assets/figures/arxiv/2606.08151v1/fig-005.webp",
+      "caption": "Table 4. Evidence ranking by claim strength, including negative evidence and applicability boundaries.",
+      "page": 9,
+      "index": 5,
+      "width": 719,
+      "height": 273
+    }
+  ]
+}

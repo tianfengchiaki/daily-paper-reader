@@ -1,0 +1,46 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2606.08146v1/fig-001.webp",
+      "caption": "Figure 1. Overall architecture of the SAGE framework. ① SAGE takes a heterogeneous tabular fraud dataset as input, ② profiles it through statistical analysis and a six-layer Data Diagnostic Tree (DDT), ③ and uses the resulting data diagnosis to select an algorithm and synthesize the initial training code. ④ The Optimization Agent then iteratively refines the code through an NLG-guided MDP loop, where code edits are evaluated by a fraud-specific composite reward and stored in trajectory memory. The process stops after convergence and returns the optimized model, final script, and evaluation metrics.",
+      "page": 6,
+      "index": 1,
+      "width": 982,
+      "height": 435
+    },
+    {
+      "url": "assets/figures/arxiv/2606.08146v1/fig-002.webp",
+      "caption": "Figure 5. Reward and underlying metrics over optimization iterations on IEEE-CIS.",
+      "page": 14,
+      "index": 2,
+      "width": 496,
+      "height": 964
+    },
+    {
+      "url": "assets/figures/arxiv/2606.08146v1/fig-003.webp",
+      "caption": "Figure 4. Per-seed standard deviation across the five datasets (lighter = more stable). SAGE attains the lowest or near-lowest F1 standard deviation on every dataset.",
+      "page": 13,
+      "index": 3,
+      "width": 480,
+      "height": 361
+    },
+    {
+      "url": "assets/figures/arxiv/2606.08146v1/fig-004.webp",
+      "caption": "Table 4. SAGE versus five baselines on five datasets and four metrics (mean±std over five seeds). For each (dataset, metric) the best value is in bold and the second-best is underlined. For Elliptic and TeleGuard, the test split contains only ∼8.4K and ∼6.2K negative samples respectively, so the minimum measurable FPR exceeds 10−4; on these two datasets the reported R@FPR10−4 is therefore equivalent to recall at the zero-false-positive operating point.",
+      "page": 12,
+      "index": 4,
+      "width": 1036,
+      "height": 634
+    },
+    {
+      "url": "assets/figures/arxiv/2606.08146v1/fig-005.webp",
+      "caption": "Figure 3. Per-metric win rate of SAGE over the 25 method–dataset comparisons (five baselines × five datasets) under five LLM backbones, with the four-metric average shown on the right.",
+      "page": 12,
+      "index": 5,
+      "width": 466,
+      "height": 276
+    }
+  ]
+}

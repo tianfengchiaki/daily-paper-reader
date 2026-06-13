@@ -1,0 +1,110 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2606.07688v1/fig-001.webp",
+      "caption": "Table 1: Complete unlearning results on Industrial & Scientific. Bold = best among unlearning methods; underline = second best. Retain metrics (↑): higher is better; Forget metrics (↓): lower is better; Sim. (↑): higher is better.",
+      "page": 25,
+      "index": 1,
+      "width": 830,
+      "height": 684
+    },
+    {
+      "url": "assets/figures/arxiv/2606.07688v1/fig-002.webp",
+      "caption": "Table 2: Complete unlearning results on Sports & Outdoors. Bold = best among unlearning methods; underline = second best. Retain metrics (↑): higher is better; Forget metrics (↓): lower is better; Sim. (↑): higher is better.",
+      "page": 26,
+      "index": 2,
+      "width": 830,
+      "height": 684
+    },
+    {
+      "url": "assets/figures/arxiv/2606.07688v1/fig-003.webp",
+      "caption": "Table 7: Qualitative Example 2 (Sports & Outdoors). Target: Speedo — “Speedo Vanquisher 2.0 Mirrored Swim Goggle”. Original model leaks 9/10 forget items (rank = 3); TRACER: 0/10.",
+      "page": 30,
+      "index": 3,
+      "width": 786,
+      "height": 612
+    },
+    {
+      "url": "assets/figures/arxiv/2606.07688v1/fig-004.webp",
+      "caption": "Figure 1: Retraining vs. Original GenRec model. (a): Original has highly overlapped semantic tokens, while Retraining mitigates overlap score significantly. (b): Original produces highly clustered embeddings, while Retraining produces dispersed embeddings. The overlap score is computed as the product of token frequencies in the forget and retain sets.",
+      "page": 2,
+      "index": 4,
+      "width": 817,
+      "height": 281
+    },
+    {
+      "url": "assets/figures/arxiv/2606.07688v1/fig-005.webp",
+      "caption": "Figure 6: Ablation study on loss weights. (a) λ1 controls the forget loss LF: increasing λ1 improves forgetting but degrades retain performance when too large. (b) λ2 controls the coherence loss LCoh: higher values improve semantic similarity with diminishing returns. (c) λ3 controls the regularization loss Lreg: stronger regularization preserves retain quality but weakens forgetting.",
+      "page": 29,
+      "index": 5,
+      "width": 814,
+      "height": 222
+    },
+    {
+      "url": "assets/figures/arxiv/2606.07688v1/fig-006.webp",
+      "caption": "Table 6: Qualitative Example 1 (Industrial & Scientific). Target: Anderson Metals — “Anderson Metals Brass Hose Fitting, Tee, 5/16” x 5/16” x 5/16” Barb”. Original model leaks 5/10 forget items (rank = 1); TRACER: 0/10.",
+      "page": 29,
+      "index": 6,
+      "width": 786,
+      "height": 612
+    },
+    {
+      "url": "assets/figures/arxiv/2606.07688v1/fig-007.webp",
+      "caption": "Figure 4: Effect of Reassignment.",
+      "page": 10,
+      "index": 7,
+      "width": 693,
+      "height": 241
+    },
+    {
+      "url": "assets/figures/arxiv/2606.07688v1/fig-008.webp",
+      "caption": "Table 5: Item-level unlearning results on Industrial & Scientific. Bold = best among unlearning methods; underline = second best. Retain (↑); Forget (↓); Sim. (↑).",
+      "page": 28,
+      "index": 8,
+      "width": 830,
+      "height": 683
+    },
+    {
+      "url": "assets/figures/arxiv/2606.07688v1/fig-009.webp",
+      "caption": "Figure 5: Ablation studies on K (left) and τ (right). Left: K=5 achieves the best trade-off between semantic coherence and unlearning effectiveness. Right: τ=0.005 yields the strongest performance; larger τ gradually degrades all metrics as the token-reassignment distribution becomes too diffuse.",
+      "page": 28,
+      "index": 9,
+      "width": 810,
+      "height": 291
+    },
+    {
+      "url": "assets/figures/arxiv/2606.07688v1/fig-010.webp",
+      "caption": "Figure 2: Overview of TRACER. a) Semantic token overlap in GenRec unlearning: removing conceptual knowledge from GenRec models is challenging, since many non-interpretable semantic tokens are shared by both forget and retain sets. b) Token reassignment: TRACER reassigns the semantic token of unlearning-affected items to the closest item of the same category, which preserves semantic coherence to the maximum extent. c) Coherenct unlearning: TRACER unlearn the target concept without affecting the recommendation ability and semantic coherence of the GenRec model.",
+      "page": 4,
+      "index": 10,
+      "width": 816,
+      "height": 310
+    },
+    {
+      "url": "assets/figures/arxiv/2606.07688v1/fig-011.webp",
+      "caption": "Table 3: Complete unlearning results on Toys & Games. Bold = best among unlearning methods; underline = second best. Retain metrics (↑): higher is better; Forget metrics (↓): lower is better; Sim. (↑): higher is better.",
+      "page": 27,
+      "index": 11,
+      "width": 829,
+      "height": 684
+    },
+    {
+      "url": "assets/figures/arxiv/2606.07688v1/fig-012.webp",
+      "caption": "Figure 3: Probing Results on MOR.",
+      "page": 9,
+      "index": 12,
+      "width": 694,
+      "height": 233
+    },
+    {
+      "url": "assets/figures/arxiv/2606.07688v1/fig-013.webp",
+      "caption": "Table 8: Qualitative Example 3 (Toys & Games). Target: Learning Resources — “Learning Resources New Sprouts Reel it”. Original model leaks 8/10 forget items (not in top-20); TRACER: 0/10.",
+      "page": 31,
+      "index": 13,
+      "width": 786,
+      "height": 611
+    }
+  ]
+}

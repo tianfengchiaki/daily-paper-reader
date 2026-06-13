@@ -1,0 +1,38 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2606.06947v1/fig-001.webp",
+      "caption": "Figure 4: UC3 conservative gating and CPDE multi-path recovery (Sports). (a) Of 18,548 vote-summary items, 56.8% fall back at the support gate, 12.4% at the margin gate, and only 10.6% actually switch SID; (b) winner items exhibit systematically higher",
+      "page": 10,
+      "index": 1,
+      "width": 1040,
+      "height": 305
+    },
+    {
+      "url": "assets/figures/arxiv/2606.06947v1/fig-002.webp",
+      "caption": "Figure 3: CART prior-support repair. Three deterministic Sports cold-start items whose static SID is absent from the CART",
+      "page": 10,
+      "index": 2,
+      "width": 1040,
+      "height": 314
+    },
+    {
+      "url": "assets/figures/arxiv/2606.06947v1/fig-003.webp",
+      "caption": "Table 4: Warm-item recommendation performance (R@10 /",
+      "page": 8,
+      "index": 3,
+      "width": 1052,
+      "height": 271
+    },
+    {
+      "url": "assets/figures/arxiv/2606.06947v1/fig-004.webp",
+      "caption": "Figure 1: Overview of the DREAM framework. The top trajectory shows SID evolution from the fragile static path Φ0 to CART candidate pool P𝑖 , UC3 primary SID ΦC, CPDE beam paths B𝑖 , and a union trie for cold-hit recovery. CART injects collaborative",
+      "page": 4,
+      "index": 4,
+      "width": 1056,
+      "height": 561
+    }
+  ]
+}

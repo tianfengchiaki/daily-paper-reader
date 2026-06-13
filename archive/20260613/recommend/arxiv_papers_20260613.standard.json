@@ -1,0 +1,984 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-06-13T21:23:30.830388+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 2,
+    "deep_divecandidates": 26,
+    "deep_cap": 7,
+    "deep_selected": 11,
+    "quick_candidates": 37,
+    "quick_skim_target": 12,
+    "quick_selected": 12
+  },
+  "deep_dive": [
+    {
+      "id": "2606.07075v1",
+      "source": "arxiv",
+      "title": "Beyond Matching: Category-Guided Latent Intent Reasoning for Generative Retrieval in E-Commerce",
+      "abstract": "Generative retrieval offers a new paradigm for e-commerce search by mapping user queries directly to product Semantic Identifiers (SIDs). However, e-commerce queries are often short, noisy, attribute-heavy, and associated with multiple category-consistent products, creating a substantial representation gap between natural-language shopping intent and artificially constructed item SIDs. Explicit Chain-of-Thought (CoT) reasoning can help bridge this gap, but its extra generation cost is difficult to reconcile with the low-latency requirements of online e-commerce systems. To address this challenge, we propose CaLIR (Category-guided Latent Intent Reasoning), a category-guided latent intent reasoning framework for e-commerce generative retrieval. Rather than generating explicit textual rationales, CaLIR learns continuous latent intent states before SID decoding and uses product category hierarchies as a natural scaffold for coarse-to-fine intent reasoning. Specifically, we introduce hierarchical semantic reasoning to align latent states with category-level shopping intent, and query-wise reasoning enhancement to model diverse intent paths under multi-positive queries. CaLIR further combines a query-specific dynamic prefix trie, assembled from pre-indexed category-level tries, with reasoning-aware constrained decoding. Experiments on multilingual e-commerce search datasets show that CaLIR achieves a better balance between retrieval effectiveness and inference efficiency than existing methods, while also demonstrating transferability and robustness across induced hierarchies and different generative backbones.",
+      "authors": [
+        "Fuwei Zhang",
+        "Xiaoyu Liu",
+        "Jiajie Jin",
+        "Jiale Mao",
+        "Wei Chen",
+        "Dongbo Xi",
+        "Yifan Yang",
+        "Peng Yan",
+        "Zichao Hao",
+        "Zhao Zhang",
+        "Fuzhen Zhuang"
+      ],
+      "primary_category": "cs.IR",
+      "categories": [
+        "cs.IR"
+      ],
+      "published": "2026-06-05T09:12:54+00:00",
+      "link": "https://arxiv.org/pdf/2606.07075v1",
+      "tags": [
+        "keyword:LLMApp",
+        "keyword:广告",
+        "query:LLMApp",
+        "query:广告"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "generative retrieval with category-guided latent intent reasoning for e-commerce",
+      "llm_evidence_cn": "面向电商的类别引导隐式意图推理生成式检索",
+      "llm_evidence": "面向电商的类别引导隐式意图推理生成式检索",
+      "canonical_evidence": "面向电商的类别引导隐式意图推理生成式检索",
+      "llm_tldr_en": "CaLIR bridges query-product gap via latent intent reasoning without extra inference cost.",
+      "llm_tldr_cn": "CaLIR通过隐式意图推理弥合查询-商品差距且不增加推理成本。",
+      "llm_tldr": "CaLIR通过隐式意图推理弥合查询-商品差距且不增加推理成本。",
+      "llm_tags": [
+        "query:q1"
+      ],
+      "matched_query_tag": "query:q1",
+      "matched_query_text": "recommendation system for advertising",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2606.07688v1",
+      "source": "arxiv",
+      "title": "TRACER: Token ReAssignment for Concept ERasure in Generative Recommendation",
+      "abstract": "Generative recommendation formulates next-item prediction as autoregressive generation over semantic ID (SID) sequences derived from users' historical interactions, making modern recommender systems structurally similar to large language models (LLMs). As privacy and safety concerns grow, these systems increasingly require concept unlearning to remove sensitive or harmful concepts associated with items. However, existing LLM unlearning methods cannot be directly applied to generative recommendation. Unlike word tokens with explicit semantics, SIDs are abstract identifiers that are often shared by both forget and retain items, leading to severe conflicts between concept removal and recommendation utility preservation.   To address this challenge, we propose TRACER, an end-to-end concept unlearning framework based on token reassignment. Rather than directly suppressing shared SIDs, TRACER reassigns concept-related items to alternative tokens that better facilitate forgetting while minimizing side effects on retained items. We further introduce a coherence regularizer to preserve semantic consistency among retain items during unlearning. Experiments on real-world recommendation datasets demonstrate that TRACER effectively removes target concepts while substantially better preserving recommendation utility than existing unlearning baselines.",
+      "authors": [
+        "Ziheng Chen",
+        "Jiali Cheng",
+        "Zezhong Fan",
+        "Hadi Amiri",
+        "Diyuan Wu",
+        "Gabriele Tolomei",
+        "Yang Zhang"
+      ],
+      "primary_category": "cs.IR",
+      "categories": [
+        "cs.IR",
+        "cs.AI",
+        "cs.CL",
+        "cs.LG"
+      ],
+      "published": "2026-06-05T05:19:31+00:00",
+      "link": "https://arxiv.org/pdf/2606.07688v1",
+      "tags": [
+        "keyword:LLMApp",
+        "keyword:广告",
+        "query:LLMApp",
+        "query:广告"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "Generative recommendation with LLM-like unlearning",
+      "llm_evidence_cn": "类似大模型的生成式推荐系统概念擦除",
+      "llm_evidence": "类似大模型的生成式推荐系统概念擦除",
+      "canonical_evidence": "类似大模型的生成式推荐系统概念擦除",
+      "llm_tldr_en": "Concept unlearning for generative recommendation using token reassignment.",
+      "llm_tldr_cn": "通过令牌重分配实现生成式推荐的概念擦除。",
+      "llm_tldr": "通过令牌重分配实现生成式推荐的概念擦除。",
+      "llm_tags": [
+        "query:llmapp"
+      ],
+      "matched_query_tag": "query:llmapp",
+      "matched_query_text": "Large language model applications in recommendation",
+      "matched_requirement_id": "req-14",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2606.08197v1",
+      "source": "arxiv",
+      "title": "AlignFed: Alignment-Aware Asynchronous Federated Fine-Tuning for Large Language Models in Heterogeneous Edge Environments",
+      "abstract": "Large Language Models (LLMs) have significantly propelled the advancement of edge intelligence and have been widely deployed across various scenarios, including autonomous driving, industrial inspection, and personalized IoT services. However, the collaborative adaptation of LLMs on edge devices continues to face formidable challenges due to strict data privacy constraints, highly heterogeneous computing and communication resources, and the non-independent and identically distributed (non-IID) nature of local data. Federated Fine-Tuning (FFT) enables the collaborative optimization of distributed models without exposing raw data. Yet, traditional synchronous aggregation suffers from a severe straggler effect, resulting in high system latency and low resource utilization. Existing asynchronous federated learning methods are predominantly designed for small-to-medium-scale models and struggle to address the specific challenges inherent in LLM fine-tuning namely, model drift caused by stale updates, aggravated client drift stemming from data heterogeneity, and aggregation fairness imbalance resulting from the dominance of fast clients. To address these issues, this paper proposes AlignFed, an asynchronous federated fine-tuning framework for LLMs tailored to heterogeneous edge environments. AlignFed employs a lightweight multi-stage semantic alignment mechanism comprising three core modules: version-aware update grouping, cross-version semantic alignment based on a mini-batch calibration set, and fairness-aware aggregation that integrates both update freshness and client participation frequency. This framework effectively mitigates cross-version model drift and client drift while enhancing aggregation fairness, thereby achieving stable and efficient asynchronous federated optimization in scenarios characterized by high heterogeneity and significant update staleness.",
+      "authors": [
+        "Yan Wang",
+        "Ziyi Gao",
+        "Rui Wang"
+      ],
+      "primary_category": "cs.CL",
+      "categories": [
+        "cs.CL",
+        "cs.DC"
+      ],
+      "published": "2026-06-06T14:28:36+00:00",
+      "link": "https://arxiv.org/pdf/2606.08197v1",
+      "tags": [
+        "keyword:LLMApp",
+        "keyword:广告",
+        "query:LLMApp"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "Federated fine-tuning of LLMs in heterogeneous edge environments",
+      "llm_evidence_cn": "异构边缘环境下的大模型联邦微调",
+      "llm_evidence": "异构边缘环境下的大模型联邦微调",
+      "canonical_evidence": "异构边缘环境下的大模型联邦微调",
+      "llm_tldr_en": "Asynchronous federated fine-tuning method for LLMs on edge devices.",
+      "llm_tldr_cn": "边缘设备上大模型的异步联邦微调方法。",
+      "llm_tldr": "边缘设备上大模型的异步联邦微调方法。",
+      "llm_tags": [
+        "query:llmapp"
+      ],
+      "matched_query_tag": "query:llmapp",
+      "matched_query_text": "fine tuning large models for tasks",
+      "matched_requirement_id": "req-12",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2606.08604v1",
+      "source": "arxiv",
+      "title": "Gryphon: A Unified Architecture for Semantic-ID Generation and Item-Level Scoring in Industrial Recommendations",
+      "abstract": "Generative retrieval (GR) has become a scalable approach to candidate generation: each item is assigned a short hierarchical token sequence called a Semantic ID (SID), and the next item's SID is decoded autoregressively. A practical limitation is that the decoder's beam search optimizes the likelihood of token sequences, not the relevance of the underlying items. These objectives diverge when sequence likelihood is poorly calibrated due to beam search error accumulation, and when several items collapse onto a single SID and receive identical scores. We introduce Gryphon, an encoder-decoder generative recommendation architecture that adds a jointly trained item-level scoring component alongside SID generation, reusing the encoder's user representation computed in a single forward pass. Instead of ranking SIDs by accumulated token likelihood, Gryphon resolves each generated SID to its concrete items and re-scores those items directly, which sidesteps miscalibrated sequence scores and separates items that collide on the same identifier. On an industrial music service, with item-level scoring trained under a next-item-prediction objective, Gryphon attains the highest item-level Recall@1000, above the strongest baselines (+3.7% over vanilla GR and +2.5% over collision-resolved GR) at comparable parameter count and latency. Gryphon's item-level ranking also surpasses its beam-likelihood ranking of the same candidates (+4.2% gain), demonstrating the benefit of item-level scoring in GR. Deployed as the sole candidate source in a 7-day A/B test, Gryphon produced no statistically significant change in total listening time (+0.25%) while replacing a pipeline of more than 15 candidate generators and a separate preranking stage, substantially simplifying the candidate-generation system.",
+      "authors": [
+        "Daria Tikhonovich",
+        "Oleg Sorokin",
+        "Vladislav Dodonov",
+        "Mariia Ulianova",
+        "Ilya Murzin"
+      ],
+      "primary_category": "cs.IR",
+      "categories": [
+        "cs.IR"
+      ],
+      "published": "2026-06-07T12:31:26+00:00",
+      "link": "https://arxiv.org/pdf/2606.08604v1",
+      "tags": [
+        "keyword:LLMApp",
+        "keyword:广告",
+        "query:LLMApp",
+        "query:广告"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "generative recommendation with semantic IDs and item scoring",
+      "llm_evidence_cn": "生成式推荐与语义ID和物品评分",
+      "llm_evidence": "生成式推荐与语义ID和物品评分",
+      "canonical_evidence": "生成式推荐与语义ID和物品评分",
+      "llm_tldr_en": "Gryphon improves generative retrieval by adding item-level scoring to semantic ID generation.",
+      "llm_tldr_cn": "Gryphon通过在语义ID生成中加入物品级评分改进了生成式检索。",
+      "llm_tldr": "Gryphon通过在语义ID生成中加入物品级评分改进了生成式检索。",
+      "llm_tags": [
+        "query:q1"
+      ],
+      "matched_query_tag": "query:q1",
+      "matched_query_text": "recommendation system for advertising",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2606.08604v2",
+      "source": "arxiv",
+      "title": "Gryphon: A Unified Architecture for Semantic-ID Generation and Item-Level Scoring in Industrial Recommendations",
+      "abstract": "Generative retrieval (GR) has become a scalable approach to candidate generation: each item is assigned a short hierarchical token sequence called a Semantic ID (SID), and the next item's SID is decoded autoregressively. A practical limitation is that the decoder's beam search optimizes the likelihood of token sequences, not the relevance of the underlying items. These objectives diverge when sequence likelihood is poorly calibrated due to beam search error accumulation, and when several items collapse onto a single SID and receive identical scores. We introduce Gryphon, an encoder-decoder generative recommendation architecture that adds a jointly trained item-level scoring component alongside SID generation, reusing the encoder's user representation computed in a single forward pass. Instead of ranking SIDs by accumulated token likelihood, Gryphon resolves each generated SID to its concrete items and re-scores those items directly, which sidesteps miscalibrated sequence scores and separates items that collide on the same identifier. On an industrial music service, with item-level scoring trained under a next-item-prediction objective, Gryphon attains the highest item-level Recall@1000, above the strongest baselines (+3.7% over vanilla GR and +2.5% over collision-resolved GR) at comparable parameter count and latency. Gryphon's item-level ranking also surpasses its beam-likelihood ranking of the same candidates (+4.2% gain), demonstrating the benefit of item-level scoring in GR. Deployed as the sole candidate source in a 7-day A/B test, Gryphon produced no statistically significant change in total listening time (+0.25%) while replacing a pipeline of more than 15 candidate generators and a separate preranking stage, substantially simplifying the candidate-generation system.",
+      "authors": [
+        "Daria Tikhonovich",
+        "Oleg Sorokin",
+        "Vladislav Dodonov",
+        "Mariia Ulianova",
+        "Ilya Murzin"
+      ],
+      "primary_category": "cs.IR",
+      "categories": [
+        "cs.IR"
+      ],
+      "published": "2026-06-07T12:31:26+00:00",
+      "link": "https://arxiv.org/pdf/2606.08604v2",
+      "tags": [
+        "keyword:LLMApp",
+        "keyword:广告",
+        "query:LLMApp",
+        "query:广告"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "generative retrieval architecture for industrial recommendations",
+      "llm_evidence_cn": "用于工业推荐的生成式检索架构",
+      "llm_evidence": "用于工业推荐的生成式检索架构",
+      "canonical_evidence": "用于工业推荐的生成式检索架构",
+      "llm_tldr_en": "Introduces Gryphon, an encoder-decoder with item-level scoring alongside semantic IDs, improving relevance in generative recommendation.",
+      "llm_tldr_cn": "提出Gryphon，编码器-解码器架构联合训练物品级评分和语义ID，提升生成式推荐相关性。",
+      "llm_tldr": "提出Gryphon，编码器-解码器架构联合训练物品级评分和语义ID，提升生成式推荐相关性。",
+      "llm_tags": [
+        "query:q1"
+      ],
+      "matched_query_tag": "query:q1",
+      "matched_query_text": "recommendation system for advertising",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2606.09082v1",
+      "source": "arxiv",
+      "title": "Teach Multimodal Recommendation Model to See via Personalized Visual Extraction and Adaptive Learning",
+      "abstract": "Multimodal sequential recommendation (MSR) incorporates textual and visual information to improve recommendation quality. However, recent studies and our empirical analysis show that visual features are often underutilized, thereby contributing far less than textual signals. We attribute this issue to two factors: insufficient visual representation learning (pretrained encoders fail to capture preference-relevant cues) and unbalanced visual-text optimization (textual features dominate the learning process). To address these issues, we propose Teach Multimodal Recommendation Model to See via Personalized Visual Extraction and Adaptive Learning (REVEAL), a plug-and-play framework that enhances visual representation learning and cross-modal optimization without modifying the original recommendation backbone. REVEAL consists of Feedback-Guided Visual Extraction (FVE), which refines prompt-guided visual extraction through task-level feedback, and Adaptive Visual Learning (AVL), which dynamically reweights visual learning to alleviate modality imbalance. Experiments on multiple real-world datasets and MSR backbones demonstrate that REVEAL consistently improves recommendation performance. Further analysis shows that these gains arise from more effective attention to preference-relevant visual regions and better visual utilization during training. The code is available at https://github.com/YutongLi2024/REVEAL.",
+      "authors": [
+        "Yutong Li",
+        "Xinyi Zhang",
+        "Ziyi Ye",
+        "Daoguo Dong",
+        "Yu-gang Jiang"
+      ],
+      "primary_category": "cs.IR",
+      "categories": [
+        "cs.IR"
+      ],
+      "published": "2026-06-08T06:28:25+00:00",
+      "link": "https://arxiv.org/pdf/2606.09082v1",
+      "tags": [
+        "keyword:LLMApp",
+        "keyword:广告",
+        "query:LLMApp",
+        "query:广告"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "enhancing visual features in multimodal sequential recommendation",
+      "llm_evidence_cn": "增强多模态序列推荐中的视觉特征",
+      "llm_evidence": "增强多模态序列推荐中的视觉特征",
+      "canonical_evidence": "增强多模态序列推荐中的视觉特征",
+      "llm_tldr_en": "REVEAL improves multimodal recommendation by personalized visual extraction and adaptive learning.",
+      "llm_tldr_cn": "REVEAL通过个性化视觉提取和自适应学习改进多模态推荐。",
+      "llm_tldr": "REVEAL通过个性化视觉提取和自适应学习改进多模态推荐。",
+      "llm_tags": [
+        "query:q6"
+      ],
+      "matched_query_tag": "query:q6",
+      "matched_query_text": "multimodal learning for advertising",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2606.10187v1",
+      "source": "arxiv",
+      "title": "Decision-Calibrated Conformal Uncertainty for Pacing Decisions in Streaming Advertising",
+      "abstract": "We develop a decision-calibrated conformal framework for pacing decisions in streaming advertising. Pacing depends on uncertain future inventory, demand pressure, incremental response, and member-experience load. Instead of calibrating a generic forecast residual, the framework measures forecast error by its largest impact on the policies that could actually be deployed. The main theorem shows that the proposed score is the smallest valid uncertainty measure that uniformly protects all deployable pacing policies. Geometrically, it is the support function of the signed policy sensitivity set. Split conformal calibration gives finite-sample coverage for this score. A high-dimensional separation theorem shows that traditional residual calibration can be arbitrarily more conservative by paying for nuisance inventory dimensions, and a robust pacing result combines inventory, response, and experience uncertainty. On public-data-calibrated pacing replays built from Criteo Uplift and KuaiRand datasets, traditional conformal pacing remains unresolved with high residual radii of 7236.7 on Criteo and 4629.4 on KuaiRand. With the proposed decision calibration approach, the uncertainty radii are reduced to 18.4 and 278.6 respectively, with separate margins for value, delivery, budget, and member load. On Criteo, the proposed method certifies a less aggressive pacing policy than the point-forecast baseline, and reduces held-out any-violation rate from 16.7% to 3.3%, with zero budget and member-load violations. On KuaiRand, the choice remains unresolved. In a nutshell, the paper establishes that forecasts, response estimates, and member-experience models should be judged by whether they shrink the uncertainty that the pacing decision uses, as this leads to confident decisions that are not overly conservative.",
+      "authors": [
+        "Prashant Shekhar",
+        "Caroline Howard"
+      ],
+      "primary_category": "stat.ML",
+      "categories": [
+        "stat.ML",
+        "cs.LG"
+      ],
+      "published": "2026-06-08T21:26:15+00:00",
+      "link": "https://arxiv.org/pdf/2606.10187v1",
+      "tags": [
+        "keyword:广告",
+        "query:LLMApp",
+        "query:广告"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "pacing decisions in streaming advertising",
+      "llm_evidence_cn": "流媒体广告中的节奏决策",
+      "llm_evidence": "流媒体广告中的节奏决策",
+      "canonical_evidence": "流媒体广告中的节奏决策",
+      "llm_tldr_en": "Decision-calibrated conformal uncertainty for advertising pacing decisions.",
+      "llm_tldr_cn": "用于广告节奏决策的决策校准共形不确定性。",
+      "llm_tldr": "用于广告节奏决策的决策校准共形不确定性。",
+      "llm_tags": [
+        "query:q2"
+      ],
+      "matched_query_tag": "query:q2",
+      "matched_query_text": "advertising technology",
+      "matched_requirement_id": "req-2",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2606.10243v1",
+      "source": "arxiv",
+      "title": "DUET -- Dual User Embedding Transformers for Offsite Conversion Prediction",
+      "abstract": "Offsite conversion rate (OCVR) prediction is an important ranking problem in computational recommendation systems. This task presents a modeling challenge: click signals are abundant and exhibit short temporal horizons, whereas conversion signals are inherently sparse, long-delayed, and frequently unattributed. Despite these statistical disparities, both signal types must inform models that operate within strict serving-latency constraints. Prior pre-training approaches address this heterogeneity with a single, undifferentiated encoder applied uniformly across both data streams. We propose DUET (Dual User Embedding Transformers), a framework that explicitly partitions user behavioral data into two domain-coherent streams -- clicks and conversions -- and pre-trains dedicated transformer encoders with architectures tailored to each stream's statistical characteristics: multi-layer self-attention for the dense click stream and interleaved cross- and self-attention for the sparse conversion stream. The resulting complementary embeddings are jointly consumed by a downstream ranker without exceeding serving-latency budgets. Evaluation demonstrates up to 0.38% normalized entropy (NE) reduction relative to the strongest baseline, and A/B test shows consistent improvements in OCVR prediction accuracy.",
+      "authors": [
+        "Reazul Hasan Russel",
+        "Mingwei Tang",
+        "Rostam Shirani",
+        "Xinlong Liu",
+        "Navid Madani",
+        "Leo Ding",
+        "Yawen He",
+        "Xiangyu Wang",
+        "Mustafa Acar",
+        "Ashish Katiyar",
+        "Yuhai Li",
+        "Alan Yang",
+        "Metarya Ruparel",
+        "Derek Qiang Xu",
+        "Rupert Wu",
+        "Rui Yang",
+        "Liang Tao",
+        "Xinyi Zhao",
+        "Larry Zhang",
+        "Sri Reddy",
+        "Rob Malkin"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG"
+      ],
+      "published": "2026-06-08T23:13:58+00:00",
+      "link": "https://arxiv.org/pdf/2606.10243v1",
+      "tags": [
+        "keyword:LLMApp",
+        "keyword:广告",
+        "query:LLMApp",
+        "query:广告"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "Offsite conversion prediction for recommendation systems",
+      "llm_evidence_cn": "离线转化率预测用于推荐系统",
+      "llm_evidence": "离线转化率预测用于推荐系统",
+      "canonical_evidence": "离线转化率预测用于推荐系统",
+      "llm_tldr_en": "Dual-encoder framework for offsite conversion prediction in recommendation systems.",
+      "llm_tldr_cn": "双编码器框架用于推荐系统的离线转化率预测。",
+      "llm_tldr": "双编码器框架用于推荐系统的离线转化率预测。",
+      "llm_tags": [
+        "query:q1"
+      ],
+      "matched_query_tag": "query:q1",
+      "matched_query_text": "recommendation system for advertising",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2606.10907v1",
+      "source": "arxiv",
+      "title": "From Prompt to Purchase: How AI Brand Recommendations Move Consumers on the Open Web",
+      "abstract": "When a conversational assistant recommends a brand to a user with no recent observed engagement, that user's same-name Google search rises +4.3 percentage points (pp) [3.1, 5.5], visits to the brand's own site +2.4 pp [1.4, 3.5], and brand-specific retailer-page visits +1.0 pp [0.3, 1.7] over matched backward placebos. Recovering that estimate is the work. The mention creates a brand exposure no web log attributes to the assistant, and the naive all-mention funnel that seems to measure it is confounded: many mentions are incidental references to brands the user already uses (\"your Netflix download\"), whose downstream visits are that existing customer's own behavior and surface as a brand-specific pre-trend. We measure off-platform response on a panel that joins opt-in clickstream to the same users' ChatGPT, Claude, and Gemini conversations, and isolate the effect with a pre-trend event study, a stance classifier, non-customer conditioning, and a within-response same-category control: incidental name-drops then move behavior far less (+1.8/+1.1/+0.3), and the named brand moves far more than unnamed same-category brands in the same response. The downstream path is mostly search-mediated and reaches both own sites and retailer pages, with a destination mix that tracks baseline brand-directed behavior rather than redirecting toward either. The design is observational and we do not observe transactions, so retail is purchase-adjacent. Standard referrer-based and last-click measurement miss this upstream exposure: assistants move observably-unengaged users into open-web brand navigation along a path attributed elsewhere.",
+      "authors": [
+        "Michael Iannelli",
+        "Alan Ai"
+      ],
+      "primary_category": "cs.CY",
+      "categories": [
+        "cs.CY",
+        "cs.IR"
+      ],
+      "published": "2026-06-09T14:16:48+00:00",
+      "link": "https://arxiv.org/pdf/2606.10907v1",
+      "tags": [
+        "keyword:LLMApp",
+        "keyword:广告",
+        "query:LLMApp",
+        "query:广告"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "studies AI brand recommendation effects on user purchase behavior",
+      "llm_evidence_cn": "研究AI品牌推荐对用户购买行为的影响",
+      "llm_evidence": "研究AI品牌推荐对用户购买行为的影响",
+      "canonical_evidence": "研究AI品牌推荐对用户购买行为的影响",
+      "llm_tldr_en": "Measures off-platform impact of conversational assistant brand recommendations on user search and visits.",
+      "llm_tldr_cn": "测量对话助手品牌推荐对用户搜索和访问的跨平台影响",
+      "llm_tldr": "测量对话助手品牌推荐对用户搜索和访问的跨平台影响",
+      "llm_tags": [
+        "query:q1"
+      ],
+      "matched_query_tag": "query:q1",
+      "matched_query_text": "recommendation system for advertising",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2606.11854v1",
+      "source": "arxiv",
+      "title": "Fine-tuning Multi-modal LLMs with ART: Art-based Reinforcement Training",
+      "abstract": "There are two main Parameter-Efficient Fine-Tuning (PEFT) techniques for Large Language Models (LLMs). While Low-Rank Adaptation (LoRA) introduces additional weights between the LLM layers, Soft Prompting introduces additional fine-tuning-specific raw tokens to an LLM input. However, both require modification to the computational graphs of precompiled, preoptimized LLMs. As a result, neither is fully supported in high-throughput engines like vLLM. We propose fine-tuning with ART (Art-based Reinforcement Training). The method injects information into a frozen Multimodal Large Language Model (MLLM) by optimizing only its raw visual input, thus enabling the soft-token approach on pre-compiled computational graphs. It relies on backpropagation of gradients back into a plain pixel array and thus supports any fine-tuning objective. Moreover, the optimized visual input can be stylized as task-relevant computational artworks. The approach's effectiveness is confirmed for different sizes of a popular open Qwen architecture and for several textual benchmarks. Specifically, ART reaches accuracy competitive with LoRA across mathematics and structured-tool-use benchmarks.",
+      "authors": [
+        "Michal Chudoba",
+        "Sergey Alyaev",
+        "Petra Galuscakova",
+        "Tomasz Wiktorski"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG",
+        "cs.AI",
+        "cs.CL"
+      ],
+      "published": "2026-06-10T09:30:37+00:00",
+      "link": "https://arxiv.org/pdf/2606.11854v1",
+      "tags": [
+        "keyword:LLMApp",
+        "keyword:广告",
+        "query:LLMApp"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "Fine-tuning multimodal LLMs with ART method",
+      "llm_evidence_cn": "使用ART方法微调多模态大模型",
+      "llm_evidence": "使用ART方法微调多模态大模型",
+      "canonical_evidence": "使用ART方法微调多模态大模型",
+      "llm_tldr_en": "Proposes a reinforcement-based fine-tuning method for frozen multimodal LLMs via visual input optimization.",
+      "llm_tldr_cn": "提出一种基于强化学习的微调方法，通过优化视觉输入来冻结多模态大模型。",
+      "llm_tldr": "提出一种基于强化学习的微调方法，通过优化视觉输入来冻结多模态大模型。",
+      "llm_tags": [
+        "query:llmapp"
+      ],
+      "matched_query_tag": "query:llmapp",
+      "matched_query_text": "fine tuning large models for tasks",
+      "matched_requirement_id": "req-12",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2606.12245v1",
+      "source": "arxiv",
+      "title": "DiffCold: A Diffusion-based Generative Model for Cold-Start Item Recommendation",
+      "abstract": "Cold-start item recommendation remains a persistent challenge in real-world systems due to the absence of interaction histories. While prior models attempt to bridge this gap using item content features, they universally suffer from the \\textbf{seesaw dilemma}: enhancing performance for cold items inevitably degrades performance for warm items, and vice versa. We identify that this dilemma stems from a fundamental \\textbf{distributional disparity}: warm item embeddings occupy a complex ``behavioral manifold\" shaped by rich interaction signals, whereas cold item embeddings are constrained to a ``semantic manifold\" derived solely from auxiliary content. Existing methods often force a rigid mapping between these inconsistent spaces, causing the model to sacrifice the precision of warm representations to accommodate cold ones. To address this, we propose \\textbf{DiffCold}, a diffusion-based generative model that unifies warm and cold representations. Unlike GANs or VAEs, DiffCold leverages conditional diffusion to reconstruct warm item embeddings from content, preserving the underlying manifold structure without degradation. We further tailor this paradigm with two specific designs: a \\textbf{Retrieval-enhanced Aggregator} that initializes generation using semantically similar warm items to bypass inefficient noise, and a \\textbf{Simulation-based Representation Alignment} module that enforces distribution consistency between generated and real embeddings via contrastive learning. Experiments on three benchmarks confirm that DiffCold resolves the seesaw dilemma, consistently outperforming state-of-the-art methods across all metrics.",
+      "authors": [
+        "Kangning Zhang",
+        "Yingjie Qin",
+        "Weinan Zhang",
+        "Yong Yu",
+        "Jianghao Lin"
+      ],
+      "primary_category": "cs.IR",
+      "categories": [
+        "cs.IR",
+        "cs.AI"
+      ],
+      "published": "2026-06-10T15:47:26+00:00",
+      "link": "https://arxiv.org/pdf/2606.12245v1",
+      "tags": [
+        "keyword:LLMApp",
+        "keyword:广告",
+        "query:LLMApp",
+        "query:广告"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "diffusion model for cold-start item recommendation",
+      "llm_evidence_cn": "用于冷启动物品推荐的扩散模型",
+      "llm_evidence": "用于冷启动物品推荐的扩散模型",
+      "canonical_evidence": "用于冷启动物品推荐的扩散模型",
+      "llm_tldr_en": "DiffCold uses diffusion to bridge semantic and behavioral manifolds for cold-start items.",
+      "llm_tldr_cn": "DiffCold使用扩散模型桥接冷启动物品的语义和行为流形。",
+      "llm_tldr": "DiffCold使用扩散模型桥接冷启动物品的语义和行为流形。",
+      "llm_tags": [
+        "query:q1"
+      ],
+      "matched_query_tag": "query:q1",
+      "matched_query_text": "recommendation system for advertising",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "quick_skim": [
+    {
+      "id": "2606.06947v1",
+      "source": "arxiv",
+      "title": "DREAM: Dynamic Refinement of Early Assignment Mappings",
+      "abstract": "Generative recommendation advances item retrieval by reformulating it as autoregressive generation of Semantic IDs (SIDs), compact token sequences that encode item semantics. While SIDs offer a strong semantic prior, current SID-based methods assign each item a single static identifier through offline tokenization before sufficient user feedback is observed. For cold-start items, this one-shot commitment produces poorly discriminative codes, generating misaligned paths that remain unrefined because the associated tokens are rarely sampled during training. We identify this early static commitment, not model capacity, as the fundamental cold-start bottleneck in SID-based generative recommendation. To overcome this bottleneck and bridge the disjoint objectives of tokenization and generation, we propose DREAM (Dynamic Refinement of Early Assignment Mappings), a three-stage framework that resolves this flaw through progressive refinement. First, an intent-aware tokenizer rebuilds the SID space through counterfactual contrastive learning, generating a diverse pool of behavior-aligned candidates per cold-start item. Second, the frozen recommendation backbone serves as an evaluator, selecting the most reliable candidate based on multi-context user support without retraining. Third, a dynamic beam mechanism maintains multiple weighted SID hypotheses throughout training and inference, preventing premature collapse to a single assignment. Extensive experiments on three Amazon benchmarks show that DREAM substantially outperforms state-of-the-art generative and sequential baselines on cold-start metrics.",
+      "authors": [
+        "Liwei Guan",
+        "Huanjie Wang",
+        "Hongwei Zhang",
+        "Linxun Chen",
+        "Zhaojie Liu"
+      ],
+      "primary_category": "cs.IR",
+      "categories": [
+        "cs.IR"
+      ],
+      "published": "2026-06-05T06:21:01+00:00",
+      "link": "https://arxiv.org/pdf/2606.06947v1",
+      "tags": [
+        "keyword:LLMApp",
+        "keyword:广告",
+        "query:LLMApp",
+        "query:广告"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "Generative recommendation with dynamic refinement of Semantic IDs, leveraging LLM-like generation",
+      "llm_evidence_cn": "通过动态精炼语义ID的生成式推荐，利用类大语言模型生成",
+      "llm_evidence": "通过动态精炼语义ID的生成式推荐，利用类大语言模型生成",
+      "canonical_evidence": "通过动态精炼语义ID的生成式推荐，利用类大语言模型生成",
+      "llm_tldr_en": "Improves cold-start recommendation by dynamically refining item Semantic IDs using generative approach",
+      "llm_tldr_cn": "通过动态精炼物品语义ID的生成方法，改善冷启动推荐",
+      "llm_tldr": "通过动态精炼物品语义ID的生成方法，改善冷启动推荐",
+      "llm_tags": [
+        "query:llmapp"
+      ],
+      "matched_query_tag": "query:llmapp",
+      "matched_query_text": "LLM for recommendation",
+      "matched_requirement_id": "req-10",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "8plus"
+    },
+    {
+      "id": "2606.06960v1",
+      "source": "arxiv",
+      "title": "Tree-of-Experience: A Structured Experience-Management Solution for Self-Evolving Agents under Low-Repetition and Implicit-Reward Environments",
+      "abstract": "Experience-based self-evolution is crucial for LLM agents, but existing benchmarks often assume explicit goals, stable task patterns, and clear feedback. We study a more challenging setting: low-repetition tasks with implicit rewards, where past experience is difficult to reuse and feedback is delayed, noisy, and outcome-level. We introduce \\textsc{FinEvolveBench}, a temporally controlled benchmark for financial sentiment prediction that links daily news-driven predictions to future excess returns. We further propose Tree-of-Experience (ToE), a structured experience-management method that organizes, retrieves, validates, and updates agent experience. Experiments show that general-purpose experience mechanisms do not consistently outperform no-experience baselines, while ToE achieves stronger overall performance. These results highlight the importance of structured experience management for self-evolving agents in implicit-reward environments.",
+      "authors": [
+        "Zihao Deng",
+        "Yining Zhu",
+        "Leiming Wang",
+        "Jingfei Lu",
+        "Junbo Wang",
+        "Chuncheng Ran",
+        "Yu Yang",
+        "Dixuan Yang",
+        "Jikun Shen"
+      ],
+      "primary_category": "cs.CL",
+      "categories": [
+        "cs.CL"
+      ],
+      "published": "2026-06-05T06:39:16+00:00",
+      "link": "https://arxiv.org/pdf/2606.06960v1",
+      "tags": [
+        "keyword:LLMApp",
+        "keyword:广告",
+        "query:LLMApp",
+        "query:广告"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "Self-evolving LLM agents with experience management",
+      "llm_evidence_cn": "具有经验管理能力的自进化大模型智能体",
+      "llm_evidence": "具有经验管理能力的自进化大模型智能体",
+      "canonical_evidence": "具有经验管理能力的自进化大模型智能体",
+      "llm_tldr_en": "Structured experience management for LLM agents under low-repetition tasks.",
+      "llm_tldr_cn": "面向低重复任务的大模型智能体结构化经验管理方法。",
+      "llm_tldr": "面向低重复任务的大模型智能体结构化经验管理方法。",
+      "llm_tags": [
+        "query:llmapp"
+      ],
+      "matched_query_tag": "query:llmapp",
+      "matched_query_text": "large language model applications",
+      "matched_requirement_id": "req-9",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2606.07402v1",
+      "source": "arxiv",
+      "title": "M$^3$Exam: Benchmarking Multimodal Memory for Realistic User-Agent Interactions",
+      "abstract": "Language agents are increasingly deployed over accumulating multimodal information, yet existing benchmarks assume a human-human form with sparse visuals and straightforward content, evaluating neither reasoning over authentic multimodal file interaction nor the interpretation of concealed user information. We therefore introduce M$^3$Exam, a query-centric multimodal conversational memory benchmark built on realistic user-agent interaction, with multi-dimensional evaluation spanning cross-modal grounding and implicit information inference. Benchmarking MLLMs and memory systems reveals persistent gaps in cross-modal grounding, cross session reasoning, and the efficiency cost of accumulating multimodal context. We further propose M$^3$Proctor, a multimodal memory method that detects query modality bias and consumes raw visual sources only on demand, improving accuracy by 13% while cutting index-construction time and retrieved tokens by over 70%.",
+      "authors": [
+        "Zhengjun Huang",
+        "Wenxuan Liu",
+        "Zhoujin Tian",
+        "Wei Chen",
+        "Junle Chen",
+        "Yuqian Wu",
+        "Fangyuan Zhang",
+        "Qintian Guo",
+        "Xiaofang Zhou"
+      ],
+      "primary_category": "cs.CL",
+      "categories": [
+        "cs.CL"
+      ],
+      "published": "2026-06-05T15:44:18+00:00",
+      "link": "https://arxiv.org/pdf/2606.07402v1",
+      "tags": [
+        "keyword:LLMApp",
+        "keyword:广告",
+        "query:LLMApp",
+        "query:广告"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "multimodal memory benchmark for user-agent interactions",
+      "llm_evidence_cn": "用户-代理交互的多模态记忆基准",
+      "llm_evidence": "用户-代理交互的多模态记忆基准",
+      "canonical_evidence": "用户-代理交互的多模态记忆基准",
+      "llm_tldr_en": "Introduces M3Exam benchmark to evaluate MLLMs on realistic multimodal memory and reasoning, revealing gaps in cross-modal grounding.",
+      "llm_tldr_cn": "提出M3Exam基准评估MLLM在真实多模态记忆和推理能力，揭示跨模态接地差距。",
+      "llm_tldr": "提出M3Exam基准评估MLLM在真实多模态记忆和推理能力，揭示跨模态接地差距。",
+      "llm_tags": [
+        "query:llmapp"
+      ],
+      "matched_query_tag": "query:llmapp",
+      "matched_query_text": "Multimodal LLM models and their applications",
+      "matched_requirement_id": "req-16",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2606.07075v2",
+      "source": "arxiv",
+      "title": "Beyond Matching: Category-Guided Latent Intent Reasoning for Generative Retrieval in E-Commerce",
+      "abstract": "Generative retrieval offers a new paradigm for e-commerce search by mapping user queries directly to product Semantic Identifiers (SIDs). However, e-commerce queries are often short, noisy, attribute-heavy, and associated with multiple category-consistent products, creating a substantial representation gap between natural-language shopping intent and artificially constructed item SIDs. Explicit Chain-of-Thought (CoT) reasoning can help bridge this gap, but its extra generation cost is difficult to reconcile with the low-latency requirements of online e-commerce systems. To address this challenge, we propose CaLIR (Category-guided Latent Intent Reasoning), a category-guided latent intent reasoning framework for e-commerce generative retrieval. Rather than generating explicit textual rationales, CaLIR learns continuous latent intent states before SID decoding and uses product category hierarchies as a natural scaffold for coarse-to-fine intent reasoning. Specifically, we introduce hierarchical semantic reasoning to align latent states with category-level shopping intent, and query-wise reasoning enhancement to model diverse intent paths under multi-positive queries. CaLIR further combines a query-specific dynamic prefix trie, assembled from pre-indexed category-level tries, with reasoning-aware constrained decoding. Experiments on multilingual e-commerce search datasets show that CaLIR achieves a better balance between retrieval effectiveness and inference efficiency than existing methods, while also demonstrating transferability and robustness across induced hierarchies and different generative backbones.",
+      "authors": [
+        "Fuwei Zhang",
+        "Xiaoyu Liu",
+        "Jiajie Jin",
+        "Jiale Mao",
+        "Wei Chen",
+        "Dongbo Xi",
+        "Yifan Yang",
+        "Peng Yan",
+        "Zichao Hao",
+        "Zhao Zhang",
+        "Fuzhen Zhuang"
+      ],
+      "primary_category": "cs.IR",
+      "categories": [
+        "cs.IR"
+      ],
+      "published": "2026-06-05T09:12:54+00:00",
+      "link": "https://arxiv.org/pdf/2606.07075v2",
+      "tags": [
+        "keyword:LLMApp",
+        "keyword:广告",
+        "query:LLMApp",
+        "query:广告"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "LLM for e-commerce generative recommendation",
+      "llm_evidence_cn": "用于电商生成式推荐的LLM",
+      "llm_evidence": "用于电商生成式推荐的LLM",
+      "canonical_evidence": "用于电商生成式推荐的LLM",
+      "llm_tldr_en": "Category-guided latent intent reasoning for generative retrieval in e-commerce.",
+      "llm_tldr_cn": "类别指导的潜在意图推理用于电商生成式检索",
+      "llm_tldr": "类别指导的潜在意图推理用于电商生成式检索",
+      "llm_tags": [
+        "query:llmapp"
+      ],
+      "matched_query_tag": "query:llmapp",
+      "matched_query_text": "LLM for recommendation",
+      "matched_requirement_id": "req-10",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "8plus"
+    },
+    {
+      "id": "2606.07924v1",
+      "source": "arxiv",
+      "title": "Decoupling Semantics and Logic: A Training-Free Coarse-to-Fine Pipeline for Video Retrieval-Augmented Generation",
+      "abstract": "This paper presents our system description for the 2nd Workshop on Multimodal Augmented Generation via MultimodAl Retrieval (MAGMaR). Addressing the critical challenges of cross-lingual long-video comprehension, strict persona adherence, and zero-hallucination temporal grounding, we propose a fully training-free, two-stage cascaded Video RAG pipeline. Our architecture strategically decouples semantic retrieval from cognitive logical reasoning through a modality-aware division of labor. In the first stage, a high-recall semantic pre-fetching module employs dense retrieval using only high-fidelity visual summaries and global text descriptions, explicitly isolating noisy modalities (e.g., OCR and ASR) to maintain a pristine vector space. In the second stage, an Adaptive, Iterative, and Reasoning-based (A.I.R.) filtering agent, powered by a commercial Large Language Model (LLM), performs fine-grained cognitive reranking. The agent re-incorporates full multimodal contexts to enforce strict logical alignment with user personas, effectively pruning semantically similar but logically irrelevant candidates. Finally, a Prompt Sculpting mechanism constrains the generator to synthesize the distilled subset into strictly formatted JSON responses with exact chunk-level citations. Evaluated on the RAG track, our resource-aware approach shows exceptional precision in both information retrieval and persona-conditioned generation.",
+      "authors": [
+        "Jiaxin Dai",
+        "Zehang Wei",
+        "Jiamin Yan",
+        "Xiang Xiang"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV",
+        "cs.AI",
+        "cs.CL",
+        "cs.LG",
+        "cs.MM"
+      ],
+      "published": "2026-06-06T01:17:40+00:00",
+      "link": "https://arxiv.org/pdf/2606.07924v1",
+      "tags": [
+        "keyword:LLMApp",
+        "keyword:广告",
+        "query:LLMApp",
+        "query:广告"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "multimodal video RAG pipeline leverages LLMs",
+      "llm_evidence_cn": "多模态视频RAG流水线利用大语言模型",
+      "llm_evidence": "多模态视频RAG流水线利用大语言模型",
+      "canonical_evidence": "多模态视频RAG流水线利用大语言模型",
+      "llm_tldr_en": "Proposes a training-free video RAG pipeline that decouples semantics and logic for multimodal retrieval.",
+      "llm_tldr_cn": "提出无需训练的视频RAG流水线，解耦语义与逻辑",
+      "llm_tldr": "提出无需训练的视频RAG流水线，解耦语义与逻辑",
+      "llm_tags": [
+        "query:llmapp"
+      ],
+      "matched_query_tag": "query:llmapp",
+      "matched_query_text": "multimodal large language model applications",
+      "matched_requirement_id": "req-13",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2606.08050v1",
+      "source": "arxiv",
+      "title": "Automatic, Real-time Classification of User Feedback Using Large Language Models",
+      "abstract": "In this paper we discuss an ongoing multi-year project that aims to make open text feedback more accessible and useful to UX practitioners by automating classification and providing real time access to comments, themes, and analysis. By significantly lowering the time and knowledge cost of implementing automated solutions, we aim to effectively democratize our data analysis processes, allowing and encouraging non-technical stakeholders to access and leverage data on their own. We share both the organizational and technical constraints we have encountered over the course of this project, and the solutions we have prototyped as a result of those constraints.",
+      "authors": [
+        "Jim Maddock",
+        "Rose Leitner",
+        "Anna Wu"
+      ],
+      "primary_category": "cs.HC",
+      "categories": [
+        "cs.HC"
+      ],
+      "published": "2026-06-06T08:31:21+00:00",
+      "link": "https://arxiv.org/pdf/2606.08050v1",
+      "tags": [
+        "keyword:LLMApp",
+        "keyword:广告",
+        "query:LLMApp",
+        "query:广告"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "LLM application for classifying user feedback",
+      "llm_evidence_cn": "大语言模型用于用户反馈分类的应用",
+      "llm_evidence": "大语言模型用于用户反馈分类的应用",
+      "canonical_evidence": "大语言模型用于用户反馈分类的应用",
+      "llm_tldr_en": "Classifies open text feedback in real-time using LLMs to democratize data analysis",
+      "llm_tldr_cn": "利用大语言模型实时分类用户反馈，降低数据分析门槛",
+      "llm_tldr": "利用大语言模型实时分类用户反馈，降低数据分析门槛",
+      "llm_tags": [
+        "query:llmapp"
+      ],
+      "matched_query_tag": "query:llmapp",
+      "matched_query_text": "large language model applications",
+      "matched_requirement_id": "req-9",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2606.07317v2",
+      "source": "arxiv",
+      "title": "Gated Bidirectional Linear Attention for Generative Retrieval",
+      "abstract": "In recommender systems, generative retrieval typically uses an encoder-decoder setup: an encoder processes a user interaction history, and an autoregressive decoder then generates recommended items. In large-scale streaming services, active users accumulate very long histories over time. As histories grow, the encoder becomes a major latency bottleneck because softmax attention scales quadratically with sequence length. In our experiments, using bidirectional attention in the encoder substantially improves quality. However, most sub-quadratic attention methods focus on causal attention.   We propose Gated Bidirectional Linear Attention (GBLA), a linear-time bidirectional attention layer that extends kernelized linear attention with three lightweight components: local causal mixing (Conv1D), sequence-level key gating for soft forgetting, and a gated RMSNorm output. On a large-scale Yandex Music dataset, a hybrid encoder that interleaves self-attention (SA) and GBLA in a 1:2 ratio (one SA block followed by two GBLA blocks) matches bidirectional self-attention quality. On H100 GPUs, GBLA reaches up to an $8.2\\times$ single-layer speedup at a history length of 32768, compared to FlashAttention-v3. Finally, we show that the same hybrid design generalizes beyond our proprietary setting, consistently preserving self-attention retrieval quality on public Amazon benchmarks.",
+      "authors": [
+        "Artem Matveev",
+        "Vladislav Tytskiy",
+        "Sergei Makeev",
+        "Sergei Liamaev"
+      ],
+      "primary_category": "cs.IR",
+      "categories": [
+        "cs.IR"
+      ],
+      "published": "2026-06-05T14:37:02+00:00",
+      "link": "https://arxiv.org/pdf/2606.07317v2",
+      "tags": [
+        "keyword:LLMApp",
+        "keyword:广告",
+        "query:LLMApp",
+        "query:广告"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "Bidirectional linear attention for generative retrieval in recommender systems",
+      "llm_evidence_cn": "推荐系统中生成式检索的双向线性注意力机制",
+      "llm_evidence": "推荐系统中生成式检索的双向线性注意力机制",
+      "canonical_evidence": "推荐系统中生成式检索的双向线性注意力机制",
+      "llm_tldr_en": "Proposes GBLA to accelerate encoder for generative retrieval in recommenders",
+      "llm_tldr_cn": "提出GBLA加速推荐系统中生成式检索的编码器",
+      "llm_tldr": "提出GBLA加速推荐系统中生成式检索的编码器",
+      "llm_tags": [
+        "query:llmapp"
+      ],
+      "matched_query_tag": "query:llmapp",
+      "matched_query_text": "LLM for recommendation",
+      "matched_requirement_id": "req-10",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "8plus"
+    },
+    {
+      "id": "2606.07988v1",
+      "source": "arxiv",
+      "title": "PAFO: Pareto Fairness Optimization for Personalized Reward Modeling",
+      "abstract": "Large language models (LLMs) increasingly rely on reward models to align their outputs with diverse user preferences. While personalized reward models aim to capture such heterogeneity, they are often trained on imbalanced user preference data and may therefore favor users whose preferences are more common in the training population. In this paper, we identify this failure mode as personalized reward bias, where reward modeling quality varies systematically with preference support rate. We formulate its mitigation as a Pareto fairness problem over group utilities, aiming to improve under-served users without degrading other user groups. To this end, we propose PAFO, a Pareto fairness optimization framework for personalized reward modeling. PAFO first trains group-specialized reward models for majority and minority preference groups, then constructs conditional margin-level supervision to distill their heterogeneous preference boundaries into a single unified model. The resulting model uses group information only during training and requires no explicit group labels at inference time. Experiments on Personal-LLM and DSP show that PAFO improves both minority-group and majority-group accuracy while reducing user-level unfairness across multiple metrics, demonstrating its effectiveness for fairer LLM personalization.",
+      "authors": [
+        "Xiaoyan Zhao",
+        "Haoting Ni",
+        "Yang Zhang",
+        "Chunyuan Zheng",
+        "Haoxuan Li",
+        "Fuli Feng"
+      ],
+      "primary_category": "cs.AI",
+      "categories": [
+        "cs.AI"
+      ],
+      "published": "2026-06-06T05:35:31+00:00",
+      "link": "https://arxiv.org/pdf/2606.07988v1",
+      "tags": [
+        "keyword:LLMApp",
+        "keyword:广告",
+        "query:LLMApp",
+        "query:广告"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "personalized reward modeling for LLM applications in advertising",
+      "llm_evidence_cn": "个性化奖励建模用于大模型在广告中的应用",
+      "llm_evidence": "个性化奖励建模用于大模型在广告中的应用",
+      "canonical_evidence": "个性化奖励建模用于大模型在广告中的应用",
+      "llm_tldr_en": "PAFO optimizes Pareto fairness in personalized reward modeling for LLM alignment, applicable to advertising.",
+      "llm_tldr_cn": "PAFO优化个性化奖励建模的帕累托公平性，可应用于广告场景。",
+      "llm_tldr": "PAFO优化个性化奖励建模的帕累托公平性，可应用于广告场景。",
+      "llm_tags": [
+        "query:llmapp"
+      ],
+      "matched_query_tag": "query:llmapp",
+      "matched_query_text": "Applications of LLMs in advertising and personalized marketing",
+      "matched_requirement_id": "req-15",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2606.08063v1",
+      "source": "arxiv",
+      "title": "Robust-U1: Can MLLMs Self-Recover Corrupted Visual Content for Robust Understanding?",
+      "abstract": "Multimodal Large Language Models (MLLMs) have demonstrated remarkable success in visual understanding, yet their performance degrades significantly under real-world visual corruptions. While existing robustness enhancement approaches exist, they are limited: black-box feature alignment lacks interpretability, and white-box text-based reasoning cannot restore lost pixel-level details. This work investigates a fundamental research question: Can MLLMs recover corrupted visual content by themselves? To address this, we propose Robust-U1, a novel framework that equips MLLMs with explicit visual self-recovery capability for robust understanding. The approach comprises three core stages: supervised fine-tuning for initial reconstruction, reinforcement learning with dual rewards (pixel-level SSIM and semantic-level CLIP similarity) for aligning high visual quality, and multimodal reasoning that jointly considers both the corrupted input and the recovered image. Extensive experiments demonstrate that Robust-U1 achieves state-of-the-art robustness on the real-world corruption benchmark and maintains superior performance under adversarial corruptions on general VQA benchmarks. Analysis confirms that high-quality visual recovery directly enhances reasoning performance, establishing self-recovery as a critical mechanism for robust visual understanding. The source code is available at https://github.com/jqtangust/Robust-U1.",
+      "authors": [
+        "Jiaqi Tang",
+        "Jianmin Chen",
+        "Youyang Zhai",
+        "Wei Wei",
+        "Runtao Liu",
+        "Mengjie Zhao",
+        "Xiangyu Wu",
+        "Qingfa Xiao",
+        "Qifeng Chen"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV",
+        "cs.AI",
+        "cs.CL"
+      ],
+      "published": "2026-06-06T08:58:12+00:00",
+      "link": "https://arxiv.org/pdf/2606.08063v1",
+      "tags": [
+        "keyword:LLMApp",
+        "keyword:广告",
+        "query:LLMApp"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "MLLM self-recovery for robust visual understanding",
+      "llm_evidence_cn": "多模态大模型自恢复实现鲁棒视觉理解",
+      "llm_evidence": "多模态大模型自恢复实现鲁棒视觉理解",
+      "canonical_evidence": "多模态大模型自恢复实现鲁棒视觉理解",
+      "llm_tldr_en": "Proposes a self-recovery framework for MLLMs to handle visual corruptions robustly.",
+      "llm_tldr_cn": "提出多模态大模型自恢复框架以鲁棒处理视觉损坏。",
+      "llm_tldr": "提出多模态大模型自恢复框架以鲁棒处理视觉损坏。",
+      "llm_tags": [
+        "query:llmapp"
+      ],
+      "matched_query_tag": "query:llmapp",
+      "matched_query_text": "multimodal large language model applications",
+      "matched_requirement_id": "req-13",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2606.07972v1",
+      "source": "arxiv",
+      "title": "OneFeed: A Unified Generative Framework for Feed Content Enhancement and Query Generation",
+      "abstract": "Modern feed recommendation and search systems are deeply connected in user behavior butare usually modeled by separate architectures. Feed recommendation mainly captures implicitinterests from browsing interactions, while search systems rely on explicit user queries to retrieveintent-matched content. This separation causes fragmented user understanding and missedopportunities for using feed interactions to improve query generation and using generated queriesto enhance feed candidate retrieval.In this paper, we propose OneFeed, a unified generative framework for jointly modelingfeed content enhancement and query generation. OneFeed encodes heterogeneous user behaviorsequences with a shared behavior encoder and employs two generative heads: a Feed SemanticID Generator that produces content semantic IDs for recommendation retrieval, and an IntentQuery Generator that produces natural-language queries for search-based candidate expansion.To bridge the semantic gap between recommendation content and search queries, we introduce aSID-Query alignment objective that learns a shared semantic space for content semantic IDs andquery representations. We further design a closed-loop self-enhancement paradigm that leveragesimplicit user feedback from generated content and search-retrieved results to improve bothgeneration tasks. We provide a detailed experimental protocol using public recommendationdatasets with weakly supervised query construction, define a comprehensive set of evaluationmetrics, report expected performance estimates grounded in known baseline values, and validatethe executability of the proposed pipeline through a minimal local prototype. OneFeed providesa practical and extensible direction for unifying search and recommendation through generativemodeling.",
+      "authors": [
+        "Guo Xun"
+      ],
+      "primary_category": "cs.IR",
+      "categories": [
+        "cs.IR"
+      ],
+      "published": "2026-06-06T04:17:09+00:00",
+      "link": "https://arxiv.org/pdf/2606.07972v1",
+      "tags": [
+        "keyword:LLMApp",
+        "keyword:广告",
+        "query:LLMApp",
+        "query:广告"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "unified generative framework for feed recommendation and query generation",
+      "llm_evidence_cn": "统一的生成式框架用于内容推荐和查询生成",
+      "llm_evidence": "统一的生成式框架用于内容推荐和查询生成",
+      "canonical_evidence": "统一的生成式框架用于内容推荐和查询生成",
+      "llm_tldr_en": "Proposes OneFeed to jointly model feed content enhancement and query generation, bridging recommendation and search behavior.",
+      "llm_tldr_cn": "提出OneFeed联合建模内容增强和查询生成，桥接推荐和搜索行为。",
+      "llm_tldr": "提出OneFeed联合建模内容增强和查询生成，桥接推荐和搜索行为。",
+      "llm_tags": [
+        "query:q1"
+      ],
+      "matched_query_tag": "query:q1",
+      "matched_query_text": "recommendation system for advertising",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "8plus"
+    },
+    {
+      "id": "2606.08151v1",
+      "source": "arxiv",
+      "title": "Decision-Aware Memory Cards: Counterfactual-Inspired Context Selection and Compression for Tool-Using LLM Agents",
+      "abstract": "Tool-using LLM agents often fail not because relevant text is absent, but because decisive evidence is not selected, compressed, or surfaced at action time. We present CICL, a decision-aware context layer that turns instance evidence into a context graph, routes deterministic, Opus-assisted, Qwen, Codex/GPT-5.5, and Qwen-QLoRA judgments through a shared eight-field schema, scores units by action shift, outcome uplift, necessity, and negative-transfer risk, and packs high-utility evidence as typed memory cards for a budgeted agent. The design separates the measured decision signal from the judge model, so frontier annotation, local surrogates, and lightweight rankers can be compared under one auditable protocol. Empirically, CICL yields a concrete open-benchmark gain while exposing its limits. On 50 SWE-bench Verified file-retrieval instances, direct Qwen3.6-plus reranking of BM25 top-50 candidates raises hit@1 from 0.58 to 0.78 and MRR@10 from 0.634 to 0.790, with all 2,500 judgments parseable. Controlled diagnostics show action-criticality: at budget 120, CICL reaches F1 0.620 on v1 and 0.425 on v3, and removing the top-utility semantic v3 unit collapses F1 to 0.000. Supplementary checks add Qwen-QLoRA agreement over 710 candidates, a small 200-label real-code Opus-assisted signal, and a three-instance patch smoke validating retrieval-to-patch plumbing without claiming official SWE-bench success. RepoBench-R summaries still beat cards, and compact rankers do not yet replace the heuristic. CICL contributes a reproducible measurement and selection layer for decision-critical context, not an end-to-end coding-agent repair claim.",
+      "authors": [
+        "Xinyu Guan",
+        "Qianyang Zhao",
+        "Yuming Deng"
+      ],
+      "primary_category": "cs.AI",
+      "categories": [
+        "cs.AI"
+      ],
+      "published": "2026-06-06T13:02:28+00:00",
+      "link": "https://arxiv.org/pdf/2606.08151v1",
+      "tags": [
+        "keyword:LLMApp",
+        "keyword:广告",
+        "query:LLMApp"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "LLM agent context selection using uplift scoring",
+      "llm_evidence_cn": "大模型智能体上下文选择，使用提升评分",
+      "llm_evidence": "大模型智能体上下文选择，使用提升评分",
+      "canonical_evidence": "大模型智能体上下文选择，使用提升评分",
+      "llm_tldr_en": "A decision-aware context layer for LLM agents that scores evidence by outcome uplift.",
+      "llm_tldr_cn": "为大模型智能体设计的上下文层，通过结果提升评分来选择证据。",
+      "llm_tldr": "为大模型智能体设计的上下文层，通过结果提升评分来选择证据。",
+      "llm_tags": [
+        "query:llmapp"
+      ],
+      "matched_query_tag": "query:llmapp",
+      "matched_query_text": "large language model applications",
+      "matched_requirement_id": "req-9",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2606.08146v1",
+      "source": "arxiv",
+      "title": "SAGE: An LLM-driven Self Reflective Agentic Framework for Fraud Detection",
+      "abstract": "Fraud detection in payment, e-commerce, and telecommunications systems requires accuracy at the individual level, robustness under severe class imbalance, and ease of understanding for risk managers. Existing methods fall at least one of these requirements: automated machine learning systems search a fixed numerical space without semantic awareness of the dataset; graph neural network-based methods require pre-defined relational graphs and remain opaque at the individual-decision level; and the design of general-purpose large language model (LLM) agents does not consider the recall and precision constraints specific to real-world fraud detection. In this paper, we propose SAGE, the first end-to-end LLM-driven multi-agent framework for fraud detection. SAGE coordinates three dedicated agents that make decisions based on a six-layer Data Diagnostic Tree (DDT) and a Markov decision process guided by natural-language gradients, automatically optimizing the model under a fraud-specific reward. On five fraud datasets and five LLM backbones, SAGE wins $96.00\\%$ of method--dataset comparisons and improves F1 by an average of $40.86\\%$ over baselines. The code is available at https://github.com/yichenC1c/SAGE.",
+      "authors": [
+        "Yichen Chen",
+        "Siying Li",
+        "Yuhang Liang",
+        "Lijun Wang",
+        "Renyang Liu"
+      ],
+      "primary_category": "cs.AI",
+      "categories": [
+        "cs.AI"
+      ],
+      "published": "2026-06-06T12:48:45+00:00",
+      "link": "https://arxiv.org/pdf/2606.08146v1",
+      "tags": [
+        "keyword:LLMApp",
+        "keyword:广告",
+        "query:LLMApp",
+        "query:广告"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "LLM-driven fraud detection in e-commerce",
+      "llm_evidence_cn": "基于LLM的电商欺诈检测",
+      "llm_evidence": "基于LLM的电商欺诈检测",
+      "canonical_evidence": "基于LLM的电商欺诈检测",
+      "llm_tldr_en": "SAGE is an LLM multi-agent framework for fraud detection in payment and e-commerce.",
+      "llm_tldr_cn": "SAGE是一个用于支付和电商欺诈检测的LLM多智能体框架。",
+      "llm_tldr": "SAGE是一个用于支付和电商欺诈检测的LLM多智能体框架。",
+      "llm_tags": [
+        "query:q2"
+      ],
+      "matched_query_tag": "query:q2",
+      "matched_query_text": "advertising technology",
+      "matched_requirement_id": "req-2",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    }
+  ]
+}

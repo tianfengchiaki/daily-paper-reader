@@ -1,0 +1,30 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2606.10650v1/fig-001.webp",
+      "caption": "Figure 2 Standard linear attention (left) vs. log-linear attention (mid) vs. dynamic linear attention (right). The input consists of query, key, and value vectors.",
+      "page": 6,
+      "index": 1,
+      "width": 986,
+      "height": 285
+    },
+    {
+      "url": "assets/figures/arxiv/2606.10650v1/fig-002.webp",
+      "caption": "Figure 3 Throughput (tokens/sec) and runtime memory consumption (GB) of vanilla, Log-Linear, and DLA variants of Mamba-2 (780M) in prefill stage on a single A100 GPU under different bat ch sizes (a, b) and different sequence lengths (c, d).",
+      "page": 10,
+      "index": 2,
+      "width": 628,
+      "height": 228
+    },
+    {
+      "url": "assets/figures/arxiv/2606.10650v1/fig-003.webp",
+      "caption": "Table 1 Performance comparison of DLA and baseline methods on zero-shot commonsense reasoning tasks on Mamba-2 (780M) and Gated DeltaNet (1.3B). Commonsense reasoning datasets (LAMBADA, PIQA, HellaSwag, WinoGrande, ARC-e, ARC-c, OpenBookQA, and CommonsenseQA) are measured by accuracy (↑). The best performance is marked in bold. The relative performance gain compared to the best-performing baseline is marked in green inside bracket.",
+      "page": 8,
+      "index": 3,
+      "width": 986,
+      "height": 192
+    }
+  ]
+}

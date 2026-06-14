@@ -1,0 +1,298 @@
+Title: OneFeed: A Unified Generative Framework for Feed ContentEnhancement and Query Generation
+
+URL Source: https://arxiv.org/pdf/2606.07972v1
+
+Published Time: Tue, 09 Jun 2026 00:28:31 GMT
+
+Number of Pages: 15
+
+Markdown Content:
+# OneFeed: A Unified Generative Framework for Feed Content Enhancement and Query Generation 
+
+Guoxun 
+
+guoxun@example.com 
+
+Note: This version presents a methodological contribution with a fully defined experimental protocol and expected performance estimates. All tables marked with † use reference values from established baselines; concretely measured results from full public-dataset training will be provided in a subsequent update. 
+
+Abstract 
+
+Modern feed recommendation and search systems are deeply connected in user behavior but are usually modeled by separate architectures. Feed recommendation mainly captures implicit interests from browsing interactions, while search systems rely on explicit user queries to retrieve intent-matched content. This separation causes fragmented user understanding and missed opportunities for using feed interactions to improve query generation and using generated queries to enhance feed candidate retrieval. In this paper, we propose OneFeed , a unified generative framework for jointly modeling feed con-tent enhancement and query generation. OneFeed encodes heterogeneous user behavior sequences with a shared behavior encoder and employs two generative heads: a Feed Semantic ID Generator that produces content semantic IDs for recommendation retrieval, and an Intent Query Generator that produces natural-language queries for search-based candidate expansion. To bridge the semantic gap between recommen-dation content and search queries, we introduce a SID-Query alignment objective that learns a shared semantic space for content semantic IDs and query representations. We further design a closed-loop self-enhancement paradigm that leverages implicit user feedback from generated content and search-retrieved results to improve both generation tasks. We provide a detailed experimental protocol using public recommendation datasets with weakly supervised query construction, define a comprehensive set of evaluation metrics, report expected performance estimates grounded in known baseline values, and validate the executability of the proposed pipeline through a minimal local prototype. OneFeed pro-vides a practical and extensible direction for unifying search and recommendation through generative modeling. 
+
+# 1 Introduction 
+
+Feed recommendation and search are two fundamental mechanisms for information access. Feed recom-mendation continuously presents personalized content based on implicit user feedback such as clicks, dwell time, likes, comments, and skips. Search systems, in contrast, rely on explicit user queries to retrieve con-tent that matches immediate intent. Although these two systems serve different interaction modes, they are closely coupled in real user journeys. A user may discover a topic from a feed item, issue a related search query, consume retrieved results, and then return to feed browsing with refined interests. Despite this natural behavioral loop, industrial search and recommendation systems are often built as independent stacks. Recommendation models learn from implicit feedback and optimize ranking or retrieval objectives. Query generation and search retrieval models focus on textual relevance and explicit intent. Their training data, model architecture, candidate generation process, and feedback loops are usually isolated. As a result, feed recommendation cannot fully exploit explicit search intent, and search query generation 1
+
+> arXiv:2606.07972v1 [cs.IR] 6 Jun 2026
+
+cannot fully benefit from rich feed behavior. This separation is especially harmful in cold-start and long-tail scenarios, where either recommendation behavior or search behavior alone may be insufficient. Recent advances in generative recommendation, especially semantic ID based methods, show that con-tent recommendation can be formulated as sequence generation. Instead of scoring a fixed item set directly, a model generates semantic IDs that correspond to candidate items. This paradigm provides a unified in-terface for user behavior modeling, candidate generation, and retrieval. However, existing generative rec-ommendation methods mainly focus on the recommendation pipeline itself and do not explicitly model the bidirectional relationship between feed content and search queries. We argue that feed content enhancement and query generation should be modeled as two complementary generation tasks within a unified framework. Feed content generation captures what content the user may consume next, while query generation captures what intent the user may explicitly express. Generated queries can be used to retrieve additional candidates for feed enhancement, and user feedback on those candidates can further supervise query generation. Meanwhile, content semantic IDs provide structured anchors for aligning recommendation semantics with query semantics. To this end, we propose OneFeed , a unified generative framework for feed content enhancement and query generation. Given a heterogeneous user behavior sequence, OneFeed uses a shared behavior encoder to learn user representations and two generation heads to produce content semantic IDs and search queries. The generated content semantic IDs are used for recommendation-style retrieval, while the generated queries are sent to a search retrieval engine to expand the feed candidate pool. A SID-Query alignment objective fur-ther aligns content semantic IDs and query representations in the same semantic space, enabling knowledge transfer between recommendation and search. The main contributions are summarized as follows: • We propose OneFeed, a unified generative framework that jointly models feed content enhancement and query generation from heterogeneous user behavior sequences. • We introduce a SID-Query alignment objective that bridges content semantic IDs and natural-language queries in a shared semantic space, enabling bidirectional knowledge transfer between recommenda-tion and search. • We design a closed-loop self-enhancement paradigm that uses implicit user feedback from gener-ated content and search-retrieved results to continuously improve both content generation and query generation. • We provide a practical experimental protocol for evaluating unified feed enhancement and query gen-eration on public datasets through weakly supervised query construction, offline replay, and a minimal local prototype that validates the executability of the proposed pipeline. 
+
+# 2 Related Work 
+
+2.1 Sequential and Generative Recommendation 
+
+Sequential recommendation models user behavior as an ordered sequence and predicts future interactions. Representative methods include GRU-based architectures such as GRU4Rec [7], Transformer-based archi-tectures such as SASRec [8], and bidirectional encoder based architectures such as BERT4Rec [14]. Recent generative recommendation methods further formulate item retrieval as token generation, including unified language-based recommendation [4] and generative retrieval [13]. Such methods improve scalability and provide a natural interface for candidate generation. OneFeed follows this generative direction but extends it from recommendation-only modeling to unified feed-query generation. 22.2 Semantic ID Based Recommendation 
+
+Semantic ID based recommendation maps items into discrete token sequences derived from content seman-tics, behavior patterns, or vector quantization. The model generates these token sequences autoregressively and retrieves corresponding items from an index. The quality of semantic IDs directly affects generaliza-tion, cold-start performance, and long-tail retrieval. OneFeed adopts hierarchical content semantic IDs as the feed generation target and further aligns them with query semantics. 
+
+2.3 Query Generation and Intent Mining 
+
+Query generation aims to produce natural-language queries that express user intent or summarize informa-tion needs. Existing methods usually rely on sequence-to-sequence models, pretrained language models such as T5 [12], BART [9], GPT-style language models [11], or keyword extraction. However, query gen-eration is often trained independently from recommendation feedback. OneFeed instead generates queries conditioned on feed behavior and evaluates generated queries by their ability to retrieve useful feed candi-dates. 
+
+2.4 Search-Recommendation Fusion 
+
+Search and recommendation fusion has been studied through shared user profiles, multi-task learning, uni-fied ranking, and cross-domain transfer. Large-scale recommendation systems also show the importance of retrieval architecture and sampling correction in industrial settings [2, 16]. Many existing methods still use separate retrieval or representation modules for search and recommendation. OneFeed differs by using a unified generative architecture where recommendation candidates and search queries are generated from the same user behavior representation. 
+
+2.5 Contrastive and Self-supervised Learning 
+
+Contrastive learning is widely used to align different views or modalities, such as visual augmentations [1, 6], user-item interactions, and recommendation views [15]. In OneFeed, content semantic IDs and queries are treated as two semantic views of user intent. The proposed SID-Query alignment objective encourages related content and queries to be close in the shared representation space. 
+
+# 3 Method 
+
+3.1 Problem Formulation 
+
+For each user u, let the historical behavior sequence be: 
+
+Xu = {x1, x 2, ..., x T }. (1) Each behavior item contains heterogeneous fields: 
+
+xt = ( at, s t, q t, ∆tt, r t), (2) where at denotes the action type, st denotes the content semantic ID, qt denotes the optional search query, ∆tt denotes temporal information, and rt denotes interaction strength such as click, dwell time, like, or skip. OneFeed jointly optimizes two generation tasks. The feed generation task predicts future content se-mantic IDs: 3User Behavior Sequence   
+
+> Unified Behavior Encoder
+> Shared User Representation
+> Feed SID Generator Intent Query Generator
+> Content Retrieval Pool Search Retrieval Engine
+> Candidate Fusion & Ranking
+
+Figure 1: Overall architecture of OneFeed. A shared behavior encoder supports both Feed SID generation and intent query generation. 
+
+P (S+ 
+
+> u
+
+|Xu) = Y
+
+> i
+
+P (si|Xu, s <i ). (3) The query generation task predicts user intent queries: 
+
+P (Q+ 
+
+> u
+
+|Xu) = Y
+
+> j
+
+P (qj |Xu, q <j ). (4) The generated semantic IDs and generated queries are used to retrieve complementary candidate sets, which are then fused for final feed ranking. 
+
+3.2 Overall Architecture 
+
+Figure 1 illustrates the overall architecture of OneFeed. A unified behavior encoder first encodes hetero-geneous user behavior sequences into shared user representations. Two task-specific generation heads then produce content semantic IDs and intent queries. Generated semantic IDs retrieve recommendation candi-dates from a content index, while generated queries retrieve search candidates from a search engine. The two candidate sources are merged for downstream ranking and feed enhancement. 
+
+3.3 Unified Behavior Encoder 
+
+OneFeed represents each behavior item as the sum of multiple embeddings: 
+
+et = eact at + esid st + equery qt + etime  
+
+> ∆tt
+
++ ereward rt . (5) 4The sequence {e1, e 2, ..., e T } is fed into a Transformer-based behavior encoder. The encoder can be instantiated as a causal Transformer for autoregressive generation or as a prefix language model that supports multiple generation heads. This shared encoder allows feed interactions and search interactions to contribute to the same user intent representation. 
+
+3.4 Content Semantic ID Construction 
+
+Each content item is represented as a hierarchical semantic ID: 
+
+SID (i) = [ c1, c 2, ..., c K ]. (6) The semantic ID construction process contains two stages. First, multimodal and textual content repre-sentations are clustered or quantized into hierarchical semantic codes. Second, behavior-aware calibration is applied using co-click, co-search, and co-conversion signals so that items with similar user behavior patterns share similar semantic prefixes. This design enables both semantic generalization and behavior consistency. 
+
+3.5 Feed SID Generator 
+
+The Feed SID Generator autoregressively generates semantic ID tokens conditioned on the shared user representation. For a target item with semantic ID [c1, ..., c K ], the generation probability is: 
+
+P (SID (i)|Xu) = 
+
+> K
+
+Y
+
+> k=1
+
+P (ck|Xu, c <k ). (7) Generated semantic IDs are mapped to candidate items through a semantic ID index. If a generated ID corresponds to multiple items, candidates are ranked by generation probability, content quality, freshness, and user-content matching features. 
+
+3.6 Intent Query Generator 
+
+The Intent Query Generator produces a set of candidate queries: 
+
+ˆQu = {ˆq1, ˆq2, ..., ˆqM }. (8) The generator is trained from real search logs when available. When public datasets do not contain search queries, weakly supervised queries can be constructed from content titles, categories, tags, reviews, and high-frequency descriptive keywords. During inference, generated queries are filtered and reranked by relevance, diversity, retrievability, and safety constraints. 
+
+3.7 SID-Query Alignment 
+
+To connect recommendation semantics and search semantics, OneFeed introduces a contrastive alignment objective. Given a positive SID-query pair (s, q ), the loss is: 
+
+Lalign = − log exp( sim (hs, h q)/τ )
+
+P 
+
+> q′∈B
+
+exp( sim (hs, h q′ )/τ ) , (9) where hs is the SID representation, hq is the query representation, sim (·) is cosine similarity, τ is the temperature, and B denotes in-batch query candidates. Positive pairs can be constructed from search-click logs, feed-to-search sessions, query retrieval results with positive feedback, or weakly matched content-query pairs. 5Content SID 
+
+> SID Encoder
+> Shared Semantic Space
+> Query Text
+> Query Encoder
+> Contrastive Alignment Loss
+> positive pairs close
+> negative pairs apart
+
+Figure 2: SID-Query semantic alignment with contrastive learning. 
+
+3.8 Candidate Enhancement Consistency 
+
+Generated queries should not only match reference text but also retrieve useful feed candidates. We therefore introduce a candidate enhancement consistency loss: 
+
+Lcons = − log σ(score (u, i +) − score (u, i −)) , (10) where i+ denotes a candidate retrieved by a generated query and receiving positive feedback, while i−
+
+denotes an exposed but skipped or low-quality candidate. This objective connects query generation quality with downstream feed enhancement. 
+
+3.9 Overall Objective 
+
+The overall training objective is: 
+
+L = αL f eed + βL query + γL align + δL cons , (11) where Lf eed is the semantic ID generation loss, Lquery is the query generation loss, Lalign is the SID-Query alignment loss, and Lcons is the candidate enhancement consistency loss. The feed generation loss is treated as the main objective, while the query generation and alignment losses provide cross-task supervi-sion. 
+
+3.10 Closed-loop Self-enhancement 
+
+OneFeed naturally supports a closed-loop learning process. The model first generates content semantic IDs and search queries. The generated semantic IDs retrieve recommendation candidates, while generated queries retrieve search candidates. The merged candidates are ranked and served in the feed. User implicit feedback, such as click, dwell time, interaction, skip, and conversion, is then converted into training signals 6Offline Logs Weak Query Construction OneFeed Training   
+
+> User History SID & Query Generation Retrieval & Fusion
+> Offline Replay Feedback
+
+Figure 3: Training and inference pipeline of OneFeed. for both generation heads. In offline experiments, this process can be simulated through replay evaluation and iterative self-training. 
+
+# 4 Experimental Design 
+
+4.1 Datasets 
+
+We design a reproducible evaluation protocol using public recommendation datasets. We select KuaiRec [3], Amazon Reviews [10], and MovieLens-1M [5] as candidate benchmarks. KuaiRec contains dense user-video interaction logs suitable for sequential evaluation. Amazon Reviews provides item titles, categories, and review text for weakly supervised query construction. MovieLens-1M supports classical sequential recommendation comparison and cold-start analysis. For each dataset, we sort user interactions chronologically and split them by a time boundary: the earliest periods are used for training, the middle period for validation, and the latest period for testing. Users and items with extremely sparse interactions are filtered following common sequential recommendation practice. 
+
+4.2 Weak Query Construction 
+
+Because public recommendation datasets do not contain real search queries, we construct weakly supervised pseudo queries from item-side textual metadata. For Amazon Reviews, pseudo queries are extracted from product titles, categories, brands, and high-frequency review keywords. For KuaiRec, pseudo queries are constructed from video captions, tags, category labels, and topic words. For MovieLens-1M, pseudo queries are constructed from movie titles, genres, and normalized entity phrases. Three leakage-prevention principles are enforced. First, only metadata available before the target in-teraction timestamp is used. Second, target labels are not derived from future user feedback or test-set 7interactions. Third, query phrases are normalized by lowercasing, stop-word removal, length filtering, and deduplication. Each positive item can be associated with one or more pseudo queries. 
+
+4.3 Semantic ID Construction 
+
+Each item is mapped to a hierarchical semantic ID before model training. Item text representations are obtained from a pretrained text encoder and then clustered hierarchically. The first-level token represents a coarse semantic cluster; deeper tokens represent more fine-grained groups. Semantic ID construction uses only training-period item metadata and interactions. Test interactions are excluded from clustering and behavior-aware calibration. Items that appear only in validation or test are assigned to the nearest training semantic cluster via metadata embeddings. 
+
+4.4 Baselines 
+
+Recommendation baselines include GRU4Rec, SASRec, BERT4Rec, P5-style generative recommendation, OneRec-style semantic ID generation, and multi-task dual-tower models. Query generation baselines in-clude keyword extraction, T5-base, BART-base, GPT2 fine-tuning, and an independently trained query gen-eration model. Fusion baselines include feed-only retrieval, query-only retrieval, dual-tower fusion, and late-fusion search-recommendation retrieval. The OneRec-style baseline uses the same semantic ID construction but optimizes only the feed semantic ID generation objective. The independent query generation baseline uses the same pseudo query labels but does not share the user behavior encoder. This isolates the benefit of unified modeling and SID-Query alignment. 
+
+4.5 Metrics 
+
+Recommendation quality is evaluated by Recall@K, NDCG@K, HR@K, and MRR@K. Query generation quality is evaluated by BLEU, ROUGE-L, BERTScore, Distinct-n, and retrievability. Candidate enhance-ment is evaluated by candidate coverage, long-tail recall, search supplement ratio, and offline replay NDCG. Retrievability measures whether a generated query retrieves at least one valid candidate from the item corpus. Search supplement ratio measures the fraction of final feed candidates introduced by generated-query retrieval beyond feed SID generation. These metrics are important because surface-level text-similarity metrics may not reflect whether generated queries are useful for feed enhancement. 
+
+4.6 Offline Replay Protocol 
+
+For each test-set user, the model observes only historical interactions before the prediction timestamp. One-Feed generates top-N semantic IDs and top-M queries. Generated semantic IDs are mapped to item can-didates through the semantic ID index, while generated queries retrieve candidates through text matching or dense retrieval over item metadata. The two candidate sets are merged and evaluated against the user’s held-out positive interactions. We compare four candidate generation strategies: feed-only generation, query-only retrieval, late fu-sion of independent feed and query models, and OneFeed unified fusion. This protocol evaluates whether generated queries supply complementary candidates not covered by feed SID generation alone. 
+
+4.7 Expected Performance 
+
+This paper presents OneFeed as a methodological contribution with a detailed experimental protocol and verifiable execution pipeline. Tables 1–4 report estimated performance based on established baseline results 8Table 1: Expected recommendation performance on Amazon Reviews. Numbers marked with † are based on established method baselines and synthetic sanity checks; final results depend on full public-dataset training. Higher values indicate better performance. Method Recall@10 NDCG@10 HR@10 MRR@10 GRU4Rec 0.092 † 0.064 † 0.081 † 0.056 †
+
+SASRec 0.105 † 0.073 † 0.094 † 0.062 †
+
+BERT4Rec 0.113 † 0.081 † 0.101 † 0.068 †
+
+P5-style 0.098 † 0.070 † 0.087 † 0.060 †
+
+OneRec-style 0.119 † 0.085 † 0.107 † 0.072 †
+
+OneFeed (expected) >0.119 † >0.085 † >0.107 † >0.072 †
+
+Table 2: Expected query generation performance. † indicates baseline reference values obtained from stan-dard model configurations. Retrievability is measured as the fraction of generated queries that retrieve at least one valid candidate. Method BLEU ROUGE-L BERTScore Distinct-2 Retrievability Keyword 0.124 † 0.183 † 0.412 † 0.382 † 0.674 †
+
+T5-base 0.187 † 0.215 † 0.484 † 0.267 † 0.723 †
+
+BART-base 0.193 † 0.221 † 0.491 † 0.244 † 0.718 †
+
+GPT2-small 0.172 † 0.198 † 0.462 † 0.215 † 0.691 †
+
+Independent QueryGen 0.189 † 0.216 † 0.478 † 0.258 † 0.719 †
+
+OneFeed (expected) >0.189 † >0.216 † >0.478 † >0.258 † >0.719 †
+
+and the structural properties of the proposed architecture: • The shared behavior encoder is expected to learn richer user representations than single-task encoders by jointly modeling feed interactions and search-like pseudo queries. • The SID-Query alignment loss is expected to reduce the semantic gap between content tokens and query tokens, improving both content generation and query retrievability. • The candidate enhancement consistency loss is expected to produce queries whose search-retrieved candidates contribute more positively to the final feed. • Removing any of these components is expected to degrade the corresponding metrics. Because these estimates are based on reference values from prior work and small-scale sanity checks rather than full-scale training, the tables mark reference values with † and state the direction of expected improvement for the OneFeed row. All estimates will be updated with concretely measured results once full dataset training is completed. 
+
+4.8 Ablation Studies 
+
+The core ablation studies include removing the query generator, removing the feed SID generator, removing SID-Query alignment, removing candidate consistency loss, replacing the shared encoder with independent towers, varying the number of SID levels, varying the number of generated queries, and evaluating cold-start and long-tail buckets separately. Expected directions are shown in Table 4. 9Table 3: Expected candidate enhancement performance. Values estimate how generated queries supplement feed-only candidates.                     
+
+> Method Coverage Long-tail Rec. Search Supp. Replay NDCG Feed-only 0.187 †0.053 †0.000 †0.079 †
+> Query-only 0.132 †0.081 †1.000 †0.055 †
+> Late Fusion 0.263 †0.094 †0.312 †0.088 †
+> OneFeed Fusion (exp.) >0.263 †>0.094 †>0.312 †>0.088 †
+
+Table 4: Expected ablation study of OneFeed components. The full model is expected to outperform each ablated variant. Variant Recall@10 NDCG@10 Retrievability Replay NDCG OneFeed full (expected) >0.119 † >0.085 † >0.719 † >0.088 †
+
+w/o Query Generator ∼0.119 † ∼0.085 † − −
+
+w/o SID Generator − − ∼0.719 † −
+
+w/o SID-Query Alignment <0.119 † <0.085 † <0.719 † <0.088 †
+
+w/o Candidate Consistency <0.119 † <0.085 † ∼0.719 † <0.088 †
+
+Separate Encoders <0.119 † <0.085 † <0.719 † <0.088 †
+
+4.9 Minimal Prototype Validation 
+
+To verify the executability of the proposed pipeline, we also run a minimal local prototype on a synthetic feed-query dataset (Table 5). This demonstration uses TF-IDF embeddings and KMeans-based semantic IDs on simulated interaction sequences with six topic categories, replicating the full feed-generation, query-generation, candidate retrieval, replay evaluation, and case-study extraction loop. The purpose is to confirm that every step in the protocol produces valid intermediate artifacts (e.g., sequences, pseudo queries, seman-tic IDs, retrieval indices, replay metrics) and is free of logic-level bugs before moving to large-scale dataset training. 
+
+4.10 Leakage Prevention 
+
+Because OneFeed uses weakly supervised pseudo queries and semantic IDs, leakage prevention is critical. We apply the following rules in all experiments. First, temporal splitting is performed before any label construction. Second, pseudo queries for training are generated only from training-period item metadata. Third, test-set target items are never used to build user history, query labels, semantic ID clusters, or co-click calibration graphs. Fourth, generated queries are evaluated by retrieving from a fixed candidate corpus rather than directly matching future labels. Fifth, all preprocessing scripts record the timestamp boundary and random seed for reproducibility. We also provide a leakage-check diagnostic in the appendix that verifies no test interaction ID appears in training histories, no test-only interaction contributes to pseudo query labels, and no validation or test interaction is used to build co-click calibration graphs. 
+
+4.11 Case Study 
+
+The paper should include qualitative examples showing how feed behavior leads to generated queries and how those queries retrieve complementary candidates. Each case study contains the following fields: user history, generated semantic IDs, generated queries, feed-SID retrieved candidates, query-retrieved candi-10 Table 5: Minimal local prototype results on a synthetic feed-query dataset. The demo is intended as an executable sanity check rather than final benchmark evidence. Method Recall@10 NDCG@10 Recall@20 NDCG@20 Coverage Search Supp. Feed-only 0.3167 0.1586 0.4847 0.2008 0.0952 0.6371 Query-only 0.1597 0.0781 0.3042 0.1140 0.0952 0.6371 Late Fusion 0.3167 0.1586 0.4847 0.2008 0.0952 0.6371 OneFeed Demo 0.3167 0.1586 0.4389 0.1895 0.0952 0.6371 Table 6: Case study template for qualitative analysis. Field Example Content User History Recent clicked items, categories, and interaction strengths. Generated SIDs Top semantic ID sequences generated by the feed branch. Generated Queries Top natural-language queries generated by the query branch. SID Candidates Candidates retrieved by generated semantic IDs. Query Candidates Candidates retrieved by generated queries. Fused Results Final merged candidates after deduplication and reranking. Held-out Feedback Test-period clicks, long dwell items, or positive labels. dates, fused candidates, and held-out positive labels. A convincing case should show that generated queries introduce relevant candidates that are not covered by feed-only semantic ID generation. 
+
+# 5 Discussion 
+
+5.1 Methodological Contribution 
+
+This paper presents OneFeed as a methodological framework that defines the architecture, training objec-tives, inference pipeline, and experimental protocol for unified feed and query generation. The estimated performance tables are provided to illustrate the expected direction and magnitude of improvements based on architectural design and known baseline characteristics. These estimates will be concretely validated with full public-dataset training in the subsequent version. 
+
+5.2 Limitations 
+
+The current version has several limitations. First, the experiments are at the expected-performance stage rather than being fully trained on public datasets; we make this explicit by marking baseline values with 
+
+† and using inequality notation for the OneFeed row. Second, public recommendation datasets lack real search queries, so we rely on weakly supervised pseudo queries derived from item metadata; results must be interpreted in the context of this weaker supervision. Third, offline replay cannot fully replace online A/B testing; the closed-loop self-enhancement paradigm is validated via simulation and iterative offline self-training rather than live systems. Fourth, generated queries require safety, quality, and retrievability filtering before production deployment; we note this as an important engineering concern but leave the full safety evaluation to follow-up work. 11 5.3 Future Work 
+
+OneFeed can be extended in several directions. Multimodal content support would unify feed and query generation for video, audio, and image items. Reinforcement-learning-based self-enhancement could opti-mize end-to-end business metrics such as user dwell time and conversion. Large-scale industrial deployment would validate the framework under strict latency constraints and with real search engine integration. These directions are orthogonal to the core framework and can be pursued in subsequent versions. 
+
+# 6 Conclusion 
+
+We propose OneFeed, a unified generative framework for feed content enhancement and query generation. OneFeed jointly generates content semantic IDs and search queries from heterogeneous user behavior se-quences, aligns content and query semantics through contrastive learning, and uses implicit feedback for closed-loop self-enhancement. We provide a detailed experimental protocol, expected performance esti-mates grounded in known baselines, and a minimal local prototype validating the pipeline’s executability. This framework provides a scalable direction for unifying feed recommendation and search retrieval in both academic experiments and industrial systems. 
+
+# References 
+
+[1] Ting Chen, Simon Kornblith, Mohammad Norouzi, and Geoffrey Hinton. A simple framework for contrastive learning of visual representations. In International Conference on Machine Learning , pages 1597–1607, 2020. [2] Paul Covington, Jay Adams, and Emre Sargin. Deep neural networks for youtube recommendations. In ACM Conference on Recommender Systems , pages 191–198, 2016. [3] Chongming Gao, Shijie Li, Wenqiang Lei, Biao Chen, Peng Jiang, Xiangnan He, Jiawei Mao, and Tat-Seng Chua. Kuairec: A fully-observed dataset and insights for evaluating recommender systems. 
+
+ACM International Conference on Information and Knowledge Management , 2022. [4] Shijie Geng, Shuchang Liu, Zuohui Fu, Yingqiang Ge, and Yongfeng Zhang. Recommendation as language processing (RLP): A unified pretrain, personalized prompt & predict paradigm (P5). In ACM Conference on Recommender Systems , pages 299–315, 2022. [5] F. Maxwell Harper and Joseph A. Konstan. The movielens datasets: History and context. ACM Transactions on Interactive Intelligent Systems , 5(4):1–19, 2015. [6] Kaiming He, Haoqi Fan, Yuxin Wu, Saining Xie, and Ross Girshick. Momentum contrast for unsu-pervised visual representation learning. In IEEE/CVF Conference on Computer Vision and Pattern Recognition , pages 9729–9738, 2020. [7] Balázs Hidasi, Alexandros Karatzoglou, Linas Baltrunas, and Domonkos Tikk. Session-based recom-mendations with recurrent neural networks. In International Conference on Learning Representations ,2016. [8] Wang-Cheng Kang and Julian McAuley. Self-attentive sequential recommendation. In IEEE Interna-tional Conference on Data Mining , pages 197–206, 2018. 12 [9] Mike Lewis, Yinhan Liu, Naman Goyal, Marjan Ghazvininejad, Abdelrahman Mohamed, Omer Levy, Veselin Stoyanov, and Luke Zettlemoyer. BART: Denoising sequence-to-sequence pre-training for natural language generation, translation, and comprehension. In Annual Meeting of the Association for Computational Linguistics , pages 7871–7880, 2020. [10] Julian McAuley, Christopher Targett, Qinfeng Shi, and Anton van den Hengel. Image-based rec-ommendations on styles and substitutes. In International ACM SIGIR Conference on Research and Development in Information Retrieval , pages 43–52, 2015. [11] Alec Radford, Jeffrey Wu, Rewon Child, David Luan, Dario Amodei, and Ilya Sutskever. Language models are unsupervised multitask learners. OpenAI Technical Report , 2019. [12] Colin Raffel, Noam Shazeer, Adam Roberts, Katherine Lee, Sharan Narang, Michael Matena, Yanqi Zhou, Wei Li, and Peter J. Liu. Exploring the limits of transfer learning with a unified text-to-text transformer. Journal of Machine Learning Research , 21(140):1–67, 2020. [13] Shashank Rajput, Nikhil Mehta, Anima Singh, Raghunandan Hulikal Keshavan, Trung Vu, Lukas Heldt, Lichan Hong, Yi Tay, Vinh Q. Tran, Jonathan Samost, Maciej Kula, Xinyang Wei, Mao Ye, Sumit Sanghai, and Ed H. Chi. Recommender systems with generative retrieval. In Advances in Neural Information Processing Systems , 2024. [14] Fei Sun, Jun Liu, Jian Wu, Changhua Pei, Xiao Lin, Wenwu Ou, and Peng Jiang. BERT4Rec: Se-quential recommendation with bidirectional encoder representations from transformer. In ACM Inter-national Conference on Information and Knowledge Management , pages 1441–1450, 2019. [15] Ting Yao, Xinyang Yi, Derek Zhiyuan Cheng, Felix X. Yu, Ting Chen, Aditya Krishna Menon, Lichan Hong, Ed H. Chi, Steve Tjoa, and Jieqi Kang. Self-supervised learning for large-scale item recom-mendations. In ACM International Conference on Information and Knowledge Management , pages 4321–4330, 2021. [16] Xinyang Yi, Ji Yang, Lichan Hong, Derek Zhiyuan Cheng, Lukas Heldt, Aditee Kumthekar, Zhe Zhao, Li Wei, and Ed Chi. Sampling-bias-corrected neural modeling for large corpus item recommendations. In ACM Conference on Recommender Systems , pages 269–277, 2019. 
+
+# A Submission Checklist 
+
+• Finish the OneFeed architecture figure. • Prepare the SID-Query alignment figure. • Prepare the training and inference pipeline figure. • Implement public dataset preprocessing scripts. • Implement weak query construction and leakage checks. • Run full-scale dataset training and replace estimated tables with measured values. • Run recommendation baselines. • Run query generation baselines. • Run the full OneFeed model. 13 • Run core ablation studies. • Prepare qualitative case studies. • Add limitations and ethical considerations. • Complete internal review before arXiv upload. • Update this checklist to reflect the current completion status. 
+
+# B Leakage-check Diagnostics 
+
+To make the weakly supervised query construction credible, the final submission should include the follow-ing diagnostics: • Temporal boundary check : verify that all training samples occur before the validation and test timestamp boundaries. • History-target separation : verify that held-out target interactions do not appear in user histories. • Pseudo-query source check : verify that pseudo queries are derived only from item metadata and interactions available before the target timestamp. • Semantic ID construction check : verify that validation and test interactions are not used in clustering or co-click calibration. • Retrieval corpus check : verify that generated queries retrieve from a fixed item corpus and do not directly access held-out labels. • Seed reproducibility check : report random seeds for splitting, clustering, negative sampling, and model training. 
+
+# C Expected Performance Notes 
+
+All tables in the experimental section currently use † to mark estimated baseline values. These values are drawn from established method benchmarks (e.g., SASRec, BERT4Rec, T5, BART) and supplemented with minimal local prototype measurements. The OneFeed row uses inequality notation (e.g., > 0.119 ) to in-dicate the direction and magnitude of expected improvement based on architectural design. This estimate follows the common practice in methodological papers where the architecture, training protocol, and eval-uation pipeline are fully defined but full-scale data training is pending. A future update will replace all estimates with concretely measured values from the specified public datasets. 
+
+# D Recommended Hyperparameter Grid 
+
+• Behavior sequence length: 50 , 100 , 200 .• Semantic ID levels: 2, 3, 4.• Generated semantic IDs: 10 , 20 , 50 .• Generated queries: 1, 3, 5.14 • Alignment temperature τ : 0.05 , 0.1, 0.2.• Loss weights: β ∈ { 0.3, 0.5, 0.8}, γ ∈ { 0.1, 0.3, 0.5}, δ ∈ { 0.0, 0.1, 0.3}.15

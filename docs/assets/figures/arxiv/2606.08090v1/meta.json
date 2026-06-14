@@ -1,0 +1,54 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2606.08090v1/fig-001.webp",
+      "caption": "Figure 2: The unified framework as a DAG. The six steps of Algorithm 1 arranged left to right. Blue boxes are document sets; amber boxes are oracle-labeled subsets; gray boxes are operations; the pink diamond is the deploy-time decision (auto-label vs. cascade) gated by whether the proxy score passes the calibration threshold 𝜏 . The dashed black arrow marks a recursion when the deploy condition fails on a partition (e.g. CSV re-clusters a cluster whose vote does not agree strongly enough, cascading individual documents to the oracle only as a last resort). The dashed green arrow is our cross-method join: the same labeled sample drawn for one method can be reused as the labeled sample of a second method (§6).",
+      "page": 6,
+      "index": 1,
+      "width": 1104,
+      "height": 180
+    },
+    {
+      "url": "assets/figures/arxiv/2606.08090v1/fig-002.webp",
+      "caption": "Figure 3: Method-by-step matrix view. Rows are methods; columns are the six steps. Cell color identifies the family (red = CSV, amber = BARGAIN, teal = ScaleDoc); blue cells are our contributions. CSV’s Deploy cell contains the recursion (⟲) that matches the dashed back-arrow in Figure 2. Two-Phase is shown as two sub-rows: the upper (CSV-style) first phase, the lower (Phase-2-style) second phase; the green arrow is the label reuse in Figure 2 and fires when ∼7% of the corpus has been labeled.",
+      "page": 6,
+      "index": 2,
+      "width": 1048,
+      "height": 475
+    },
+    {
+      "url": "assets/figures/arxiv/2606.08090v1/fig-003.webp",
+      "caption": "Figure 1: End-to-end latency vs. per-query difficulty (mean Bayes ErrorRate (BER) of the oracle LLMover documents), on PubMed corpus at the 90% accuracy target (§8). Each point is a query; each line is a non-parametric smoothing curve. BERLB is our derivation of optimal performance. All methods cascade to more oracle LLM calls for harder queries to meet accuracy target.",
+      "page": 2,
+      "index": 3,
+      "width": 506,
+      "height": 240
+    },
+    {
+      "url": "assets/figures/arxiv/2606.08090v1/fig-004.webp",
+      "caption": "Figure 7: Per-query end-to-end time breakdown at 𝛼 =0.9. Bars stack proxy time and oracle-LLM time across five segments: proxy train/score, Phase-1 sample labeling, training-set labeling, calibration labeling, and cascade. The cross-hatched cascade segment dominates everywhere; Phase-2 and Two-Phase shrink it on essentially every query; Two-Phase additionally removes the training-labeling segment on Phase-1-resolved queries. Right-axis markers indicate per-query accuracy: ◦ for Acc𝑞 ≥ 0.9, × for Acc𝑞 < 0.9.",
+      "page": 13,
+      "index": 4,
+      "width": 948,
+      "height": 920
+    },
+    {
+      "url": "assets/figures/arxiv/2606.08090v1/fig-005.webp",
+      "caption": "Table 1: Desired properties in semantic filter. ✓: delivered; ✗: not delivered; ∼: partially. Explanation of ∼ marks: (CSV) not declarative in the original paper, but setting internal parameters trivially meets target accuracy; (BARGAIN) prebuilt small LLM is partially trustworthy to oracle LLM; it processes tokens, but its scan over all documents adds a substantial cost.",
+      "page": 4,
+      "index": 5,
+      "width": 1056,
+      "height": 250
+    },
+    {
+      "url": "assets/figures/arxiv/2606.08090v1/fig-006.webp",
+      "caption": "Figure 6: Target accuracy vs. end-to-end cost. Curves further to the left are cheaper at a given target; curves steeperupward hold their cost as the target tightens. Two-Phase and Phase-2 form the cheapest, steepest pair; ScaleDoc and BARGAIN trail by a roughly constant offset; CSV is competitive only at low 𝛼 . The dashed BER-LB curve is the non-deployable greedy lower bound (Def. 1) at each 𝛼 .",
+      "page": 12,
+      "index": 6,
+      "width": 456,
+      "height": 651
+    }
+  ]
+}

@@ -1,0 +1,94 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2606.09032v1/fig-001.webp",
+      "caption": "Figure 6: The three construction paradigms of §3 along an implicit↔explicit spectrum of how world knowledge is represented: learning absorbs dynamics into model parameters (high fidelity, low verifiability); prompting surfaces dynamics via in-context exemplars or retrieval (rapid adaptation, hallucination-prone); programmatic synthesis emits executable artifacts (verifiable and reusable, but per-environment).",
+      "page": 11,
+      "index": 1,
+      "width": 916,
+      "height": 186
+    },
+    {
+      "url": "assets/figures/arxiv/2606.09032v1/fig-002.webp",
+      "caption": "Figure 1: Chronological development of text world models for LLM-based agents. Each cluster groups representative works by release date; the field has expanded rapidly from 2025 onward.",
+      "page": 2,
+      "index": 2,
+      "width": 877,
+      "height": 521
+    },
+    {
+      "url": "assets/figures/arxiv/2606.09032v1/fig-003.webp",
+      "caption": "Figure 5: Construction pipelines for the three building paradigms (§3). Each row traces the data flow from input to a usable world model: (1) Learning-based feeds ⟨s, a, s′⟩ trajectories into a base LLM and updates parameters via SFT, DPO, or GRPO losses. (2) Prompt-based composes demonstrations or retrieved documents into a context that turns a frozen LLM into a world model via ICL, CoT, RAG, or self-refine. (3) Programmatic prompts a coder LLM to emit PDDL, Python, or DSL programs that an executor runs as the world model, with execution errors fed back for refinement.",
+      "page": 7,
+      "index": 3,
+      "width": 784,
+      "height": 458
+    },
+    {
+      "url": "assets/figures/arxiv/2606.09032v1/fig-004.webp",
+      "caption": "Figure 2: The text world model lifecycle. A world model M is first constructed via learning, prompting, or code generation (§3); then used to train agents through synthetic rollouts (§4) and guide them via lookahead at inference time (§5); finally evaluated for fidelity and utility (§6). The dashed arrow indicates a feedback loop that iteratively improves the world model.",
+      "page": 3,
+      "index": 4,
+      "width": 882,
+      "height": 348
+    },
+    {
+      "url": "assets/figures/arxiv/2606.09032v1/fig-005.webp",
+      "caption": "Figure 3: Taxonomy of text world model research organized by the agent lifecycle. Colors encode lifecycle stages: blue = construction (§3), orange = training-time use (§4), green = inference-time deployment (§5), red = evaluation (§6). Representative papers are shown at the leaves.",
+      "page": 4,
+      "index": 5,
+      "width": 911,
+      "height": 1196
+    },
+    {
+      "url": "assets/figures/arxiv/2606.09032v1/fig-006.webp",
+      "caption": "Table 2: Comparison of inference-time world model approaches. Role: Simulator = produces futures for action selection; Verifier = screens proposed actions. Depth: number of lookahead steps (1 = one-step, k = multi-step, ∞ = full rollout, 0 = no rollout).",
+      "page": 19,
+      "index": 6,
+      "width": 783,
+      "height": 412
+    },
+    {
+      "url": "assets/figures/arxiv/2606.09032v1/fig-007.webp",
+      "caption": "Figure 8: Inference-time roles of a text world model. WM as simulator (left, centre): shallow lookahead imagines the immediate consequence of each candidate action and picks the best; deep tree search uses the WM as transition function for multi-step rollouts. WM as verifier (right): the WM predicts the consequence of a proposed action, and a judge accepts or sends it back for revision.",
+      "page": 17,
+      "index": 7,
+      "width": 968,
+      "height": 211
+    },
+    {
+      "url": "assets/figures/arxiv/2606.09032v1/fig-008.webp",
+      "caption": "Figure 7: Three training-time paradigms that pair a world model with an agent: 1⃝ internalising the world model into the agent’s own parameters, 2⃝ using a world model as a training environment (offline synthesis, online rollouts, or co-evolution), and 3⃝ simulating users for multi-turn interaction.",
+      "page": 12,
+      "index": 8,
+      "width": 968,
+      "height": 209
+    },
+    {
+      "url": "assets/figures/arxiv/2606.09032v1/fig-009.webp",
+      "caption": "Figure 9: Three evaluation paradigms for text world models: intrinsic prediction accuracy against groundtruth next states, extrinsic task-driven metrics where the world model is plugged into a downstream agent, and meta evaluation where the world model itself serves as a benchmarking environment for agents.",
+      "page": 20,
+      "index": 9,
+      "width": 782,
+      "height": 385
+    },
+    {
+      "url": "assets/figures/arxiv/2606.09032v1/fig-010.webp",
+      "caption": "Figure 4: Two-dimensional landscape of text world models along state representation and grounding domain. The horizontal axis categorizes grounding domain—Physical (embodied environments, game physics, disaster assessment), Digital (web interfaces, software, code reasoning), Social (user simulation, dialogue), and Abstract (planning, math, and symbolic reasoning). The vertical axis categorizes state representation— Natural Language (free-form text descriptions), Structured (JSON, knowledge graphs, accessibility trees), and Executable Code (Python, TypeScript, HTML programs).",
+      "page": 5,
+      "index": 10,
+      "width": 977,
+      "height": 506
+    },
+    {
+      "url": "assets/figures/arxiv/2606.09032v1/fig-011.webp",
+      "caption": "Table 1: Comparison of training-time world model approaches. WM Form: how the world model manifests; Real Env.: whether real environment access is needed during training.",
+      "page": 16,
+      "index": 11,
+      "width": 783,
+      "height": 569
+    }
+  ]
+}

@@ -1,0 +1,441 @@
+Title: DUET – Dual User Embedding Transformers for Offsite Conversion Prediction
+
+URL Source: https://arxiv.org/pdf/2606.10243v1
+
+Published Time: Wed, 10 Jun 2026 00:20:53 GMT
+
+Number of Pages: 17
+
+Markdown Content:
+# DUET — Dual User Embedding Transformers for Offsite Conversion Prediction 
+
+Reazul Hasan Russel †, Mingwei Tang †, Rostam Shirani †, Xinlong Liu , Navid Madani , Leo Ding , Yawen He ,
+
+Xiangyu Wang , Mustafa Acar , Ashish Katiyar , Yuhai Li , Alan Yang , Metarya Ruparel , Derek Qiang Xu ,
+
+Rupert Wu , Rui Yang , Liang Tao , Xinyi Zhao , Larry Zhang , Sri Reddy , Rob Malkin 
+
+> †
+
+Equal contribution , AI at Meta 
+
+Offsite conversion rate (OCVR) prediction is an important ranking problem in computational recom-mendation systems. This task presents a modeling challenge: click signals are abundant and exhibit short temporal horizons, whereas conversion signals are inherently sparse, long-delayed, and frequently unattributed. Despite these statistical disparities, both signal types must inform models that operate within strict serving-latency constraints. Prior pre-training approaches address this heterogeneity with a single, undifferentiated encoder applied uniformly across both data streams. We propose DUET (Dual User Embedding Transformers), a framework that explicitly partitions user behavioral data into two domain-coherent streams — clicks and conversions — and pre-trains dedicated transformer en-coders with architectures tailored to each stream’s statistical characteristics: multi-layer self-attention for the dense click stream and interleaved cross- and self-attention for the sparse conversion stream. The resulting complementary embeddings are jointly consumed by a downstream ranker without exceeding serving-latency budgets. Evaluation demonstrates up to 0.38% normalized entropy (NE) reduction relative to the strongest baseline, and A/B test shows consistent improvements in OCVR prediction accuracy.  
+
+> Correspondence:
+
+Reazul Hasan Russel at rrussel@meta.com  
+
+> Keywords:
+
+User Representation Learning, Sequence Modeling, Cross-Domain Learning, Event-Triggered Inference, Click-Through Rate (CTR), Conversion Rate (CVR), Recommender System 
+
+# 1 Introduction 
+
+Offsite Conversion (OCVR) prediction refers to the task of estimating the probability that a user completes a target action—such as a purchase or registration—on an external destination (website or application) after engaging with a recommended item served on the host platform. The importance of OCVR prediction is growing, driven by the expansion of retail media networks and the deprecation of third-party cookies, which together are shifting performance budgets toward platforms with first-party behavioral data. Offsite retail media is forecast to grow annually, making accurate OCVR prediction a differentiator for recommendation platforms. Yet the OCVR prediction task is difficult: positive labels are sparse (rates below 5%), attribution windows are long and variable (hours to days), and a fraction of conversions remain unattributed depending on product segment and attribution method. Recommendation models must contend with all of these challenges under stringent online training and inference latency constraints, creating a persistent tension between prediction quality and serving efficiency. A natural response to these constraints is to focus on richer user representations — models that capture deeper behavioral patterns should yield better conversion predictions. Indeed, recent advances in transformer-based sequence modeling Kang and McAuley (2018); Xiong et al . (2026), self-supervised pre-training Ouyang et al .(2023a); Shtoff et al . (2023); Zhang et al . (2023b), and embedding methods Su et al . (2025); Wang et al . (2024) have demonstrated quality gains in recommendation and ranking tasks. However, the computational cost of these expressive architectures makes direct deployment in the latency-critical serving path impractical. This motivates a decoupled design: an upstream model pre-trains rich user embeddings offline, which are then served asynchronously as static embedding features to the ranker. The separation allows expressive architectures to inform ranking models without violating latency budgets. Existing instantiations of this 1
+
+> arXiv:2606.10243v1 [cs.LG] 8 Jun 2026
+
+paradigm Tang et al . (2024) have validated the approach for click prediction, but they train a single upstream model on click and onsite conversion data, treating all behavioral signals as a homogeneous stream. This design introduces three limitations when the goal is OCVR prediction: 1. Signal dominance under regime mismatch. Click and onsite conversion data is dense with short attribution windows, while offsite conversion data is orders of magnitude sparser. A single model trained on both is dominated by the denser click signal, underrepresenting the conversion patterns most relevant to the downstream task. 2. Architectural uniformity. Applying a single encoder architecture to data streams with fundamentally different statistical properties ignores the possibility that dense click sequences and sparse conversion sequences benefit from different inductive biases — an observation we validate empirically in Section 3.2.3. 3. Shallow cross-domain transfer. Knowledge transfer across applications has typically been limited to shared feature encoders Fu et al . (2024); Tian et al . (2023) or domain-disentangled representations Zhu et al . (2023); Wang et al . (2025), without incorporating organic engagement or content-derived semantic signals that can enrich user representations. We propose DUET (Dual User Embedding Transformers), a framework that aims to address these limitations through a single, unified principle: learn dedicated user embeddings from statistically coherent data streams, then compose them in the downstream ranker . Concretely, DUET partitions upstream training data into two domain-coherent streams — a click/onsite-conversion stream and an offsite-conversion stream — and pre-trains a dedicated transformer encoder on each, with an architecture tailored to the stream’s statistical properties. The resulting complementary embeddings, which we term ClickAUE (Click Attentive User Embedding) and  
+
+> ConvAUE
+
+(Conversion Attentive User Embedding), are jointly consumed by the downstream ranker for offsite OCVR prediction. The main contributions of this work are: 1. Domain-specialized dual embedding learning. We introduce domain-aware data routing that partitions heterogeneous behavioral data into click and conversion streams, and pre-train a dedicated upstream encoder on each. We select attention architectures matched to each stream’s regime: multi-layer self-attention (LLaTTE Xiong et al . (2026)) for the dense click data stream and interleaved cross-/self-attention for the sparse conversion data stream. Ablations confirm that each architecture choice is load-bearing for its respective stream (Section 3.2.3). 2. Multimodal, cross-application input enrichment. Both upstream encoders consume event-based fea-tures (EBFs) spanning content interactions, organic feed engagement, and content-derived semantic IDs Roychowdhury et al. (2026) across multiple applications, enabling richer user representations. 3. Asynchronous serving with scalable infrastructure. An event-triggered inference mechanism generates user embeddings asynchronously, decoupling upstream model complexity from the serving-latency budget. The deployment incorporates throttling, checkpoint validation, and embedding quantization, achieving negligible training QPS and serving latency overhead . 4. Empirical validation. We evaluate DUET across 6 downstream OCVR models, demonstrating meaningful metric improvements. 
+
+# 2 Related Work 
+
+We review prior work along three axes most relevant to our contributions.  
+
+> CVR Prediction
+
+General conversion rate (CVR) prediction is challenged by label sparsity and sample selection bias. ESMM Ma et al . (2018a) jointly models CTR and CVR to estimate conversion rate over the full impression space, and subsequent work extends this with counterfactual multi-task objectives (ESCM 2) Wang et al . (2022), doubly robust estimation Dai et al . (2022); Li et al . (2023), and variational information exploitation Fei et al . (2024). Multi-task architectures such as MMoE Ma et al . (2018b) and PLE Zhou et al .(2023) balance shared and task-specific representations within a single model. These approaches address sparsity through task decomposition or debiasing at the model level. Our work is complementary: we address sparsity upstream by routing data into domain-coherent streams and pre-training dedicated encoders whose embeddings are consumed by any downstream CVR architecture. 2The challenge of unattributed and offsite conversions — where events cannot be deterministically matched to impressions due to cross-device fragmentation, cookie restrictions, or app tracking policies – has grown over time. Entire-space counterfactual methods Wang et al . (2022) and doubly robust estimators Dai et al .(2022) partially address this, but remain limited when attribution rates are structurally low. Our framework incorporates unattributed conversion events directly into the ConvAUE training stream, using them as weak supervision to mitigate sparsity rather than discarding them.  
+
+> Sequence Modeling for Recommendation
+
+Modeling user behavior as ordered interaction sequences has driven advances in recommendation. SASRec Kang and McAuley (2018) introduced self-attention for sequential recommendation; target-aware variants such as DIN Zhou et al . (2018b) and DIEN Zhou et al . (2018a) activate the most relevant historical behaviors; and multi-interest architectures Li et al . (2019); Xiao et al . (2020) represent users as mixtures of latent interest vectors. Scaling laws for sequential models Zhang et al . (2023a, 2024b) establish capacity–performance relationships that motivate deeper architectures. Most relevant to our work, LLaTTE Xiong et al . (2026) applies stackable transformer layers for sequence modeling with predictable power-law scaling in depth and sequence length. We adopt LLaTTE as the encoder for the dense click stream (ClickAUE) and apply interleaved cross-/self-attention for the sparse conversion stream (ConvAUE), matching the architecture to each stream’s statistical properties.  
+
+> Cross-Domain and Multi-Scenario Recommendation
+
+Cross-domain recommendation integrates user signals across multiple apps or surfaces. Representative approaches include shared-plus-specific topologies (STAR Sheng et al . (2021)), personalized parameter generation (PEPNet Chang et al . (2023)), adaptive domain-specific scaling (ADS Chai et al . (2025a)), and contrastive alignment across heterogeneous scenarios Xie et al . (2022); Xu et al. (2023). These methods transfer knowledge via shared encoders or representation alignment within a single model. Our framework differs by transferring knowledge through pre-trained embeddings: both ClickAUE and ConvAUE consume cross-application event-based features spanning ads interactions, organic engagement, and content-derived signals, but the resulting embeddings are composed downstream rather than aligned during training.  
+
+> Pre-training and Asynchronous Serving for Ads
+
+A persistent challenge in industrial recommendation is that high-capacity models improve quality but cannot satisfy online latency budgets. Two-tower architectures Covington et al . (2016) and model compression Deng et al . (2021) address this at the model level. Self-supervised and contrastive pre-training offer an alternative: pre-training on unlabeled impressions Shtoff et al . (2023), contrastive views of user–ad interactions Ouyang et al . (2023a), and masked multi-domain objectives Ouyang et al . (2023b) learn transferable representations before task-specific fine-tuning. On the infrastructure side, multi-faceted large embedding tables Su et al . (2025) and the COFFEE codesign framework Roychowdhury et al. (2026) scale embedding representations for ranking. Most directly relevant to our work, asynchronous pre-training paradigms Tang et al . (2024) decouple represen-tation learning from online inference by pre-training upstream user embeddings that are consumed as static features by lightweight rankers. SUM Zhang et al . (2024a) demonstrates modular upstream–downstream user modeling serving hundreds of downstream models, and LONGER Chai et al . (2025b) extends this to long-horizon multi-scenario settings. Our framework builds on this paradigm but introduces two main departures: domain-aware data routing that partitions behavioral data into statistically coherent streams, and stream-specific encoder architectures that produce complementary rather than monolithic user representations. 
+
+# 3 DUET Framework 
+
+Ranking models aim to predict the probability of click or conversion given a user-item pair. DUET decomposes this problem into three stages: partitioning training data into domain-coherent streams (Section 3.1), pre-training a dedicated upstream encoder on each stream (Section 3.2), and integrating the resulting embeddings into the downstream ranker (Section 3.3). 
+
+3.1 Domain-Aware Data Routing 
+
+We partition pointwise training data into two streams based on label semantics and attribution horizon. 3Figure 1 DUET unified framework: data routing, representation pre-training, and downstream ranker. 
+
+CTR / Onsite-CVR Stream. This stream contains click and onsite conversion events, where the labeled action typically occurs within a short amount of time from the recommended item interaction. On this data stream, negative samples are downsampled and all positives are retained. 
+
+OCVR Stream. This stream contains user actions on external websites or third party apps, with a longer attribution window. We don’t perform downsampling on OCVR training samples in order to preserve training data volume. To mitigate the data sparsity issue in OCVR, the stream incorporates Synthetic data from unattributed conversion — conversion events that cannot be deterministically linked to a specific item exposure due to cross-device journeys, cookie restrictions, or delayed attribution. Synthetic data is generated by inferring the best possible ranking results associated with an unattributed conversion. Although individually noisy, these events carry aggregate user-level intent signals and increase the effective training volume. The statistical contrast between the two streams — dense, short-horizon click data versus sparse, long-horizon conversion data — motivates both the data separation and the architectural choices described next. 
+
+3.2 Upstream Encoder Design 
+
+We instantiate two upstream encoders from a shared backbone architecture, each trained on one data stream. The encoders differ in attention configuration and output dimensionality but share the same input representation and backbone structure.  
+
+> 3.2.1 Input Representation
+
+Each encoder consumes user-side and target item-side features. Target item features are processed through the non-sequence branch of a DLRM backbone. User-side features consist of event-based feature (EBF) sequences 
+
+( Roychowdhury et al . (2026)) constructed from user engagement across recommended items (impressions, onsite conversions), organic feed (views, likes), and video content over a lookback window of several months, with each event represented by: 1. Timestamp : a dense encoding of event occurrence time. 2. ID-based attributes : entity-level features including item ID, author ID, media type, and position. 3. Semantic IDs : compact discrete codes derived from entity content (image, text, video) via KNN Roy-chowdhury et al . (2026) or RQ VAE Ramasamy et al . (2025), capturing content semantics beyond ID-based representations.  
+
+> 3.2.2 Backbone Architecture
+
+Both encoders follow a DLRM structure (Figure 2, left) with two parallel branches: a sequence branch that processes user EBF sequences and top user static features (selected by feature importance on the downstream 4Figure 2 DUET architecture. Left: the DLRM backbone with parallel sequence and non-sequence branches. Right: event tower structure with stacked attention blocks and DCN user summarization. 
+
+task), and a non-sequence branch that consumes ranking item-side and user non-sequence features. Branch outputs are fused in an overarch interaction layer Zhang et al . (2022) for joint prediction during pre-training. Within the sequence branch, each event type is processed by a dedicated event tower composed of transformer blocks (detailed below). The outputs of all event towers are concatenated and passed through a Deep & Cross Network (DCN) Wang et al . (2017, 2021) user summarization module, which produces the final user embedding. We instantiate two models from this backbone: 
+
+• ClickAUN (Click-Attentive Upstream Network): trained on the CTR/onsite-CVR stream. Produces 
+
+ClickAUE user embeddings. 
+
+• ConvAUN (Conversion-Attentive Upstream Network): trained on the OCVR stream. Produces ConvAUE 
+
+user embeddings.  
+
+> 3.2.3 Attention Configuration
+
+Each event tower applies transformer blocks over sequence embeddings Xsq and user static feature embeddings 
+
+Xst . We define two block types: 
+
+Self-Attention Block. Static and sequence embeddings are concatenated as 
+
+X = concat( Xst , X sq ), (1) which is jointly processed as: 
+
+Yself = X + attention( Q=LayerNorm( X), K =LayerNorm( X), V =LayerNorm( X)) , (2) where Q, K, and V are the query, key, and value as inputs of attention , respectively. This allows the model to capture complex interactions between static and sequence feature types. The output of the self-attention block is 
+
+SelfAttn( Xst , X sq ) = Yself + FFN(LayerNorm( Yself )) . (3) 5Cross-Attention Block. Static embeddings query against sequence embeddings as: 
+
+Ycross = Xst + attention( Q=LayerNorm( Xst ), K =LayerNorm( Xsq ), V =LayerNorm( Xsq )) . (4) This enables the model to contextualize sequential user behaviors using high-importance static features. The output of the cross-attention block is 
+
+CrossAttn( Xst , X sq ) = Ycross + FFN(LayerNorm( Ycross )) . (5) 
+
+Stream-Specific Configuration. ClickAUN stacks multiple self-attention layers following the LLaTTE paradigm Xiong et al . (2026): dense supervision and short attribution windows make deep self-attention effective for capturing high-order interaction patterns. ConvAUN interleaves cross-attention and self-attention blocks. Under sparse positive labels, pure self-attention over long sequences risks overfitting to uninformative majority-negative patterns; cross-attention against stable user-level attributes anchors sequence representations, providing implicit regularization. This design also reduces computational cost, as the cross-attention query length is bounded by the number of static features rather than the full sequence length. We validate these configuration choices through ablations in Section 5.6.  
+
+> 3.2.4 Training Objectives
+
+Let ℓBCE ( ˆy, y ) = −y log ˆ y + (1 − y) log (1 − ˆy) denote the binary cross-entropy (BCE) loss for a predicted probability ˆy ∈ (0 , 1) and binary label y ∈ { 0, 1}. Both upstream models are trained with multitask objectives that combine task-specific BCE losses. ClickAUN is optimized on the CTR/onsite-CVR stream: 
+
+LClickAUN = α1 ℓBCE (ˆ yctr , y ctr ) + α2 ℓBCE (ˆ yonsite , y onsite ), (6) where ˆyctr and ˆyonsite are the predicted click-through and onsite conversion probabilities, yctr , y onsite ∈ { 0, 1}
+
+are the corresponding labels, and α1, α 2 > 0 are task weights. The CTR task provides dense supervisory signal; the onsite conversion task provides sparser but more intent-indicative supervision. ConvAUN is optimized on the offsite conversion stream: 
+
+LConvAUN = β1 ℓBCE (ˆ yoff , y off ) + β2 ℓBCE (ˆ yunattr , y unattr ). (7) where ˆyoff and ˆyunattr are the predicted probabilities for attributed and unattributed offsite conversions, with labels yoff , y unattr ∈ { 0, 1} and task weights β1, β 2 > 0. All task weights are tuned on held-out validation data. 
+
+3.3 Downstream Integration 
+
+Let eclick and econv denote the ClickAUE and ConvAUE embeddings for a given user. The downstream ranker consumes these as additional input features alongside its standard feature vector x, with no other architectural modifications. Both embeddings are frozen during downstream training—no gradients propagate back through eclick or econv —enabling upstream and downstream models to retrain on independent schedules. The downstream model is trained with a multitask objective: 
+
+Ldown = λ1 ℓBCE (ˆ ycvr , y cvr ) + 
+
+> K
+
+X
+
+> k=1
+
+λk+1 ℓBCE 
+
+ ˆy(k)aux , y (k)aux 
+
+, (8) where the primary term is the offsite conversion loss, ˆy(k)aux , y (k)aux  
+
+> Kk=1
+
+are predictions and labels for K auxiliary tasks (e.g., value prediction, engagement prediction) that provide additional gradient signal for regularization, and {λi}K+1  
+
+> i=1
+
+are the corresponding task weights. 
+
+Serving. Embeddings are generated asynchronously via the Event-Triggered Inference (ETI) system (Sec-tion 4.1), stored in a feature store, and retrieved at serving time within the latency budget. 6Figure 3 End-to-end system: recurring pre-training with checkpoint validation followed by SIDE-based embedding compression and finally event-triggered inference and serving. 
+
+# 4 System Architecture 
+
+4.1 Event-Triggered Inference 
+
+Conventional embedding pipelines couple embedding generation to training data ingestion, producing updates at the cadence of the training loop. This is problematic for DUET: the CTR/OCVR stream generates high data volume, while the OC stream is too sparse– neither cadence yields a desirable freshness vs infra-load tradeoff. We instead decouple embedding generation from training via an event-triggered inference (ETI) architecture (as illustrated in Figure 3). While the model is doing pre-training on hourly/daily basis, a dedicated serving model, loading from the most recently validated pre-trained checkpoint, generates embeddings on demand: when a user performs a qualifying action (e.g., an onsite conversion), the system fetches the user’s latest EBF and static features from online storage and runs a forward pass to produce an updated embedding. Onsite conversions provide a natural trigger — their volume is moderate (higher than post-click events, lower than impressions) and correlates with user value, ensuring that high-activity users receive fresher representations. 
+
+Independent Pipeline Operation ClickAUN and ConvAUN pre-training iterate at a cadence matched to its data volume — ClickAUN retrains more frequently; ConvAUN is paced by sparser conversion data. Embedding staleness and serving health are monitored per-pipeline via automated alerts on NE degradation and latency. 
+
+Checkpoint Validation Training and inference are operationally separated: if a training run produces a degraded checkpoint (e.g., due to gradient instability), the serving model rejects any checkpoint whose validation NE exceeds a predefined threshold relative to its predecessor, maintaining embedding quality without manual intervention. 
+
+Efficiency Optimizations At inference time, only the sequence learning component is extracted from the training checkpoint, reducing model size and the number of serving hosts. A fixed throttling window suppresses redundant updates for users with frequent triggering events. 74.2 Embedding Compression 
+
+Raw embeddings from ETI are compressed by a standalone quantization module before storage (Figure 3, middle). We apply the Semantic ID Embedding (SIDE) technique Ramasamy et al . (2025), which maps continuous embedding vectors to discrete codebook entries via vector quantization and fuses multiple quantized vectors into compact semantic ID representations. The quantization module is pre-trained offline on raw embeddings. SIDE achieves 4× compression relative to FP16 storage with negligible downstream NE impact. 
+
+4.3 Serving-Time Decoding 
+
+At serving time, quantized embeddings are fetched from the feature store and decoded via a rule-based decoder from SIDE into float-valued vectors. A learnable MLP, trained jointly with the downstream model, projects the decoded embeddings to match the dimensionality of other input features before they enter the overarch interaction layer. This design adds no architectural modifications to the downstream ranker beyond the additional embedding inputs. 
+
+# 5 Experiments 
+
+We evaluate DUET through retrospective experiments, ablation studies, and A/B tests. Section 5.1–5.3 describe the evaluation metric, compared configurations, and implementation details. Section 5.4 analyzes the learned embeddings. Sections 5.5 and 5.6 present the main results and component-level ablations. Finally section 5.7 reports online results. 
+
+5.1 Evaluation Metric 
+
+We use normalized entropy (NE) as the primary evaluation metric, defined as the average log loss normalized by the entropy of a naïve model predicting the empirical positive rate p:NE = − 1
+
+> N
+
+PNi=1 
+
+yi log(ˆ pi) + (1 −yi) log(1 −ˆpi)
+
+−p log( p) + (1 −p) log(1 −p) . (9) NE is preferred over raw log-loss because it normalizes for class imbalance, enabling meaningful comparison across tasks and datasets with different positive rates. We report relative NE reduction (% ∆NE) against the baseline, where higher reduction is better. NE is used consistently across both upstream pre-training and downstream evaluation, enabling end-to-end performance tracking. 
+
+5.2 Compared Configurations 
+
+We evaluate four configurations, all sharing the same downstream DLRM architecture and input feature set: 1. Baseline : the existing downstream ranker without pre-trained embeddings. 2. ClickAUE Only : downstream ranker augmented with ClickAUE. 3. ConvAUE Only : downstream ranker augmented with ConvAUE. 4. DUET : downstream ranker augmented with both ClickAUE and ConvAUE. Contrastive and masked pre-training methods Ouyang et al . (2023a,b) are excluded as their augmentation-based objectives differ from our pointwise BCE formulation. The single-embedding configurations serve as ablations isolating each stream’s marginal contribution. 
+
+5.3 Implementation Details 
+
+Both ClickAUN and ConvAUN are trained on 128 NVIDIA H100 GPUs, achieving approximately ≈200K offline training QPS—sufficient throughput to enable continuous training and timely deployment of updated model checkpoints under strict latency constraints. 8ClickAUN employs a multi-task architecture with seven task-specific towers, including CTR, onsite conversion, and video view prediction. Each task head’s contribution is modulated via a gradient scaling hyperparameter, calibrated to balance the supervisory signal strength against task-specific label noise. The sequence learning architecture of ClickAUN comprises seven event towers, each corresponding to a distinct user-side event feature, with a maximum sequence length of 1, 000 . The self-attention module consists of n = 2 stacked layers, each with h = 2 attention heads, model dimension dmodel = 256 , and feed-forward dimension df f = 1024 . The output ClickAUE are 16 80 -dimension embeddings. ConvAUN comprises seven task specific towers, including conversion optimized, link click, button click and synthetic conversion task. The sequence learning architecture adopts horizontal scale paradigm comprising 13 
+
+event towers, where maximum event length not exceed 200 . The attention module consists of n = 1 layer with 
+
+h = 8 attention heads, model dimension dmodel = 128 , and feed-forward dimension df f = 256 . The output dimension of ConvAUE is 5 × 80 . We use the existing downstream models as baselines, maintaining identical architecture and training data; only the input feature set is modified to include ConvAUE and ClickAUE as additional embedding features.   
+
+> Figure 4 Principal components of quantized user embed-dings. ConvAUE and ClickAUE occupy distinct regions, indicating non-redundant information.
+> Figure 5 Orthogonality between ConvAUE and ClickAUE. Degree of complementarity varies, higher orthogonality indicating greater potential for additive information gain.
+
+5.4 Embedding Analysis 
+
+We examine whether ClickAUE and ConvAUE encode redundant or complementary information through two analyses. 
+
+Principal component visualization. Figure 4 projects quantized ClickAUE and ConvAUE vectors onto their first two principal components. The two embedding types occupy largely disjoint regions, indicating that they capture distinct aspects of user behavior rather than redundant representations of the same signal. 
+
+Cosine distance distribution. Figure 5 plots the probability density of pairwise cosine distances between ClickAUE and ConvAUE for the same users. The distribution is approximately uniform over [−1, +1] with mild concentrations at both extremes. A uniform distribution implies that the two embedding spaces are approximately orthogonal in aggregate — neither systematically aligned nor systematically opposed. The slight peaks near −1 and +1 suggest that a small subset of users exhibit strongly correlated or anti-correlated click and conversion patterns, while the majority of users are represented by embeddings that carry independent information. This near-orthogonality is consistent with the additive NE gains observed when combining both embeddings (Section 5.5): the two representations contribute largely non-overlapping predictive signal to the downstream ranker. 9Table 1 Training NE gain of downstream rankers, DUET outperforms and approaches theoretical upperbound. 
+
+Downstream Ranker %∆NE Gain With ClickAUE 0.21% With ConvAUE 0.30% With DUET 0.38% Upperbound: ConvAUE ⊥ ClickAUE 0.51% 
+
+5.5 Main Results 
+
+Table 1 reports the relative training NE reduction on the primary OCVR task. ConvAUE alone yields a 0.3% gain, ClickAUE alone yields 0.21%, and DUET (both embeddings combined) achieves 0.38%. The theoretical upper bound — computed under the assumption that ClickAUE and ConvAUE are perfectly orthogonal and their gains are fully additive — is 0.51%. DUET recovers approximately 75% of this upper bound (0.38/0.51) with at least ≈ 13% relative lift compared to standalone embeddings, indicating complementarity between the two embeddings while suggesting partial information overlap, consistent with the cosine distance analysis in Section 5.4. Notably, neither single-stream embedding alone approaches the combined gain, confirming that the click and conversion streams encode distinct predictive signals that are jointly more informative than either in isolation.  
+
+> Figure 6 Eval NE gains (%) on Different Types and Stages of downstream rankers. Higher is better.
+
+Figure 6 reports evaluation NE gains across six downstream offsite CVR models. These are distinct OCVR ranking models, spanning different ranking stages (e.g. final-stage feed vs. early-stage explore) and optimization objectives. They differ in traffic volume, attribution characteristics, and baseline feature sets. We omit further architectural and operational details as they are not important for the evaluation; the important property is that all six share the same DLRM backbone and differ only in the input feature set when augmented with DUET embeddings. Three observations emerge. First, DUET consistently outperforms ConvAUE/ClickAUE across all six models, with additive lifts from ClickAUE ranging from +0.04% (Ranker 5) to +0.21% (Ranker 6). This confirms that click-derived representations provide complementary signal to conversion-derived representations regardless of the downstream model configuration. Second, the magnitude of both ConvAUE/ClickAUE and DUET gains varies across models — Ranker 2 and Ranker 6 benefit most (0.35% and 0.36% respectively), while Ranker 5 shows more modest improvement (0.10%). This variation reflects differences in data volume, attribution rates, and the degree to which each model’s existing feature set already captures click- and conversion-related 10 Table 2 Ablation study on the upstream encoders.  
+
+> ConvAUE
+
+PT % ∆NE DR % ∆NE Remove Synthetic Data 0.13% 0.03% Reduce 1 Layer Attention 0.06% 0.025% Remove User Journey Event 0.3% 0.1% Remove Item Impression Event 0.04% 0.015% 
+
+> ClickAUE
+
+Scaling Sequence/Non-sequence Arch 0.13% 0.05% Ablate Item Impression Event Feature 0.04% 0.01% Ablate Page Event Feature 0.07% 0.03% patterns. Third, the relative contribution of ClickAUE (the gap between DUET and ConvAUE) is not constant: Ranker 6 shows the largest additive lift (+0.21%), suggesting that its baseline feature set has the most room for enrichment from click-stream representations, whereas Ranker 3 and Ranker 5 show smaller incremental gains, indicating that their existing features already capture some of the information encoded in ClickAUE. 
+
+5.6 Ablation Study 
+
+We perform an ablation study on how individual components—training data, model architecture complexity, and event features—affect pre-training (PT) and downstream ranker (DR) performance. Table 2 reports PT and DR NE degradation when each component is removed from its upstream encoder; larger values indicate greater importance. ConvAUE ablations. The user journey event feature is the most impactful single component across both encoders, with removal incurring a 0.30% PT NE loss and 0.1% DR NE loss. This feature captures cross-site browsing patterns that provide direct evidence of conversion intent. Unattributed synthetic data contributes 0.13% PT NE and 0.03% DR NE, confirming that conversion events lacking deterministic attribution nonetheless provide useful weak supervision for the sparse OCVR stream. Architectural depth (2-layer vs. 1-layer attention) accounts for 0.06% PT and 0.025% DR, a modest but consistent gain that validates the interleaved cross-/self-attention design under sparse supervision. ClickAUE ablations. Scaling the sequence and non-sequence architecture yields up to 0.13% PT NE and 0.05% DR NE gain, indicating that model capacity in the dense-feature branch is load-bearing for ClickAUE quality. Among individual event features, page engagement is the most impactful (0.07% PT and 0.03% DR), followed by target item impression events (0.04% PT and 0.015% DR). Cross-encoder comparison. ConvAUE is dominated by a single high-signal source (user journey at 0.30%), whereas ClickAUE draws gains uniformly with no event feature exceeding 0.07%. This reflects the data regimes: the sparse conversion stream depends on few high-signal events, while the dense click stream benefits from breadth across many modest sources. PT-to-DR transfer ratio. Comparing PT and DR NE changes reveals that sequence architecture modifications and event feature additions exhibit transfer ratios of 30%–40%, as these changes directly affect the sequence learning component used in embedding generation. Data-level changes such as synthetic data show a lower but still meaningful transfer ratio (23%), confirming that upstream data improvements propagate to downstream rankers through the learned embedding representations. 
+
+5.7 A/B Test Results 
+
+We validate DUET’s impact through A/B tests on two CVR models (Table 3). Experimentation in recom-mendation systems is resource-intensive and this constrains the number of models that can be evaluated concurrently. Both models show statistically significant improvements. Ranker 3 achieves a +0.66% CVR lift; Ranker 4 11 Table 3 A/B test results with relative lifts vs. the baseline. 
+
+Downstream Ranker Offsite CVR Lift Ranker 3 +0.66% Ranker 4 +0.15% achieves a +0.15% CVR lift. Therefore, both models deliver positive lifts, confirming that the offline NE gains (Section 5.5) translate to measurable A/B test impact. All results are statistically significant at p < 0.05 
+
+(two-sided t-test). Latency overhead is negligible, as embeddings are pre-computed via the ETI system (Section 4.1) and served through feature store lookup with no additional model inference at serving time. 
+
+# 6 Conclusion 
+
+We presented DUET, a framework that partitions heterogeneous behavioral data into domain-coherent click and conversion streams, pre-trains dedicated upstream encoders with stream-matched attention architectures, and integrates the resulting complementary embeddings into downstream rankers via asynchronous serving. The contribution lies not in the individual components — which draw on established techniques — but in their principled composition for offsite CVR prediction and detailed validation. Our experiments demonstrate as much as 0.38 % NE reduction over the strongest baseline, and A/B tests across multiple downstream models confirm consistent CVR lifts with negligible latency overhead. 
+
+Limitations and Future Work. The current data routing is static and rule-based; learned routing mechanisms could enable finer-grained, multi-stream partitioning. The attention configuration assignment (self-attention for clicks, cross-attention for conversions) was validated through ablation but not compared against alternative assignments. Frozen embeddings during downstream training favor operational decoupling at the potential burden of adaptation to distribution shifts — lightweight fine-tuning strategies (e.g., adapter layers) could mitigate this tradeoff. 
+
+# References 
+
+Zheng Chai, Hui Lu, Di Chen, Qin Ren, Yuchao Zheng, and Xun Zhou. 2025a. Adaptive Domain Scaling for Personalized Sequential Modeling in Recommenders. In Proceedings of the 48th International ACM SIGIR Conference on Research and Development in Information Retrieval (SIGIR ’25) . ACM, 4234–4238. doi: 10.1145/3726302.3731939 
+
+Zheng Chai, Qin Ren, Xijun Xiao, Huizhi Yang, Bo Han, Sijun Zhang, Di Chen, Hui Lu, Wenlin Zhao, Lele Yu, Xionghang Xie, Shiru Ren, Xiang Sun, Yaocheng Tan, Peng Xu, Yuchao Zheng, and Di Wu. 2025b. LONGER: Scaling Up Long Sequence Modeling in Industrial Recommenders. arXiv:2505.04421 [cs.IR] https://arxiv.org/abs/ 2505.04421 
+
+Jianxin Chang, Chenbin Zhang, Yiqun Hui, Dewei Leng, Yanan Niu, Yang Song, and Kun Gai. 2023. PEPNet: Parameter and Embedding Personalized Network for Infusing with Personalized Prior Information. arXiv:2302.01115 [cs.IR] 
+
+https://arxiv.org/abs/2302.01115 
+
+Paul Covington, Jay Adams, and Emre Sargin. 2016. Deep Neural Networks for YouTube Recommendations. In 
+
+Proceedings of the 10th ACM Conference on Recommender Systems . 191–198. Quanyu Dai, Haoxuan Li, Peng Wu, Zhenhua Dong, Xiao-Hua Zhou, Rui Zhang, Rui zhang, and Jie Sun. 2022. A Generalized Doubly Robust Learning Framework for Debiasing Post-Click Conversion Rate Prediction. arXiv:2211.06684 [cs.LG] https://arxiv.org/abs/2211.06684 
+
+Wei Deng, Junwei Pan, Tian Zhou, Deguang Kong, Aaron Flores, and Guang Lin. 2021. DeepLight: Deep Lightweight Feature Interactions for Accelerating CTR Predictions in Ad Serving. arXiv:2002.06987 [cs.LG] https://arxiv.org/ abs/2002.06987 
+
+Ke Fei, Xinyue Zhang, and Jingjing Li. 2024. Entire-Space Variational Information Exploitation for Post-Click Conversion Rate Prediction. arXiv:2502.15687 [cs.IR] https://arxiv.org/abs/2502.15687 
+
+12 Zichuan Fu, Xiangyang Li, Chuhan Wu, Yichao Wang, Kuicai Dong, Xiangyu Zhao, Mengchen Zhao, Huifeng Guo, and Ruiming Tang. 2024. A Unified Framework for Multi-Domain CTR Prediction via Large Language Models. arXiv:2312.10743 [cs.IR] https://arxiv.org/abs/2312.10743 
+
+Vineet Gupta, Tomer Koren, and Yoram Singer. 2018. Shampoo: Preconditioned Stochastic Tensor Optimization. arXiv:1802.09568 [cs.LG] https://arxiv.org/abs/1802.09568v2 
+
+Wang-Cheng Kang and Julian McAuley. 2018. Self-Attentive Sequential Recommendation. arXiv:1808.09781 [cs.IR] 
+
+https://arxiv.org/abs/1808.09781 
+
+Chao Li, Zhiyuan Liu, Mengmeng Wu, Yuchi Xu, Pipei Huang, Huan Zhao, Guoliang Kang, Qiwei Chen, Wei Li, and Dik Lun Lee. 2019. Multi-Interest Network with Dynamic Routing for Recommendation at Tmall. arXiv:1904.08030 [cs.IR] https://arxiv.org/abs/1904.08030 
+
+Haoxuan Li, Yan Lyu, Chunyuan Zheng, and Peng Wu. 2023. TDR-CL: Targeted Doubly Robust Collaborative Learning for Debiased Recommendations. arXiv:2203.10258 [cs.IR] https://arxiv.org/abs/2203.10258 
+
+Jiaqi Ma, Zhe Zhao, Xinyang Yi, Jilin Chen, Lichan Hong, and Ed H. Chi. 2018b. Modeling Task Relationships in Multi-Task Learning with Multi-Gate Mixture-of-Experts. In Proceedings of the 24th ACM SIGKDD International Conference on Knowledge Discovery and Data Mining . 1930–1939. Xiao Ma, Liqin Zhao, Guan Huang, Zhi Wang, Zelin Hu, Xiaoqiang Zhu, and Kun Gai. 2018a. Entire Space Multi-Task Model: An Effective Approach for Estimating Post-Click Conversion Rate. arXiv:1804.07931 [stat.ML] 
+
+https://arxiv.org/abs/1804.07931 
+
+Wentao Ouyang, Rui Dong, Xiuwu Zhang, Chaofeng Guo, Jinmei Luo, Xiangzheng Liu, and Yanlong Du. 2023a. Contrastive Learning for Conversion Rate Prediction. In Proceedings of the 46th International ACM SIGIR Conference on Research and Development in Information Retrieval (SIGIR ’23) . ACM, 1909–1913. doi: 10.1145/3539618.3591968 
+
+Wentao Ouyang, Xiuwu Zhang, Chaofeng Guo, Shukui Ren, Yupei Sui, Kun Zhang, Jinmei Luo, Yunfeng Chen, Dongbo Xu, Xiangzheng Liu, and Yanlong Du. 2023b. Masked Multi-Domain Network: Multi-Type and Multi-Scenario Conversion Rate Prediction with a Single Model. In Proceedings of the 32nd ACM International Conference on Information and Knowledge Management (CIKM ’23) . ACM, 4773–4779. doi: 10.1145/3583780.3614697 
+
+Dinesh Ramasamy, Shakti Kumar, Chris Cadonic, Jiaxin Yang, Sohini Roychowdhury, Esam Abdel Rhman, and Srihari Reddy. 2025. SIDE: Semantic ID Embedding for effective learning from sequences. arXiv:2506.16698 [cs.LG] 
+
+https://arxiv.org/abs/2506.16698 
+
+Sohini Roychowdhury, Doris Wang, Qian Ge, Joy Mu, and Srihari Reddy. 2026. COFFEE: COdesign Framework for Feature Enriched Embeddings in Ads-Ranking Systems. arXiv:2601.02807 [cs.IR] https://arxiv.org/abs/2601.02807 
+
+Xiang-Rong Sheng, Liqin Zhao, Guorui Zhou, Xinyao Ding, Binding Dai, Qiang Luo, Siran Yang, Jingshan Lv, Chi Zhang, Hongbo Deng, and Xiaoqiang Zhu. 2021. One Model to Serve All: Star Topology Adaptive Recommender for Multi-Domain CTR Prediction. arXiv:2101.11427 [cs.IR] https://arxiv.org/abs/2101.11427 
+
+Alex Shtoff, Yohay Kaplan, and Ariel Raviv. 2023. Improving conversion rate prediction via self-supervised pre-training in online advertising. In 2023 IEEE International Conference on Big Data (BigData) . IEEE, 1835–1842. doi: 10.1109/bigdata59044.2023.10386162 
+
+Runze Su, Jiayin Jin, Jiacheng Li, Sihan Wang, Guangtong Bai, Zelun Wang, Li Tang, Yixiong Meng, Huasen Wu, Zhimeng Pan, Kungang Li, Han Sun, Zhifang Liu, Haoyang Li, Siping Ji, Degao Peng, Jinfeng Zhuang, Ling Leng, and Prathibha Deshikachar. 2025. Multi-Faceted Large Embedding Tables for Pinterest Ads Ranking. arXiv:2508.05700 [cs.IR] https://arxiv.org/abs/2508.05700 
+
+Mingwei Tang, Meng Liu, Hong Li, Junjie Yang, Chenglin Wei, Boyang Li, Dai Li, Rengan Xu, Yifan Xu, Zehua Zhang, Xiangyu Wang, Linfeng Liu, Yuelei Xie, Chengye Liu, Labib Fawaz, Li Li, Hongnan Wang, Bill Zhu, and Sri Reddy. 2024. Async Learned User Embeddings for Ads Delivery Optimization. arXiv:2406.05898 [cs.IR] 
+
+https://arxiv.org/abs/2406.05898 
+
+Zhen Tian, Changwang Zhang, Wayne Xin Zhao, Xin Zhao, Ji-Rong Wen, and Zhao Cao. 2023. UFIN: Universal Feature Interaction Network for Multi-Domain Click-Through Rate Prediction. arXiv:2311.15493 [cs.IR] https: //arxiv.org/abs/2311.15493 
+
+Hao Wang, Tai-Wei Chang, Tianqiao Liu, Jianmin Huang, Zhichao Chen, Chao Yu, Ruopeng Li, and Wei Chu. 2022. ESCM2: Entire Space Counterfactual Multi-Task Model for Post-Click Conversion Rate Estimation. In Proceedings of the 45th International ACM SIGIR Conference on Research and Development in Information Retrieval (SIGIR ’22) . ACM, 363–372. doi: 10.1145/3477495.3531972 
+
+13 Junting Wang, Praneet Rathi, and Hari Sundaram. 2024. A Pre-trained Zero-shot Sequential Recommendation Framework via Popularity Dynamics. In 18th ACM Conference on Recommender Systems (RecSys ’24) . ACM, 433–443. doi: 10.1145/3640457.3688145 
+
+Ruoxi Wang, Bin Fu, Gang Fu, and Mingliang Wang. 2017. Deep & Cross Network for Ad Click Predictions. arXiv:1708.05123 [cs.LG] https://arxiv.org/abs/1708.05123 
+
+Ruoxi Wang, Rakesh Shivanna, Derek Cheng, Sagar Jain, Dong Lin, Lichan Hong, and Ed Chi. 2021. DCN V2: Improved Deep & Cross Network and Practical Lessons for Web-scale Learning to Rank Systems. In Proceedings of the Web Conference 2021 (WWW ’21) . ACM, 1785–1797. doi: 10.1145/3442381.3450078 
+
+Yuhan Wang, Qing Xie, Zhifeng Bao, Mengzi Tang, Lin Li, and Yongjian Liu. 2025. Enhancing Transferability and Consistency in Cross-Domain Recommendations via Supervised Disentanglement. In Proceedings of the Nineteenth ACM Conference on Recommender Systems (RecSys ’25) . ACM, 104–113. doi: 10.1145/3705328.3748044 
+
+Zhibo Xiao, Luwei Yang, Weiwen Jiang, Yi Wei, Yi Hu, and Hao Wang. 2020. Deep Multi-Interest Network for Click-Through Rate Prediction. In Proceedings of the 29th ACM International Conference on Information and Knowledge Management . 2265–2268. Ruobing Xie, Qi Liu, Liangdong Wang, Shukai Liu, Bo Zhang, and Leyu Lin. 2022. Contrastive Cross-domain Recommendation in Matching. arXiv:2112.00999 [cs.IR] https://arxiv.org/abs/2112.00999 
+
+Lee Xiong, Zhirong Chen, Rahul Mayuranath, Shangran Qiu, Arda Ozdemir, Lu Li, Yang Hu, Dave Li, Jingtao Ren, Howard Cheng, Fabian Souto Herrera, Ahmed Agiza, Baruch Epshtein, Anuj Aggarwal, Julia Ulziisaikhan, Chao Wang, Dinesh Ramasamy, Parshva Doshi, Sri Reddy, and Arnold Overwijk. 2026. LLaTTE: Scaling Laws for Multi-Stage Sequence Modeling in Large-Scale Ads Recommendation. arXiv:2601.20083 [cs.IR] https://arxiv.org/ abs/2601.20083 
+
+Zitao Xu, Weike Pan, and Zhong Ming. 2023. A Multi-view Graph Contrastive Learning Framework for Cross-Domain Sequential Recommendation. In Proceedings of the 17th ACM Conference on Recommender Systems (Singapore, Singapore) (RecSys ’23) . Association for Computing Machinery, New York, NY, USA, 491–501. doi: 10.1145/ 3604915.3608785 
+
+Buyun Zhang, Liang Luo, Yuxin Chen, Jade Nie, Xi Liu, Daifeng Guo, Yanli Zhao, Shen Li, Yuchen Hao, Yantao Yao, Guna Lakshminarayanan, Ellie Dingqiao Wen, Jongsoo Park, Maxim Naumov, and Wenlin Chen. 2024b. Wukong: Towards a Scaling Law for Large-Scale Recommendation. arXiv:2403.02545 [cs.LG] https://arxiv.org/abs/2403. 02545 
+
+Buyun Zhang, Liang Luo, Xi Liu, Jay Li, Zeliang Chen, Weilin Zhang, Xiaohan Wei, Yuchen Hao, Michael Tsang, Wenjun Wang, Yang Liu, Huayu Li, Yasmine Badr, Jongsoo Park, Jiyan Yang, Dheevatsa Mudigere, and Ellie Wen. 2022. DHEN: A Deep and Hierarchical Ensemble Network for Large-Scale Click-Through Rate Prediction. arXiv:2203.11014 [cs.IR] https://arxiv.org/abs/2203.11014 
+
+Gaowei Zhang, Yupeng Hou, Hongyu Lu, Yu Chen, Wayne Xin Zhao, and Ji-Rong Wen. 2023a. Scaling Law of Large Sequential Recommendation Models. arXiv:2311.11351 [cs.IR] https://arxiv.org/abs/2311.11351 
+
+Wei Zhang, Dai Li, Chen Liang, Fang Zhou, Zhongke Zhang, Xuewei Wang, Ru Li, Yi Zhou, Yaning Huang, Dong Liang, Kai Wang, Zhangyuan Wang, Zhengxing Chen, Fenggang Wu, Minghai Chen, Huayu Li, Yunnan Wu, Zhan Shu, Mindi Yuan, and Sri Reddy. 2024a. Scaling User Modeling: Large-scale Online User Representations for Ads Personalization in Meta. In Companion Proceedings of the ACM Web Conference 2024 (WWW ’24) . ACM, 47–55. doi: 10.1145/3589335.3648301 
+
+Yichi Zhang, Guisheng Yin, and Yuxin Dong. 2023b. Contrastive Learning with Frequency-Domain Interest Trends for Sequential Recommendation. Proceedings of the 17th ACM Conference on Recommender Systems (2023). 
+
+https://api.semanticscholar.org/CorpusID:261823407 
+
+Guorui Zhou, Na Mou, Ying Fan, Qi Pi, Weijie Bian, Chang Zhou, Xiaoqiang Zhu, and Kun Gai. 2018a. Deep Interest Evolution Network for Click-Through Rate Prediction. arXiv:1809.03672 [stat.ML] https://arxiv.org/abs/1809. 03672 
+
+Guorui Zhou, Chengru Song, Xiaoqiang Zhu, Ying Fan, Han Zhu, Xiao Ma, Yanghui Yan, Junqi Jin, Han Li, and Kun Gai. 2018b. Deep Interest Network for Click-Through Rate Prediction. arXiv:1706.06978 [stat.ML] 
+
+https://arxiv.org/abs/1706.06978 
+
+Jie Zhou, Qian Yu, Chuan Luo, and Jing Zhang. 2023. Feature Decomposition for Reducing Negative Transfer: A Novel Multi-task Learning Method for Recommender System. arXiv:2302.05031 [cs.IR] https://arxiv.org/abs/2302.05031 
+
+14 Jiajie Zhu, Yan Wang, Feng Zhu, and Zhu Sun. 2023. Domain Disentanglement with Interpolative Data Augmentation for Dual-Target Cross-Domain Recommendation. In Proceedings of the 17th ACM Conference on Recommender Systems (RecSys ’23) . ACM, 515–527. doi: 10.1145/3604915.3608802 
+
+15 7 Appendix 
+
+7.1 Upstream Encoder Details 
+
+We optimize the models using Distributed Shampoo optimizer Gupta et al . (2018), a second-order method that leverages Kronecker-factored preconditioning to capture pairwise gradient correlations. Compared to first-order optimizers such as Adam, AdaGrad, and SGD, Shampoo consistently yields statistically significant improvements while incurring no additional inference overhead. We configure Shampoo with learning rate 
+
+α = 0 .04 , β1 = 0 .9, β2 = 1 .0, ϵ = 10 −4, momentum μ = 0 , and weight decay λ = 10 −5. We apply linear learning rate warmup over 20 , 000 iterations, interpolating from the initial rate to 10 −3.
+
+7.2 Equivalence of Consolidated and Separate Upstream Models 
+
+In this section, we argue that the impact of AFL embeddings in the downstream model is approximately the same regardless of whether they are learned by one consolidated or two separate upstream models. 
+
+Assumption 1. The AFL upstream model matches the baseline architecture, except it includes the sequence learning component, while the baseline uses a fixed embedding (i.e., the sequence component is frozen in the baseline). 
+
+Assumption 2. In a consolidated model, interactions between different data sources or intermediate embeddings occur within the upstream model; with separate upstream models, their interaction is deferred to the downstream model (e.g., within the interaction layer or overarch). 
+
+Assumption 3. Interactions between embedding vectors are realized through dot product operations. Note that this is a simplifying assumption; in practice, DLRMs use nonlinear interaction layers (e.g., DCN cross layers, MLPs), which may introduce deviations from the equivalence derived below. 
+
+Lemma 1. Learning a joint user embedding with a consolidated model utilizing both click and conversion data is nearly equivalent to separately learning embeddings from each data type in the upstream and integrating them together in the downstream model. Proof. Let u ∈ Rn be ConvAUE and v ∈ Rn be ClickAUE. Let w ∈ Rn be scalar weights in the consolidated upstream, w′, w′′ ∈ Rn be scalar weights in ClickAUN and ConvAUN respectively, and z ∈ Rn be a scalar vector in the downstream model. By Assumption 2, the downstream model learns only z ∈ Rn regardless of whether the upstream is consolidated or separate. Table 4 summarizes the embeddings and associated weights in both settings. Upstream Downstream Consolidated (u · v)w  (u · v)wz
+
+Separate uw ′, vw ′′  uw ′ · vw ′′ z 
+
+> Table 4 Consolidated vs. independent user embeddings in upstream and downstream settings.
+
+For the consolidated downstream representation: 
+
+(u · v)w =
+
+> n
+
+X
+
+> i=1
+
+wi(ui · v)= ( w1u1) · v + · · · + ( wnun) · v (homogeneity) 
+
+=
+
+ nX
+
+> i=1
+
+wiui
+
+
+
+· v (distributivity) (10) 16 For the separate downstream representation, using Assumption 2: 
+
+uw ′ · vw ′′ = ( u ◦ w′) · (v ◦ w′′ ) (Hadamard product) 
+
+=
+
+> n
+
+X
+
+> i=1
+
+uiw′
+
+> i
+
+viw′′ 
+
+> i
+
+=
+
+> n
+
+X
+
+> i=1
+
+w∗ 
+
+> i
+
+uivi
+
+=
+
+ nX
+
+> i=1
+
+w∗ 
+
+> i
+
+ui
+
+
+
+· v (11) By Assumption 1, comparing Equations (10) and (11), we have w∗ ≈ w, establishing near-equivalence. 
+
+Discussion. The near-equivalence result shows that separating embeddings into two upstream models does not sacrifice representational power relative to a consolidated model, under linear interaction assumptions. However, the separate design offers important advantages beyond equivalence: it enables each upstream model to use a different attention architecture tailored to its data domain (pure self-attention for ClickAUM vs. interleaved cross-attention and self-attention for ConvAUM), which a single consolidated model cannot easily accommodate. Furthermore, separate models provide operational benefits including independent scaling, fault isolation, and the ability to retrain each pipeline on its own schedule without affecting the other. We note that in practice, DLRMs use nonlinear interaction layers (e.g., DCN cross layers, MLPs) rather than pure dot products, which means the actual equivalence may be looser than the linear case derived above; nonetheless, our empirical results (Section 5.5) confirm that the separate design performs at least as well as single-stream pre-training while offering the architectural flexibility described above. 17

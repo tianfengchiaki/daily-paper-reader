@@ -1,0 +1,70 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2606.09204v1/fig-001.webp",
+      "caption": "Table 11. Brand distribution under the 3-doc baseline (N=50 per model). Sennheiser MTW4 (the replacement document) appears 0/50 times in the top-2 of either model, confirming that the replacement does not displace target brands in the ranking.",
+      "page": 11,
+      "index": 1,
+      "width": 804,
+      "height": 254
+    },
+    {
+      "url": "assets/figures/arxiv/2606.09204v1/fig-002.webp",
+      "caption": "Table 8. Full model results under T1+T2 and Combined conditions. ∆ = change in hit rate (pp) vs. Baseline under the Combined condition.",
+      "page": 10,
+      "index": 2,
+      "width": 875,
+      "height": 235
+    },
+    {
+      "url": "assets/figures/arxiv/2606.09204v1/fig-003.webp",
+      "caption": "Table 9. Temperature robustness: hit rate (%) at t=0.3 vs. t=1.0 across three models.",
+      "page": 10,
+      "index": 3,
+      "width": 985,
+      "height": 184
+    },
+    {
+      "url": "assets/figures/arxiv/2606.09204v1/fig-004.webp",
+      "caption": "Table 13. Corpus composition by brand.",
+      "page": 14,
+      "index": 4,
+      "width": 863,
+      "height": 335
+    },
+    {
+      "url": "assets/figures/arxiv/2606.09204v1/fig-005.webp",
+      "caption": "Table 14. Parametric baseline (no-corpus) top-2 recommendation rates, n=100 per model.",
+      "page": 14,
+      "index": 5,
+      "width": 613,
+      "height": 261
+    },
+    {
+      "url": "assets/figures/arxiv/2606.09204v1/fig-006.webp",
+      "caption": "Figure 1. Experimental overview. A 40-document corpus is tested under four conditions across GPT and Claude model families. The same prompt injection produces promotion in GPT but suppression in safety-trained Claude models—the Injection Paradox.",
+      "page": 4,
+      "index": 6,
+      "width": 1013,
+      "height": 324
+    },
+    {
+      "url": "assets/figures/arxiv/2606.09204v1/fig-007.webp",
+      "caption": "Table 7. Trigger taxonomy and condition compositions.",
+      "page": 9,
+      "index": 7,
+      "width": 1017,
+      "height": 472
+    },
+    {
+      "url": "assets/figures/arxiv/2606.09204v1/fig-008.webp",
+      "caption": "Table 6. Cross-brand detailed statistics.",
+      "page": 9,
+      "index": 8,
+      "width": 1017,
+      "height": 261
+    }
+  ]
+}

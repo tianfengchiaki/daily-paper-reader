@@ -1,0 +1,30 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2606.08466v1/fig-001.webp",
+      "caption": "Figure 1: Examples of query recommendations in AI assistants and search engines",
+      "page": 2,
+      "index": 1,
+      "width": 468,
+      "height": 313
+    },
+    {
+      "url": "assets/figures/arxiv/2606.08466v1/fig-002.webp",
+      "caption": "Figure 8: Two cases where ToolRec successfully provides toolinvoking queries that users click. The content is translated into English for better understanding.",
+      "page": 8,
+      "index": 2,
+      "width": 486,
+      "height": 348
+    },
+    {
+      "url": "assets/figures/arxiv/2606.08466v1/fig-003.webp",
+      "caption": "Figure 3: An overview of our proposed ToolRec. (a) The overall pipeline of ToolRec establishes a closed-loop system from online deployment to model optimization. (b) During online serving, a context-aware tool retrieval module actively fetches relevant tools from the SysToolKit before generating query recommendations for users. By collecting users’ responses (clicks or non-clicks) to these queries, we extract raw implicit preference data. (c) To further improve the preference data quality, these raw click preference data are then refined by a dual-level calibration mechanism, incorporating both user-side calibration and system-side calibration. (d) The resulting calibrated preference data ultimately drives the final preference alignment phase, optimizing the LLM via weighted KTO.",
+      "page": 4,
+      "index": 3,
+      "width": 907,
+      "height": 497
+    }
+  ]
+}

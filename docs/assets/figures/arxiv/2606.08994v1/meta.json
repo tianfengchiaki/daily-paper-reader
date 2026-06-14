@@ -1,0 +1,70 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2606.08994v1/fig-001.webp",
+      "caption": "Figure 1: Language-Aware Token Boosting (LATB) enhances target language generation confidence by selectively boosting target language tokens.",
+      "page": 1,
+      "index": 1,
+      "width": 458,
+      "height": 387
+    },
+    {
+      "url": "assets/figures/arxiv/2606.08994v1/fig-002.webp",
+      "caption": "Figure 2: Strict prompt templates used in the experiment",
+      "page": 7,
+      "index": 2,
+      "width": 458,
+      "height": 269
+    },
+    {
+      "url": "assets/figures/arxiv/2606.08994v1/fig-003.webp",
+      "caption": "Figure 4: Impact of the Perturbation Value α on Language Confusion and Performance in LATB",
+      "page": 8,
+      "index": 3,
+      "width": 950,
+      "height": 258
+    },
+    {
+      "url": "assets/figures/arxiv/2606.08994v1/fig-004.webp",
+      "caption": "Figure 5: Impact of the Confidence Difference Threshold β on Language Confusion and Performance in AdaptiveLATB with α fixed at 1000",
+      "page": 8,
+      "index": 4,
+      "width": 950,
+      "height": 252
+    },
+    {
+      "url": "assets/figures/arxiv/2606.08994v1/fig-005.webp",
+      "caption": "Table 1: Language confusion across different methods evaluated on eight languages, reported as Token-level/Linelevel/Response-level language confusion in percentage.",
+      "page": 4,
+      "index": 5,
+      "width": 941,
+      "height": 232
+    },
+    {
+      "url": "assets/figures/arxiv/2606.08994v1/fig-006.webp",
+      "caption": "Table 2: Summarization performance across different methods evaluated on eight languages, reported as ROUGE1/ROUGE-2/ROUGE-L in percentage.",
+      "page": 4,
+      "index": 6,
+      "width": 941,
+      "height": 231
+    },
+    {
+      "url": "assets/figures/arxiv/2606.08994v1/fig-007.webp",
+      "caption": "Table 3: Qwen3 4B-I Language confusion and Summarization performance across different methods evaluated on eight languages reported as Response-level language confusion/ROUGE-L in percentage.",
+      "page": 9,
+      "index": 7,
+      "width": 940,
+      "height": 293
+    },
+    {
+      "url": "assets/figures/arxiv/2606.08994v1/fig-008.webp",
+      "caption": "Figure 7: Performance improvements with LATB correlate strongly with language confusion levels",
+      "page": 9,
+      "index": 8,
+      "width": 461,
+      "height": 477
+    }
+  ]
+}

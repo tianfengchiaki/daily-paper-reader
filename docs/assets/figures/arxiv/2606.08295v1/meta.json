@@ -1,0 +1,150 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2606.08295v1/fig-001.webp",
+      "caption": "Figure 1: Illustration of a TLRD deployment. Given raw features, the student model generates tri-level rationales.",
+      "page": 1,
+      "index": 1,
+      "width": 458,
+      "height": 456
+    },
+    {
+      "url": "assets/figures/arxiv/2606.08295v1/fig-002.webp",
+      "caption": "Table 1: Results across all datasets. Bold values denote the best result among LLM-based methods, and underlined values denote the strongest non-LLM tabular baseline for each dataset. Among fine-tuned student backbones, TLRD variants achieve the strongest classification performance within every backbone group.",
+      "page": 6,
+      "index": 2,
+      "width": 902,
+      "height": 542
+    },
+    {
+      "url": "assets/figures/arxiv/2606.08295v1/fig-003.webp",
+      "caption": "Table 8: LLM fine-tuning hyperparameters.",
+      "page": 15,
+      "index": 3,
+      "width": 461,
+      "height": 339
+    },
+    {
+      "url": "assets/figures/arxiv/2606.08295v1/fig-004.webp",
+      "caption": "Table 9: Prompt template used for Zero-shot / w/o Statistics / w/o Comparison / Tri-level Reasoning.",
+      "page": 15,
+      "index": 4,
+      "width": 950,
+      "height": 444
+    },
+    {
+      "url": "assets/figures/arxiv/2606.08295v1/fig-005.webp",
+      "caption": "Table 10: Prompt template for standard and Evidence-Augmented distillation corpus construction.",
+      "page": 15,
+      "index": 5,
+      "width": 950,
+      "height": 246
+    },
+    {
+      "url": "assets/figures/arxiv/2606.08295v1/fig-006.webp",
+      "caption": "Table 15: Ablation study of tri-level reasoning and distillation variants across classification and regression datasets.",
+      "page": 21,
+      "index": 6,
+      "width": 939,
+      "height": 807
+    },
+    {
+      "url": "assets/figures/arxiv/2606.08295v1/fig-007.webp",
+      "caption": "Figure 3: A qualitative case study comparing the same model under standard distillation and TLRD. For a sample with ground-truth label YES, the standard distillation model predicts incorrectly, whereas TLRD predicts correctly and provides a more grounded tri-level rationale.",
+      "page": 7,
+      "index": 7,
+      "width": 950,
+      "height": 329
+    },
+    {
+      "url": "assets/figures/arxiv/2606.08295v1/fig-008.webp",
+      "caption": "Table 7: Class imbalance handling rules used for baselines (fixed, not tuned).",
+      "page": 14,
+      "index": 8,
+      "width": 611,
+      "height": 198
+    },
+    {
+      "url": "assets/figures/arxiv/2606.08295v1/fig-009.webp",
+      "caption": "Table 6: Hyperparameter search spaces used in HPO.",
+      "page": 14,
+      "index": 9,
+      "width": 639,
+      "height": 779
+    },
+    {
+      "url": "assets/figures/arxiv/2606.08295v1/fig-010.webp",
+      "caption": "Figure 2: Overview of the TLRD framework. Starting from a label-only tabular dataset, we construct Tri-Level Augmented Inputs for the teacher model. Guided by the Tri-Level Rationale Schema, the teacher generates structured rationales, which are then distilled into a student LLM through supervised fine-tuning. During deployment, the student takes only the raw serialized row as input and outputs both the prediction and the tri-level rationale.",
+      "page": 3,
+      "index": 10,
+      "width": 835,
+      "height": 494
+    },
+    {
+      "url": "assets/figures/arxiv/2606.08295v1/fig-011.webp",
+      "caption": "Table 16: Average prompt-construction overhead before the LLM generation call. Overhead is measured in milliseconds and defined as Comparison Build (ms) + Stats Compute (ms/sample). Zero-shot and TLRD incur no test-time overhead because they do not require prompt-time statistics computation or retrieval.",
+      "page": 23,
+      "index": 11,
+      "width": 754,
+      "height": 404
+    },
+    {
+      "url": "assets/figures/arxiv/2606.08295v1/fig-012.webp",
+      "caption": "Table 3: Performance under different supervision sources for each student backbone.",
+      "page": 8,
+      "index": 12,
+      "width": 461,
+      "height": 275
+    },
+    {
+      "url": "assets/figures/arxiv/2606.08295v1/fig-013.webp",
+      "caption": "Table 13: Quantitative analyses of hallucination and consistency on classification datasets. Stab. denotes prediction stability averaged over all sampled instances; for each instance, 1.000 means that all repeated generations produce the same prediction, while 0.833 means that five out of six generations agree, i.e., one prediction shift. Cons. denotes the percentage of samples that pass the prediction–rationale consistency check; 100% means that all evaluated samples pass this test. Cite Err. denotes cited-number error, reported as the number of incorrect cited numbers over the total number of cited numbers. Case denotes the percentage of samples whose comparison-level rationales are supported by history cases. The selected supervisor is GPT-OSS-120B.",
+      "page": 19,
+      "index": 13,
+      "width": 854,
+      "height": 306
+    },
+    {
+      "url": "assets/figures/arxiv/2606.08295v1/fig-014.webp",
+      "caption": "Table 12: Prompt template for TLRD model inference.",
+      "page": 17,
+      "index": 14,
+      "width": 950,
+      "height": 446
+    },
+    {
+      "url": "assets/figures/arxiv/2606.08295v1/fig-015.webp",
+      "caption": "Table 5: Dataset statistics. For binary datasets, Imbalance (%) reports the positive-to-negative class ratio (P:N) in percentages. Preprocessing and subsampling details are provided in Appendix A.",
+      "page": 12,
+      "index": 15,
+      "width": 835,
+      "height": 186
+    },
+    {
+      "url": "assets/figures/arxiv/2606.08295v1/fig-016.webp",
+      "caption": "Table 17: Average input and output token counts for each dataset–model configuration. HC = HOME CREDIT, OK = OKCUPID. Token counts are computed using the tokenizer corresponding to each backbone model.",
+      "page": 24,
+      "index": 16,
+      "width": 943,
+      "height": 450
+    },
+    {
+      "url": "assets/figures/arxiv/2606.08295v1/fig-017.webp",
+      "caption": "Table 14: Human evaluation results on classification datasets using Gemma 3-12B as the backbone and GPTOSS-120B as the teacher model. Base, Std. Distill., and TLRD denote the non-finetuned model, standard distillation, and our method, respectively. Und., Util., and Struc. denote understandability, decision-support utility, and structuredness.",
+      "page": 20,
+      "index": 17,
+      "width": 458,
+      "height": 339
+    },
+    {
+      "url": "assets/figures/arxiv/2606.08295v1/fig-018.webp",
+      "caption": "Table 11: Prompt template for TLRD corpus construction.",
+      "page": 16,
+      "index": 18,
+      "width": 950,
+      "height": 1237
+    }
+  ]
+}

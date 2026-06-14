@@ -1,0 +1,22 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2606.08300v1/fig-001.webp",
+      "caption": "Figure 2. QueryWeaver architecture illustrating the transformation of natural language queries into graph representations and their execution via a structured planning and tool-calling pipeline.",
+      "page": 3,
+      "index": 1,
+      "width": 1017,
+      "height": 596
+    },
+    {
+      "url": "assets/figures/arxiv/2606.08300v1/fig-002.webp",
+      "caption": "Figure 1. QueryWeaver interface for “Find the file folders that contain email attachments from Jane Doe.” A. Execution graph with nodes for people (p), emails (e), files (f), and directories (dir), and edges such as from, has attachment, and parent, showing stepwise resolution (p → e → f → dir). B. Activity panel with intermediate results (e.g., 461 emails, 235 with attachments). C. Node details showing the final candidate set.",
+      "page": 2,
+      "index": 2,
+      "width": 904,
+      "height": 592
+    }
+  ]
+}

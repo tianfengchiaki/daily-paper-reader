@@ -1,0 +1,78 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2606.07954v1/fig-001.webp",
+      "caption": "Figure 3: DoReMi: uniform assigned weights vs learned domain mixture after 1 epoch of baseline and proxy training.",
+      "page": 11,
+      "index": 1,
+      "width": 524,
+      "height": 276
+    },
+    {
+      "url": "assets/figures/arxiv/2606.07954v1/fig-002.webp",
+      "caption": "Figure 7: MetaMathQA domain composition.",
+      "page": 25,
+      "index": 2,
+      "width": 489,
+      "height": 344
+    },
+    {
+      "url": "assets/figures/arxiv/2606.07954v1/fig-003.webp",
+      "caption": "Figure 8: Minority-domain validation log-pplx over training steps.",
+      "page": 26,
+      "index": 3,
+      "width": 533,
+      "height": 355
+    },
+    {
+      "url": "assets/figures/arxiv/2606.07954v1/fig-004.webp",
+      "caption": "Figure 2: Comparing Random selection with PartitionSel for Qwen2.5 and Llama3 models for downstream accuracy.",
+      "page": 10,
+      "index": 4,
+      "width": 743,
+      "height": 501
+    },
+    {
+      "url": "assets/figures/arxiv/2606.07954v1/fig-005.webp",
+      "caption": "Figure 9: Validation log-pplx on MetaMathQA.",
+      "page": 28,
+      "index": 5,
+      "width": 951,
+      "height": 364
+    },
+    {
+      "url": "assets/figures/arxiv/2606.07954v1/fig-006.webp",
+      "caption": "Figure 4: Reducing gradient conflicts. ID ignores cross-domain redundancy and can pick mutually conflicting gradients. PartitionSel trades off samples across domains, improving alignment and reducing destructive interference.",
+      "page": 12,
+      "index": 6,
+      "width": 512,
+      "height": 388
+    },
+    {
+      "url": "assets/figures/arxiv/2606.07954v1/fig-007.webp",
+      "caption": "Figure 5: Latency breakdown across 1 layer vs 3-layer gradient computation.",
+      "page": 12,
+      "index": 7,
+      "width": 919,
+      "height": 328
+    },
+    {
+      "url": "assets/figures/arxiv/2606.07954v1/fig-008.webp",
+      "caption": "Table 8: Subset selection performance on four molecule generation datasets using BLEU / Edit Distance, evaluated with Llama-3.2-3B.",
+      "page": 27,
+      "index": 8,
+      "width": 996,
+      "height": 223
+    },
+    {
+      "url": "assets/figures/arxiv/2606.07954v1/fig-009.webp",
+      "caption": "Table 3: Comparison of data mixture strategies",
+      "page": 9,
+      "index": 9,
+      "width": 960,
+      "height": 189
+    }
+  ]
+}

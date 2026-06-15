@@ -1,0 +1,126 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2606.09461v1/fig-001.webp",
+      "caption": "Table 3: LLM-Judge performance with GPT-4.1-Nano [59]. D = Dyadic, M = Multi-party, and D&M denotes the weighted average, weighted by the number of questions. * indicates the higher value between D and M. Bold numbers in the D&M column denote the best overall performance. Light blue shading highlights D&M cells. Additional results on other backbone models are reported in Appendix D.1.",
+      "page": 6,
+      "index": 1,
+      "width": 981,
+      "height": 463
+    },
+    {
+      "url": "assets/figures/arxiv/2606.09461v1/fig-002.webp",
+      "caption": "Table 9: Example session outline.",
+      "page": 15,
+      "index": 2,
+      "width": 848,
+      "height": 823
+    },
+    {
+      "url": "assets/figures/arxiv/2606.09461v1/fig-003.webp",
+      "caption": "Table 13: Weighted average (D&M) performance of different methods (Qwen2.5-7B-VL-Instruct [58], top-5 retrieval) across categories. Metrics: P=Precision, R=Recall, F1=F1-score, B=BLEU-1. Bold values indicate the best performance among the six methods within each metric column for the given category.",
+      "page": 21,
+      "index": 3,
+      "width": 902,
+      "height": 548
+    },
+    {
+      "url": "assets/figures/arxiv/2606.09461v1/fig-004.webp",
+      "caption": "Table 12: Weighted average (D&M) performance of different methods (Qwen2.5-3B-VL-Instruct [58], top-5 retrieval) across categories. Metrics: P=Precision, R=Recall, F1=F1-score, B=BLEU-1. Bold values indicate the best performance among the six methods within each metric column for the given category.",
+      "page": 21,
+      "index": 4,
+      "width": 902,
+      "height": 548
+    },
+    {
+      "url": "assets/figures/arxiv/2606.09461v1/fig-005.webp",
+      "caption": "Figure 1: Comparison between Human–Assistant Interaction and Human–Human Interaction.",
+      "page": 2,
+      "index": 5,
+      "width": 964,
+      "height": 517
+    },
+    {
+      "url": "assets/figures/arxiv/2606.09461v1/fig-006.webp",
+      "caption": "Table 4: Weighted average (D&M) performance of different methods across all categories. Metrics: P=Precision, R=Recall, F1=F1-score, B=BLEU-1. Results are from GPT-4.1-nano [59] with top-5 retrieval. Bold values indicate the best performance among the six methods within each metric column for the given category. Additional results on other backbone models are reported in Appendix D.2.",
+      "page": 7,
+      "index": 6,
+      "width": 902,
+      "height": 549
+    },
+    {
+      "url": "assets/figures/arxiv/2606.09461v1/fig-007.webp",
+      "caption": "Table 8: Complete participant profile schema and example.",
+      "page": 14,
+      "index": 7,
+      "width": 856,
+      "height": 562
+    },
+    {
+      "url": "assets/figures/arxiv/2606.09461v1/fig-008.webp",
+      "caption": "Table 1: Comparison of dialogue benchmarks. ✓: fully covered; ✗: not covered; ✓✗: partially covered. A. Round and A. Img. denote the average number of rounds and images per session, respectively, and MM-Info. indicates whether multimodal information is included.",
+      "page": 3,
+      "index": 8,
+      "width": 968,
+      "height": 297
+    },
+    {
+      "url": "assets/figures/arxiv/2606.09461v1/fig-009.webp",
+      "caption": "Figure 6: Judgment prompt template for memory evaluation.",
+      "page": 18,
+      "index": 9,
+      "width": 979,
+      "height": 1079
+    },
+    {
+      "url": "assets/figures/arxiv/2606.09461v1/fig-010.webp",
+      "caption": "Figure 4: Case studies of multimodal conversational reasoning. (a) Identifying ingredients in Lu Zhixing’s recipe. (b) Inferring Lin Chang’an’s conclusion based on a shared menu.",
+      "page": 8,
+      "index": 10,
+      "width": 974,
+      "height": 367
+    },
+    {
+      "url": "assets/figures/arxiv/2606.09461v1/fig-011.webp",
+      "caption": "Table 2: Statistics of the H2HMem dataset. “Conv. Data” denotes conversation data. “Eval. Data” denotes evaluation data. “Avg. sessions/dialogue” denotes the average number of sessions per dialogue. “Avg. rounds/session” denotes the average number of dialogue rounds per session. “Avg. participants/dialogue” denotes the average number of participants per dialogue.",
+      "page": 4,
+      "index": 11,
+      "width": 602,
+      "height": 234
+    },
+    {
+      "url": "assets/figures/arxiv/2606.09461v1/fig-012.webp",
+      "caption": "Figure 2: Dataset construction pipeline of our H2HMem. (1) generating dyadic and multi-party participant profiles from structured schemas; (2) creating multi-session scenarios with topic-specific outlines and image keywords; (3) collecting and refining images to align visual evidence with scenario outlines; (4) prompting an LLM scriptwriter with profiles, outlines, and image captions to generate dialogues; and (5) constructing and human-verifying question–answer pairs across memory recall, reasoning, and application.",
+      "page": 4,
+      "index": 12,
+      "width": 974,
+      "height": 490
+    },
+    {
+      "url": "assets/figures/arxiv/2606.09461v1/fig-013.webp",
+      "caption": "Table 10: LLM-Judge performance of various methods on dyadic and multi-party conversations using Qwen2.5-3B-VLInstruct [58]. D = Dyadic, M = Multi-party, D&M = Weighted average. * marks the higher value between D and M for the same method and metric. Bold numbers in D&M rows indicate the highest value among all methods for LLM-Judge performance on the weighted average dataset. Light blue background highlights the D&M data cells.",
+      "page": 19,
+      "index": 13,
+      "width": 983,
+      "height": 467
+    },
+    {
+      "url": "assets/figures/arxiv/2606.09461v1/fig-014.webp",
+      "caption": "Table 11: LLM-Judge performance of various methods on dyadic and multi-party conversations using Qwen2.5-VL-7BInstruct [58]. D = Dyadic, M = Multi-party, D&M = Weighted average. * marks the higher value between D and M for the same method and metric. Bold numbers in D&M rows indicate the highest value among all methods for LLM-Judge performance on the weighted average dataset. Light blue background highlights the D&M data cells.",
+      "page": 20,
+      "index": 14,
+      "width": 979,
+      "height": 467
+    },
+    {
+      "url": "assets/figures/arxiv/2606.09461v1/fig-015.webp",
+      "caption": "Figure 3: Figure (a) shows the total number and distribution of questions; Figure (b) provides definition and an example for each question type.",
+      "page": 5,
+      "index": 15,
+      "width": 958,
+      "height": 330
+    }
+  ]
+}

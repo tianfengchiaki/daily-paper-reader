@@ -1,0 +1,46 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2606.09366v1/fig-001.webp",
+      "caption": "Table 2: Public-reference scale calibration. Protocol and data differences make these numbers scale calibration rather than a strict leaderboard. N.R. denotes not reported; systems with all three benchmarks N.R. are omitted.",
+      "page": 6,
+      "index": 1,
+      "width": 828,
+      "height": 325
+    },
+    {
+      "url": "assets/figures/arxiv/2606.09366v1/fig-002.webp",
+      "caption": "Table 3: Diffuse top-16 routing rules out lexical token retrieval. The table reports the entropy and KL of the renormalized posterior π̃t,16 over the actual top-16 support forwarded to the LLM, with Hmax = log 16. The selected mixture is still close to uniform, so per-frame routing weights cannot be the symbolic transcript, emotion, or reasoning channel.",
+      "page": 7,
+      "index": 2,
+      "width": 828,
+      "height": 186
+    },
+    {
+      "url": "assets/figures/arxiv/2606.09366v1/fig-003.webp",
+      "caption": "Figure 2: Task-conditional self-attention readout. (a) Layer-14 effective rank of the text→audio attention under emotion vs. ASR prompts. C-Gate-Emotion stays pooled low-rank, C-Gate-ASR is per-position high-rank (9.78), and C-Gate-2T switches with the prompt (1.47→6.11), showing joint training preserves the task-conditional readout within a single model. (b) Dense per-layer effective rank across all 28 Qwen2.5-7B layers on C-Gate-3T. Both prompts remain low-rank (rankeff≲2.5) with a small ASR>emotion gap in early and middle layers. Shaded bands are ±1 s.d.",
+      "page": 8,
+      "index": 3,
+      "width": 635,
+      "height": 255
+    },
+    {
+      "url": "assets/figures/arxiv/2606.09366v1/fig-004.webp",
+      "caption": "Figure 1: C-Gate. Whisper hidden states h1:T are downsampled to pooled speech states h̃1:T ′ and scored against the frozen LLM vocabulary. C-Gate only projects queries and keys for scoring, but the values are always the raw LLM input embeddings Ev: there is no value projection and no post-codebook multilayer perceptron (MLP) for Ev . Therefore the weighted sum ẽt lies in convex(E) by construction before it is inserted into the LLM context. The inset in green visualizes this geometry: grey points are embedding rows, orange points are the selected top-16 support, and the blue star is the convex mixture. Only the bridge scorer, temperature, and selected LLM self-attention projections are trained, while the grey components are frozen.",
+      "page": 4,
+      "index": 4,
+      "width": 786,
+      "height": 333
+    },
+    {
+      "url": "assets/figures/arxiv/2606.09366v1/fig-005.webp",
+      "caption": "Figure 3: Causal interventions on C-Gate-3T. (a) RAVDESS emotion accuracy and (b) LibriSpeech test-clean WER under five perturbations against the small-N real-audio reference. Audio replacement collapses both tasks. Frame-trajectory shuffle collapses both tasks, showing that the working channel is the time-ordered trajectory rather than the unordered support set. Random or row-permuted E tables further erase both gains, isolating the role of the trained input manifold. The WER axis is capped at 200% for readability, with labels reporting uncapped values.",
+      "page": 9,
+      "index": 5,
+      "width": 635,
+      "height": 239
+    }
+  ]
+}

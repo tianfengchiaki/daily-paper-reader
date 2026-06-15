@@ -1,0 +1,54 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2606.08410v1/fig-001.webp",
+      "caption": "Figure 5: Experimental results on synthetic dataset.",
+      "page": 15,
+      "index": 1,
+      "width": 1005,
+      "height": 193
+    },
+    {
+      "url": "assets/figures/arxiv/2606.08410v1/fig-002.webp",
+      "caption": "Figure 6: Experimental results on synthetic dataset under query corruption.",
+      "page": 15,
+      "index": 2,
+      "width": 1008,
+      "height": 192
+    },
+    {
+      "url": "assets/figures/arxiv/2606.08410v1/fig-003.webp",
+      "caption": "Figure 1: Illustration of interaction styles in conversational recommendation. (a) Passive interaction: the system proposes items or keywords and receives binary feedback, providing limited information about user trade-offs. (b) Proactive interaction: the user expresses high-level priorities in the initial query, revealing structured preference signals that enable more informative objective trade-off inference.",
+      "page": 2,
+      "index": 3,
+      "width": 483,
+      "height": 564
+    },
+    {
+      "url": "assets/figures/arxiv/2606.08410v1/fig-004.webp",
+      "caption": "Figure 4: Experimental protocol of hotel recommendation with LLMs as conversational agents for simulation.",
+      "page": 14,
+      "index": 4,
+      "width": 761,
+      "height": 231
+    },
+    {
+      "url": "assets/figures/arxiv/2606.08410v1/fig-005.webp",
+      "caption": "Figure 2: Regret comparison on different datasets and query environments. (t denotes the number of interaction rounds)",
+      "page": 8,
+      "index": 5,
+      "width": 1000,
+      "height": 189
+    },
+    {
+      "url": "assets/figures/arxiv/2606.08410v1/fig-006.webp",
+      "caption": "Table 1: Comparison of representative algorithms in regret, computational complexity, and functionality. Columns denote: Pref. (preference awareness), Conv. (conversational interaction), Proact. (proactive query), and Robust. (robustness to corrupted preference signals).",
+      "page": 12,
+      "index": 6,
+      "width": 909,
+      "height": 315
+    }
+  ]
+}

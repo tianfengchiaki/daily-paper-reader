@@ -1,0 +1,102 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2606.12608v1/fig-001.webp",
+      "caption": "Table 4: Multi-turn weighted pass rate (%) by taxonomy dimension for the frontier model of each family, averaged across turns within each group.",
+      "page": 6,
+      "index": 1,
+      "width": 381,
+      "height": 425
+    },
+    {
+      "url": "assets/figures/arxiv/2606.12608v1/fig-002.webp",
+      "caption": "Table 3: Main results on ShoppingReasoningBench. Weighted pass rate (%) on single-turn (ST, 232 missions) and multi-turn (MT, 293 missions) subsets. Overall averages ST and MT weighted by mission count.",
+      "page": 6,
+      "index": 2,
+      "width": 477,
+      "height": 260
+    },
+    {
+      "url": "assets/figures/arxiv/2606.12608v1/fig-003.webp",
+      "caption": "Table 2: Judge validation against expert annotations by reasoning category. Left: rubric-level macro-F1 and Cohen’s κ (judge vs. mission-owner expert; ceiling = inter-expert). Right: Spearman ρ between judge weighted pass-rates and expert Likert (baseline = second expert’s pass-rates). N = rubrics; n = responses.",
+      "page": 6,
+      "index": 3,
+      "width": 812,
+      "height": 217
+    },
+    {
+      "url": "assets/figures/arxiv/2606.12608v1/fig-004.webp",
+      "caption": "Table 5: Multi-turn required vs. optional rubric pass rates (%), averaging the per-turn fraction of rubrics met within each importance class. Gap = Optional − Required; negative values indicate that models perform worse on above-and-beyond criteria.",
+      "page": 7,
+      "index": 4,
+      "width": 471,
+      "height": 259
+    },
+    {
+      "url": "assets/figures/arxiv/2606.12608v1/fig-005.webp",
+      "caption": "Table 6: Rubric difficulty by dimension. Floor = fraction passed by no model; Ceiling = fraction passed by all nine models. Higher ceiling indicates easier rubrics; higher floor indicates harder rubrics.",
+      "page": 7,
+      "index": 5,
+      "width": 467,
+      "height": 426
+    },
+    {
+      "url": "assets/figures/arxiv/2606.12608v1/fig-006.webp",
+      "caption": "Table 8: Cross-tabulation of reasoning stage and reasoning quality across all 10,863 rubrics. Each cell shows the number of rubrics at the intersection.",
+      "page": 13,
+      "index": 6,
+      "width": 846,
+      "height": 206
+    },
+    {
+      "url": "assets/figures/arxiv/2606.12608v1/fig-007.webp",
+      "caption": "Figure 4: Full LLM judge prompt used by ShoppingReasoningBench. The «. . . » tokens are filled at evaluation time with the current turn, rubric text, and (for multi-turn) conversation history through the preceding turn.",
+      "page": 19,
+      "index": 7,
+      "width": 962,
+      "height": 1031
+    },
+    {
+      "url": "assets/figures/arxiv/2606.12608v1/fig-008.webp",
+      "caption": "Table 7: Definitions of the six reasoning stages and six quality dimensions used to tag each rubric. Percentages give the share of ShoppingReasoningBench’s 10,863 rubrics carrying each tag.",
+      "page": 12,
+      "index": 8,
+      "width": 646,
+      "height": 375
+    },
+    {
+      "url": "assets/figures/arxiv/2606.12608v1/fig-009.webp",
+      "caption": "Figure 6: System prompt used in the system prompt ablation. This prompt is prepended as the system message for all three frontier models in the ablation condition.",
+      "page": 20,
+      "index": 9,
+      "width": 962,
+      "height": 484
+    },
+    {
+      "url": "assets/figures/arxiv/2606.12608v1/fig-010.webp",
+      "caption": "Figure 1: Expert annotation pipeline illustrated on a Constrained Recommendation query from ShoppingReasoningBench. The customer query is analyzed through structured reasoning stages, producing atomic rubrics—binary, independently verifiable evaluation criteria.",
+      "page": 5,
+      "index": 10,
+      "width": 448,
+      "height": 537
+    },
+    {
+      "url": "assets/figures/arxiv/2606.12608v1/fig-011.webp",
+      "caption": "Figure 2: The ShoppingReasoningBench reasoning taxonomy: five top-level categories and fifteen finegrained subcategories with occurrence frequencies and per-category lexical word clouds.",
+      "page": 5,
+      "index": 11,
+      "width": 457,
+      "height": 527
+    },
+    {
+      "url": "assets/figures/arxiv/2606.12608v1/fig-012.webp",
+      "caption": "Figure 5: Per-turn pass rate for the three frontier models across turns T1 through T7.",
+      "page": 16,
+      "index": 12,
+      "width": 433,
+      "height": 339
+    }
+  ]
+}

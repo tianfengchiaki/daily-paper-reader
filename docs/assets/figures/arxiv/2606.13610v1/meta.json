@@ -1,0 +1,134 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2606.13610v1/fig-001.webp",
+      "caption": "Figure 1: We instantiate the deployed search-augmented LLM pipeline. The two chains share the query → live web search → search results → LLM → recommendation backbone, differing only in where fake content enters: Real-world GEO (top): GEO operators inject fake content upstream into the live web; Our Simulation (bottom): due to Ethical Considerations, we rewrite a subset of the search results locally rather than polluting the live web.",
+      "page": 1,
+      "index": 1,
+      "width": 458,
+      "height": 308
+    },
+    {
+      "url": "assets/figures/arxiv/2606.13610v1/fig-002.webp",
+      "caption": "Figure 7: English replication: per-model fooled rate (averaged over 3 categories), Chinese vs English, sorted by EN−CN gap. n=10 products per (model, category); 360 trials total; 8/12 models within ±10 pp of their Chinese rate. Category-level breakdown in Appendix K.",
+      "page": 6,
+      "index": 2,
+      "width": 439,
+      "height": 307
+    },
+    {
+      "url": "assets/figures/arxiv/2606.13610v1/fig-003.webp",
+      "caption": "Table 4: Representative cases where Stage 1 (LLM extractor) requires correction by downstream stages. Type A: LLM ranked a non-brand token (geography, category descriptor, content marker) at top-1. Type B: LLM returned no usable brand anchor—either none, or a model/sub-brand string rather than the gold brand; the rule-based stage recovers the correct anchor from title patterns. Product column gives the English category label of the query; LLM top-1 and Final anchor show the actual strings, with English gloss for Chinese entries.",
+      "page": 15,
+      "index": 3,
+      "width": 460,
+      "height": 352
+    },
+    {
+      "url": "assets/figures/arxiv/2606.13610v1/fig-004.webp",
+      "caption": "Table 1: Web-content pollution against generative recommenders as a distinct risk. Unlike corrupted training data, poisoned retrieval corpora, or manipulated user prompts—all of which assume attacker write-access to a controlled channel—web-content pollution arises on the open live web, where no curator exists and commercial operators must surface content through standard SEO. Polluted content is plausible user-style text, leaving no distinctive cue, and outputs remain fluent and on-task.",
+      "page": 2,
+      "index": 4,
+      "width": 908,
+      "height": 201
+    },
+    {
+      "url": "assets/figures/arxiv/2606.13610v1/fig-005.webp",
+      "caption": "Figure 12: FORGE pipeline overview. Blue: search and retrieval (Serper SERP → quality gate → 10 docs). Orange: three-stage complementary-recall anchor extraction. Red/green: top-3 entity-replacement attack → 12 LLM inference → binary fooled-rate metric. Subsequent paragraphs in this appendix elaborate each stage; Figure 13 visualizes the multi-stage recall.",
+      "page": 14,
+      "index": 5,
+      "width": 941,
+      "height": 304
+    },
+    {
+      "url": "assets/figures/arxiv/2606.13610v1/fig-006.webp",
+      "caption": "Table 3: Per-category dataset statistics. Prod: number of products (15 each). Docs: anchor slots (10 per product). Brands: distinct real-brand pool across the category. B/prod: mean distinct brands per 10-doc bundle. D/b: average documents per brand (concentration index). The Total row is corpus-level (deduplicated): per-category Brands pools sum to 1,564, but only 1,478 are distinct across the corpus; B/prod and D/b are pooled over all bundles, not column averages.",
+      "page": 14,
+      "index": 6,
+      "width": 436,
+      "height": 374
+    },
+    {
+      "url": "assets/figures/arxiv/2606.13610v1/fig-007.webp",
+      "caption": "Table 12: English cross-lingual replication. Top-3 entity-replacement fooled rate on the 12 models evaluated in the Chinese main experiment, three categories spanning the low / mid / high vulnerability spectrum. EN: this replication (10 fresh English products per category, US-region SERP, EN evidence, EN system prompt). CN: matched Chinese category from the main experiment (Table 2). ∆ is EN − CN in percentage points.",
+      "page": 23,
+      "index": 7,
+      "width": 731,
+      "height": 418
+    },
+    {
+      "url": "assets/figures/arxiv/2606.13610v1/fig-008.webp",
+      "caption": "Figure 10: Skepticism-prompt ∆ across 12 models, sorted ascending. Closed-source cluster in the backfire half (+2 to +44 pp); open-weights near zero. Whiskers: binomial paired-difference 95% CI, n=225.",
+      "page": 8,
+      "index": 8,
+      "width": 460,
+      "height": 290
+    },
+    {
+      "url": "assets/figures/arxiv/2606.13610v1/fig-009.webp",
+      "caption": "Table 7: Top-1 placement of the fake brand under top3 entity replacement (12 models, 15 categories, n=15 products per cell).",
+      "page": 17,
+      "index": 9,
+      "width": 356,
+      "height": 367
+    },
+    {
+      "url": "assets/figures/arxiv/2606.13610v1/fig-010.webp",
+      "caption": "Table 6: Manual disambiguation of 8 cells flagged by the warning-marker lexicon. None is a genuine negative recommendation.",
+      "page": 17,
+      "index": 10,
+      "width": 451,
+      "height": 317
+    },
+    {
+      "url": "assets/figures/arxiv/2606.13610v1/fig-011.webp",
+      "caption": "Table 13: Defense efficacy across all 12 models, 15 categories, top-3 entity replacement. Baseline: cross-section fooled rate (n=225 per model). D1: same attack with the skepticism system-prompt prefix. D2 util.: model-prior consensus filter, fraction of real-brand recommendations in baseline that fall outside the model’s R= ∅ probe set; only the six open-weights models have R= ∅ probes collected (closed-source D2 marked “–”). D3 util.: crossdocument evidence-agreement filter at τ=4, fraction of real-brand recommendations whose cross-doc corroboration count < 4. D2 and D3 both remove the fake brand in nearly all cells (D2 almost always, via the model-prior probe; D3 at τ=4 catches 89.9% of fake-brand mentions across the 12-model panel); the meaningful comparison is utility cost on real-brand recommendations.",
+      "page": 24,
+      "index": 11,
+      "width": 467,
+      "height": 359
+    },
+    {
+      "url": "assets/figures/arxiv/2606.13610v1/fig-012.webp",
+      "caption": "Table 15: Per-category D1 effect ∆ (D1 − baseline, pp) averaged across model subgroups, all 12 models × 15 categories × 15 products. Positive values indicate D1 worsens fooled rate. CS-6: six closed-source models. OSS-6: six open-weights models. 12-mean: all 12 models pooled.",
+      "page": 24,
+      "index": 12,
+      "width": 442,
+      "height": 532
+    },
+    {
+      "url": "assets/figures/arxiv/2606.13610v1/fig-013.webp",
+      "caption": "Table 11: Attack realism ablation, per-model averages across all 15 categories × 5 products = 75 cells per (model, attack). A1: cross-section entity replacement (restricted to the same 5-product subset for parity). A2: 120–180-character LLM-generated promotional paragraph injected into an otherwise unmodified page. A3: 500–700-character LLM-generated review article replacing the entire body, hosted at a same-domain URL. ∆3−2: A3 minus A2 in percentage points.",
+      "page": 20,
+      "index": 13,
+      "width": 412,
+      "height": 332
+    },
+    {
+      "url": "assets/figures/arxiv/2606.13610v1/fig-014.webp",
+      "caption": "Table 10: False-positive control across all 12 evaluated models. Layer B (parametric R= ∅): no evidence bundle. Layer C (clean): unmodified evidence bundle. The empirical FP rate is 0.30% in (B) and 0.00% in (C); all five (B) hits trace to two prefixes already flagged by Layer A (和云 as Chinese conjunction; 征途 as Deuter Aircontact nickname).",
+      "page": 20,
+      "index": 14,
+      "width": 489,
+      "height": 363
+    },
+    {
+      "url": "assets/figures/arxiv/2606.13610v1/fig-015.webp",
+      "caption": "Table 2: Fooled rate (%) per (model, category) cell, top-3 replacement, n=15 per cell. Colors: light green (low) → red (high). Bold = per-row min; underline = per-row max. Right column / bottom row: averages over 15 categories / 12 models.",
+      "page": 5,
+      "index": 15,
+      "width": 952,
+      "height": 665
+    },
+    {
+      "url": "assets/figures/arxiv/2606.13610v1/fig-016.webp",
+      "caption": "Table 5: Qualitative outputs for the query “Recommend the top-5 most worth-buying screen protectors” under top-3 entity replacement on the Electronics Accessories category. The fake brand Langyu (朗域, Lang-yu) appears only in the three replaced documents at ranks 1–3; ranks 4–10 contain real brands (e.g., Shanmo,闪魔). Red bold: fake brand reproduced by the model. Blue: real brands. F: fooled. R: resisted. Outputs are translated and abridged; ellipses are ours.",
+      "page": 16,
+      "index": 16,
+      "width": 941,
+      "height": 293
+    }
+  ]
+}

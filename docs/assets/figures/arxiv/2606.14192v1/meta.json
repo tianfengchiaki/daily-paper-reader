@@ -1,0 +1,134 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2606.14192v1/fig-001.webp",
+      "caption": "Table 7. Hyperparameter and Architecture Comparison. Summary of the model configurations for the main AuctionNet policy, the auxiliary encoder used for retrieval, and the model used for Gym locomotion tasks.",
+      "page": 15,
+      "index": 1,
+      "width": 825,
+      "height": 349
+    },
+    {
+      "url": "assets/figures/arxiv/2606.14192v1/fig-002.webp",
+      "caption": "Table 8. Critic Hyperparameter Comparison between AuctionNet and D4RL Benchmarks. Summary of architecture and optimization details for IQL (Critic) modules.",
+      "page": 15,
+      "index": 2,
+      "width": 571,
+      "height": 251
+    },
+    {
+      "url": "assets/figures/arxiv/2606.14192v1/fig-003.webp",
+      "caption": "Figure 11. Ablation study on Critic architecture. Performance comparison between the CQL-based critic (Blue) and the IQL-based critic (Orange) across varying budget constraints. The results indicate that while both architectures yield comparable performance in low-budget regimes, the IQL critic demonstrates superior scalability and robustness, consistently outperforming the CQL variant as the budget increases.",
+      "page": 21,
+      "index": 3,
+      "width": 491,
+      "height": 319
+    },
+    {
+      "url": "assets/figures/arxiv/2606.14192v1/fig-004.webp",
+      "caption": "Figure 10. Detailed Performance Analysis across Budgets. Comparison of Average Score (Left) and Risk/Exceed Rate (Right) under varying budget constraints. The constraint-aware critic (w/ CPA) consistently maintains high rewards while significantly reducing the risk of budget violation compared to the baseline.",
+      "page": 21,
+      "index": 4,
+      "width": 800,
+      "height": 224
+    },
+    {
+      "url": "assets/figures/arxiv/2606.14192v1/fig-005.webp",
+      "caption": "Table 1. Comparison with baselines on AuctionNet and AuctionNet-Sparse datasets under different budget constraints. We report values (mean ± standard deviation) over 10 seeds. The best results are bolded, and the second-best results are underlined.",
+      "page": 7,
+      "index": 5,
+      "width": 1017,
+      "height": 358
+    },
+    {
+      "url": "assets/figures/arxiv/2606.14192v1/fig-006.webp",
+      "caption": "Table 2. Comparison with baselines on D4RL benchmarks. We report normalized scores over 5 seeds. The best results are bolded, and the second-best results are underlined. The results for baselines are taken from original papers.",
+      "page": 7,
+      "index": 6,
+      "width": 1017,
+      "height": 360
+    },
+    {
+      "url": "assets/figures/arxiv/2606.14192v1/fig-007.webp",
+      "caption": "Figure 12. Sensitivity analysis of sampling size L. Average Total Reward as the number of generated candidate actions L increases. Error bars denote the standard deviation over 5 seeds. While the performance is robust to variations in L, the retrieval-augmented variant consistently outperforms the baseline across all sampling budgets.",
+      "page": 22,
+      "index": 7,
+      "width": 492,
+      "height": 249
+    },
+    {
+      "url": "assets/figures/arxiv/2606.14192v1/fig-008.webp",
+      "caption": "Figure 13. Sensitivity analysis of retrieved neighbor count K. Average Total Reward comparison between DRIVE and the retrieval-only baseline. Error bars denote standard deviation over 5 seeds. While only retrieve relies on a larger K for performance, DRIVE demonstrates superior robustness, maintaining high rewards even with minimal retrieval context (K = 1).",
+      "page": 22,
+      "index": 8,
+      "width": 492,
+      "height": 248
+    },
+    {
+      "url": "assets/figures/arxiv/2606.14192v1/fig-009.webp",
+      "caption": "Figure 7. Representative retrieval neighborhoods illustrating the discrepancy between the DT prediction and the optimal action. Each panel shows the empirical distribution of actions, the mean action predicted by the DT head (blue vertical line, “DT (Mean)”), and the action that achieves the highest return in that neighborhood (red vertical line, “Optimal”). “Gap” denotes the absolute difference between these two actions.",
+      "page": 18,
+      "index": 9,
+      "width": 892,
+      "height": 469
+    },
+    {
+      "url": "assets/figures/arxiv/2606.14192v1/fig-010.webp",
+      "caption": "Figure 8. Qualitative comparison of trajectories on Maze2D. The top row displays results on maze2d-medium, and the bottom row on maze2d-large. Green solid lines denote DRIVE (Ours), and red dashed lines denote the DT baseline. DRIVE consistently generates collision-free paths to the goal without manual seed selection.",
+      "page": 19,
+      "index": 10,
+      "width": 941,
+      "height": 534
+    },
+    {
+      "url": "assets/figures/arxiv/2606.14192v1/fig-011.webp",
+      "caption": "Figure 6. Comparison of Action Distributions: AuctionNet vs. AuctionNet-Sparse. The top row shows the original dense dataset, while the bottom row depicts the sparse variant. The log-scale plots (right column) reveal the extreme long-tail property of the sparse dataset, where the action space extends significantly with a drastic increase in kurtosis. This shift highlights the exploration difficulty in the sparse setting.",
+      "page": 17,
+      "index": 11,
+      "width": 803,
+      "height": 493
+    },
+    {
+      "url": "assets/figures/arxiv/2606.14192v1/fig-012.webp",
+      "caption": "Table 10. Evaluation of Generalization across Architectures. The DRIVE module is integrated into four distinct policy backbones (BC, PDIT, CDT, and DT) on the AuctionNet dataset. We report the total rewards (mean ± standard deviation) over 5 seeds.",
+      "page": 20,
+      "index": 12,
+      "width": 1020,
+      "height": 206
+    },
+    {
+      "url": "assets/figures/arxiv/2606.14192v1/fig-013.webp",
+      "caption": "Figure 9. Q-function multimodality analysis across delivery periods P7–P13 (2,000 randomly sampled states). (a) Proportion of states with multimodal Q-functions (≥ 2 peaks). (b) DT suboptimal rate (Q-percentile < 80% ) for multimodal vs. unimodal states. (c) Average DT distance to a∗ for multimodal vs. unimodal states.",
+      "page": 20,
+      "index": 13,
+      "width": 850,
+      "height": 235
+    },
+    {
+      "url": "assets/figures/arxiv/2606.14192v1/fig-014.webp",
+      "caption": "Figure 3. The DRIVE framework. DRIVE is built upon a Transformer-based offline RL paradigm, incorporating (I) a multimodal GMM-based policy, (II) a retrieval index over contextual state embeddings, and (III) a value-based offline critic. At inference time, generated and retrieved actions are jointly evaluated, and the final action is selected via critic-based ranking.",
+      "page": 5,
+      "index": 14,
+      "width": 991,
+      "height": 560
+    },
+    {
+      "url": "assets/figures/arxiv/2606.14192v1/fig-015.webp",
+      "caption": "Figure 5. Visualizations of the AuctionNet and D4RL benchmarks.",
+      "page": 16,
+      "index": 15,
+      "width": 808,
+      "height": 306
+    },
+    {
+      "url": "assets/figures/arxiv/2606.14192v1/fig-016.webp",
+      "caption": "Table 9. The Parameters of AuctionNet and AuctionNet-sparse.",
+      "page": 16,
+      "index": 16,
+      "width": 513,
+      "height": 253
+    }
+  ]
+}

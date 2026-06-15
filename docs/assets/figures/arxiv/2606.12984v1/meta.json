@@ -1,0 +1,70 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2606.12984v1/fig-001.webp",
+      "caption": "Figure 3: SBS human evaluation win/tie/lose rates for Stage 3 vs. ManualSkill across five intent categories (300 queries, 60 per intent). SkillChain achieves a net win across all intents, with the largest margin on contentdemanding scenes.",
+      "page": 6,
+      "index": 1,
+      "width": 459,
+      "height": 270
+    },
+    {
+      "url": "assets/figures/arxiv/2606.12984v1/fig-002.webp",
+      "caption": "Table 5: Ablation on Stage 3 design choices. ∆ reports the change relative to the full variant within each group ( – denotes the reference row). Metrics defined in §4.1.",
+      "page": 11,
+      "index": 2,
+      "width": 817,
+      "height": 258
+    },
+    {
+      "url": "assets/figures/arxiv/2606.12984v1/fig-003.webp",
+      "caption": "Table 6: Structural comparison of a ManualSkill vs. a SkillChain self-evolved Skill for the Utility Assistance intent across six dimensions.",
+      "page": 11,
+      "index": 3,
+      "width": 881,
+      "height": 506
+    },
+    {
+      "url": "assets/figures/arxiv/2606.12984v1/fig-004.webp",
+      "caption": "Table 9: LLM Judge prompt template used in Stage 3. Raw scores (max 50) are linearly normalized to [0, 1] for reporting.",
+      "page": 14,
+      "index": 4,
+      "width": 950,
+      "height": 1029
+    },
+    {
+      "url": "assets/figures/arxiv/2606.12984v1/fig-005.webp",
+      "caption": "Figure 1: An overview of the SkillChain three-stage framework. (a) Skill Creator bootstraps Skills from task specifications and user trajectories via an engineer loop, then gates quality through human reflection before deployment. (b) Route Optimizer continuously mines routing failures in production and applies update/merge/discard operations to keep Skill Description boundaries aligned with real traffic. (c) Body Refiner evaluates responses through a dual-path pipeline and aggregates cross-sample signals to drive iterative Skill Body refinement.",
+      "page": 3,
+      "index": 5,
+      "width": 941,
+      "height": 458
+    },
+    {
+      "url": "assets/figures/arxiv/2606.12984v1/fig-006.webp",
+      "caption": "Table 7: Implementation settings for all SkillChain experiments.",
+      "page": 13,
+      "index": 6,
+      "width": 841,
+      "height": 506
+    },
+    {
+      "url": "assets/figures/arxiv/2606.12984v1/fig-007.webp",
+      "caption": "Table 8: Routing boundary analysis prompt templates used in Stage 2. Case A (mismatch) generates Description refinement suggestions; Case B (match) reinforces correct boundary rules.",
+      "page": 13,
+      "index": 7,
+      "width": 950,
+      "height": 733
+    },
+    {
+      "url": "assets/figures/arxiv/2606.12984v1/fig-008.webp",
+      "caption": "Table 2: Main offline evaluation results. Each SkillChain row adds one pipeline stage cumulatively over the previous. LLM Judge dimensions are each scored in [0, 100]: TCR Tool Call Rationality, CCC Card Composition Compliance, CQ Content Quality, CA Constraint Adherence; Avg normalized aggregate score across all four dimensions. †CCC",
+      "page": 5,
+      "index": 8,
+      "width": 908,
+      "height": 190
+    }
+  ]
+}

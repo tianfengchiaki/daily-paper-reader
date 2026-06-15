@@ -1,0 +1,46 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2606.11118v2/fig-001.webp",
+      "caption": "Figure 2 Regret of TWL-UCB Algorithm",
+      "page": 24,
+      "index": 1,
+      "width": 964,
+      "height": 291
+    },
+    {
+      "url": "assets/figures/arxiv/2606.11118v2/fig-002.webp",
+      "caption": "Figure 3 Performance Comparison of Algorithms: TWL-UCB vs. Agrawal et al. (2019)",
+      "page": 24,
+      "index": 2,
+      "width": 964,
+      "height": 594
+    },
+    {
+      "url": "assets/figures/arxiv/2606.11118v2/fig-003.webp",
+      "caption": "Figure 1 Sequence of Events on Online Platform",
+      "page": 8,
+      "index": 3,
+      "width": 978,
+      "height": 326
+    },
+    {
+      "url": "assets/figures/arxiv/2606.11118v2/fig-004.webp",
+      "caption": "Figure 4 Value Function vs. Assortment Bound (B)",
+      "page": 26,
+      "index": 4,
+      "width": 964,
+      "height": 291
+    },
+    {
+      "url": "assets/figures/arxiv/2606.11118v2/fig-005.webp",
+      "caption": "Figure 5 Marginal Increase in Value Function vs. Assortment Bound (B)",
+      "page": 26,
+      "index": 5,
+      "width": 964,
+      "height": 295
+    }
+  ]
+}

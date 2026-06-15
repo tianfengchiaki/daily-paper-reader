@@ -1,0 +1,230 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2606.09038v1/fig-001.webp",
+      "caption": "Fig. 20: Overview of multimodal personalization paradigms.",
+      "page": 38,
+      "index": 1,
+      "width": 775,
+      "height": 600
+    },
+    {
+      "url": "assets/figures/arxiv/2606.09038v1/fig-002.webp",
+      "caption": "Fig. 12: Associations between preference heterogeneity and personalized RL safety attacks.",
+      "page": 26,
+      "index": 2,
+      "width": 600,
+      "height": 484
+    },
+    {
+      "url": "assets/figures/arxiv/2606.09038v1/fig-003.webp",
+      "caption": "Fig. 4: Overview of prompting-based personalization.",
+      "page": 15,
+      "index": 3,
+      "width": 767,
+      "height": 436
+    },
+    {
+      "url": "assets/figures/arxiv/2606.09038v1/fig-004.webp",
+      "caption": "Fig. 14: Overview of MoE-based personalization. (i) Personalization techniques range from shared experts to increasingly adaptive specialization (group-level, pattern-level, and dynamic). (ii) Safety risks and mitigations span routing leakage, manipulation attacks, group bias, and dynamic instability, with representative works at the leaf nodes.",
+      "page": 30,
+      "index": 4,
+      "width": 771,
+      "height": 330
+    },
+    {
+      "url": "assets/figures/arxiv/2606.09038v1/fig-005.webp",
+      "caption": "Fig. 2: Overview of personalization representations, techniques, and associated safety risks. Safety risks and challenges span the entire personalization lifecycle, from user representation to personalization implementation, interaction, and evaluation. Different representation forms expose user information at different levels. Personalization paradigms further build upon these representations to adapt model behaviors, introducing paradigm-specific vulnerabilities. For example, retrievalaugmented personalization methods may suffer from retrieval manipulation, while agent-based systems face risks related to unsafe planning and decision-making. Beyond paradigm-specific threats, some risks arise inherently from personalized adaptation itself rather than any specific personalization paradigm.",
+      "page": 7,
+      "index": 5,
+      "width": 775,
+      "height": 675
+    },
+    {
+      "url": "assets/figures/arxiv/2606.09038v1/fig-006.webp",
+      "caption": "Fig. 10: Architectural differences in Prompt Tuning strategies among Persoma [96], PPR [138], and SPT [139]. While Persoma relies on an adapter-based derivation for task concatenation, PPR focuses on profile-driven generation with contrastive training, and SPT shifts to a retrieval-and-fusion paradigm from an initialized prompt pool.",
+      "page": 22,
+      "index": 6,
+      "width": 756,
+      "height": 621
+    },
+    {
+      "url": "assets/figures/arxiv/2606.09038v1/fig-007.webp",
+      "caption": "Fig. 18: A representative system-level architecture for personalized LLM agents, highlighting the interaction among user/environment inputs, personalization storage, context construction, reasoning and planning, tool execution, feedback updates, and guardrail-based safety supervision [228].",
+      "page": 34,
+      "index": 7,
+      "width": 765,
+      "height": 229
+    },
+    {
+      "url": "assets/figures/arxiv/2606.09038v1/fig-008.webp",
+      "caption": "Table 4: Mapping between personalized representation types, storage mechanisms, associated attack surfaces, and their characteristic, often overlapping leakage risks [43, 86–90].",
+      "page": 14,
+      "index": 8,
+      "width": 765,
+      "height": 240
+    },
+    {
+      "url": "assets/figures/arxiv/2606.09038v1/fig-009.webp",
+      "caption": "Fig. 17: Safety risk caused by pruning-based personalization [221]. (a) Attackers identify weights likely to be pruned and implant malicious functions in retained parameters. They fix tampered weights and retrain discarded ones to restore normal performance and evade safety checks. (b) The manipulated model is released publicly with no obvious risks. (c) End-user pruning alters model structure, triggers hidden threats and produces harmful outputs.",
+      "page": 33,
+      "index": 9,
+      "width": 775,
+      "height": 296
+    },
+    {
+      "url": "assets/figures/arxiv/2606.09038v1/fig-010.webp",
+      "caption": "Fig. 19: System-level personalized LLM agents: architectural components, safety risks and mitigation strategies.",
+      "page": 35,
+      "index": 10,
+      "width": 771,
+      "height": 777
+    },
+    {
+      "url": "assets/figures/arxiv/2606.09038v1/fig-011.webp",
+      "caption": "Table 6: Examples of techniques solving the safety concerns caused by personalization.",
+      "page": 46,
+      "index": 11,
+      "width": 777,
+      "height": 705
+    },
+    {
+      "url": "assets/figures/arxiv/2606.09038v1/fig-012.webp",
+      "caption": "Fig. 7: Comparison of RAP paradigms. Early static methods retrieve personalized information using query-only retrieval from user memory or external knowledge bases [77, 110]. User-adaptive retrieval further incorporates dynamic user signals, such as profiles and historical preferences, to better match evolving user needs [112, 113]. More recent response-aware methods additionally integrate conversational context to dynamically determine whether and how personalization should be applied during generation [114].",
+      "page": 18,
+      "index": 12,
+      "width": 623,
+      "height": 384
+    },
+    {
+      "url": "assets/figures/arxiv/2606.09038v1/fig-013.webp",
+      "caption": "Table 5: Representative personalization benchmarks. (The blue, orange, green, and purple sections correspond to benchmarks with language, classification, dialogue, and personalization safety metrics, respectively. Safe awareness refers to whether safety metrics are included in the benchmark.)",
+      "page": 45,
+      "index": 13,
+      "width": 771,
+      "height": 510
+    },
+    {
+      "url": "assets/figures/arxiv/2606.09038v1/fig-014.webp",
+      "caption": "Fig. 13: Comparison of MoE-based personalization paradigms under different routing and expert specialization strategies. Personalization evolves from shared experts [190] with generic input routing, to group-level [191] and pattern-level [192–195] expert allocation conditioned on user characteristics and contextual patterns, and finally to dynamic expert [196] specialization with state-dependent routing based on evolving hidden representations.",
+      "page": 28,
+      "index": 14,
+      "width": 754,
+      "height": 310
+    },
+    {
+      "url": "assets/figures/arxiv/2606.09038v1/fig-015.webp",
+      "caption": "Fig. 3: An overview of personalization representation types. This figure presents four forms of personalization information as inputs for LLMs. Structured profile encodes user attributes in explicit key–value formats (e.g., age-30). Textual persona represents user characteristics through natural language descriptions and semantic narratives. Preference signals capture user preferences from explicit or implicit feedback, such as pairwise choices, ratings, clicks, corrections, and behavioral interactions. Memory structure organizes personalized information across different temporal scopes, including short-term conversational context, session-level interaction history, and persistent long-term user memory.",
+      "page": 8,
+      "index": 15,
+      "width": 777,
+      "height": 523
+    },
+    {
+      "url": "assets/figures/arxiv/2606.09038v1/fig-016.webp",
+      "caption": "Fig. 21: Comparison of multimodal personalization modeling paradigms, illustrating the evolution from globally shared and user-independent modeling toward preferenceinfluenced and ultimately user-conditioned systems. Existing approaches progressively extend multimodal alignment and fusion from global shared representations [282] to preference-aware [262] and personalized modeling mechanisms [263]. Notably, alignment and fusion are not always explicitly separated as illustrated in the figure, but are often implicitly coupled and jointly optimized during representation learning.",
+      "page": 40,
+      "index": 16,
+      "width": 656,
+      "height": 437
+    },
+    {
+      "url": "assets/figures/arxiv/2606.09038v1/fig-017.webp",
+      "caption": "Table 1: A summary of existing related surveys on LLM personalization and safety.",
+      "page": 4,
+      "index": 17,
+      "width": 773,
+      "height": 227
+    },
+    {
+      "url": "assets/figures/arxiv/2606.09038v1/fig-018.webp",
+      "caption": "Fig. 8: Potential leakage pathway in retrieval-augmented personalization through external memory retrieval [115–117].",
+      "page": 19,
+      "index": 18,
+      "width": 773,
+      "height": 244
+    },
+    {
+      "url": "assets/figures/arxiv/2606.09038v1/fig-019.webp",
+      "caption": "Table 7: Comparison of personalized tuning technologies for agents.",
+      "page": 51,
+      "index": 19,
+      "width": 775,
+      "height": 225
+    },
+    {
+      "url": "assets/figures/arxiv/2606.09038v1/fig-020.webp",
+      "caption": "Fig. 6: Overview of retrieval-augmented personalization.",
+      "page": 17,
+      "index": 20,
+      "width": 771,
+      "height": 450
+    },
+    {
+      "url": "assets/figures/arxiv/2606.09038v1/fig-021.webp",
+      "caption": "Table 3: Memory infrastructure and frameworks supporting personalization. The publication years of these works are taken from their formal papers or technical reports and used for the statistics.",
+      "page": 12,
+      "index": 21,
+      "width": 852,
+      "height": 1088
+    },
+    {
+      "url": "assets/figures/arxiv/2606.09038v1/fig-022.webp",
+      "caption": "Fig. 22: The evolution of LLM personalization evaluation metrics and benchmarks.",
+      "page": 44,
+      "index": 22,
+      "width": 777,
+      "height": 365
+    },
+    {
+      "url": "assets/figures/arxiv/2606.09038v1/fig-023.webp",
+      "caption": "Fig. 11: Overview of reinforcement learning-based personalization.",
+      "page": 24,
+      "index": 23,
+      "width": 771,
+      "height": 605
+    },
+    {
+      "url": "assets/figures/arxiv/2606.09038v1/fig-024.webp",
+      "caption": "Fig. 15: Overview of pruning-based personalization.",
+      "page": 31,
+      "index": 24,
+      "width": 771,
+      "height": 222
+    },
+    {
+      "url": "assets/figures/arxiv/2606.09038v1/fig-025.webp",
+      "caption": "Table 8: Common vulnerabilities & exposures (CVE) cases and related characteristics.",
+      "page": 52,
+      "index": 25,
+      "width": 779,
+      "height": 425
+    },
+    {
+      "url": "assets/figures/arxiv/2606.09038v1/fig-026.webp",
+      "caption": "Fig. 9: Overview of SFT-based personalization.",
+      "page": 20,
+      "index": 26,
+      "width": 769,
+      "height": 466
+    },
+    {
+      "url": "assets/figures/arxiv/2606.09038v1/fig-027.webp",
+      "caption": "Fig. 1: Overview of the personalization landscape in LLMs and its associated safety implications. The figure summarizes personalized representations and personalization paradigms, together with their emerging safety risks and corresponding mitigations across the personalization stack, as well as broader risks arising inherently from personalized adaptation, together with personalization evaluation benchmarks. It further groups mitigation and evaluation strategies into three categories: training-based approaches, training-free methods, and personalized safety evaluation frameworks, and additionally summarizes deployment considerations and emerging technical trends in personalized intelligent agent ecosystems.",
+      "page": 5,
+      "index": 27,
+      "width": 633,
+      "height": 936
+    },
+    {
+      "url": "assets/figures/arxiv/2606.09038v1/fig-028.webp",
+      "caption": "Fig. 5: User information exposed to the third-party LLM provider caused by hard and soft prompting-based personalization [102, 103].",
+      "page": 16,
+      "index": 28,
+      "width": 777,
+      "height": 332
+    }
+  ]
+}

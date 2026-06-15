@@ -1,0 +1,54 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2606.14142v1/fig-001.webp",
+      "caption": "Figure 3: Overview of PAUSEREC. Instead of generating explicit rationales and applying RL post-training, PAUSEREC pretrains a <pause> token to bridge text and SID representations, then inserts pause tokens before SID generation and trains them only through the final next-item prediction loss.",
+      "page": 6,
+      "index": 1,
+      "width": 940,
+      "height": 231
+    },
+    {
+      "url": "assets/figures/arxiv/2606.14142v1/fig-002.webp",
+      "caption": "Table 5: Main recommendation results on three Amazon datasets. PAUSEREC consistently improves over next-item SFT and exceeds the baselines on most metrics; boldface and underlining mark the best and second-best results.",
+      "page": 7,
+      "index": 2,
+      "width": 946,
+      "height": 333
+    },
+    {
+      "url": "assets/figures/arxiv/2606.14142v1/fig-003.webp",
+      "caption": "Figure 6: Token embeddings after each stage of the PAUSEREC pipeline. The learned <pause> token lies near the boundary between natural-language tokens and SID tokens, indicating that pause pretraining positions it as a bridge between the two embedding spaces. This supports the role of <pause> tokens in connecting semantic information from natural language to SID prediction.",
+      "page": 14,
+      "index": 3,
+      "width": 822,
+      "height": 486
+    },
+    {
+      "url": "assets/figures/arxiv/2606.14142v1/fig-004.webp",
+      "caption": "Figure 1: The three identified limitations for explicit CoT in SID-based GR. CoT SFT weakens world-knowledge verbalization (left), separates natural-language and SID embedding spaces (middle), and makes recommendation quality sensitive to rationale perturbations (right), motivating an implicit alternative to verbal rationales.",
+      "page": 3,
+      "index": 4,
+      "width": 929,
+      "height": 313
+    },
+    {
+      "url": "assets/figures/arxiv/2606.14142v1/fig-005.webp",
+      "caption": "Table 9: Inference latency for CoT SFT variants and PAUSEREC on 500 Beauty samples. PAUSEREC is fastest because it uses fixed <pause> tokens instead of generating natural-language rationales.",
+      "page": 18,
+      "index": 5,
+      "width": 458,
+      "height": 311
+    },
+    {
+      "url": "assets/figures/arxiv/2606.14142v1/fig-006.webp",
+      "caption": "Figure 2: PCA of text and SID token embeddings across training stages. SID tokens drift away from ordinary text tokens as training progresses, indicating limited embedding space overlap between text and SIDs.",
+      "page": 5,
+      "index": 6,
+      "width": 446,
+      "height": 335
+    }
+  ]
+}

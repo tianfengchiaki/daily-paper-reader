@@ -6,77 +6,89 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-06-14
-- 运行时间：2026-06-14 21:31:31 UTC
+- 最新运行日期：2026-06-15
+- 运行时间：2026-06-15 22:57:18 UTC
 - 运行状态：成功
-- 本次总论文数：19
-- 精读区：7
+- 本次总论文数：23
+- 精读区：11
 - 速读区：12
 
 ### 今日简报（AI）
-今日推荐系统领域共收录19篇论文，精读7篇、速读12篇，重点关注语义ID生成架构与安全训练中的品牌级抑制现象。最值得关注的是10.0高分论文《Gryphon: A Unified Architecture for Semantic-ID Generation》提出的统一架构，以及《The Injection Paradox》揭示的RAG注入安全悖论。建议普通读者优先精读这两篇9分论文，核心方向为生成式推荐中的ID设计和安全控制。
-- 详情：[/202606/14/README](/202606/14/README)
+今日23篇推荐系统论文中，两篇9分精读聚焦工业级语义ID生成与安全注入风险。最值得关注的是Gryphon统一架构实现物品级评分与语义ID生成，以及RAG注入导致品牌级抑制的反直觉发现。建议优先阅读这两篇精读，并关注多模态reranking的视觉缓存复用技巧。
+- 详情：[/202606/15/README](/202606/15/README)
 
 ### 精读区论文标签
-1. [Gryphon: A Unified Architecture for Semantic-ID Generation and Item-Level Scoring in Industrial Recommendations](/202606/14/2606.08604v2-gryphon-a-unified-architecture-for-semantic-id-generation-and-item-level-scoring-in-industrial-recommendations)  
+1. [Gryphon: A Unified Architecture for Semantic-ID Generation and Item-Level Scoring in Industrial Recommendations](/202606/15/2606.08604v1-gryphon-a-unified-architecture-for-semantic-id-generation-and-item-level-scoring-in-industrial-recommendations)  
    标签：评分：9.0/10、query:q1
-   evidence：工业推荐中生成式检索和物品评分的统一架构
-2. [The Injection Paradox: Brand-Level Suppression in Safety-Trained LLM Recommendations via RAG Context Injection](/202606/14/2606.09204v1-the-injection-paradox-brand-level-suppression-in-safety-trained-llm-recommendations-via-rag-context-injection)  
+   evidence：生成式推荐架构，包含语义ID生成和工业级评分
+2. [The Injection Paradox: Brand-Level Suppression in Safety-Trained LLM Recommendations via RAG Context Injection](/202606/15/2606.09204v1-the-injection-paradox-brand-level-suppression-in-safety-trained-llm-recommendations-via-rag-context-injection)  
    标签：评分：9.0/10、query:q1
-   evidence：通过提示注入在LLM推荐中品牌抑制
-3. [Constrained user-item allocation for e-commerce marketing campaigns](/202606/14/2606.09623v1-constrained-user-item-allocation-for-e-commerce-marketing-campaigns)  
-   标签：评分：9.0/10、query:q1
-   evidence：电子商务营销活动中的受限用户-物品分配
-4. [Decision-Calibrated Conformal Uncertainty for Pacing Decisions in Streaming Advertising](/202606/14/2606.10187v1-decision-calibrated-conformal-uncertainty-for-pacing-decisions-in-streaming-advertising)  
+   evidence：LLM推荐中的品牌级别抑制在广告场景
+3. [Constrained user-item allocation for e-commerce marketing campaigns](/202606/15/2606.09623v1-constrained-user-item-allocation-for-e-commerce-marketing-campaigns)  
    标签：评分：9.0/10、query:q2
-   evidence：流媒体广告中的节奏决策
-5. [DUET -- Dual User Embedding Transformers for Offsite Conversion Prediction](/202606/14/2606.10243v1-duet----dual-user-embedding-transformers-for-offsite-conversion-prediction)  
+   evidence：电商营销活动的约束性用户-物品分配
+4. [Decision-Calibrated Conformal Uncertainty for Pacing Decisions in Streaming Advertising](/202606/15/2606.10187v1-decision-calibrated-conformal-uncertainty-for-pacing-decisions-in-streaming-advertising)  
    标签：评分：9.0/10、query:q2
-   evidence：广告推荐中的站外转化预测
-6. [From Prompt to Purchase: How AI Brand Recommendations Move Consumers on the Open Web](/202606/14/2606.10907v1-from-prompt-to-purchase-how-ai-brand-recommendations-move-consumers-on-the-open-web)  
-   标签：评分：9.0/10、query:q3
-   evidence：大模型品牌推荐对购买行为的影响
-7. [CFALR: Collaborative Filtering-Augmented Large Language Model for Personalized Fashion Outfit Recommendation](/202606/14/2606.13001v1-cfalr-collaborative-filtering-augmented-large-language-model-for-personalized-fashion-outfit-recommendation)  
+   evidence：针对流媒体广告投放节奏的决策校准一致性框架
+5. [DUET -- Dual User Embedding Transformers for Offsite Conversion Prediction](/202606/15/2606.10243v1-duet----dual-user-embedding-transformers-for-offsite-conversion-prediction)  
+   标签：评分：9.0/10、query:q1
+   evidence：面向广告的离站转化预测的双用户嵌入
+6. [From Prompt to Purchase: How AI Brand Recommendations Move Consumers on the Open Web](/202606/15/2606.10907v1-from-prompt-to-purchase-how-ai-brand-recommendations-move-consumers-on-the-open-web)  
+   标签：评分：9.0/10、query:q1
+   evidence：AI品牌推荐影响消费者购买行为
+7. [SkillChain: Closing the Loop on Skill Evolution for Image-Based E-Commerce AI Assistants](/202606/15/2606.12984v1-skillchain-closing-the-loop-on-skill-evolution-for-image-based-e-commerce-ai-assistants)  
+   标签：评分：9.0/10、query:q1
+   evidence：面向产品搜索和风格推荐的电商AI助手
+8. [One Polluted Page Is Enough: Evaluating Web Content Pollution in Generative Recommenders](/202606/15/2606.13610v1-one-polluted-page-is-enough-evaluating-web-content-pollution-in-generative-recommenders)  
+   标签：评分：9.0/10、query:q1
+   evidence：生成式推荐与虚假产品推广
+9. [Implicit Reasoning for Large Language Model-based Generative Recommendation](/202606/15/2606.14142v1-implicit-reasoning-for-large-language-model-based-generative-recommendation)  
    标签：评分：9.0/10、query:llmapp
-   evidence：大规模语言模型用于个性化服装推荐
+   evidence：基于大模型的生成式推荐中的隐式推理
+10. [DRIVE: Distributional and Retrieval-Augmented Bidding with Value Evaluation](/202606/15/2606.14192v1-drive-distributional-and-retrieval-augmented-bidding-with-value-evaluation)  
+   标签：评分：9.0/10、query:q2
+   evidence：使用基于Transformer的框架改进实时广告系统中的自动竞价
+11. [OdysSim: Building Foundation Models for Human Behavior Simulation](/202606/15/2606.14199v1-odyssim-building-foundation-models-for-human-behavior-simulation)  
+   标签：评分：9.0/10、query:llmapp
+   evidence：利用LLM构建行为基础模型进行人类仿真
 
 ### 速读区论文标签
-1. [OneFeed: A Unified Generative Framework for Feed Content Enhancement and Query Generation](/202606/14/2606.07972v1-onefeed-a-unified-generative-framework-for-feed-content-enhancement-and-query-generation)  
-   标签：评分：8.0/10、query:llmapp
-   evidence：用于信息流推荐和查询生成的统一生成模型
-2. [Unintended Consequences of Recommender System Interventions: Evidence from a Field Experiment](/202606/14/2606.08265v1-unintended-consequences-of-recommender-system-interventions-evidence-from-a-field-experiment)  
+1. [Gryphon: A Unified Architecture for Semantic-ID Generation and Item-Level Scoring in Industrial Recommendations](/202606/15/2606.08604v2-gryphon-a-unified-architecture-for-semantic-id-generation-and-item-level-scoring-in-industrial-recommendations)  
    标签：评分：8.0/10、query:q1
-   evidence：推荐系统干预影响用户参与的实地实验
-3. [Adaptive Loss Balancing for Noise-Robust GRPO in Generative Recommendation](/202606/14/2606.08480v1-adaptive-loss-balancing-for-noise-robust-grpo-in-generative-recommendation)  
+   evidence：工业推荐中的生成式检索
+2. [Teach Multimodal Recommendation Model to See via Personalized Visual Extraction and Adaptive Learning](/202606/15/2606.09082v1-teach-multimodal-recommendation-model-to-see-via-personalized-visual-extraction-and-adaptive-learning)  
+   标签：评分：8.0/10、query:q1
+   evidence：多模态序列推荐与个性化视觉提取
+3. [miniReranker: Efficient Multimodal Reranking through Visual Cache Reuse and Interaction Sparsity](/202606/15/2606.10759v1-minireranker-efficient-multimodal-reranking-through-visual-cache-reuse-and-interaction-sparsity)  
    标签：评分：8.0/10、query:llmapp
-   evidence：生成式推荐中的噪声鲁棒强化学习
-4. [Look Less, Reason More: Block-wise Attention Skipping for Efficient Multimodal LLMs](/202606/14/2606.08511v1-look-less-reason-more-block-wise-attention-skipping-for-efficient-multimodal-llms)  
+   evidence：使用多模态大模型进行高效重排序，用于搜索/推荐
+4. [Shopping Reasoning Bench: An Expert-Authored Benchmark for Multi-Turn Conversational Shopping Assistants](/202606/15/2606.12608v1-shopping-reasoning-bench-an-expert-authored-benchmark-for-multi-turn-conversational-shopping-assistants)  
    标签：评分：8.0/10、query:llmapp
-   evidence：无需训练的注意力跳过用于高效多模态LLM推理
-5. [Fast LLM-Based Semantic Filtering: From a Unified Framework to an Adaptive Two-Phase Method](/202606/14/2606.08090v1-fast-llm-based-semantic-filtering-from-a-unified-framework-to-an-adaptive-two-phase-method)  
+   evidence：对话式购物助手基准
+5. [CritLens: Visual Analytics for Criteria Discovery in Review-Based Decision Making](/202606/15/2606.08426v1-critlens-visual-analytics-for-criteria-discovery-in-review-based-decision-making)  
    标签：评分：7.0/10、query:llmapp
-   evidence：基于LLM的级联用于高效文档语义过滤
-6. [TLRD: Teaching LLMs to Reason over Tabular Data with Tri-Level Rationale Distillation](/202606/14/2606.08295v1-tlrd-teaching-llms-to-reason-over-tabular-data-with-tri-level-rationale-distillation)  
+   evidence：利用LLM将评论转化为决策模型支持推荐
+6. [Personalization Meets Safety:Mechanisms,Risks,and Mitigations in Personalized LLMs](/202606/15/2606.09038v1-personalization-meets-safetymechanismsrisksand-mitigations-in-personalized-llms)  
    标签：评分：7.0/10、query:llmapp
-   evidence：对表格数据进行推理的LLM微调
-7. [QueryWeaver: Reliable Multi-Tool Query Execution Planning via LLM-Based Graph Generation](/202606/14/2606.08300v1-queryweaver-reliable-multi-tool-query-execution-planning-via-llm-based-graph-generation)  
+   evidence：关于个性化大语言模型的综述，涵盖安全风险与个性化机制
+7. [Explicit Representation Alignment for Multimodal Sentiment Analysis](/202606/15/2606.09148v1-explicit-representation-alignment-for-multimodal-sentiment-analysis)  
    标签：评分：7.0/10、query:llmapp
-   evidence：基于LLM的图生成查询规划
-8. [ToolRec: Calibrated Preference Alignment for Query Recommendation in On-Device Assistants](/202606/14/2606.08466v1-toolrec-calibrated-preference-alignment-for-query-recommendation-in-on-device-assistants)  
+   evidence：使用视觉语言模型进行多模态对齐以进行情感分析
+8. [H2HMem: A Multimodal Memory Benchmark for Agents in Human-Human Interactions](/202606/15/2606.09461v1-h2hmem-a-multimodal-memory-benchmark-for-agents-in-human-human-interactions)  
    标签：评分：7.0/10、query:llmapp
-   evidence：使用LLM进行生成式查询推荐的校准偏好对齐
-9. [Minibatch Selection via Partition Matroid Constrained Gradient Matching](/202606/14/2606.07954v1-minibatch-selection-via-partition-matroid-constrained-gradient-matching)  
+   evidence：人机交互中多模态记忆基准测试
+9. [Provably Efficient Personalized Multi-Objective Bandits with Proactive Conversational Queries](/202606/15/2606.08410v1-provably-efficient-personalized-multi-objective-bandits-with-proactive-conversational-queries)  
+   标签：评分：6.0/10、query:q2
+   evidence：基于对话查询的多目标盗贼算法用于个性化
+10. [Is Text All You Need? Text as a Universal Information Bottleneck for Speech LLMs](/202606/15/2606.09366v1-is-text-all-you-need-text-as-a-universal-information-bottleneck-for-speech-llms)  
    标签：评分：6.0/10、query:llmapp
-   evidence：LLM训练中的小批量选择
-10. [Language-Aware Token Boosting: LLM Language Confusion Reduction Without Tuning](/202606/14/2606.08994v1-language-aware-token-boosting-llm-language-confusion-reduction-without-tuning)  
+   evidence：多模态LLM桥接实现语音到文本的集成
+11. [Measuring Human Value Expression in Social Media Texts: Calibrated LLM Annotation and Encoder Transfer](/202606/15/2606.11018v1-measuring-human-value-expression-in-social-media-texts-calibrated-llm-annotation-and-encoder-transfer)  
    标签：评分：6.0/10、query:llmapp
-   evidence：无需微调减少语言混淆的方法
-11. [Bridging the Agent-World Gap: Text World Models for LLM-based Agents](/202606/14/2606.09032v1-bridging-the-agent-world-gap-text-world-models-for-llm-based-agents)  
-   标签：评分：6.0/10、query:llmapp
-   evidence：LLM智能体的文本世界模型
-12. [Dynamic Linear Attention](/202606/14/2606.10650v1-dynamic-linear-attention)  
-   标签：评分：6.0/10、query:llmapp
-   evidence：LLM中多状态线性注意力的动态记忆合并
+   evidence：校准LLM注释以衡量社交媒体中的人类价值观
+12. [Data-Driven Dynamic Assortment in Online Platforms: Learning about Two Sides](/202606/15/2606.11118v2-data-driven-dynamic-assortment-in-online-platforms-learning-about-two-sides)  
+   标签：评分：6.0/10、query:q2
+   evidence：双边平台动态品类学习
 
 
 <div class="dpr-home-promo-card">

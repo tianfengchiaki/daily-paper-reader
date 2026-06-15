@@ -1,0 +1,359 @@
+Title: Measuring Human Value Expression in Social Media Texts: Calibrated LLM Annotation and Encoder Transfer
+
+URL Source: https://arxiv.org/pdf/2606.11018v1
+
+Published Time: Wed, 10 Jun 2026 01:28:35 GMT
+
+Number of Pages: 21
+
+Markdown Content:
+# Measuring Human Value Expression in Social Media Texts: Calibrated LLM Annotation and Encoder Transfer 
+
+Maria Milkova 1, Maksim Rudnev 2,
+
+> 1
+
+Independent researcher, Lisbon, Portugal, 2University of Waterloo, ON, Canada  
+
+> Correspondence: m.a.milkova@gmail.com
+
+Abstract 
+
+Measuring subjective constructs in naturally oc-curring social media text requires annotation procedures that are theoretically grounded, em-pirically validated, and transferable to an en-coder model for scalable prediction. Using non-English social media posts annotated according to Schwartz’s theory of basic human values, we investigate how different LLMs, prompts, and instruction languages operationalize the expres-sion of values in text. We argue that although texts may permit multiple plausible interpreta-tions, theory-based value definitions can con-strain interpretations and reduce spurious value attributions. Beyond precision, recall, and F1, we evaluate structural alignment between val-ues, error structure, confidence-ambiguity re-lations, and annotation stability. We show that different LLMs produce different value inter-pretations. Iterative prompt calibration through error analysis reduces misattributions and im-proves alignment with expert annotations. We also derive targeted expert verification rules from recurrent error structures and use them during corpus annotation. Finally, we show that LLM annotations can be transferred to an encoder model through soft-label training, re-taining theory-based value interpretations and information about uncertainty in value expres-sion. 
+
+1 Introduction 
+
+Human value classification from text has emerged as an important task in computational social sci-ence and NLP (Kiesel et al., 2022; Legkas et al., 2024) with social media providing a unique source for studying value expression in communication (Shifman et al., 2025). However, naturally occur-ring social media posts are often implicit, context-dependent, and highly heterogeneous, making value expression ambiguous. Existing work typically formulates value iden-tification as a multi-label classification problem, where texts are annotated for the presence of prede-fined human values (Mirzakhmedova et al., 2024). Importantly, the development of supervised classifi-cation models depends on the availability and qual-ity of annotated data. While previous work uses value labels as gold standard annotations, recent advances show that value perception is partially in the eye of the beholder (Falk and Lapesa, 2025; Epstein et al., 2025). Large language models (LLMs) are increas-ingly used to annotate texts for human values (Starovolsky-Shitrit et al., 2025; Rodrigues et al., 2024; Fernández et al., 2025). However, relatively little attention has been paid to how different anno-tation configurations influence the interpretation of subjective constructs. Given the ambiguity of value expression and internal biases of LLMs, alternative models, prompt design and instruction languages may operationalize values differently and therefore produce different readings of the same texts. These challenges are further amplified in non-English set-tings, where linguistic and cultural contexts may diverge from those implicitly encoded in LLMs (Tao et al., 2024; Xu et al., 2024). When specific annotations are used to train clas-sifiers, annotation biases can propagate into large-scale estimates of value prevalence, trends, and co-occurrence patterns. This creates a central methodological challenge for subjective NLP tasks and computational social science. How should annotation regimes be calibrated, validated, and transferred to downstream prediction when subjec-tive constructs permit multiple plausible interpreta-tions? We study this problem in the context of human value annotation of naturally occurring non-English social media posts using Schwartz’s theory of basic human values (Schwartz, 1992). We conceptual-ize combinations of models, prompts, and prompt languages as annotation regimes. Because aggre-gate classification metrics alone are insufficient 1
+
+> arXiv:2606.11018v1 [cs.CL] 9 Jun 2026
+
+for subjective annotation tasks, we evaluate anno-tation regimes not only through precision, recall, and F1, but also through structural alignment be-tween values, confidence-ambiguity relations, and disagreement patterns. We further use recurrent disagreement patterns to derive targeted expert ver-ification rules, enabling selective review of poten-tially problematic annotations. Finally, we evaluate how calibrated LLM annotations can be transferred to an encoder model trained on soft labels. 
+
+2 Related work 
+
+2.1 Subjectivity in annotation 
+
+Subjective NLP tasks often involve multiple plausi-ble interpretations of the same text, resulting in dis-agreement among annotators (Basile et al., 2021). Recent work argues that this disagreement may reflect ambiguity, contextual variation, and differ-ences in perspective (Plank, 2022; Fleisig et al., 2024). This view is consistent with the perspec-tivist paradigm, which regards annotation outcomes as situated judgments rather than direct observa-tions of an objective ground truth (Davani et al., 2022). Consequently, subjectivity should not be eliminated through aggregation, but explicitly iden-tified and modeled as part of the annotation process (Homayounirad et al., 2025). Recent studies of human value annotation similarly demonstrate that value attribution often depends on interpretation and may vary across annotators (Falk and Lapesa, 2025; Epstein et al., 2025). 
+
+2.2 LLM annotation as measurement 
+
+Interpretive variation does not disappear when reading and subsequent annotation is delegated to LLMs. As LLMs are increasingly used as text annotators, recent work argues that such coding systems should be treated as a measurement chal-lenge, with particular attention to how concepts are operationalized and how annotations are validated (Tan et al., 2024; Calderon et al., 2025; Wallach et al., 2025; Halterman and Keith, 2025). Recent evaluations suggest that LLMs do not consistently outperform human or supervised alternatives across annotation tasks, and their performance depends on the task, evaluation criterion, and annotation design (Kristensen-McLachlan et al., 2025; Boji´ cet al., 2025; Calderon et al., 2025). Prior work shows that LLM annotation in sub-jective tasks is sensitive to prompt framing, role instructions, and perspective specification (Schäfer et al., 2025; Vera and Driggers, 2025; Fröhling et al., 2025; Radharapu et al., 2025). In multilin-gual settings, annotation outcomes may also vary with instruction language, standpoint, and cultural mismatch (Cui et al., 2025). A related question is how alternative annotations should be compared and validated when the target construct is conceptually structured. In Schwartz’s theory, basic human values are organized into broader higher-order domains, which means that not all classification errors are substantively equiv-alent. In hierarchical and multi-label settings struc-tured label spaces require specifically designed met-rics (Kosmopoulos et al., 2015; Amigó and Del-gado, 2022; Plaud et al., 2024; Chen et al., 2023). Importantly, the introduction of LLMs into an-notation workflows does not eliminate the need for human judgment (Pangakis and Wolken, 2025). Re-cent work explores hybrid pipelines that combine model-generated labels with human verification, in-cluding selective review strategies based on uncer-tainty or confidence estimates (Wang et al., 2024; Kim et al., 2024; Schroeder et al., 2025; Gligori´ cet al., 2025; Rouzegar and Makrehchi, 2024). 
+
+3 Experimental Setup 
+
+3.1 Datasets 
+
+Our empirical analysis is based on a corpus of Russian-language social media posts collected from the VKontakte (VK), the largest Russian so-cial media platform. The corpus includes both original posts and reposts and reflects naturally occurring users’ self-expression. After anonymiza-tion and filtering of spam, advertisements, and non-personal content following the preprocessing pipeline described in prior work, the remaining corpus consisted of 1,105,085 potentially value-expressive posts. This corpus serves as the sam-pling frame for three datasets used in our experi-ments. Dataset-1 consists of 1,000 posts annotated in-dependently by three experts (with research back-grounds in human values) in a multi-label setting for the presence of each of the ten Schwartz values. Before the main annotation stage, experts com-pleted a pilot annotation task consisting of 80 posts with and wrote justifications for assigned values to confirm their conceptual alignment with value the-ory. Dataset-1 serves as a benchmark for evaluating LLM annotation regimes. Figure 1 illustrates the distribution of value labels and the corresponding 2Figure 1: Distribution of expert votes in Dataset-1 (N=1,000). 
+
+levels of expert consensus (1/3, 2/3, and 3/3 votes). Overall expert agreement was moderate (Fleiss’ k = 0.6). The distribution is imbalanced across val-ues, with Benevolence and Security being the most prevalent values, whereas Power and Conformity are the least represented. Dataset-2 consists of 2,000 posts annotated inde-pendently by a different group of three experts. For each of the ten values, 200 posts were randomly sampled and annotated in a binary setting, where experts judged only a single target value per post. The resulting positive-label rates and expert-vote distributions are shown in Appendix D. We use this dataset to assess the robustness of the final LLM annotation regime. Dataset-3 consists of 24,000 posts used for large-scale LLM annotation and downstream encoder training. 
+
+3.2 LLM annotation regimes 
+
+We started with a calibration stage in which we eval-uated three models: GPT-4, GPT-5.2, and Gemini-2.5-pro. These models were selected based on their strong performance in preliminary experiments on subjective annotation tasks. For each model, we tested different prompts (Table 1), which vary in the level of details in value definition, cultural fram-ing, and contextual cues. Prompt variants were designed as successive stages of conceptual refine-ment and bias calibration. Full prompts are pro-vided in the Appendix A. All LLM annotation experiments were con-ducted on Dataset-1. For each annotation regime (model-prompt configuration), every post was an-
+
+Prompt vari-ant Description 
+
+Baseline Short value definitions Extended More detailed conceptual definitions Contextualized Russian social media fram-ing Bias-calibrated Definitions refined via error analysis Bias-calibrated RU Russian-language cali-brated prompt 
+
+> Table 1: Short description of prompt variants.
+
+notated five times using independently constructed random batches and a temperature of 0.1. Majority-vote aggregation was used for general evaluation. Repeated LLM annotations provided probabilistic labels (soft labels), allowing us to represent uncer-tainty in value assignment beyond majority-vote ag-gregation. The best-performing annotation regime was subsequently evaluated on Dataset-2. 
+
+3.3 Evaluation framework 
+
+We evaluated annotation outcomes along several complementary dimensions, such as general align-ment, structural alignment, ambiguity analysis, and error structure. 
+
+General alignment between expert and LLM annotations was evaluated using majority vot-ing through precision-recall-F1 metrics, as well as through over-attribution ( F P/ ExpertNegatives )and under-attribution ( F N/ ExpertPositives ) rates. However, these metrics evaluate values indepen-dently and therefore do not capture the conceptual structure of Schwartz’s theory (see Figure 2). Be-cause values are organized into four higher-order domains, different annotation disagreements are not substantively equivalent. For example, confus-ing Self-direction with Stimulation is conceptually less severe than confusing Self-direction with Se-curity. 
+
+Structural alignment was evaluated using a domain-aware adaptation of Jaccard similarity. Ex-act value matches receive full similarity. Confu-sions between values belonging to the same higher-order domain receive partial similarity (0.5), reflect-ing their conceptual proximity within Schwartz’s value structure. Cross-domain mismatches receive zero similarity. The metric incorporates optimal matching between predicted and expert-assigned 3Figure 2: Higher-order structure of Schwartz’s basic human values, (Schwartz, 1992). 
+
+value sets to account for partial overlap in multi-label annotations. Full metric definition is provided in Appendix B. 
+
+Ambiguity analysis examined whether annota-tion confidence in repeated LLM annotations aligns with ambiguity in expert judgments. To evaluate this, we computed Spearman correlations between the number of positive expert votes (0–3) and the number of positive model annotations (0–5). Prompt calibration followed an iterative error-driven protocol. Over-attributed values were re-fined by tightening their definitions, whereas under-attributed values’ definitions were expanded to bet-ter capture implicit expressions. The calibrated prompt was supplemented with information about motivational relationships between values, derived from Schwartz’s theory. Refinement also included adding interpretive guidance, such as instructions to prioritize conceptual meaning over lexical cues, avoid assumptions beyond the text, account for subtle value expressions, and avoid over-attributing values in emotional texts. Calibration continued un-til further refinements failed to improve one evalua-tion dimension without degrading others. The best-performing calibrated regime was used in all sub-sequent analyses. The full bias-calibrated prompt is provided in Appendix A. We also assessed annotation stability by repeat-ing the best-performing regime in two independent sets of five annotation runs and computing Cohen’s 
+
+κ and the average label variation between runs. 
+
+Error profiling was used to identify contexts in which the best-performing annotation regime was more likely to misattribute values. We analyzed value co-occurrence patterns for over- and under-attributed values together with annotation confi-dence. These analyses were then used to derive rules for targeted expert verification. 
+
+3.4 Large-scale annotation and encoder transfer 
+
+After establishing the best-performing annotation regime, we applied it to Dataset-3 for large-scale annotation. Cases flagged as potentially problem-atic through error-based rules were selectively ver-ified by experts. Corrections were provided inde-pendently by a single expert per post to maximize review coverage under annotation-cost constraints. Experts used labels (0, 0.6, 1.0), where 0.6 denotes partial evidence of value expression. The resulting annotated corpus was then used to train an encoder-based classifier (20,000/4,000 train/test split). We fine-tuned XLM-RoBERTa-large on soft labels. Full training details are pro-vided in Appendix H.1. We evaluated predictions from two perspectives. First, we assessed predic-tive quality using Precision-Recall AUC on both the held-out test set and Dataset-1. Second, we ex-amined whether the classifier reproduces the distri-bution of values by comparing cumulative distribu-tions of expert and LLM annotations, and encoder-based predictions. We additionally assess whether encoder predictions preserve the graded ordering of value expression by computing Spearman correla-tions between encoder probabilities and the number of positive expert votes. We argue that evaluating continuous prediction scores is more appropriate than applying a fixed decision threshold because our goal is to preserve graded ambiguity in value expression. 
+
+4 Results 
+
+4.1 Model-specific annotation biases 
+
+Our analysis shows that different LLMs exhibit different value attribution biases under identical prompting conditions. Under the Baseline prompt, newer models (GPT-5.2 and Gemini-2.5) achieve stronger alignment with expert annotations than GPT-4, with overall F1 increasing from 0.52 for GPT-4 to 0.65 and 0.66 for GPT-5.2 and Gemini, respectively (see Appendix C for detailed metrics). We additionally observe differences in the direction of annotation bias across models. As shown in Figure 3, GPT-4 over-attributes values belonging to the Openness to Change domain (Self-direction and Stimulation), whereas GPT-5.2 and Gemini 4Figure 3: Over- and under-attribution rates across val-ues and models under the Baseline prompt. SD: Self-direction; ST: Stimulation; HE: Hedonism; AC: Achievement; PO: Power; SE: Security; CO: Conformity; TR: Tradition; BE: Benevolence; UN: Universalism. 
+
+over-attribute Conservation-related values, such as Security and Tradition. All models systematically under-attribute Hedonism and Conformity. 
+
+4.2 General performance across annotation regimes 
+
+Prompt calibration alters annotation behavior. Across models, extending value definitions gen-erally increases precision and reduces over-attribution, often at the cost of lower recall. How-ever, models respond differently to refinement (see Figure C.1 in Appendix). Relative to the Base-line prompt, GPT-5.2 becomes more conserva-tive after calibration, achieving higher precision (0.63 →0.76) but missing more implicit value ex-pressions (recall 0.67 →0.58). In contrast, Gemini maintains a more balanced precision–recall trade-off (precision 0.64 →0.72, recall 0.68 →0.67). In Table 2 we report overall F1 across annotation regimes. Detailed precision and recall metrics are provided in Appendix C) . For example, a post expressing willingness to help and support a close person ( “I promise I’ll 
+
+Model Regime F1 
+
+GPT-4 Baseline 0.52 Bias-calibrated 0.56 (+0.04) Bias-calibrated RU 0.58 (+0.06) GPT-5 Baseline 0.65 Bias-calibrated 0.66 (+0.01) Bias-calibrated RU 0.69 (+0.04) Gemini Baseline 0.66 Bias-calibrated 0.70 (+0.04) Bias-calibrated RU 0.70 (+0.04) 
+
+> Table 2: Effect of prompt calibration. Values in paren-theses indicate changes relative to the baseline configu-ration of the corresponding model.
+
+be there for you -— just let me know if you need me” ) was annotated by experts as Benevolence. Under the Baseline prompt, GPT-4 additionally at-tributed Self-direction, while GPT-5.2 and Gemini attributed Security. After calibration, all models converged on Benevolence only, eliminating these spurious co-attributions. Russian-language prompting generally increases recall and over-attribution rates while reducing precision. Consequently, improvements in F1 ob-served for the Russian-language variants are driven by higher recall, which outweighs the accompa-nying loss in precision. Although the Russian-language GPT-5.2 regime achieves higher precision than Gemini (0.74 vs. 0.69), it also exhibits lower recall (0.65 vs. 0.72) and stronger precision–recall imbalance (Appendix C). 
+
+4.3 Structural alignment 
+
+We then evaluate annotation regimes using domain-penalized Jaccard similarity to compare their struc-tural alignment. To better characterize alignment structure, we decompose Jaccard scores into five categories: full alignment (J = 1), strong alignment (0.5 < J < 1), partial alignment (J = 0.5), weak alignment (0 < J < 0.5), and no alignment (J = 0). Figure 4 shows that prompt refinement improves structural alignment, with Gemini under the bias-calibrated prompt achieving the highest structural alignment with expert annotations (mean Jaccard increasing from 0.56 to 0.62). Jaccard scores for all annotation regimes provided in Appendix C.4. 
+
+4.4 Ambiguity in value annotation 
+
+Across annotation regimes, we observe significant positive correlations between expert and model vote counts. Correlations increased across prompt 5Figure 4: Domain-aware Jaccard similarity across sev-eral annotation regimes. 
+
+refinements from 0.47 to 0.54 for GPT-4, from 0.61 to 0.64 for GPT-5.2, and from 0.64 to 0.67 for Gemini (see Appendix C.5). Across values, corre-lations ranged from 0.40 for Conformity to 0.83 for Benevolence (for Gemini bias-calibrated prompt, see Appendix E.2). These results suggest that, if the number of expert votes is treated as a proxy for ambiguity in value expression, repeated LLM annotations capture this variation. 
+
+4.5 Final calibrated regime 
+
+Based on the combined evaluation across aggregate metrics, over-attribution profiles, and structural alignment, we select Gemini with the English bias-calibrated prompt as the final annotation regime. Table 3 shows the final performance metrics of the selected regime. Performance varies across values with Benevolence exhibiting the strongest align-ment with expert annotations (F1=0.88), followed by Achievement (0.71), Tradition (0.67), and Uni-versalism (0.67). In contrast, Conformity value remains difficult to identify (0.39). Table 3 also reports asymmetric error rates. Over-attribution rates (OA) range from 0.01 (for Conformity) to 0.07-0.08 (for Security, Benev-olence, and Self-direction). The highest under-attribution rates (UA) are observed for Conformity (0.71) and Hedonism (0.51). These asymmetric er-ror profiles motivate the targeted verification rules discussed in Section 4.6. To assess robustness, we evaluated the selected regime on Dataset-2. Overall F1 decreased from                                                        
+
+> Value PRF1 OA UA
+> Self-direction 0.53 0.70 0.61 0.08 0.30 Stimulation 0.48 0.54 0.51 0.04 0.46 Hedonism 0.77 0.49 0.60 0.04 0.51 Achievement 0.72 0.70 0.71 0.04 0.30 Power 0.43 0.71 0.53 0.03 0.29 Security 0.71 0.50 0.59 0.07 0.50 Conformity 0.57 0.29 0.39 0.01 0.71 Tradition 0.55 0.85 0.67 0.05 0.15 Benevolence 0.93 0.83 0.88 0.07 0.17 Universalism 0.57 0.81 0.67 0.06 0.19
+> Table 3: Performance of Gemini bias-calibrated anno-tation regime. OA = over-attribution rate, UA = under-attribution rate.
+
+0.70 to 0.64 under different annotator group and ex-pert annotation protocol. Importantly, the difficulty of value identification remains largely consistent across datasets, with Benevolence, Tradition, and Achievement exhibiting the strongest alignment in both settings, and Conformity the weakest. Preci-sion, Recall, F1, over- and under- attribution rates for Dataset-2 are reported in Appendix E.1. We additionally evaluate the stability of repeated annotations produced by the final regime. Across independently constructed annotation batches (5×5 repeated runs), the regime demonstrates high inter-run consistency (Cohen’s k = 0.88) with low aver-age variation in vote counts (mean delta votes = 0.19), indicating that repeated annotations remain stable. 
+
+4.6 Error structure and rules for expert verification 
+
+As shown in Table 3 and the robustness check on Dataset-2 (Appendix E.1), several values continue to exhibit higher over- and under-attribution rates. To improve the reliability of large-scale annotation, we introduced targeted expert verification. To form the rules for verification, we first identified val-ues associated with relatively high over-attribution rates (Security, Benevolence, Self-direction, and Tradition) and under-attribution rates (Hedonism and Conformity). To understand contexts in which these errors occurred most frequently, we then ex-amined value co-occurrence patterns associated with over- and under-attributed cases (Figure 5). Figure 5 shows that, for example, over-attribution of Security was frequently associated with co-occurring Benevolence, whereas under-attribution of Hedonism and Conformity was con-centrated in posts co-occurring with Benevolence and Security. We additionally applied the same co-occurrence analysis to Dataset-2 and used the 6resulting Dataset-2-specific patterns to complement the final set of verification contexts (Appendix F.1). We further observed that misattributions concen-trate disproportionately in lower-confidence annota-tions. Over- attributed cases are substantially more likely for unstable positive predictions (3–4 out of 5 votes) than for unanimous predictions (OR = 4.5, p < 0.001), while under- attributed cases are more likely for low-confidence negative predictions (1–2 votes vs. 0 votes; OR = 8.4, p < 0.001). We used both co-occurrence patterns and annota-tion confidence to derive targeted verification rules. We excluded pairs of conceptually adjacent val-ues and retained only those co-occurrences that reflect broader or cross-domain confusions, be-cause confusions between conceptually adjacent values are less consequential from the perspec-tive of Schwartz’s value structure. The full list of target–context pairs and verification rules are provided in Appendix F.2. 
+
+Figure 5: Contexts associated with over- and under-attributed values. 
+
+4.7 Transferring to encoder model 
+
+We then applied the best-performing annotation regime to Dataset-3 for large-scale annotation. The verification rules identified 5,225 potentially prob-lematic annotations. Due to annotation-cost con-straints, we randomly sampled 2,000 cases for ex-pert verification proportionally to the size of each flagged subgroup. Expert review resulted in 962 corrections of target-value annotations (on average, 64% for over-attribution rules and 24% for under-attribution rules). Detailed statistics for flagged, sampled, and corrected cases by value group are provided in Appendix G.2. The resulting dataset is then used to fine-tune XLM-RoBERTa-large on soft labels. The distribu-                                  
+
+> Value Gemini-
+> Experts
+> XLM-
+> Experts
+> XLM-
+> Gemini Self-direction 0.54 0.59 0.74 Stimulation 0.41 0.44 0.65 Hedonism 0.59 0.68 0.67 Achievement 0.69 0.73 0.81 Power 0.39 0.47 0.52 Security 0.59 0.72 0.72 Conformity 0.26 0.23 0.36 Tradition 0.51 0.67 0.80 Benevolence 0.92 0.94 0.94 Universalism 0.61 0.56 0.71
+> Macro Average 0.55 0.60 0.69
+
+Table 4: Precision–Recall AUC across experts, Gemini and XLM–RoBERTa predictions.             
+
+> Value Spearman ρ
+> Self-direction 0.545 Stimulation 0.444 Hedonism 0.624 Achievement 0.600 Power 0.368 Security 0.597 Conformity 0.333 Tradition 0.443 Benevolence 0.813 Universalism 0.532
+
+Table 5: Spearman correlations between XLM– RoBERTa probabilities and number of positive expert votes. 
+
+tion of soft labels in the training data is reported in Appendix G.1. Table 4 reports Precision-Recall AUC for pre-dictions. For most values, the performance of the encoder model relative to expert annotations is comparable to or higher than the performance observed for Gemini relative to experts. Macro PR-AUC equals 0.55 for Gemini–Experts, 0.60 for XLM-RoBERTa–Experts, and 0.69 for XLM-RoBERTa–Gemini. Figure 6 compares cumulative prediction dis-tributions across experts, Gemini, and XLM-RoBERTa. The encoder model largely repro-duces the overall distributional structure of expert and LLM annotations, but smooths discrete high-confidence positive annotations. To assess whether encoder predictions preserve graded value expres-sion, we computed Spearman correlations between encoder probabilities and the number of positive expert votes. For all values, correlations are posi-tive and significant (p < 0.001), ranging from 0.33 for Conformity to 0.81 for Benevolence (Table 5). Together, these results suggest that the encoder model successfully transfers the interpretation of value categories and preserves part of the ambiguity 7Figure 6: Cumulative distribution functions. 
+
+present in expert judgments. Performance on the held-out test dataset is reported in Appendix H.2. 
+
+4.8 Discussion 
+
+Our findings contribute to the growing literature on human value detection by shifting attention from classification performance alone to the problem of value measurement. Previous research has shown that values can be detected in text and that LLMs can be used as annotators. However, when values are inferred from naturally occurring everyday self-expression, the problem of value operationaliza-tion becomes central, and the choice of annotation regime becomes a measurement decision. Our results show that different LLMs produce different value interpretations. Prompt calibration can reduce some spurious attributions and make the annotation regime more theoretically constrained and more diagnostically transparent. Importantly, repeated LLM annotations provide useful information about uncertainty in value ex-pression. This supports the use of soft labels for encoder-based models. In this setting, ranked prob-abilities produced by the encoder model retain in-formation about the ambiguity in value expression. The comparison with our earlier GPT-4-based annotation regime illustrates the substantive con-sequences of annotation design decisions (see Ap-pendix G.3). Different annotation regimes produce different prevalence structures when applied at scale. In our previous research, an encoder trained on GPT-4 annotations over-attributed values related to Openness-to-Change. As a result, this annota-tion regime led to different conclusions about value prevalence and value change over time. Scalable ambiguity-aware value prediction may be particularly important for studying naturally occurring value expression to track the values of a population without survey data and to analyze overall value change and responsiveness to major events. 
+
+Limitations 
+
+Our study is limited to Russian-language data. Al-though the proposed calibration and validation framework is intended to be language-independent, annotation behavior and value interpretation may differ across linguistic and cultural settings. Fu-ture work should therefore evaluate the proposed framework across additional languages and cultural contexts. Also, our analysis is based exclusively on textual content. In social media posts, value expression may depend on visual context, memes, or attached media that are not recoverable from text alone. More complete identification of value expression will require multimodal modeling. Another limitation is that we base our study on ten basic human values and do not utilize the re-fined theory of nineteen values (Schwartz et al., 2012). As a result, the proposed annotation scheme does not distinguish between more specific value types, restricting a more nuanced understanding of value expression. Our annotations reflect theory-informed expert interpretation. They should not be interpreted as universal judgments of how ordinary users perceive value expression. The relatively small size of Dataset-1 may limit the completeness of prompt calibration and error profiling for rare values. Dataset-2 provides an additional robustness check with a different ex-pert group, but it uses a single-value binary pro-tocol, which may not fully capture interactions between simultaneously expressed values. This 8design was motivated by annotation cost, since evaluating all ten values simultaneously requires substantial expertise in value theory and is difficult to scale through crowd-based annotation platforms. Importantly, our initial motivation was to de-velop and validate an annotation regime capable of capturing value expression. For this reason, we did not evaluate the sensitivity of annotation outcomes to each individual prompt addition. We also did not evaluate few-shot prompting for LLM annotation. Few-shot examples may improve alignment with expert annotations, but selecting representative posts for highly heterogeneous value expressions is itself non-trivial and may introduce additional contextual biases tied to selected exam-ples. During the expert verification stage, only 40% of flagged cases were reviewed, and experts evaluated only the target value rather than the full multi-label annotation profile. In addition, each reviewed post was assessed by a single expert. Although this de-sign reflects annotation constraints for large-scale subjective tasks, additional expert review and multi-expert verification may further improve annotation quality. 
+
+Ethics Statement 
+
+This study analyzes social media posts collected from open user profiles only. User and post iden-tifiers were hashed prior to analysis. Because the study focuses on aggregate patterns of value expres-sion, the resulting models should not be interpreted as direct measurements of individuals’ personal values or used for individual-level decision making. The proposed framework is intended for aggregate-level analysis only. 
+
+References 
+
+Enrique Amigó and Agustín Delgado. 2022. Evalu-ating extreme hierarchical multi-label classification. In Proceedings of the 60th Annual Meeting of the Association for Computational Linguistics (Volume 1: Long Papers) , pages 5809–5819. Association for Computational Linguistics. Valerio Basile, Michael Fell, Tommaso Fornaciari, Dirk Hovy, Silviu Paun, Barbara Plank, Massimo Poesio, and Alexandra Uma. 2021. We need to consider disagreement in evaluation. Proceedings of the 1st Workshop on Benchmarking: Past, Present and Fu-ture .L. Boji´ c, O. Zagovora, A. Zelenkauskaite, and 1 others. 2025. Comparing large language models and human annotators in latent content analysis of sentiment, political leaning, emotional intensity and sarcasm. 
+
+Scientific Reports , 15:11477. Nitay Calderon, Roi Reichart, and Rotem Dror. 2025. The alternative annotator test for LLM-as-a-judge: How to statistically justify replacing human anno-tators with LLMs. In Proceedings of the 63rd An-nual Meeting of the Association for Computational Linguistics (Volume 1: Long Papers) , pages 16051– 16081. Association for Computational Linguistics. Yunmo Chen, William Gantt, Tongfei Chen, Aaron Steven White, and Benjamin Van Durme. 2023. A unified view of evaluation metrics for structured prediction. In Proceedings of the 2023 Conference on Empirical Methods in Natural Lan-guage Processing . Association for Computational Linguistics. Xia Cui, Ziyi Huang, and Naeemeh Adel. 2025. Bias in, bias out: Annotation bias in multilingual large language models. In Proceedings of the Interdisci-plinary Workshop on Observations of Misunderstood, Misguided and Malicious Use of Language Models ,pages 1–16. INCOMA Ltd. Aida Mostafazadeh Davani, Mark Díaz, and Vinodku-mar Prabhakaran. 2022. Dealing with disagreements: Looking beyond the majority vote in subjective an-notations. Transactions of the Association for Com-putational Linguistics , 10:92–110. Ziv Epstein, Farnaz Jahanbakhsh, Tiziano Piccardi, Isabel Gallegos, Dora Zhao, Johan Ugander, and Michael S. Bernstein. 2025. Measuring value expressions in social media posts. Preprint ,arXiv:2511.08453. Neele Falk and Gabriella Lapesa. 2025. Mining the uncertainty patterns of humans and models in the annotation of moral foundations and human values. In Proceedings of the 63rd Annual Meeting of the Association for Computational Linguistics (Volume 1: Long Papers) , pages 22898–22921. Association for Computational Linguistics. Eduardo Fernández, de la Cruz, Marcelo Karanik, and Sascha Ossowski. 2025. Value lens: Using large language models to understand human values. arXiv e-prints , pages arXiv–2512. Eve Fleisig, Su Lin Blodgett, Dan Klein, and Zeerak Talat. 2024. The perspectivist paradigm shift: As-sumptions and challenges of capturing human labels. In Proceedings of the 2024 Conference of the North American Chapter of the Association for Computa-tional Linguistics: Human Language Technologies (Volume 1: Long Papers) , pages 2279–2292. Associ-ation for Computational Linguistics. Leon Fröhling, Gianluca Demartini, and Dennis Assen-macher. 2025. Personas with attitudes: Controlling LLMs for diverse data annotation. In Proceedings of the 9th Workshop on Online Abuse and Harms , pages 468–481. Association for Computational Linguistics. 
+
+9Kristina Gligori´ c, Tijana Zrnic, Cinoo Lee, Emmanuel J. Candès, and Dan Jurafsky. 2025. Can unconfident LLM annotations be used for confident conclusions? In Proceedings of the 2025 Conference of the Na-tions of the Americas Chapter of the Association for Computational Linguistics: Human Language Tech-nologies (Volume 1: Long Papers) , pages 3514–3533. Association for Computational Linguistics. Andrew Halterman and Katherine A. Keith. 2025. Code-book LLMs: Evaluating LLMs as measurement tools for political science concepts. Political Analysis .Amir Homayounirad, Enrico Liscio, Tong Wang, Catholijn M Jonker, and Luciano Cavalcante Siebert. 2025. Will annotators disagree? identifying subjec-tivity in value-laden arguments. In Findings of the Association for Computational Linguistics: EMNLP 2025 .Johannes Kiesel, Milad Alshomary, Nicolas Handke, Xiaoni Cai, Henning Wachsmuth, and Benno Stein. 2022. Identifying the human values behind argu-ments. In Proceedings of the 60th Annual Meeting of the Association for Computational Linguistics (Vol-ume 1: Long Papers) , pages 4459–4471. Association for Computational Linguistics. Hannah Kim, Kushan Mitra, Rafael Li Chen, Sajjadur Rahman, and Dan Zhang. 2024. MEGAnno+: A human-LLM collaborative annotation system. In 
+
+Proceedings of the 18th Conference of the European Chapter of the Association for Computational Lin-guistics: System Demonstrations , pages 168–176. Association for Computational Linguistics. Aris Kosmopoulos, Ioannis Partalas, Eric Gaussier, Georgios Paliouras, and Ion Androutsopoulos. 2015. Evaluation measures for hierarchical classification: A unified view and novel approaches. Data Mining and Knowledge Discovery , 29:820–865. Ross Deans Kristensen-McLachlan, Miceal Canavan, Marton Kardos, Mia Jacobsen, and Lene Aarøe. 2025. Are chatbots reliable text annotators? sometimes. 
+
+PNAS Nexus , 4(4):pgaf069. Sotirios Legkas, Christina Christodoulou, Matthaios Zidianakis, Dimitrios Koutrintzes, Maria Dagioglou, and Georgios Petasis. 2024. Hierocles of alexandria at touché: Multi-task & multi-head custom architec-ture with transformer-based models for human value detection. In CLEF (Working Notes), 2024 .Nailia Mirzakhmedova, Johannes Kiesel, Milad Al-shomary, Maximilian Heinrich, Nicolas Handke, Xi-aoni Cai, Valentin Barriere, Doratossadat Dastgheib, Omid Ghahroodi, Mohammad Ali Sadraei, Ehsaned-din Asgari, Lea Kawaletz, Henning Wachsmuth, and Benno Stein. 2024. The Touché23-ValueEval dataset for identifying human values behind arguments. In 
+
+Proceedings of the 2024 Joint International Confer-ence on Computational Linguistics, Language Re-sources and Evaluation , pages 16085–16102. ELRA and ICCL. Nicholas Pangakis and Samuel Wolken. 2025. Keeping humans in the loop: Human-centered automated an-notation with generative AI. In Proceedings of the International AAAI Conference on Web and Social Media , volume 19, pages 1471–1492. Barbara Plank. 2022. The “problem” of human label variation: On ground truth in data, modeling and eval-uation. In Proceedings of the 2022 Conference on Empirical Methods in Natural Language Processing ,pages 10671–10682. Association for Computational Linguistics. Rémi Plaud, Eva D’hondt, Frédéric Béchet, and Marco Dinarelli. 2024. Revisiting hierarchical text clas-sification: Inference and metrics. In Proceedings of the 28th Conference on Computational Natural Language Learning . Association for Computational Linguistics. Bhaktipriya Radharapu, Manon Revel, Megan Ung, Se-bastian Ruder, and Adina Williams. 2025. Arbiters of ambivalence: Challenges of using LLMs in no-consensus tasks. In Findings of the Association for Computational Linguistics: ACL 2025 , pages 4677– 4731. Association for Computational Linguistics. Diego Dimer Rodrigues, Mariana Recamonde-Mendoza, and Viviane P. Moreira. 2024. Beyond single models: Leveraging llm ensembles for human value detection in text. In Proceedings of the 13th Brazilian Conference on Intelligent Systems (BRACIS) .Hamidreza Rouzegar and Masoud Makrehchi. 2024. Enhancing text classification through LLM-driven ac-tive learning and human annotation. In Proceedings of the 18th Linguistic Annotation Workshop . Associa-tion for Computational Linguistics. Johannes Schäfer, Manuel Stöckel, Paul Röttger, Janet B. Pierrehumbert, Dong Nguyen, Domenic Rosati, Srishti Sachdeva, and Roman Klinger. 2025. Which demographics do LLMs default to during an-notation? In Proceedings of the 63rd Annual Meeting of the Association for Computational Linguistics (Vol-ume 1: Long Papers) . Association for Computational Linguistics. Hope Schroeder, Deb Roy, and Jad Kabbara. 2025. Just put a human in the loop? investigating LLM-assisted annotation for subjective tasks. In Findings of the As-sociation for Computational Linguistics: ACL 2025 ,pages 25771–25795. Association for Computational Linguistics. Shalom H. Schwartz. 1992. Universals in the content and structure of values: Theoretical advances and empirical tests in 20 countries. Advances in Experi-mental Social Psychology , 25:1–65. Shalom H. Schwartz, Jan Cieciuch, Michele Vecchione, Eldad Davidov, Ronald Fischer, Constanze Beierlein, Arie Ramos, Markku Verkasalo, Jan-Erik Lönnqvist, Kurdal Demirutku, and 1 others. 2012. Refining the theory of basic individual values. Journal of Personality and Social Psychology , 103(4):663–688. 
+
+10 Limor Shifman, Tommaso Trillò, Blake Hallinan, Saki Mizoroki, Avishai Green, Rebecca Scharlach, and Paul Frosh. 2025. The expression of values on social media: An analytical framework. New Media & Society .Alina Starovolsky-Shitrit, Alon Neduva, Naama Appel Doron, Itamar Gafni, Ella Daniel, and Oren Tsur. 2025. The value of nothing: Multimodal extrac-tion of human values expressed by tiktok influencers. 
+
+arXiv preprint arXiv:2501.11770 .Zhen Tan, Dawei Li, Song Wang, Alimohammad Beigi, Bohan Jiang, Amrita Bhattacharjee, Man-sooreh Karami, Jundong Li, Lu Cheng, and Huan Liu. 2024. Large language models for data annota-tion and synthesis: A survey. In Proceedings of the 2024 Conference on Empirical Methods in Natural Language Processing , pages 930–957. Association for Computational Linguistics. Yan Tao, Samet Gürgöze, Alireza Mirbabaei, Weng Marc Lim, and Patrick Mikalef. 2024. Cultural bias and cultural alignment of large language models. 
+
+PNAS Nexus , 3(9):pgae346. Sergio V. Vera and Hannah Driggers. 2025. LLMs as annotators: The effect of party cues on labelling decisions by large language models. Humanities and Social Sciences Communications , 12:1530. Hanna Wallach, A. Feder Cooper, Alex Hanna, Abi-gail Z. Jacobs, Henning Licht, Arvind Narayanan, Jon Kleinberg, Seth Tisue, and 1 others. 2025. Position: Evaluating generative AI systems is a social science measurement challenge. Preprint ,arXiv:2502.00561. Xinru Wang, Hannah Kim, Sajjadur Rahman, Kushan Mitra, and Zhijie Miao. 2024. Human-LLM collab-orative annotation through effective verification of LLM labels. In Proceedings of the 2024 CHI Con-ference on Human Factors in Computing Systems .Association for Computing Machinery. Shaoyang Xu, Weilong Dong, Zishan Guo, Xinwei Wu, and Deyi Xiong. 2024. Exploring multilingual con-cepts of human values in large language models: Is value alignment consistent, transferable and control-lable across languages? In Findings of the Associa-tion for Computational Linguistics: EMNLP 2024 ,pages 1771–1793. 
+
+11 A Prompt Specifications 
+
+Baseline prompt 
+
+You are a professional annotator tasked with categorizing social media posts. Assign a binary code to each post -whether (code 1) or not (code 0) the post reflects the Values listed below: Self-direction: Independent thought and action — choosing, creating, and exploring. Stimulation: Excitement, novelty, and challenge in life. Hedonism: Pleasure and sensuous gratification for oneself. Achievement: Personal success through demonstrating competence according to social standards. Power: Social status and prestige, wealth, control or dominance over people and resources. Security: Safety, harmony, strong government, and stability of society, relationships, and self. Conformity: The restraint of actions, inclinations, and impulses that are likely to upset or harm others and violate social expectations or norms. Tradition: Respect, commitment, and acceptance of the customs and ideas that traditional culture or religion provides. Benevolence: Preservation and enhancement of the welfare of people with whom one is in frequent personal contact. Universalism: Understanding, appreciation, tolerance, and protection for the welfare of all people and of nature. 
+
+Extended prompt 
+
+You are a professional annotator of social media posts. Assign a binary code to each post - whether (code 1) or not (code 0) the post reflects basic human values. Values are an expression of the importance of an object, phenomenon, or quality. The Values are listed below: Self-direction: importance of independent thought and action, choosing, creating, and exploring, curious, au-tonomous. Stimulation: Excitement, novelty, and challenge in life, daring Hedonism: Pleasure and sensuous gratification for oneself, enjoying life, self-indulgent Achievement: Personal success through demonstrating competence according to social standards, ambitious, capable, influential, social recognition Power: Social status and prestige, wealth, control or dominance over people and resources, authority, social power Security: Safety, harmony, strong government, and stability of society, relationships, and self, social order, family security, national security, clean, healthy Conformity: The restraint of actions, inclinations, and impulses that are likely to upset or harm others and violate social expectations or norms, obedient, self-discipline, politeness, responsible Tradition: Respect, commitment, and acceptance of the customs and ideas that traditional culture or religion provides, humble, devout, moderate, subordination Benevolence: Preservation and enhancement of the welfare of people with whom one is in frequent personal contact, helpful, honest, forgiving, responsible, loyal, true friendship, mature love Universalism: Understanding, appreciation, tolerance, and protection for the welfare of all people and of nature, broadminded, social justice, equality, world at peace, protecting the environment. When assigning values, prioritize conceptual meaning over surface-level lexical cues. Don’t overestimate emotional texts. Do NOT make assumptions about the author and intentions beyond the text. Power, achievement, hedonism, stimulation, and self-direction primarily focus on personal interests and characteris-tics. Benevolence, universalism, tradition, conformity, and security are primarily concerned with how one relates socially to others and affects their interests. Power, achievement, tradition, conformity, and security serve to cope with anxiety due to uncertainty in the social and physical world. Hedonism, stimulation, self-direction, universalism, and benevolence express anxiety-free motivations. Security and conformity aim to avoid or overcome actual or potential danger. Self-direction and close values motivate intrinsically rewarding social, intellectual, and emotional opportunities. 
+
+Contextualized prompt 
+
+This prompt is identical to the Extended prompt, with the only difference being at the beginning: You are a professional annotator of Russian social media VKontakte born in Russia and living in Russia. 
+
+12 Bias-calibrated prompt 
+
+You are a professional annotator of social media posts. Assign a binary code to each post - whether (code 1) or not (code 0) the post reflects basic human values.Values are an expression of the importance of an object, phenomenon, or quality. The Values are listed below: Self-direction: Importance of independent thought and action, making autonomous decisions based on one’s own judgment, creating and exploring, being curious. Stimulation: Excitement, novelty, and variety in life, daring. Appreciation of surprises, adventures, trying new things. Hedonism: Importance of having good time, pleasure and sensuous gratification, ’spoiling’ themselves, food, leisure, sex or other personally enjoyable activities. Achievement: Personal success through demonstrating competence according to social standards, importance of being ambitious, capable, influential, getting social recognition. Power: Social status and prestige, wealth, control or dominance over people and resources, authority, social power. Importance of being visibly rich and in charge. Security: Safety, harmony, strong government, stability of relationships, of self, of society and social order, national security, clean, healthy. Conformity: The restraint of actions, inclinations, and impulses that are likely to upset or harm others and violate social expectations or norms. Tradition: Respect, commitment, and acceptance of the customs and ideas that traditional culture or religion provides, humble, devout, moderate, subordination. Benevolence: Preservation and enhancement of the welfare of close people with whom one is in frequent personal contact (e.g., family, friends), helpful, honest, forgiving, responsible toward close others, loyal, true friendship, mature love. Universalism: Understanding, appreciation, tolerance, and protection for the welfare of all people in the world including strangers; importance of broadmindedness, social justice, equality, world at peace. Importance of nature and environment protection. When assigning values, prioritize conceptual meaning over surface-level lexical cues. Don’t overestimate emotional texts. If the value is expressed subtly or implicitly, assign it when there is reasonable textual evidence, rather than requiring explicit keywords. Do NOT make assumptions about the author and intentions beyond the text. Power, achievement, hedonism, stimulation, and self-direction primarily focus on personal interests and characteris-tics. Benevolence, universalism, tradition, conformity, and security are primarily concerned with how one relates socially to others and affects their interests. Power, achievement, tradition, conformity, and security serve to cope with anxiety due to uncertainty in the social and physical world. Hedonism, stimulation, self-direction, universalism, and benevolence express anxiety-free motivations. Security and conformity aim to avoid or overcome actual or potential danger. Self-direction and close values motivate intrinsically rewarding social, intellectual, and emotional opportunities. 
+
+B Domain-penalized Jaccard similarity metric Jdp (E, P )
+
+Let E = {e1, ..., e n} denote the set of expert-assigned values and P = {p1, ..., p m} the set of predicted values for a post. We define pairwise similarity between values as: 
+
+s(ei, p j ) = 
+
+
+
+1, if ei = pj ,
+
+0.5, if ei̸ = pj and both belong to the same higher-order domain ,
+
+0, otherwise .
+
+We then compute an optimal bipartite matching between predicted and expert-assigned values: 
+
+M (E, P ) = max 
+
+> π
+
+X 
+
+> (ei,p j)∈π
+
+s(ei, p j ),
+
+where π denotes an optimal one-to-one matching between elements of E and P .The final domain-penalized Jaccard similarity score is computed as: 
+
+Jdp (E, P ) = M (E, P )
+
+E ∪ P ,
+
+where E ∪ P denotes the number of unique values appearing in the expert-assigned set, the predicted set, or both. 
+
+13 C Annotation regimes metrics (Dataset-1, N=1,000) 
+
+C.1 Response of models to prompt refinement 
+
+Figure 7: Changes in Precision, Recall, F1, and over-attribution rates across stages of prompt refinement. 
+
+C.2 Overall P/R/F1 
+
+Model Prompt P R F1 
+
+GPT-4 Baseline 0.527 0.518 0.522 Extended 0.577 0.514 0.544 Contextualized 0.592 0.558 0.575 Bias-calibrated 0.588 0.540 0.563 Bias-calibrated-RU 0.567 0.588 0.577 GPT-5.2 Baseline 0.628 0.674 0.650 Extended 0.705 0.596 0.646 Contextualized 0.699 0.627 0.661 Bias-calibrated 0.760 0.577 0.656 Bias-calibrated-RU 0.744 0.647 0.692 Gemini Baseline 0.644 0.681 0.662 Extended 0.684 0.678 0.681 Contextualized 0.680 0.692 0.686 Bias-calibrated 0.723 0.672 0.697 Bias-calibrated-RU 0.685 0.719 0.702 
+
+Table 6: Overall Precision, Recall, and F1 across annotation regimes. 
+
+C.3 Per-value metrics 
+
+GPT-4 GPT-5.2 Gemini Value P R F1 P R F1 P R F1 
+
+Self-direction 0.286 0.838 0.427 0.484 0.667 0.561 0.459 0.703 0.555 Stimulation 0.261 0.671 0.376 0.391 0.514 0.444 0.450 0.643 0.529 Hedonism 0.541 0.254 0.345 0.651 0.474 0.548 0.694 0.565 0.623 Achievement 0.664 0.654 0.659 0.713 0.685 0.699 0.740 0.717 0.728 Power 0.271 0.471 0.344 0.386 0.647 0.484 0.351 0.794 0.486 Security 0.780 0.337 0.471 0.590 0.639 0.613 0.571 0.496 0.531 Conformity 0.320 0.436 0.369 0.431 0.400 0.415 0.478 0.400 0.436 Tradition 0.356 0.508 0.419 0.327 0.885 0.478 0.377 0.852 0.523 Benevolence 0.931 0.614 0.740 0.891 0.795 0.840 0.926 0.787 0.851 Universalism 0.375 0.434 0.402 0.538 0.687 0.603 0.548 0.819 0.657 
+
+Table 7: Per-value Precision, Recall, and F1 scores under Baseline prompt. 
+
+14 GPT-4 GPT-5.2 Gemini Value P R F1 P R F1 P R F1 
+
+Self-direction 0.324 0.793 0.460 0.625 0.495 0.553 0.534 0.703 0.607 Stimulation 0.320 0.571 0.410 0.500 0.371 0.426 0.481 0.543 0.510 Hedonism 0.635 0.225 0.332 0.772 0.292 0.424 0.773 0.488 0.598 Achievement 0.704 0.543 0.613 0.763 0.559 0.645 0.724 0.701 0.712 Power 0.283 0.441 0.345 0.542 0.382 0.448 0.429 0.706 0.533 Security 0.820 0.325 0.466 0.760 0.516 0.615 0.708 0.500 0.586 Conformity 0.339 0.364 0.351 0.438 0.255 0.322 0.571 0.291 0.386 Tradition 0.371 0.590 0.456 0.521 0.820 0.637 0.547 0.852 0.667 Benevolence 0.912 0.749 0.823 0.906 0.804 0.852 0.933 0.827 0.877 Universalism 0.370 0.410 0.389 0.661 0.470 0.549 0.573 0.807 0.670 
+
+Table 8: Per-value Precision, Recall, and F1 scores under Bias-calibrated prompt. 
+
+C.4 Structural alignment Jaccard scores 
+
+Model Prompt Mean 
+
+GPT-4 Baseline 0.444 Extended 0.456 Contextualized 0.498 Bias-calibrated 0.499 Bias-calibrated-RU 0.504 GPT-5.2 Baseline 0.544 Extended 0.553 Contextualized 0.568 Bias-calibrated 0.569 Bias-calibrated-RU 0.599 Gemini Baseline 0.563 Extended 0.597 Contextualized 0.593 Bias-calibrated 0.616 Bias-calibrated-RU 0.612 
+
+Table 9: Domain-penalized Jaccard similarity scores across annotation regimes. 
+
+C.5 Spearman correlations 
+
+Model Prompt Spearman ρ
+
+GPT-4 Baseline 0.493 Extended 0.472 Contextualized 0.543 Bias-calibrated 0.495 Bias-calibrated-RU 0.520 GPT-5 Baseline 0.615 Extended 0.609 Contextualized 0.624 Bias-calibrated 0.621 Bias-calibrated-RU 0.638 Gemini Baseline 0.637 Extended 0.635 Contextualized 0.645 Bias-calibrated 0.666 Bias-calibrated-RU 0.663 
+
+Table 10: Spearman correlations between expert and model vote counts across annotation regimes. 
+
+15 D Dataset-2, value distribution 
+
+Figure 8: Distribution of expert votes across values in Dataset-2. Each value was independently evaluated on a sample of 200 posts. 
+
+Overall expert agreement in Dataset-2 was low (Fleiss’ k = 0.3), substantially below that observed in Dataset-1 (Fleiss k = 0.6). In addition, the lower proportion of unanimous decisions suggests that Dataset-2 contains a larger number of borderline cases and/or reflects more conservative expert annotation style. This provides a plausible explanation for some of the differences observed between Dataset-1 and Dataset-2, including higher over-attribution rates and lower precision for several values. 
+
+E Final annotation regime (Gemini bias-calibrated English-language prompt) 
+
+E.1 Per-value metrics on Dataset-2 
+
+Value P R F1 OA UA 
+
+Self-direction 0.49 0.90 0.64 0.24 0.17 Stimulation 0.50 0.56 0.53 0.07 0.44 Hedonism 0.51 0.82 0.63 0.17 0.14 Achievement 0.67 0.74 0.71 0.12 0.13 Power 0.61 0.68 0.64 0.12 0.20 Security 0.45 0.94 0.61 0.33 0.06 Conformity 0.35 0.27 0.31 0.04 0.59 Tradition 0.72 0.87 0.79 0.09 0.08 Benevolence 0.64 0.96 0.77 0.32 0.07 Universalism 0.29 0.50 0.37 0.17 0.07 
+
+Table 11: Precision, Recall, F1, over-attribution rate (OA), and under-attribution rate (UA). 
+
+Note. Relative to Dataset-1, Dataset-2 exhibits higher Recall and over-attribution rates, and lower Precision for several values. This pattern is likely influenced by differences in annotation conditions and more conservative expert annotation style, accompanied by low expert agreement. 
+
+E.2 Spearman correlations 
+
+16 Value Dataset-1 Dataset-2 
+
+Self-direction 0.634 0.635 Stimulation 0.535 0.505 Hedonism 0.598 0.742 Achievement 0.681 0.714 Power 0.516 0.581 Security 0.597 0.681 Conformity 0.395 0.445 Tradition 0.584 0.791 Benevolence 0.833 0.719 Universalism 0.674 0.537 
+
+Table 12: Spearman correlations between expert and annotation vote counts across values in Dataset-1 and Dataset-2, p < 0.001. 
+
+F Error profiles and targeted verification 
+
+F.1 Error profiles for over- and under- attributed values on Dataset-2 
+
+Figure 9: Contexts associated with over- and under- attributed values for Dataset-2. 
+
+17 F.2 Targeted expert verification procedure 
+
+> Figure 10: Targeted expert verification workflow.
+
+G Train dataset (N=20,000) 
+
+18 G.1 Gemini annotation results, value distribution 
+
+Figure 11: Distribution of positive votes across values. 
+
+G.2 Expert verification and annotation corrections 
+
+Target value Verification rule Flagged, N Sampled, N 
+
+Benevolence FP: Benevolence – Security 358 146 Benevolence FP: Benevolence – Hedonism 291 118 Security FP: Security – Benevolence 690 280 Security FP: Security – Universalism 338 136 Self-direction FP: Self-direction – Achievement 275 111 Self-direction FP: Self-direction – Benevolence 270 109 Self-direction FP: Self-direction – Universalism 223 90 Self-direction FP: Self-direction – Security 181 73 Tradition FP: Tradition – Benevolence 345 139 Conformity FN: Conformity – Benevolence 565 229 Conformity FN: Conformity – Security 536 218 Hedonism FN: Hedonism – Benevolence 921 374 Hedonism FN: Hedonism – Security 232 94 
+
+Table 13: Target–context verification rules and sampled cases for expert review. 
+
+Target value Reviewed, N Corrected share (N) 
+
+Security 399 0.78 (310) Self-direction 345 0.74 (256) Tradition 138 0.59 (81) Benevolence 257 0.45 (116) Hedonism 439 0.26 (113) Conformity 414 0.21 (86) 
+
+Table 14: Expert verification results across target-value groups. 
+
+Note. Correction shares are reported with respect to the intended direction of verification. For over-attribution rules, a correction is counted only when expert review decreases the target-value label. For under-attribution rules, a correction is counted only when expert review increases the target-value label. Changes in the opposite direction are not counted. 
+
+19 G.3 Annotation differences between Gemini and GPT-4 
+
+Figure 12: Annotation differences on train dataset: Gemini 2.5 (bias-calibrated prompt) vs GPT-4 (baseline prompt) results. 
+
+Note. The figure illustrates how alternative annotation regimes operationalize value categories differently. Panel A shows value prevalence differences between the earlier GPT-4 annotation regime and the current calibrated Gemini regime. Panel B shows agreement structure and regime-specific disagreements. Expert corrections were applied only to the Gemini regime. GPT-4 results are shown for historical comparison 
+
+H Encoder-transfer results 
+
+H.1 Encoder training details 
+
+We fine-tuned the last two layers of XLM-RoBERTa-large using mean pooling, linear multi-label classification head, and binary cross-entropy (BCE) loss. Other parameters were: batch size 16, maximum sequence length 512, AdamW optimizer with a learning rate of 2e-5, and early stopping based on validation loss and PR-AUC (6 epochs). 
+
+H.2 XLM-RoBERTa performance against Gemini annotations, on test dataset (N=4,000) 
+
+Value AP 
+
+Self-direction 0.752 Stimulation 0.633 Hedonism 0.726 Achievement 0.794 Power 0.473 Security 0.686 Conformity 0.429 Tradition 0.755 Benevolence 0.930 Universalism 0.702 
+
+Table 15: Precision–Recall AUC (Average Precision, AP). 
+
+20 Figure 13: Cumulative distribution functions. 
+
+21

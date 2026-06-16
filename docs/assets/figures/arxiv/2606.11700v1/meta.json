@@ -1,0 +1,86 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2606.11700v1/fig-001.webp",
+      "caption": "Figure 6: Attention Accuracy across all 32 Transformer layers of Mistral-7B. The metric measures the proportion of queries where the highest attention score is assigned to the positive document. The shaded region marks early layers with near-random performance.",
+      "page": 15,
+      "index": 1,
+      "width": 646,
+      "height": 311
+    },
+    {
+      "url": "assets/figures/arxiv/2606.11700v1/fig-002.webp",
+      "caption": "Table 3: Complete reranking results on seven BEIR datasets. We report NDCG@10.",
+      "page": 14,
+      "index": 2,
+      "width": 818,
+      "height": 183
+    },
+    {
+      "url": "assets/figures/arxiv/2606.11700v1/fig-003.webp",
+      "caption": "Figure 1: Overview of CompRank. (a) Document blocks are decoupled by inter-document masking and shared positional offsets, enabling reusable document representations. (b) Token-level compression reduces the number of document tokens exposed to query-side attention. (c) CopyNet-style supervision directly optimizes attention-derived document scores for decoding-free reranking.",
+      "page": 3,
+      "index": 3,
+      "width": 818,
+      "height": 367
+    },
+    {
+      "url": "assets/figures/arxiv/2606.11700v1/fig-004.webp",
+      "caption": "Figure 9: Qualitative example of decode-ID failure in Direct-List. The model repeats previously generated identifiers and omits several valid candidates when evaluated beyond its 30-document training setting.",
+      "page": 18,
+      "index": 4,
+      "width": 790,
+      "height": 502
+    },
+    {
+      "url": "assets/figures/arxiv/2606.11700v1/fig-005.webp",
+      "caption": "Figure 10: Qualitative example of severe coverage failure for Direct-List under a 300-document candidate list.",
+      "page": 18,
+      "index": 5,
+      "width": 790,
+      "height": 320
+    },
+    {
+      "url": "assets/figures/arxiv/2606.11700v1/fig-006.webp",
+      "caption": "Figure 5: Prompt template used for the Direct-List baseline.",
+      "page": 13,
+      "index": 6,
+      "width": 790,
+      "height": 492
+    },
+    {
+      "url": "assets/figures/arxiv/2606.11700v1/fig-007.webp",
+      "caption": "Figure 8: Average number of decoding errors per query for Direct-List on TREC-COVID as the number of candidate documents increases. The model produces valid identifier sequences under the 30-document setting seen during training, but decoding errors increase when evaluated on longer candidate lists.",
+      "page": 17,
+      "index": 7,
+      "width": 630,
+      "height": 300
+    },
+    {
+      "url": "assets/figures/arxiv/2606.11700v1/fig-008.webp",
+      "caption": "Figure 4: Input prompt template used for CompRank. The decision token after Final Answer: is used for attention-based document scoring.",
+      "page": 12,
+      "index": 8,
+      "width": 790,
+      "height": 473
+    },
+    {
+      "url": "assets/figures/arxiv/2606.11700v1/fig-009.webp",
+      "caption": "Table 4: Decoding error statistics of Direct-List on TREC-COVID (50 queries). Percentages indicate the proportion of queries exhibiting each error type.",
+      "page": 16,
+      "index": 9,
+      "width": 818,
+      "height": 194
+    },
+    {
+      "url": "assets/figures/arxiv/2606.11700v1/fig-010.webp",
+      "caption": "Figure 7: Attention Accuracy under different decision token and aggregation strategies (CompRank, Mistral-7B, Layer 20). Query Token Aggregation and Query Block Aggregation aggregate attention over multiple positions, while the remaining three use a single token as the decision point.",
+      "page": 16,
+      "index": 10,
+      "width": 580,
+      "height": 365
+    }
+  ]
+}

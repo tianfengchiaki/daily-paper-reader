@@ -1,0 +1,38 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2606.15209v1/fig-001.webp",
+      "caption": "Fig. 4. Robustness and diagnostic checks. The top row summarizes interaction setting sensitivity and topic library robustness. The higher interaction setting increases the measured signal, but the same qualitative pattern remains: histories with identity exposure support bounded inference and aggregate disclosure removes the evaluated oracle input tied to users. The bottom row reports predicate granularity diagnostics. Predicate length 1 retains measurable signal, while predicate length 3 is close to prior ranking because narrower predicates reduce exposure and interaction opportunities under the minimum audience constraint. The heatmap gives the corresponding visibility pattern in the main setting.",
+      "page": 11,
+      "index": 1,
+      "width": 1072,
+      "height": 263
+    },
+    {
+      "url": "assets/figures/arxiv/2606.15209v1/fig-002.webp",
+      "caption": "TABLE VI DISCLOSURE POLICY EFFECTS UNDER THE FINAL RUN. VALUES ARE MEAN BAYESIAN AUC ACROSS RUNS, WITH STANDARD DEVIATIONS IN PARENTHESES. AGGREGATE REPORTING REMAINS AT CHANCE LEVEL RANKING IN BOTH SETTINGS. TYPE FILTERING AND RANDOMIZED IDENTITY DISCLOSURE REDUCE THE SIGNAL, WHILE THE EVALUATED THRESHOLD SETTING REMAINS CLOSE TO DISCLOSURE WITH VISIBLE IDENTITY.",
+      "page": 10,
+      "index": 2,
+      "width": 1052,
+      "height": 723
+    },
+    {
+      "url": "assets/figures/arxiv/2606.15209v1/fig-003.webp",
+      "caption": "Fig. 2. Campaign count and confidence sweeps. The top row shows the inference signal as campaigns accumulate. Bayesian AUC rises from 0.532 to 0.636 in the main setting and from 0.541 to 0.654 in the higher interaction setting. The bottom row reports the fraction of evaluated users whose posterior confidence crosses 0.70. The same monotone pattern appears, but high confidence decisions remain a minority of runs in the main setting. Together, the four panels show that the oracle is compositional: repeated campaigns with identity exposure add evidence, while interaction noise keeps the attack bounded.",
+      "page": 9,
+      "index": 3,
+      "width": 1060,
+      "height": 334
+    },
+    {
+      "url": "assets/figures/arxiv/2606.15209v1/fig-004.webp",
+      "caption": "TABLE V MAIN INFERENCE RESULTS AT 160 CAMPAIGNS. VALUES ARE MEANS ACROSS 28 RUNS PER SETTING, WITH STANDARD DEVIATIONS IN PARENTHESES. THE MAIN SETTING IS THE CONSERVATIVE CONFIGURATION. THE HIGHER INTERACTION SETTING INCREASES EVENT DENSITY WHILE KEEPING THE SAME POPULATION, CAMPAIGN, AND DISCLOSURE INTERFACE.",
+      "page": 9,
+      "index": 4,
+      "width": 1050,
+      "height": 396
+    }
+  ]
+}

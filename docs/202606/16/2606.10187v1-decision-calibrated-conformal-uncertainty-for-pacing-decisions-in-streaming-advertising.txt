@@ -1,0 +1,1416 @@
+Title: Decision-Calibrated Conformal Uncertainty for Pacing Decisions in Streaming Advertising
+
+URL Source: https://arxiv.org/pdf/2606.10187v1
+
+Published Time: Wed, 10 Jun 2026 00:22:36 GMT
+
+Number of Pages: 29
+
+Markdown Content:
+# Decision-Calibrated Conformal Uncertainty for Pacing Decisions in Streaming Advertising 
+
+Prashant Shekhar 1 and Caroline Howard 
+
+Department of Mathematics Embry-Riddle Aeronautical University Daytona Beach, FL, USA 
+
+Abstract 
+
+We develop a decision-calibrated conformal framework for pacing decisions in streaming advertising. Pac-ing depends on uncertain future inventory, demand pressure, incremental response, and member-experience load. Instead of calibrating a generic forecast residual, the framework measures forecast error by its largest impact on the policies that could actually be deployed. The main theorem shows that the proposed score is the smallest valid uncertainty measure that uniformly protects all deployable pacing policies. Geometrically, it is the support function of the signed policy sensitivity set. Split conformal calibration gives finite-sample coverage for this score. A high-dimensional separation theorem shows that traditional residual calibration can be arbitrarily more conservative by paying for nuisance inventory dimensions, and a robust pacing result combines inventory, response, and experience uncertainty. On public-data-calibrated pacing replays built from Criteo Uplift and KuaiRand datasets, traditional conformal pacing remains unresolved with high residual radii of 7236 .7 on Criteo and 4629 .4 on KuaiRand. With the proposed decision calibration approach, the uncertainty radii are reduced to 18 .4 and 278 .6 respectively, with separate margins for value, delivery, budget, and member load. On Criteo, the proposed method certifies a less aggressive pacing policy than the point-forecast baseline, and reduces held-out any-violation rate from 16 .7% to 3.3% , with zero budget and member-load violations. On KuaiRand, the choice remains unresolved. Across forecasters, the lowest test MAE doesn’t necessarily give the smallest pacing radius. Although a simple temporal-Transformer model attains minimum Criteo MAE, seasonal ridge forecast model attains the smallest uncertainty radius. In a nutshell, the paper establishes that forecasts, response estimates, and member-experience models should be judged by whether they shrink the uncertainty that the pacing decision uses, as this leads to confident decisions that are not overly conservative. 
+
+# 1 Introduction 
+
+Advertising marketplaces are controlled by decisions made before the future is visible. A platform forecasts incoming inventory, paces budgets over time, chooses which campaigns or creatives compete for each opportunity, and enforces product constraints that protect members from excessive ad load or low-quality experiences. These choices are delicate in streaming advertising. Demand may concentrate in particular shows, regions, hours, devices, or audience segments. Campaigns may compete for the same inventory, and a short-run revenue gain can reduce member experience or advertiser incrementality if it overexposes users or exhausts high-quality opportunities too early. This paper asks how a streaming advertising platform should construct conformal uncertainty sets for pacing decisions when future inventory, incremental response, and member-experience load are all uncertain. Existing work separately studies budgeted ad allocation, pacing equilibria, risk-constrained pacing, neural time-series forecasting, response and policy learning, and robust optimization [Mehta et al., 2007, Devanur and Hayes, 2009, Balseiro et al., 2023, Gaitonde et al., 2022, Lucier et al., 2024, Dai et al., 2024, Dudík et al., 2011, Chernozhukov et al., 2018, Ben-Tal et al., 2006, Bertsimas et al., 2011]. The gap is that forecasting and pacing   
+
+> 1Corresponding author: shekharp@erau.edu
+
+1
+
+> arXiv:2606.10187v1 [stat.ML] 8 Jun 2026
+
+Figure 1: Decision-calibrated conformal pacing. Generic residual calibration uses a radius that covers all forecast errors, including irrelevant inventory directions. The decision-calibrated score projects forecast errors onto value and constraint directions used by the pacing catalog, calibrates the resulting policy-impact radius, and returns either a certified policy or an unresolved decision. 
+
+methods typically calibrate uncertainty in prediction space, not in the value and constraint directions that determine delivery, budget, value, and member-experience risk. In one sentence, the paper calibrates forecast uncertainty after projecting forecast errors through the value and constraint directions that matter for the pacing decision. Figure 1 shows the central comparison. Generic residual calibration covers all forecast errors and can create a large radius. The method developed here first projects errors onto policy-sensitive directions, then calibrates the resulting policy-impact score. The selector certifies a pacing policy only when the resulting robust value and constraint margins are large enough. Otherwise it returns unresolved. The key quantity we propose is a dual-weighted forecast score. Underforecasting a scarce audience segment needed by a high-value campaign near its delivery constraint can be much more damaging than the same error in slack inventory. The objective gives a value direction, and the pacing dual variables give shadow prices for delivery, budget, and member-experience constraints. Together these directions identify which future inventory errors matter. The score measures the largest policy impact of a forecast error across the deployable catalog. Conformal calibration then controls this decision-relevant error rather than marginal mean absolute error or mean squared error [Romano et al., 2019, Gibbs and Candès, 2021, Xu and Xie, 2021, Angelopoulos et al., 2025]. Thus, the optimizer receives uncertainty sets shaped by ad-delivery economics. The formulation is designed to return the best certified pacing policy. Forecasting enters because future supply and demand are unknown. Response modeling enters because pacing value depends on incremental advertiser response, not raw clicks. Member-experience modeling enters because the selected policy must respect exposure and load constraints. Robust optimization turns these uncertainties into either a certificate or an unresolved shortlist. The finite policy catalog reflects deployment practice, where platforms ship pacing rules, bidding multipliers, and budget controls from auditable catalogs rather than arbitrary measurable policies.   
+
+> 1Corresponding author: shekharp@erau.edu
+
+2The paper makes three primary contributions. First , it proposes a decision-calibrated conformal pacing method that projects forecast errors through the value and constraint directions used by a deployable policy catalog, calibrates the resulting uncertainty radii, and returns either a certified pacing policy or an unresolved shortlist. Second , it proves that the resulting dual-weighted score is the minimal valid scalar certificate for the catalog and develops finite-sample theory for estimating the value and constraint radii, including a sample-complexity result for stable policy certification. Third , it combines calibrated forecast uncertainty with response and member-experience uncertainty in a robust pacing selector and evaluates the full pipeline on public-data-calibrated Criteo and KuaiRand pacing replays. The experiments report selected policies, realized value, held-out constraint violations, and ablations for geometry, coverage, catalog granularity, response uncertainty, and calibration sample size. Code for reproducing the experiments is available at 
+
+https://github.com/p-shekhar/pacing-decisions-advertising .
+
+# 2 Related Work 
+
+Budgeted ad allocation and pacing : The AdWords problem and generalized online matching formalize online ad allocation under budgeted bidders [Mehta et al., 2007, Devanur and Hayes, 2009]. Budget pacing, first-price pacing equilibria, and robust pacing study repeated auctions and budget constraints when demand and bids are uncertain [Balseiro et al., 2023, Gaitonde et al., 2022, Liao and Kroer, 2023, Liao et al., 2024]. Autobidding extends this view to budget and return-on-investment constraints [Lucier et al., 2024]. Reinforcement-learning approaches to real-time bidding learn bidding policies in display and sponsored-search systems [Cai et al., 2017, Jin et al., 2018, Zhao et al., 2018]. Building on that, the current paper asks how to calibrate conformal uncertainty after future inventory, response, and member-experience uncertainty have been translated into value and constraint sensitivity. 
+
+Forecasting, predict-then-optimize, and calibrated uncertainty : Probabilistic and neural forecasting models such as DeepAR, N-BEATS, Temporal Fusion Transformers, Informer, Autoformer, PatchTST, and foundation-style time-series models provide flexible tools for future demand and inventory [Salinas et al., 2017, Oreshkin et al., 2020, Lim et al., 2021, Zhou et al., 2021, Wu et al., 2021, Nie et al., 2023, Ansari et al., 2024]. Predict-then-optimize and decision-focused learning evaluate predictive models by downstream optimization quality rather than prediction loss alone [Elmachtoub and Grigas, 2022]. Conformalized quantile regression, adaptive conformal inference, ensemble batch prediction intervals, conformal robust optimization, robust contextual linear programming, and utility-directed conformal prediction provide finite-sample calibration tools for predictive decisions [Romano et al., 2019, Gibbs and Candès, 2021, Xu and Xie, 2021, Angelopoulos et al., 2025, Johnstone and Cox, 2021, Sun et al., 2023, Cortes-Gomez et al., 2025]. We treat the forecasting model as an upstream input. The contribution is to move calibration from prediction space into the directions that matter for pacing. The empirical forecasting comparison tests whether prediction accuracy and decision radius can disagree. 
+
+Incremental response as an input to pacing : Logged ad and recommendation systems produce biased samples of actions and outcomes. Doubly robust policy learning, counterfactual risk minimization, double machine learning, causal forests, and representation learning for treatment effects provide tools for estimating incremental response and policy value from logged data [Dudík et al., 2011, Swaminathan and Joachims, 2015, Chernozhukov et al., 2018, Athey et al., 2019, Shalit et al., 2017]. Public datasets such as Criteo Uplift, Open Bandit, and KuaiRand make related empirical tests possible [Diemert et al., 2018, Saito et al., 2020, Gao et al., 2022]. We use these estimates as inputs to the pacing certificate. The methodological contribution is the uncertainty layer that decides how forecast, response, and experience uncertainty should jointly affect a pacing decision. 
+
+Robust optimization and constrained online learning : Robust optimization studies decisions that remain feasible under uncertainty sets [Ben-Tal et al., 2006, Bertsimas et al., 2011]. Bandits with knapsacks and online convex optimization with long-term constraints study online decisions under resource constraints [Badanidiyuru et al., 2018, Jenatton et al., 2016]. We use this perspective to derive decision guarantees for ad pacing policies selected from calibrated forecast and response uncertainty sets. 
+
+Closest distinction : Closest to our setting are conformal robust optimization, robust contextual linear   
+
+> 1Corresponding author: shekharp@erau.edu
+
+3Table 1: Problem-setup notation used in the objective and constraints. Symbol Meaning 
+
+π, πt Pacing policy and the action it selects at time t.
+
+Dk Delivery target for campaign k.
+
+Bk Budget for campaign k.
+
+vk Value per incremental outcome for campaign k.
+
+τk,t (πt) Incremental advertiser response under the selected action. 
+
+dk,t (πt) Delivered units for campaign k.
+
+ck,t (πt) Budget spend for campaign k.
+
+Qt(πt) Member-experience load or quality cost. 
+
+Qmax Allowed total member-experience load. 
+
+programming, and utility-directed conformal prediction [Johnstone and Cox, 2021, Sun et al., 2023, Cortes-Gomez et al., 2025]. Those papers establish decision-aware calibration as a general methodology. Our contribution is the pacing-specific geometry. Objective sensitivity together with delivery, budget, and member-experience dual prices induces the minimal valid certificate for a streaming ad-delivery catalog. The same geometry exposes a failure mode of generic residual calibration, which can reserve slack for nuisance inventory dimensions that are invisible to every deployable pacing policy. 
+
+# 3 Problem Setup 
+
+Time is indexed by t = 1 , . . . , T . At each time, a streaming platform receives ad opportunities with observable context, such as region, device, title, hour, user segment, and campaign eligibility. There are K campaigns. Campaign k has delivery target Dk, budget Bk, and value-per-incremental-outcome vk. A platform action may include the displayed campaign, creative, bid multiplier, reserve adjustment, or no-ad decision. Let Π be the class of feasible pacing policies, and let πt be the action selected by policy π at time t. For campaign k, let τk,t (πt) denote incremental advertiser response, dk,t (πt) denote delivered units, and ck,t (πt)
+
+denote budget spend. The response τk,t (πt) is distinct from raw click-through or conversion probability because it measures incremental value relative to not showing the ad or showing an alternative. Let Qt(πt)
+
+denote member-experience load or quality cost, let Qmax be the allowed total member-experience load, and let 
+
+λload ≥ 0 be the objective penalty on member load. With these notations defined (also summarized in Table 1), in the following formulation, expectations are placed over future opportunity arrivals and outcomes. The notation Eπ emphasizes the distribution induced by policy π.The clean objective is 
+
+max  
+
+> π∈Π
+
+E
+
+" TX
+
+> t=1
+> K
+
+X
+
+> k=1
+
+vk τk,t (πt) − λload Qt(πt)
+
+#
+
+, (1) subject to campaign delivery, budget, and member-experience constraints. 
+
+Eπ
+
+" TX
+
+> t=1
+
+dk,t (πt)
+
+#
+
+≥ Dk, k = 1 , . . . , K, (2) 
+
+Eπ
+
+" TX
+
+> t=1
+
+ck,t (πt)
+
+#
+
+≤ Bk, k = 1 , . . . , K, (3) 
+
+Eπ
+
+" TX
+
+> t=1
+
+Qt(πt)
+
+#
+
+≤ Qmax . (4) The difficulty is that future opportunity volume, τk,t (·), and parts of Qt(·) are not known before launch. The paper therefore replaces point optimization with robust optimization over calibrated uncertainty sets.   
+
+> 1Corresponding author: shekharp@erau.edu
+
+44 Decision-Calibrated Conformal Pacing 
+
+4.1 Forecasting as an input to pacing uncertainty 
+
+Let z denote the vector of future quantities over the planning horizon. In the implementation, each segment-block vector has coordinates for inventory volume, eligible demand pressure, and quality-adjusted opportunity mass. A forecasting model fitted on historical logs produces the point forecast bz.A raw forecast residual treats every coordinate of z as equally important. A pacing decision does not. If the forecast is wrong for an audience segment that no active campaign can use, the error may have little effect on delivery, budget, value, or member load. If the same-sized error occurs in scarce inventory needed by a high-value campaign near a delivery constraint, it can change which policy should be launched. The question is therefore not only how large the forecast error is, but whether the error falls in directions that affect the pacing decision. Different inventory dimensions matter for different reasons. Some coordinates affect expected value because they create high-quality advertising opportunities. Others affect feasibility because they determine whether campaigns can meet delivery goals, stay within budget, or respect member-experience limits. A useful uncertainty score should reflect these differences. Reducing prediction error in an irrelevant coordinate should not force the platform to reserve more pacing slack, while reducing error in a scarce, constraint-relevant coordinate should matter. For each deployable policy π, we summarize this dependence by a sensitivity vector wπ .Conceptually, wπ
+
+measures how the downstream pacing quantities for policy π respond to changes in the forecasted planning vector, including changes in value and constraint margins. The forecast error enters only after this sensitivity is paired with e = z − bz. Large entries of wπ mark forecast coordinates whose errors can change the decision. Small or zero entries mark coordinates that are mostly irrelevant for that policy. Let Πcat ⊆ Π denote the finite deployable policy catalog, and let J be the number of constraint functions. The Lagrangian below is only a bookkeeping device for computing these sensitivity directions. It combines value sensitivity with the delivery, budget, and member-experience dual prices from the nominal relaxation, producing relevant directions for each policy in the catalog. The forecasting model itself remains model-agnostic and it may be simple or neural, but it is judged by whether its errors are small in these policy-relevant directions. 
+
+Definition 1 (Decision-calibrated forecast score) . Let bu = ( bz, bτ , bm) be the nominal future world, collecting inventory, incremental-response, and member-experience forecasts, and let bλ ≥ 0 be a vector of dual prices for the delivery, budget, and member-experience constraints in the nominal pacing relaxation. For policy π, define the Lagrangian 
+
+L(π; u, bλ) = V (π; u) −
+
+> J
+
+X
+
+> j=1
+
+bλj gj (π; u),
+
+where V is platform value and gj ≤ 0 are constraint violations. The inventory sensitivity of π is 
+
+wπ (bu, bλ) = ∇z L(π; bu, bλ).
+
+For calibration block b, with realized future zb and forecast bzb, the dual-weighted forecast score is 
+
+Sdc  
+
+> b
+
+= max 
+
+> π∈Πcat
+
+D
+
+wπ (bub, bλb), z b − bzb
+
+E
+
+.
+
+For a forecast error e = z − bz, write the corresponding catalog support function as 
+
+ΦΠcat (e; bu, bλ) = max 
+
+> π∈Πcat
+
+D
+
+wπ (bu, bλ), e 
+
+E
+
+. (5) Then the calibration score is Sdc  
+
+> b
+
+= Φ Πcat (zb − bzb; bub, bλb). It is large when the forecast error falls in inventory directions with high downstream value or high constraint pressure. A forecaster improves the pacing decision   
+
+> 1Corresponding author: shekharp@erau.edu
+
+5when it reduces this score, even if another model has lower generic prediction error. Given calibration scores 
+
+Sdc 1 , . . . , S dc  
+
+> n
+
+and miscoverage level α, define the split-conformal quantile 
+
+bqdc 1−α = the ⌈(n + 1)(1 − α)⌉ th order statistic of {Sdc  
+
+> b
+
+}nb=1 . (6) 
+
+Assumption 1 (Exchangeable calibration blocks) . The calibration score blocks and the future test block are exchangeable after conditioning on the training procedure used to fit the forecasting model and compute the nominal pacing dual prices. 
+
+Assumption 2 (Affine downstream inventory contribution) . For every π ∈ Πcat , the inventory-dependent part of the evaluated Lagrangian is affine in z over the planning block, with coefficient wπ (bu, bλ). When the downstream functions are differentiable rather than exactly affine, the proof applies to the first-order term and adds the usual second-order Taylor remainder. The next theorem gives the score its decision meaning. For a forecast error e, it asks how much any deployable policy’s downstream value-and-constraint tradeoff can change. The answer is the largest inner product between 
+
+e and the catalog sensitivities. This is the quantity to control if one radius must protect every candidate policy. The same quantity has a geometric form. The catalog induces sensitivity vectors wπ and their negatives, since both over- and under-forecasting can hurt. Their convex hull contains every signed catalog direction. The largest policy effect is the support function of this hull. Any valid scalar certificate for the catalog must contain the same geometry. 
+
+Theorem 4.1 (Decision-calibrated uncertainty characterization) .
+
+The result has four parts, an operational identity, a geometric representation, a minimality characterization, and a conformal coverage statement. 
+
+Part I. Operational characterization :Suppose Assumption 2 holds. Fix a nominal world (bu, bλ). For any forecast error e = z − bz, the largest downstream Lagrangian change over the deployable pacing catalog is 
+
+sup 
+
+> π∈Πcat
+
+L(π; ( bz + e, bτ , bm), bλ) − L (π; ( bz, bτ , bm), bλ) = Φ Πcat (e; bu, bλ).
+
+Part II. Geometric representation :Now define the signed policy-sensitivity set 
+
+WΠcat (bu, bλ) = conv 
+
+
+
+{wπ (bu, bλ) : π ∈ Πcat } ∪ {− wπ (bu, bλ) : π ∈ Πcat }
+
+
+
+.
+
+The same catalog effect has the support-function representation 
+
+ΦΠcat (e; bu, bλ) = σWΠcat (e) := sup  
+
+> v∈W Πcat (bu, bλ)
+
+⟨v, e ⟩.
+
+Part III. Minimality characterization :This part shows that any valid scalar certificate must cover every signed sensitivity direction generated by the catalog. Geometrically, any valid uncertainty measure must contain all directions that can affect a deployable policy. Consider any finite-valued lower-semicontinuous sublinear scalar certificate B, meaning that B is nonnegative, positively homogeneous, and subadditive. If B uniformly certifies all catalog Lagrangian errors, 
+
+L(π; ( bz + e, bτ , bm), bλ) − L (π; ( bz, bτ , bm), bλ) ≤ B(e) for all π ∈ Πcat and all e, 
+
+then there exists a closed convex set 
+
+KB = {v : ⟨v, e ⟩ ≤ B(e) for all e}  
+
+> 1Corresponding author: shekharp@erau.edu
+
+6such that B = σKB and 
+
+WΠcat (bu, bλ) ⊆ K B .
+
+Consequently B(e) ≥ ΦΠcat (e; bu, bλ) for all e. Equality for all e holds if and only if KB = WΠcat . Thus the score is the unique minimal coherent scalar certificate for the catalog. 
+
+Part IV. Conformal validity :If Assumption 1 also holds and bqdc 1−α is the conformal quantile in Eq. (6) , then for the next planning block, 
+
+P
+
+
+
+max 
+
+> π∈Πcat
+
+D
+
+wπ (bu, bλ), z − bz
+
+E
+
+≤ bqdc 1−α
+
+
+
+≥ 1 − α. 
+
+Theorem 4.1 shows that the relevant uncertainty is not the full forecast residual, but the part seen by the current pacing catalog. The minimality result rules out smaller valid scalar certificates under catalog-level robustness. A smaller radius requires additional structure beyond the catalog sensitivities. The conformal statement makes the score usable with any upstream forecaster, while keeping the radius in downstream pacing units. Appendix Figure 5 gives the corresponding diagnostic. Strict supersets of the signed sensitivity hull are valid but conservative, while omitting an active direction or scaling below the support function breaks catalog validity. The selector applies the same calibration recipe more than once. The Lagrangian score gives one radius for the combined value-and-constraint tradeoff, which is useful for the geometry theorem. Deployment also needs component-level statements. The platform needs a lower confidence bound on value and upper confidence bounds on delivery shortfall, budget overspend, and member-experience load. A single radius would hide which part of the decision is safe and which part is binding. The implementation therefore calibrates value and each constraint separately. Each component has a sensitivity direction, a calibration score, and a split-conformal radius. The value sensitivity measures how platform value responds locally to changes in the forecasted planning vector. The constraint sensitivities measure how each feasibility margin responds locally to the same forecast coordinates. Forecast error is then evaluated by pairing these sensitivities with e = z − bz. The resulting radii enter the robust selector as value discounts and constraint tightenings. The following scores are direct analogues of Sdc  
+
+> b
+
+, but applied to the individual decision components rather than to the combined Lagrangian direction. Let 
+
+aπ,V = ∇z V (π; bu), aπ,g j = ∇z gj (π; bu), j = 1 , . . . , J. 
+
+For calibration block b, define 
+
+SVb = max 
+
+> π∈Πcat
+
+|⟨ aπ,V , z b − bzb⟩| , Sgj 
+
+> b
+
+= max 
+
+> π∈Πcat
+
+|⟨ aπ,g j , z b − bzb⟩| .
+
+Let αcomp denote the component miscoverage level used for value and constraint certification. The corre-sponding split-conformal quantiles are denoted 
+
+bqV 
+
+> 1−αcomp
+
+, bqgj 
+
+> 1−αcomp
+
+, j = 1 , . . . , J. 
+
+In the experiments, J = 3 , corresponding to delivery shortfall, budget overspend, and member-experience load, and Bonferroni calibration sets αcomp = α/ (J + 1) = 0 .025 .
+
+4.2 Response and experience uncertainty in the pacing certificate 
+
+For each action a, let τt(a) be incremental advertiser response and mt(a) be member-experience cost. The platform estimates these functions from randomized experiments, logged bandit data, or quasi-experimental variation. We represent uncertainty through intervals 
+
+τt(a) ∈ [bτt(a) − ρτ,t (a), bτt(a) + ρτ,t (a)] , mt(a) ∈ [ bmt(a) − ρm,t (a), bmt(a) + ρm,t (a)] .  
+
+> 1Corresponding author: shekharp@erau.edu
+
+7Table 2: Guide to the main calibration quantities. The first three rows define the combined Lagrangian score used in Theorem 4.1. The remaining rows define the component radii used by the deployable selector in Eq. (7). Symbol Plain-language meaning Role 
+
+wπ Sensitivity direction for policy π Prices forecast errors by how they affect value and constraint margins. 
+
+Sdc  
+
+> b
+
+Combined decision score on calibration block b
+
+Measures the largest Lagrangian error across the catalog. 
+
+bqdc 1−α Conformal radius for the combined score Certifies the catalog-level Lagrangian error in Theorem 4.1. 
+
+SVb Value-only calibration score Measures how forecast error changes platform value. 
+
+Sgj 
+
+> b
+
+Constraint-j calibration score Measures how forecast error changes delivery, budget, or member-load margin gj .
+
+bqV 
+
+> 1−αcomp
+
+Value forecast radius Subtracted from nominal value in Eq. (7). 
+
+bqgj 
+
+> 1−αcomp
+
+Constraint-j forecast radius Added to constraint gj in Eq. (7). 
+
+ρV (π) Response uncertainty radius for policy value Further discounts value when incremental re-sponse is uncertain. 
+
+ρg,j (π) Response or experience radius for constraint j
+
+Further tightens constraints when response or member-experience estimates are uncertain. 
+
+The uncertainty radius may come from doubly robust scores, cross-fitting, causal forests, conformal risk control, or domain-specific sensitivity analysis. The framework does not require a new response estimator. It requires intervals that can be used by the pacing decision. In the implementation, response uncertainty contributes to the policy-level value radius ρV (π), member-experience uncertainty contributes to the member-load constraint radius, and delivery and budget constraints receive no additional response or experience radius beyond their calibrated forecast component radii. More generally, these intervals can define policy-level value and constraint radii ρV (π) and ρg,j (π).The robust selector discounts value by the forecast-calibration margin bqV and the response margin ρV (π).It tightens each constraint by its forecast-calibration margin bqgj and any component-specific response or experience margin ρg,j (π). A policy is certified only if it remains feasible after these adjustments. The selected policy maximizes the resulting value lower bound subject to the corresponding constraint upper bounds. 
+
+bπ ∈ arg max 
+
+> π∈Πcat
+
+n bV (π) − bqV 
+
+> 1−αcomp
+
+− ρV (π)
+
+o
+
+subject to bgj (π) + bqgj 
+
+> 1−αcomp
+
++ ρg,j (π) ≤ 0, j = 1 , . . . , J. 
+
+(7) Here bV and bgj are evaluated at the point forecast and estimated response functions. The component radii 
+
+bqV and bqgj use the same support-function construction as bqdc , applied to the value and constraint directions certified by the selector. This is the implementation used in the experiments. The implementation (Algorithm 1) also reports an uncertainty-aware shortlist. Let bR⋆ be the best robust value among certified policies, or the best robust value over the full catalog if no policy is certified. Given a planning tolerance ηplan , the shortlist contains policies whose robust value is at least bR⋆ − ηplan | bR⋆|. All experiments use ηplan = 0 .05 .
+
+# 5 Theoretical Results 
+
+The remaining main results explain how the calibrated radii behave in deployment. They address how many calibration blocks are needed, why nuisance inventory dimensions can make generic residual radii too large, and how forecast, response, and experience uncertainty combine in the final certificate. The first result turns conformal coverage into a calibration-sample-size rule for stable policy certification. 
+
+Proposition 5.1 (Calibration sample size for stable pacing certification) . Let Kcomp = J + 1 be the number of calibrated decision components used by Eq. (7) , consisting of one value component and J constraint   
+
+> 1Corresponding author: shekharp@erau.edu
+
+8Algorithm 1 Decision-Calibrated Conformal Pacing Selector 
+
+Require: Historical logs, policy catalog Πcat , campaign constraints, miscoverage levels α, α τ , α m, planning tolerance ηplan .
+
+Ensure: Selected pacing policy bπ, robust value, constraint certificate, and uncertainty shortlist.  
+
+> 1:
+
+Split the streaming blocks into training, calibration, and held-out planning blocks.  
+
+> 2:
+
+Fit a forecasting model on the training blocks to predict future inventory, demand pressure, and opportunity quality z. 
+
+> 3:
+
+On each calibration block b, compute forecast error eb = zb − bzb. 
+
+> 4:
+
+Solve finite-catalog linear relaxation of Eqs. (1) –(4) at calibration forecast bzb, using mixture weights over 
+
+Πcat , and record delivery, budget, and member-experience dual prices bλb returned by the linear program.  
+
+> 5:
+
+Compute the Lagrangian support score Sdc  
+
+> b
+
+from Definition 1, equivalently Eq. (5).  
+
+> 6:
+
+Compute the Lagrangian decision radius bqdc 1−α using Eq. (6).  
+
+> 7:
+
+For value certification, compute SVb = max π∈Πcat |⟨ aπ,V , e b⟩| and its conformal radius bqV 
+
+> 1−αcomp
+
+using the same order statistic as Eq. (6).  
+
+> 8:
+
+For each constraint j = 1 , . . . , J , compute Sgj 
+
+> b
+
+= max π∈Πcat |⟨ aπ,g j , e b⟩| and its conformal radius 
+
+bqgj 
+
+> 1−αcomp
+
+using the same order statistic as Eq. (6).  
+
+> 9:
+
+Estimate response and member-experience uncertainty. In the implemented experiments, convert response uncertainty to ρV (π), convert member-experience uncertainty to the member-load constraint radius, and set additional response/experience radii for delivery and budget constraints to zero.  
+
+> 10:
+
+Form the planning forecast bzplan from the mean predicted held-out horizon generated by the rolling replay.  
+
+> 11:
+
+for each policy π ∈ Πcat do  
+
+> 12:
+
+Evaluate nominal bV (π) and bgj (π) at bzplan . 
+
+> 13:
+
+Compute robust value lower bound bR(π) = bV (π) − bqV 
+
+> 1−αcomp
+
+− ρV (π), as in Eq. (7).  
+
+> 14:
+
+Compute robust constraint upper bounds bGj (π) = bgj (π) + bqgj 
+
+> 1−αcomp
+
++ ρg,j (π), as in Eq. (7).  
+
+> 15:
+
+Mark π certified if bGj (π) ≤ 0 for all j = 1 , . . . , J . 
+
+> 16:
+
+end for  
+
+> 17:
+
+Select bπ as the certified policy with largest bR(π), matching Eq. (7).  
+
+> 18:
+
+Let bR⋆ be the best robust value among certified policies, or the best robust value over Πcat if no policy is certified.  
+
+> 19:
+
+Return all policies with bR(π) ≥ bR⋆ − ηplan | bR⋆|. If no policy is certified, return this as an unresolved shortlist. 
+
+components. For component k ∈ { V, g 1, . . . , g J }, let Sk be its score, let Fk be the population distribution of 
+
+Sk, and let qk = F −1 
+
+> k
+
+(1 − αk) be the population calibration radius. Suppose that, for some fmin > 0 and 
+
+ε > 0, every Fk has density at least fmin on [qk − ε, q k + ε]. Let bqk be the split-conformal empirical quantile computed from ncal exchangeable calibration blocks. Then, there is a universal constant C > 0 such that if 
+
+ncal ≥ Cf 2min ε2 log 2Kcomp 
+
+δ ,
+
+then, with probability at least 1 − δ,
+
+max   
+
+> k∈{ V,g 1,...,g J}
+
+|bqk − qk| ≤ ε. 
+
+Consequently, every robust value lower bound and every robust constraint upper bound used by Eq. (7) 
+
+is within ε of its population-calibrated counterpart, uniformly over the policy catalog. If the population-calibrated selector has a unique feasible optimizer whose active feasibility and value margins exceed 2ε, then the empirical selector returns the same policy. When these margins are smaller, calibration uncertainty is large enough to affect the decision, and the appropriate output is an uncertainty-aware shortlist rather than a forced recommendation. 
+
+Proposition 5.1 gives the sample-complexity layer. A platform does not need enough historical blocks to estimate a band in every nuisance inventory coordinate. It needs enough calibration blocks to estimate the high   
+
+> 1Corresponding author: shekharp@erau.edu
+
+9quantile of the decision score. The local density condition is the usual quantile stability requirement. If many scores pile up near the target quantile, the radius is hard to estimate. If the distribution crosses the quantile cleanly, fewer blocks are needed. The next result shows why this distinction matters when many forecast coordinates are irrelevant to the current pacing catalog. 
+
+Theorem 5.2 (High-dimensional separation from generic residual calibration) . Let the inventory-forecast space decompose orthogonally as Rd = S ⊕ N , where all catalog sensitivity vectors satisfy wπ ∈ S and N is a nuisance subspace that no pacing policy prices. Then for any forecast error e = eS + eN ,
+
+ΦΠcat (e; bu, bλ) = Φ Πcat (eS ; bu, bλ),
+
+whereas a generic Euclidean residual score depends on both components. 
+
+∥e∥22 = ∥eS ∥22 + ∥eN ∥22.
+
+Consequently, for every A > 1, there exists an exchangeable calibration/test distribution with valid conformal radii qdc 1−α and qgen 1−α such that 
+
+qgen 1−α ≥ A q dc 1−α,
+
+while qdc 1−α remains the sharp radius for all catalog Lagrangian forecast errors. More concretely, in dimension 
+
+d = m + 1 , a one-policy catalog with sensitivity w = e1, where e1 is the first coordinate vector, and exchangeable forecast errors with σ > 0
+
+e = ( ξ0, σξ 1, . . . , σξ m), ξ0, ξ 1, . . . , ξ m ∈ {− 1, 1},
+
+with independent Rademacher signs, has 
+
+qdc 1−α = 1 , qgen 1−α = p1 + mσ 2.
+
+Thus the conservatism of norm-based residual calibration grows as √m when nuisance inventory error has constant scale. 
+
+Theorem 5.2 gives a failure mode for accuracy-first uncertainty quantification. A forecaster may err in inventory coordinates that do not affect the current campaign mix, while a generic residual interval still forces the optimizer to reserve slack for those errors. The dual-weighted score avoids this by projecting forecast error through the catalog sensitivities and discarding nuisance directions with zero price for the current decision. The calibration is therefore not just a model-comparison exercise. It changes which uncertainty can constrain the business decision. The final main theorem combines the calibrated inventory radii with response and member-experience uncertainty in the selector. 
+
+Assumption 3 (Response and experience coverage) . Let u⋆ be the realized future world, and let ατ and αm
+
+be the response and member-experience miscoverage levels. Let αcomp be the component-level conformal miscoverage used to calibrate the value and constraint forecast radii. With probability at least 1 − α − ατ − αm,the calibrated forecast radii and the estimated response and member-experience radii satisfy, for all π ∈ Πcat 
+
+and all constraints j,
+
+|V (π; u⋆) − bV (π)| ≤ bqV 
+
+> 1−αcomp
+
++ ρV (π), gj (π; u⋆) ≤ bgj (π) + bqgj 
+
+> 1−αcomp
+
++ ρg,j (π).
+
+The component forecast radii may be calibrated jointly, or by a Bonferroni split over value and the J constraints. 
+
+Theorem 5.3 (Robust pacing certificate) . Let bπ be selected by Eq. (7) . Suppose Assumptions 1, 2, and 3 hold, and suppose Eq. (7) is solved to optimization error εopt . Then, with probability at least 1 − α − ατ − αm, all constraints hold for the realized future world: 
+
+gj (bπ; u⋆) ≤ 0, j = 1 , . . . , J. 
+
+Moreover, if π⋆ 
+
+> rob
+
+is the best policy in Πcat satisfying the same robust constraints, then 
+
+V (π⋆
+
+> rob
+
+; u⋆) − V (bπ; u⋆) ≤ 2 sup 
+
+> π∈Πcat
+
+nbqV 
+
+> 1−αcomp
+
++ ρV (π)
+
+o
+
++ εopt .  
+
+> 1Corresponding author: shekharp@erau.edu
+
+10 Theorem 5.3 ties the pieces to one pacing decision. A forecasting model helps when it reduces bqV and 
+
+bqgj , regardless of whether it is simple or neural. Response measurement helps when it reduces ρV and any response-driven constraint radii. In the experiments, response uncertainty enters the value radius, while member-experience uncertainty enters the member-load constraint. A policy is credible only when its robust value clears the calibrated forecast, response, and experience margins. Otherwise the output is a shortlist rather than a forced recommendation. The appendix adds three practical guardrails. Appendix Lemma A.1 underlies Proposition 5.1. Appendix Theorem A.2 shows why a point forecast can rank policies but cannot certify delivery, budget, or member-experience feasibility without slack in the relevant directions. Appendix Proposition A.3 justifies finite deployment catalogs. If the catalog is dense in the behavior that matters for value and constraints, optimizing over it loses only the corresponding approximation error. 
+
+# 6 Experiments 
+
+6.1 Experimental Setup 
+
+The empirical section evaluates pacing decisions coupled with forecast accuracy. Public production pacing logs with campaign budgets, delivery goals, member-load constraints, and randomized response are not available, so the experiments use public-data-calibrated streaming pacing benchmarks. Criteo supplies randomized ad response and anonymized context heterogeneity. KuaiRand supplies sequential recommendation exposure and repeated user-item structure. The pacing layer supplies the campaign catalog, delivery targets, budgets, member-load limits, and deployable policies. These benchmarks test whether the conformal pacing certificate behaves as predicted in reproducible environments. Each case is loaded with up to 500 ,000 rows and converted into a 120 -block streaming planning instance with 
+
+60 training blocks, 30 calibration blocks, and 30 held-out test blocks. The main selector uses the medium catalog of 12 pacing policies (discussed in appendix Table 6), miscoverage levels α = ατ = αm = 0 .1,component level αcomp = 0 .025 , and planning tolerance ηplan = 0 .05 . The planning vector has coordinates for inventory mass, demand-pressure mass, and quality-adjusted opportunity mass within each segment. The selector is solved on the mean predicted held-out planning vector. Forecasts are generated by a rolling replay using time features and lagged block totals available at each block. Realized value and violation rates are computed by replaying the selected policy on each of the 30 held-out blocks. This matches the affine downstream-inventory structure used in the theory. The streaming generator uses 16 context segments when available and 6 synthetic campaigns. Segment popularity, time-profile structure, quality profiles, base response, and treatment lift are calibrated from the public logs. Criteo uses pseudo-time induced by row order and a fixed conservative repeated-exposure scale, while KuaiRand uses date-hour-min structure and repeated user-item exposure. Campaign values, delivery targets, budgets, and member-load limits are then sampled from fixed seed-controlled ranges. Forecasting models are fit only on the 60 training blocks. The radii are calibrated only on the 30 calibration blocks and are never fit on the held-out test blocks. The forecasting diagnostic is not a leaderboard. It checks whether low prediction error and low pacing radius select the same upstream model. For reproducibility, the implemented comparison uses seven forecast generators: (i) previous-block point naive, (ii) seasonal ridge, (iii) nonlinear random features, (iv) histogram gradient boosting, (v) numpy-MLP (MultiLayer Perceptron), (vi) PyTorch-GRU (Gated Recurrent Unit), and (vii) PyTorch temporal Transformer. The GRU and Transformer models use automatic accelerator selection and run on CUDA when available. 
+
+Dataset 1. Randomized ad response : The Criteo Uplift dataset provides randomized treatment assignment and ad-response outcomes [Diemert et al., 2018]. We load up to 250 ,000 treated and 250 ,000 control rows when available, use the logged conversion outcome, construct 64 context identifiers from anonymized feature buckets, and create pseudo-time indices by ordering rows into chunks of size ⌊n/ 96 ⌋ before generating the streaming case. We use this dataset to estimate incremental response and advertiser value under different delivery intensities. Because the dataset is not a streaming ad server log, the benchmark constructs the pacing environment by ordering opportunities into time blocks and assigning campaigns to context clusters. Thus   
+
+> 1Corresponding author: shekharp@erau.edu
+
+11 Table 3: Empirical benchmark provenance. Criteo and KuaiRand provide public-data structure for response, context heterogeneity, time ordering, and repeated exposure, while the campaign budgets, delivery targets, member-load limits, pacing policies, and constraint system are constructed as a reproducible pacing layer. The experiments should therefore be considered as public-data-calibrated simulated stress tests, not as production pacing logs. Component Criteo source KuaiRand source Pacing layer Response/outcome signal Randomized treatment and conversion Logged random recommendation interactions Calibrated value scale Context heterogeneity Anonymized feature buckets Item and date-hour-min buckets Context-to-campaign mapping Time structure Row-ordered pseudo-time bins Date-hour-min sequence when available       
+
+> 120 -block planning horizon Repeated exposure/load Limited in source log Repeated user-item exposure Member-load constraints Campaign budgets and delivery goals Not in public log Not in public log Constructed with fixed seed Pacing catalog and policies Not in public log Not in public log 12 -policy deployable catalog
+
+Criteo contributes randomized response and context heterogeneity, while the budgeted pacing problem is the reproducible stress layer. 
+
+Dataset 2. Sequential recommendation exposure : KuaiRand provides repeated recommendation exposure with randomization and sequential user-item interactions [Gao et al., 2022]. We use the KuaiRand-Pure random log when the archive is available, load up to 500 ,000 rows, define the outcome as 0.6 times click plus 0.3 times long-view plus 0.1 times like, use date-hourmin bins for time, and construct 64 item-context buckets from video identifiers. We use it to calibrate opportunity arrival, repeated exposure, response decay, and load-sensitive experience costs. The campaign budgets, delivery constraints, and pacing policies remain constructed, as shown in Table 3. When the loaded recommendation log does not contain enough treatment contrast for a stable response estimator, the implementation uses a conservative public-data-calibrated response scale and records this fallback in the response diagnostic. The main experiments evaluate how calibrated uncertainty changes launch decisions and held-out constraint behavior. The first experiment compares point-forecast pacing, generic-residual conformal pacing, and the decision-calibrated selector under the same policy catalog; its results are reported in Figure 2 and Table 4. The second experiment reruns the selector with all seven forecasting models and asks whether the lowest held-out prediction error also gives the smallest calibrated radius in Eq. (6) ; its results are reported in Figure 3. The third experiment compares predicted response, context-adjusted doubly robust response when treatment contrast is available, and robust response; its results are reported in Figure 4. The first and third main experiments use the numpy-MLP forecaster. The appendix reports the supporting diagnostics: (i) geometry and conformal coverage in Figures 5–6 and Table 5, (ii) catalog and deployment ablations in Table 7, and (iii) calibration sample size in Figure 7. 
+
+6.2 Main Results Decision-calibrated pacing versus point and generic robust baselines : Figure 2 and Table 4 report the main selector comparison. The point-forecast baseline certifies aggressive policies without reserving forecast slack. On Criteo, point-forecast pacing selects pace_i3_q0 , obtains realized value 394 .8, and has a 16 .7% 
+
+any-violation rate over test blocks, including a 13 .3% budget-violation rate. The generic-residual baseline uses the unweighted residual radius qgeneric = 7236 .7, which is too conservative and returns unresolved. The decision-calibrated selector has Lagrangian radius qdc = 18 .4 and uses component radii for value, delivery, budget, and member-load certification. It selects pace_i3_q1 , obtains realized value 379 .5, and reduces the any-violation rate to 3.3% with zero budget and member-load violations in the realized test blocks.   
+
+> 1Corresponding author: shekharp@erau.edu
+
+12 Table 4: Deployment-facing replay summary. The radius column reports the scalar headline radius, with 0 for point forecasts, qgeneric for generic conformal pacing, and qdc for the decision-calibrated selector. Certification additionally uses separate component radii for value, delivery, budget, and member load. Unresolved rows have no launched policy, so realized value and held-out violation rates are not reported.                                                         
+
+> Case Method Decision Policy Shown radius Value Any viol. Budget viol. Member viol. Criteo Point forecast certify pace_i3_q0 0.0394 .816 .7% 13 .3% 0.0%
+> Criteo Generic conformal unresolved –7236 .7––––Criteo Decision calibrated certify pace_i3_q1 18 .4379 .53.3% 0.0% 0.0%
+> KuaiRand Point forecast certify pace_i3_q2 0.0306 .940 .0% 0.0% 0.0%
+> KuaiRand Generic conformal unresolved –4629 .4––––KuaiRand Decision calibrated unresolved –278 .6––––
+
+Figure 2: Deployment-facing replay comparison. Point-forecast pacing ignores forecast uncertainty. Generic-residual conformal pacing uses an unweighted residual radius, while the decision-calibrated selector uses component radii built from catalog sensitivities. Criteo has enough margin for a certified policy, while KuaiRand remains unresolved under repeated-exposure and member-load uncertainty. 
+
+The KuaiRand case is harder because repeated exposure creates larger delivery and member-load uncertainty. Point-forecast pacing selects pace_i3_q2 with a 40 .0% delivery-driven violation rate. The generic-residual baseline again returns unresolved. The decision-calibrated radius falls from 4629 .4 to 278 .6, but the selector still returns unresolved after the value, delivery, budget, and member-load margins are applied. This is the intended behavior. The radius can be much smaller than a generic residual band, while certification still fails when constraint margins are weak. Appendix B explains why the Criteo certification occurs and why the KuaiRand case remains unresolved. The decomposition is summarized in Table 7. First, holding the robust optimizer fixed, replacing the generic residual radius with the decision-calibrated component radii changes the Criteo robust selector from unresolved to certified. This isolates the role of catalog sensitivity geometry in the sense that the generic radius is too large because it pays for forecast-error directions that the policy catalog does not use. Second, holding the decision-calibrated certificate fixed, the nominal point-forecast policy pace_i3_q0 fails the robust budget check, with robust overspend 34 .8. The robust selector instead moves to pace_i3_q1 , whose robust budget margin is −360 .7. This isolates the role of robust optimization in the sense that once uncertainty is measured in the right directions, the optimizer still has to choose a policy with enough budget and member-load slack. On KuaiRand, the decision-calibrated radius is much smaller than the generic residual radius, but all robust margins remain weak, so the correct output remains unresolved. 
+
+Forecast accuracy is not the same as decision uncertainty : Figure 3 is not a forecasting leaderboard. Its point is that the lowest held-out error need not produce the smallest pacing radius. On Criteo, the Transformer has the lowest test MAE among the fitted models ( 481 .0), but the smallest decision radius is obtained by the seasonal ridge model ( 17 .7), followed closely by the numpy MLP ( 18 .4) and gradient-boosted model (19 .1). All Criteo forecasters certify pace_i3_q1 with realized value 379 .5. On KuaiRand, the point-naive forecaster has the smallest decision radius ( 250 .1), but every forecaster remains unresolved because member-load and delivery uncertainty dominate the robust constraints. A forecasting model is useful for pacing when it shrinks uncertainty in directions used by the pacing problem, not merely when it improves generic prediction.   
+
+> 1Corresponding author: shekharp@erau.edu
+
+13 Figure 3: Forecasting inputs evaluated by downstream pacing uncertainty and certification outcome. The top-left panel reports Criteo decision-calibrated radii by forecaster; smaller radii mean less uncertainty in the value and constraint directions used by the pacing selector, and all Criteo forecasters certify a policy. The bottom-left panel reports the same quantity for KuaiRand, where every forecaster remains unresolved despite substantially smaller radii than generic residual calibration. The top-right panel shows the ratio between the generic residual radius and the decision-calibrated radius; large ratios indicate how much extra slack generic calibration reserves for forecast-error directions that are not priced by the policy catalog. The bottom-right panel summarizes the final decision state by dataset and forecaster, with blue cells denoting certified policies and gray cells denoting unresolved decisions. The figure shows that forecast accuracy alone is not the relevant object for pacing. The useful quantity is the calibrated radius after forecast errors are projected through the value and constraint sensitivities of the deployable policy catalog. 
+
+Response uncertainty enters the same pacing certificate. Figure 4 checks how the incremental-response input affects the selector. The implementation first computes a public-data response summary. When both treatment arms have usable support, it forms a context-adjusted doubly robust score. Treatment propensities are estimated within context buckets and clipped to [0 .05 , 0.95] , treated and control outcome regressions are replaced by context-level means, and the response estimate is the average doubly robust score. Its standard error is the empirical standard deviation of the doubly robust scores divided by the square root of the number of rows. The robust response input is the lower confidence adjustment bτrob = max {bτDR − 1.96 bse DR , 10 −4}.
+
+When the loaded log has insufficient treatment variation, the implementation records this fallback and uses a conservative public-data-calibrated response scale. For Criteo, the raw predicted response estimate is 0.00149 , the context-adjusted doubly robust estimate is 
+
+0.01184 with standard error 0.00046 , and the robust response input is 0.01094 . All three response modes select pace_i3_q1 . Robust value changes because the response scale changes, but the certified policy is stable. For KuaiRand, the loaded recommendation log does not contain enough treatment contrast for a stable doubly robust estimator. The experiment therefore uses the conservative fallback response scale, carries the response standard error into ρV (π), and remains unresolved under predicted, doubly robust, and robust response modes. Thus response estimation is treated as an input to the same robust certificate as forecast and member-experience uncertainty, rather than as a separate decision rule. 
+
+Summary : Across the main experiments, the decision-calibrated radii change both the radius and the decision state. On Criteo, they certify a policy that is less risky than the point-forecast policy and far less conservative than generic-residual conformal pacing. On KuaiRand, they reduce the generic radius but still return unresolved because repeated-exposure and member-experience uncertainty leave no robust certificate. Appendix B reports the supporting diagnostics and ablations.   
+
+> 1Corresponding author: shekharp@erau.edu
+
+14 Figure 4: Response-estimation inputs to the conformal pacing selector. The left panel compares the response scale supplied to the pacing problem under three modes: (i) a model-predicted response, (ii) a context-adjusted doubly robust estimate when treatment contrast is available, and (iii) a robust response input that subtracts the response uncertainty radius. Criteo has enough randomized treatment contrast for the doubly robust estimate, so its response input increases relative to the raw prediction and remains positive after robust adjustment. KuaiRand has weaker treatment contrast in the loaded recommendation log, so the implementation uses a conservative public-data-calibrated response fallback and records the uncertainty in the robust certificate. The right panel shows the downstream pacing outcome under the same three response modes. Criteo remains certified in all modes, with realized value around 379 .5 and held-out any-violation rate 0.03 . KuaiRand remains unresolved in all modes because repeated-exposure and member-load uncertainty keep the robust constraints from clearing, even when the response input changes. 
+
+# 7 Conclusion 
+
+We develop a conformal uncertainty framework for pacing decisions in streaming advertising. The framework weights forecast residuals by objective and constraint sensitivity directions, calibrates the resulting radius, combines it with response and member-experience uncertainty, and selects implementable policies by robust constrained optimization. A policy is selected when it improves robust value while satisfying delivery and experience constraints. When uncertainty is too large for a single recommendation, the selector returns a shortlist. 
+
+# References 
+
+Anastasios N Angelopoulos, Stephen Bates, Emmanuel J Candès, Michael I Jordan, and Lihua Lei. Learn then test: Calibrating predictive algorithms to achieve risk control. The Annals of Applied Statistics , 19(2): 1641–1662, 2025. Abdul Fatir Ansari, Lorenzo Stella, Caner Turkmen, Xiyuan Zhang, Pedro Mercado, Huibin Shen, Oleksandr Shchur, Syama Sundar Rangapuram, Sebastian Pineda Arango, Shubham Kapoor, Jasper Zschiegner, Danielle C. Maddix, Hao Wang, Michael W. Mahoney, Kari Torkkola, Andrew Gordon Wilson, Michael Bohlke-Schneider, and Yuyang Wang. Chronos: Learning the language of time series. arXiv preprint arXiv:2403.07815 , 2024. Susan Athey, Julie Tibshirani, and Stefan Wager. Generalized random forests. The Annals of Statistics , 47(2): 1148–1178, 2019. Ashwinkumar Badanidiyuru, Robert Kleinberg, and Aleksandrs Slivkins. Bandits with knapsacks. Journal of the ACM (JACM) , 65(3):1–55, 2018. Santiago R. Balseiro, Rachitesh Kumar, Vahab Mirrokni, Balasubramanian Sivan, and Di Wang. Robust budget   
+
+> 1Corresponding author: shekharp@erau.edu
+
+15 pacing with a single sample. In Proceedings of the 40th International Conference on Machine Learning ,volume 202 of Proceedings of Machine Learning Research , pages 1636–1659. PMLR, 2023. Aharon Ben-Tal, Stephen Boyd, and Arkadi Nemirovski. Extending the scope of robust optimization. 
+
+Mathematical Programming , 107:63–89, 2006. Dimitris Bertsimas, David B. Brown, and Constantine Caramanis. Theory and applications of robust optimiza-tion. SIAM Review , 53(3):464–501, 2011. Han Cai, Kan Ren, Weinan Zhang, Kleanthis Malialis, Jun Wang, Yong Yu, and Defeng Guo. Real-time bidding by reinforcement learning in display advertising. In Proceedings of the Tenth ACM International Conference on Web Search and Data Mining , pages 661–670, 2017. doi: 10.1145/3018661.3018702. Victor Chernozhukov, Denis Chetverikov, Mert Demirer, Esther Duflo, Christian Hansen, Whitney Newey, and James Robins. Double/debiased machine learning for treatment and structural parameters. The Econometrics Journal , 21(1):C1–C68, 2018. Santiago Cortes-Gomez, Carlos Miguel Patiño, Yewon Byun, Steven Wu, Eric Horvitz, and Bryan Wilder. Utility-directed conformal prediction: A decision-aware framework for actionable uncertainty quantification. In International Conference on Learning Representations , 2025. Liang Dai, Kejie Lyu, Chengcheng Zhang, Guangming Zhao, Zhonglin Zu, Liang Wang, and Bo Zheng. Percentile risk-constrained budget pacing for guaranteed display advertising in online optimization. In AAAI Conference on Artificial Intelligence , volume 38, pages 7987–7994, 2024. Nikhil R. Devanur and Thomas P. Hayes. The AdWords problem: Online keyword matching with budgeted bidders under random permutations. In Proceedings of the 10th ACM Conference on Electronic Commerce ,pages 71–78, 2009. Eustache Diemert, Artem Betlei, Christophe Renaudin, and Massih-Reza Amini. A large scale benchmark for uplift modeling. In Proceedings of the AdKDD and TargetAd Workshop, KDD , 2018. Miroslav Dudík, John Langford, and Lihong Li. Doubly robust policy evaluation and learning. In Proceedings of the 28th International Conference on Machine Learning , pages 1097–1104, 2011. Adam N. Elmachtoub and Paul Grigas. Smart “predict, then optimize”. Management Science , 68(1):9–26, 2022. Jason Gaitonde, Yingkai Li, Bar Light, Brendan Lucier, and Aleksandrs Slivkins. Budget pacing in repeated auctions: Regret and efficiency without convergence. arXiv preprint arXiv:2205.08674 , 2022. Chongming Gao, Shijun Li, Yuan Zhang, Jiawei Chen, Biao Li, Wenqiang Lei, Peng Jiang, and Xiangnan He. KuaiRand: An unbiased sequential recommendation dataset with randomly exposed videos. In Proceedings of the 31st ACM International Conference on Information and Knowledge Management , pages 3953–3957, 2022. doi: 10.1145/3511808.3557624. Isaac Gibbs and Emmanuel Candès. Adaptive conformal inference under distribution shift. In Advances in Neural Information Processing Systems , 2021. Rodolphe Jenatton, Jim Huang, and Cédric Archambeau. Adaptive algorithms for online convex optimization with long-term constraints. In International Conference on Machine Learning , pages 402–411. PMLR, 2016. Junqi Jin, Chengru Song, Han Li, Kun Gai, Jun Wang, and Weinan Zhang. Real-time bidding with multi-agent reinforcement learning in display advertising. In Proceedings of the 27th ACM International Conference on Information and Knowledge Management , pages 2193–2201, 2018. doi: 10.1145/3269206.3272021. Chancellor Johnstone and Bruce Cox. Conformal uncertainty sets for robust optimization. In Proceedings of the Tenth Symposium on Conformal and Probabilistic Prediction and Applications , volume 152 of 
+
+Proceedings of Machine Learning Research , pages 72–90. PMLR, 2021.   
+
+> 1Corresponding author: shekharp@erau.edu
+
+16 Luofeng Liao and Christian Kroer. Statistical inference and a/b testing for first-price pacing equilibria. arXiv preprint arXiv:2301.02276 , 2023. Luofeng Liao, Christian Kroer, Sergei Leonenkov, Okke Schrijvers, Liang Shi, Nicolas Stier-Moses, and Congshan Zhang. Interference among first-price pacing equilibria: A bias and variance analysis. arXiv preprint arXiv:2402.07322 , 2024. Bryan Lim, Sercan O. Arik, Nicolas Loeff, and Tomas Pfister. Temporal fusion transformers for interpretable multi-horizon time series forecasting. International Journal of Forecasting , 37(4):1748–1764, 2021. Brendan Lucier, Sarath Pattathil, Aleksandrs Slivkins, and Mengxiao Zhang. Autobidders with budget and roi constraints: Efficiency, regret, and pacing dynamics. In Proceedings of Thirty Seventh Conference on Learning Theory , volume 247 of Proceedings of Machine Learning Research , pages 3642–3643. PMLR, 2024. Aranyak Mehta, Amin Saberi, Umesh Vazirani, and Vijay Vazirani. Adwords and generalized online matching. 
+
+Journal of the ACM , 54(5):22, 2007. Yuqi Nie, Nam H. Nguyen, Phanwadee Sinthong, and Jayant Kalagnanam. A time series is worth 64 words: Long-term forecasting with transformers. In International Conference on Learning Representations , 2023. Boris N. Oreshkin, Dmitri Carpov, Nicolas Chapados, and Yoshua Bengio. N-BEATS: Neural basis expansion analysis for interpretable time series forecasting. In International Conference on Learning Representations ,2020. Yaniv Romano, Evan Patterson, and Emmanuel Candes. Conformalized quantile regression. Advances in neural information processing systems , 32, 2019. Yuta Saito, Shunsuke Aihara, Megumi Matsutani, and Yusuke Narita. Open bandit dataset and pipeline: Towards realistic and reproducible off-policy evaluation. arXiv preprint arXiv:2008.07146 , 2020. David Salinas, Valentin Flunkert, and Jan Gasthaus. DeepAR: Probabilistic forecasting with autoregressive recurrent networks. arXiv preprint arXiv:1704.04110 , 2017. Uri Shalit, Fredrik D Johansson, and David Sontag. Estimating individual treatment effect: generalization bounds and algorithms. In International conference on machine learning , pages 3076–3085. PMLR, 2017. Chunlin Sun, Linyu Liu, and Xiaocheng Li. Predict-then-calibrate: A new perspective of robust contextual lp. 
+
+Advances in neural information processing systems , 36:17713–17741, 2023. Adith Swaminathan and Thorsten Joachims. Counterfactual risk minimization: Learning from logged bandit feedback. In International conference on machine learning , pages 814–823. PMLR, 2015. Haixu Wu, Jiehui Xu, Jianmin Wang, and Mingsheng Long. Autoformer: Decomposition transformers with auto-correlation for long-term series forecasting. Advances in neural information processing systems , 34: 22419–22430, 2021. Chen Xu and Yao Xie. Conformal prediction interval for dynamic time-series. In Proceedings of the 38th International Conference on Machine Learning , volume 139 of Proceedings of Machine Learning Research ,pages 11559–11569. PMLR, 2021. Jun Zhao, Guang Qiu, Ziyu Guan, Wei Zhao, and Xiaofei He. Deep reinforcement learning for sponsored search real-time bidding. In Proceedings of the 24th ACM SIGKDD International Conference on Knowledge Discovery and Data Mining , pages 1021–1030, 2018. Haoyi Zhou, Shanghang Zhang, Jieqi Peng, Shuai Zhang, Jianxin Li, Hui Xiong, and Wancai Zhang. Informer: Beyond efficient transformer for long sequence time-series forecasting. In Proceedings of the AAAI conference on artificial intelligence , volume 35, pages 11106–11115, 2021.   
+
+> 1Corresponding author: shekharp@erau.edu
+
+17 A Supporting Results 
+
+The appendix has three roles. Appendix A and C contains proof details and supporting theory. Appendix B first reports theory-supporting diagnostics for the support-function geometry, conformal coverage, robust certificate, slack condition, and finite catalog approximation. It then reports deployment-facing ablations for catalog granularity, response scale, budget pressure, member-load pressure, and catalog geometry versus robust optimization. The final diagnostic studies calibration sample size. Readers mainly interested in the method’s empirical behavior can start with Appendix B. Readers checking the formal guarantees can start with the proofs in Appendix A and C. The quantile lemma is the sampling fact that turns conformal validity into a planning calculation. Split conformal prediction gives coverage for any exchangeable calibration set. The lemma below asks how many calibration blocks are needed for the empirical radius to be close to the population radius that would be used with unlimited calibration data. 
+
+Lemma A.1 (Uniform quantile concentration for calibrated decision scores) . Let S1, . . . , S n be exchangeable calibration scores with distribution function F , and let 
+
+q = F −1(1 − α).
+
+Assume F has density at least fmin > 0 on 
+
+[q − ε, q + ε],
+
+with fmin ε ≤ 1. Let bq be the split-conformal empirical quantile 
+
+bq = S(⌈(n+1)(1 −α)⌉),
+
+where S(r) denotes the rth order statistic. There is a universal constant C > 0 such that, for any δ ∈ (0 , 1) , if 
+
+n ≥ Cf 2min ε2 log 2
+
+δ ,
+
+then 
+
+P (|bq − q| ≤ ε) ≥ 1 − δ. 
+
+The slack result formalizes a common failure mode. A point forecast can make a candidate policy look feasible because its nominal constraint value is negative. If the forecast can move in a direction that increases the same constraint, nominal feasibility is not a deployment guarantee. The relevant margin is the largest plausible movement in the constraint’s sensitivity direction. 
+
+Theorem A.2 (Necessity of decision-calibrated slack) . Consider any policy π and constraint j whose inventory contribution is affine with sensitivity vector aπ,j . Suppose the plausible forecast-error set contains both perturbations e and −e with |⟨ aπ,j , e ⟩| = δ. If the point-forecast margin satisfies 
+
+−bgj (π) < δ, 
+
+then there exists a plausible future in the same decision-calibrated uncertainty set for which gj (π) > 0.Consequently, no point-forecast pacing rule can certify constraint j over this uncertainty class unless it keeps slack at least δ in the constraint’s decision-relevant direction. 
+
+If the nominal margin is smaller than the uncertainty in the constraint direction, there is an admissible future in which the policy violates the constraint. In ads language, a plan that appears to satisfy delivery, budget, or ad-load limits under the point forecast can still fail when scarce inventory moves in the direction that affects that constraint. Algorithm 1 therefore certifies policies only after subtracting forecast, response, and member-experience slack.   
+
+> 1Corresponding author: shekharp@erau.edu
+
+18 The following finite-catalog result addresses a different implementation issue. In principle, a pacing policy could be any measurable mapping from histories and contexts to bid multipliers or allocation probabilities. In production, platforms usually deploy an auditable catalog of pacing rules, budget multipliers, reserve schedules, or load-control policies. The proposition gives the condition under which this restriction is harmless at the resolution relevant for robust pacing. 
+
+Proposition A.3 (Finite catalog sufficiency in pacing geometry) . Let R(π) be the robust pacing risk associated with Eq. (7) , and let U be the uncertainty set of plausible future worlds. Suppose R is LΠ-Lipschitz under the pacing-behavior metric 
+
+dpace (π, π ′) = sup 
+
+> u∈U
+
+|V (π; u) − V (π′; u)| +
+
+> J
+
+X
+
+> j=1
+
+|gj (π; u) − gj (π′; u)|
+
+ .
+
+If Πcat is an η-net of a richer policy class Π under dpace , then 
+
+inf 
+
+> π∈Πcat
+
+R(π) ≤ inf  
+
+> π∈Π
+
+R(π) + LΠη. 
+
+The metric dpace compares policies by robust value and constraint behavior across plausible futures. The catalog need not approximate every microscopic action probability. It only needs to approximate value, delivery, budget, and experience behavior. If the spacing is η, deployment discreteness costs at most LΠη.This justifies the catalog diagnostics. Adding pacing rules is useful only when it materially changes robust value or constraint behavior under dpace .
+
+# B Empirical Diagnostics and Ablations 
+
+This appendix records diagnostics that support the main empirical story. The main body focuses on three deployment-facing comparisons: (i) pacing method, (ii) forecasting radius, and (iii) response mode. The diagnostics below isolate the selector components and stress-test the pipeline under catalog, response, budget, member-load, and calibration-size perturbations. 
+
+B.1 Geometry, conformal coverage, and certificate checks 
+
+Figures 5 and 6 isolate the geometry theorem. The equality check has maximum absolute gap 0. Figure 5 compares five scalar certificates on the same policy-sensitivity set. The minimal signed hull has mean certificate ratio 1.00 and no violations. Two strict supersets, an enclosing ℓ2 ball and a coordinate box, are valid but larger, with mean ratios 2.36 and 3.72 . A set that omits one active signed sensitivity violates the catalog certificate on 15 .1% of tested forecast-error directions, and the understated radius 0.8Φ Πcat fails on every tested draw. This matches Theorem 4.1. Valid certificates contain the signed policy sensitivities, and the signed hull is the minimal such set. Figure 6 verifies split-conformal coverage and high-dimensional separation. For dimensions 
+
+6, 24 , and 96 , the decision-calibrated coverage rates are 0.912 , 0.910 , and 0.910 , respectively, against a target of 0.900 . The separation panel shows the generic residual radius increasing from 1.41 to 16 .03 as the nuisance dimension grows to 256 , while the decision-calibrated radius remains fixed at 1.Table 5 summarizes the remaining theory diagnostics. Their goal is not to mimic Criteo or KuaiRand, but to check that each mathematical component behaves as the theory predicts. The robust-certificate diagnostic tests Theorem 5.3. It simulates separate uncertainty layers for the inventory forecast, incremental response, and member-experience model, then runs the same robust-selection logic as Algorithm 1. With 
+
+α = ατ = αm = 0 .1, the theorem gives a conservative joint coverage target of 1 − α − ατ − αm = 0 .700 .
+
+Across the tested dimensions, the observed joint coverage rates are 0.718 , 0.732 , and 0.718 . The realized certificate violation rate is at most 0.002 , and the regret bound in Theorem 5.3 holds in at least 0.998 of simulated runs. This confirms that the union-bound certificate is conservative but operationally valid in the constructed affine setting.   
+
+> 1Corresponding author: shekharp@erau.edu
+
+19 Figure 5: Geometry diagnostic for Theorem 4.1. This is a synthetic theorem-level diagnostic rather than a Criteo or KuaiRand experiment. The implementation constructs 8 orthogonal policy-sensitivity directions in a 16 -dimensional forecast-error space and evaluates 500 random forecast-error draws plus targeted active-direction errors. The left panel reports each candidate certificate’s mean size relative to the minimal signed-hull support function. The right panel reports the catalog violation rate, meaning the share of tested forecast errors for which the candidate certificate is smaller than the true catalog support score. Supersets of the signed sensitivity hull are valid but conservative. Certificates that omit an active signed sensitivity or scale below the support function violate catalog validity. 
+
+Table 5: Appendix diagnostics associated with the theoretical results. S.No. Result component Implementation diagnostic Observed outcome 1 Sharp support function Equality and understated-radius check Gap 0, and 0.8Φ Πcat fails on all draws 2 Signed-hull characterization Minimal hull, supersets, missing active sensitivity Supersets valid but larger, and missing sensitivity fails on 15 .1% 
+
+3 Split-conformal coverage Coverage over dimensions 6, 24 , 96 0.912 , 0.910 , 0.910 at target 0.900 
+
+4 High-dimensional separation Nuisance dimension 1 to 256 Generic/decision ratio grows to 16 .03 
+
+5 Robust certificate Simulated selector coverage and regret Joint coverage 0.718 –0.732 at target 
+
+0.700 , violation ≤ 0.002 , and regret bound holds ≥ 0.998 
+
+6 Slack necessity Margin versus δ = 0 .2 Margins below δ can violate 7 Finite catalog Catalog sizes 4 to 40 Approximation error below LΠη
+
+The slack diagnostic tests Appendix Theorem A.2. It constructs an affine constraint with directional uncertainty size δ = 0 .2. When the point-forecast margin is smaller than δ, an admissible forecast perturbation can push the realized constraint above zero, so the nominally feasible policy is not certifiable. When the margin is at least δ, the same constructed uncertainty set is safely absorbed by the slack. This illustrates why Algorithm 1 certifies policies only after tightening constraints by the calibrated radii. The finite-catalog diagnostic tests Appendix Proposition A.3. It compares increasingly fine catalogs, with sizes from 4 to 40 , against the Lipschitz-net approximation bound. In every tested setting, the observed catalog approximation error remains below the bound. This supports the use of a finite deployable catalog: the catalog need not approximate every possible pacing rule, only the value and constraint behavior relevant to robust selection. 
+
+B.2 Policy catalog used in the main experiments 
+
+Table 6 reports the 12 -policy medium catalog used in the main Criteo and KuaiRand experiments. The policy names are implementation labels. The intensity parameter controls how aggressively the policy uses available opportunities. The quality-focus parameter shifts allocation toward quality-adjusted opportunity   
+
+> 1Corresponding author: shekharp@erau.edu
+
+20 Figure 6: Theory-level separation and coverage diagnostics. These are synthetic diagnostics for Theorem 5.2 and the split-conformal coverage statement in Theorem 4.1. The left panel constructs forecast-error vectors with one decision-relevant coordinate and an increasing number of nuisance inventory coordinates that are orthogonal to every policy-sensitivity direction. The decision-calibrated radius stays fixed at 1, because the nuisance coordinates do not affect any deployable policy in the catalog. The generic Euclidean residual radius grows from about 1.41 to 16 .03 as the nuisance dimension increases to 256 , showing the separation predicted by Theorem 5.2. The right panel verifies split-conformal coverage over synthetic Gaussian forecast-error draws for dimensions 6, 24 , and 96 . The dashed horizontal line is the target coverage 
+
+> 0.90 . Both the decision-calibrated score and the generic residual score achieve coverage slightly above the target, while only the decision-calibrated score avoids paying for nuisance dimensions.
+
+mass. The demand-focus, load-guard, and budget-guard parameters are deterministic functions used by the implementation: demand _focus = 1 − 0.5 quality _focus , load _guard = 0 .8 + 0 .4 quality _focus ,
+
+budget _guard = 1 .15 − 0.25 intensity . Thus higher quality focus gives more protection against member-load pressure, while higher intensity increases delivery and value potential but also increases budget pressure. 
+
+B.3 Sensitivity ablations 
+
+Table 7 summarizes the sensitivity ablations that support the main empirical results in Figure 2, Table 4, Figure 3, and Figure 4. These diagnostics ask whether the conclusions depend on one catalog, one response scale, one budget or member-load setting, or one way of measuring forecast error. The catalog-granularity diagnostic tests Appendix Proposition A.3. In Criteo, the selected policy changes as the catalog is refined. The coarse catalog selects pace_i2_q0 with value 393 .1, the medium catalog used in the main experiments selects pace_i3_q1 with value 379 .5, and the fine catalog selects pace_i5_q2 
+
+with value 413 .7. All three have 3.3% any-violation rate in the realized test blocks. This shows why the finite catalog matters as refinement is useful when it changes the robust value and constraint behavior available to the selector. The response misspecification diagnostic complements Figure 4. It perturbs the assumed Criteo response scale from 0.5 to 2.0 times the calibrated value and compares no-response-radius and robust-response-radius modes. Across all twelve settings, the selector returns pace_i3_q1 . This stability should be interpreted narrowly. The selected Criteo policy is robust to this response-scale stress grid, not to arbitrary response uncertainty. The KuaiRand budget/member-load diagnostic complements the unresolved KuaiRand result in Figure 2 and Table 4. It multiplies the budget limits by 0.7, 1.0, 1.4 and the member-load limits by 0.75 , 1.0, 1.25 .The implementation records the best unresolved representative policy and its robust delivery, budget, and member-load margins in each setting. All nine settings remain unresolved, matching the main result that repeated-exposure and member-load uncertainty dominate certification in that case. The catalog-geometry-versus-robustness ablation decomposes the main Criteo gain in Figure 2. It uses four rows for each case: a nominal point-forecast selector with zero radii, a generic-residual robust selector, a decision-calibrated robust selector, and an audit of the nominal policy under the same decision-calibrated certificate. The generic and decision-calibrated rows use the same robust optimizer, so their difference isolates   
+
+> 1Corresponding author: shekharp@erau.edu
+
+21 Table 6: Medium pacing-policy catalog used in the main experiments. The catalog crosses four intensity levels with three quality-focus levels, giving 12 deployable policies. Policy Intensity Quality focus Demand focus Load guard Budget guard                                                             
+
+> pace_i0_q0 0.40 0.15 0.925 0.86 1.05
+> pace_i0_q1 0.40 0.60 0.700 1.04 1.05
+> pace_i0_q2 0.40 0.95 0.525 1.18 1.05
+> pace_i1_q0 0.60 0.15 0.925 0.86 1.00
+> pace_i1_q1 0.60 0.60 0.700 1.04 1.00
+> pace_i1_q2 0.60 0.95 0.525 1.18 1.00
+> pace_i2_q0 0.80 0.15 0.925 0.86 0.95
+> pace_i2_q1 0.80 0.60 0.700 1.04 0.95
+> pace_i2_q2 0.80 0.95 0.525 1.18 0.95
+> pace_i3_q0 1.00 0.15 0.925 0.86 0.90
+> pace_i3_q1 1.00 0.60 0.700 1.04 0.90
+> pace_i3_q2 1.00 0.95 0.525 1.18 0.90
+
+Table 7: Sensitivity-ablation summary. Values are read from the saved appendix artifacts. Ablation Stress grid Main observation Catalog granularity Coarse, medium, fine Criteo catalogs Fine catalog reaches value 413 .7 with 3.3%                
+
+> violation rate Response scale Multipliers 0.5to 2.0Criteo remains at pace_i3_q1 in all settings Budget/member pressure
+> 3×3KuaiRand stress grid All settings unresolved, with the saved table reporting representative robust margins Catalog geometry vs. robustness Point, generic-robust, decision-calibrated robust, nominal-policy audit Criteo certification comes from geometry, and robust optimization rejects the nominal policy’s budget-unsafe certificate Dual versus unweighted Seven Criteo forecast generators Generic radius is 220 .6–394 .2×larger
+
+the uncertainty geometry. The audit row holds the decision-calibrated certificate fixed and asks whether the nominal policy would have passed it, isolating robust optimization. On Criteo, catalog geometry reduces the robust radius from 7236 .7 to 18 .4 and changes the robust selector from unresolved to certified. The nominal policy pace_i3_q0 has higher realized value but fails the certificate because its robust budget overspend is 
+
+34 .8. The robust selector chooses pace_i3_q1 , whose robust budget margin is −360 .7 and whose realized any-violation rate is 3.3% rather than 16 .7% . On KuaiRand, the radius falls from 4629 .4 to 278 .6, but both robust selectors remain unresolved and the nominal policy fails all robust margins. The dual-versus-unweighted diagnostic complements Figure 3. On Criteo, the unweighted residual radius is 220 .6 to 394 .2 times larger than the dual-weighted Lagrangian radius across the fitted forecasters. This supports the central claim that generic forecast calibration can reserve slack for inventory directions that no deployable policy uses, while the decision-calibrated radius pays only for relevant directions. 
+
+B.4 Calibration sample size 
+
+Figure 7 tests Proposition 5.1. The diagnostic uses longer 480 -block streaming cases and treats the full 
+
+120 -block calibration split as the reference calibration set. For Criteo, the reference decision is the certified policy pace_i3_q2 . With 8 calibration blocks, only 25 .0% of resamples recover the same policy and decision state. At 96 calibration blocks, the recovery rate reaches 1.0, and the median shortlist size is 3. For KuaiRand, the reference decision is unresolved. The same decision state is recovered in 97 .9% of resamples at 8 calibration blocks and 100% from 12 blocks onward. Policy-agreement is not reported for KuaiRand because the reference state is unresolved rather than a named policy. The margin-condition curve is conservative. It records the condition from Proposition 5.1. The maximum   
+
+> 1Corresponding author: shekharp@erau.edu
+
+22 Figure 7: Calibration sample-size diagnostic for Proposition 5.1. The experiment builds longer 480 -block Criteo and KuaiRand streaming cases, treats the full 120 -block calibration split as the reference calibration set, then repeatedly subsamples smaller calibration sets and reruns the same component-radius calibration and robust selector. The left panel reports the median maximum component quantile error across value, delivery, budget, and member-load radii, relative to the full-calibration reference. Shaded bands show the interquartile range over resamples, and dashed horizontal lines show half of the empirical decision margin for each case. Because the vertical axis is logarithmic, exact zero errors relative to the reference are displayed at a small positive floor. The middle panel reports two stability rates: (i) the solid line is the share of resamples recovering the same decision state as the full-calibration reference, and (ii) the dashed line is the share satisfying the sufficient margin condition from Proposition 5.1. The right panel reports the median shortlist size under calibration uncertainty. Criteo stabilizes to the reference certified policy as calibration size grows, while KuaiRand stabilizes to the unresolved state because member-load and delivery margins remain weak even with small calibration error. 
+
+component quantile error must fall below half of the empirical decision margin. Criteo decision stability becomes perfect before this condition holds in every resample, which is expected. The proposition gives a reliable stability certificate, not an exact prediction of every stable empirical run. 
+
+# C Proofs 
+
+C.1 Proof of Lemma A.1 
+
+Let p = 1 − α, and let Fn be the empirical distribution function of S1, . . . , S n. The split-conformal order statistic uses the rank 
+
+rn = ⌈(n + 1) p⌉ .
+
+Equivalently, bq = F −1 
+
+> n
+
+(bpn) with empirical quantile level bpn = rn/n . The conformal rank is slightly more conservative than the population level p. Since 
+
+(n + 1) p ≤ rn ≤ (n + 1) p + 1 ,
+
+we have 
+
+p ≤ bpn ≤ p + 2
+
+n .
+
+By the density lower bound on [q − ε, q + ε],
+
+F (q) − F (q − ε) ≥ fmin ε, F (q + ε) − F (q) ≥ fmin ε. 
+
+Because q = F −1(p), this implies 
+
+F (q − ε) ≤ p − fmin ε, F (q + ε) ≥ p + fmin ε. 
+
+Consider the event 
+
+En =
+
+
+
+sup 
+
+> x
+
+|Fn(x) − F (x)| ≤ fmin ε
+
+4
+
+
+
+.  
+
+> 1Corresponding author: shekharp@erau.edu
+
+23 On En,
+
+Fn(q − ε) ≤ F (q − ε) + fmin ε
+
+4 ≤ p − 3fmin ε
+
+4 .
+
+Also, 
+
+Fn(q + ε) ≥ F (q + ε) − fmin ε
+
+4 ≥ p + 3fmin ε
+
+4 .
+
+If n ≥ 8/(fmin ε), then 2/n ≤ fmin ε/ 4, so 
+
+bpn ≤ p + 2
+
+n ≤ p + fmin ε
+
+4 .
+
+Therefore, 
+
+Fn(q − ε) < bpn < F n(q + ε).
+
+By the definition of the empirical quantile, this implies 
+
+q − ε ≤ bq ≤ q + ε. 
+
+It remains to control the probability of En. By the Dvoretzky–Kiefer–Wolfowitz inequality, 
+
+P(Ecn) ≤ 2 exp 
+
+(
+
+−2n
+
+ fmin ε
+
+4
+
+2)
+
+= 2 exp 
+
+
+
+− nf 2min ε2
+
+8
+
+
+
+.
+
+Thus P(En) ≥ 1 − δ whenever 
+
+n ≥ 8
+
+f 2min ε2 log 2
+
+δ .
+
+The additional rank-correction requirement n ≥ 8/(fmin ε) is implied by the same display after increasing the universal constant C, using fmin ε ≤ 1 and δ ∈ (0 , 1) . Hence, for a universal constant C,
+
+n ≥ Cf 2min ε2 log 2
+
+δ
+
+implies 
+
+P (|bq − q| ≤ ε) ≥ 1 − δ. 
+
+C.2 Proof of Proposition 5.1 
+
+Apply Lemma A.1 to each calibrated decision component k ∈ { V, g 1, . . . , g J }, with failure probability 
+
+δ/K comp . If 
+
+ncal ≥ Cf 2min ε2 log 2Kcomp 
+
+δ ,
+
+then, by a union bound over the Kcomp components, 
+
+max   
+
+> k∈{ V,g 1,...,g J}
+
+|bqk − qk| ≤ ε
+
+with probability at least 1 − δ. This proves the first claim. We now show how this event translates into the robust pacing quantities used by Eq. (7) . Define the population-calibrated robust value lower bound 
+
+V0(π) = bV (π) − qV − ρV (π),
+
+and its empirical counterpart bV(π) = bV (π) − bqV − ρV (π).  
+
+> 1Corresponding author: shekharp@erau.edu
+
+24 On the quantile-concentration event, 
+
+bV(π) − V 0(π) = |bqV − qV | ≤ ε for all π ∈ Πcat .
+
+Similarly, for constraint j, define the population-calibrated robust constraint margin 
+
+M0,j (π) = bgj (π) + qgj + ρg,j (π),
+
+and the empirical margin 
+
+cMj (π) = bgj (π) + bqgj + ρg,j (π).
+
+Then, uniformly over π ∈ Πcat ,
+
+cMj (π) − M 0,j (π) = |bqgj − qgj | ≤ ε. 
+
+Thus every robust value lower bound and every robust constraint upper bound used by the empirical selector is within ε of the population-calibrated version, uniformly over the catalog. It remains to verify the stated stability consequence. Let 
+
+Π0 = {π ∈ Πcat : M0,j (π) ≤ 0 for all j}
+
+be the population-calibrated feasible catalog, and suppose π0 ∈ Π0 is the unique population-calibrated optimizer. Assume the population decision has margin larger than 2ε in the following concrete sense: 
+
+M0,j (π0) ≤ − 2ε for all j, 
+
+every population-infeasible policy satisfies 
+
+max  
+
+> j
+
+M0,j (π) > 2ε, 
+
+and every other population-feasible policy satisfies 
+
+V0(π0) − V 0(π) > 2ε. 
+
+On the quantile-concentration event, π0 remains empirically feasible because 
+
+cMj (π0) ≤ M 0,j (π0) + ε ≤ − ε < 0.
+
+Any population-infeasible policy remains empirically infeasible because, for at least one j,
+
+cMj (π) ≥ M 0,j (π) − ε > ε > 0.
+
+Therefore the empirical feasible set is contained in the population feasible set and contains π0. For any other empirically feasible policy π, the value gap satisfies 
+
+bV(π0) − bV(π) ≥ V 0(π0) − V 0(π) − 2ε > 0.
+
+Hence π0 is also the unique empirical robust optimizer. If these 2ε margins fail, then a perturbation of the calibrated quantiles within the guaranteed sampling error can change either feasibility or the robust value ordering. In that regime the calibration data support a set of near-optimal or near-feasible policies rather than a stable single-policy recommendation, which is the uncertainty-aware shortlist interpretation stated in the proposition.   
+
+> 1Corresponding author: shekharp@erau.edu
+
+25 C.3 Proof of Theorem 4.1 Part I. Operational characterization. Fix the nominal world (bu, bλ) and a forecast error e = z − bz. By Assumption 2, for every policy π ∈ Πcat , the inventory-dependent contribution to the evaluated pacing Lagrangian is affine in z with coefficient wπ (bu, bλ). Therefore, 
+
+L(π; ( bz + e, bτ , bm), bλ) − L (π; ( bz, bτ , bm), bλ) = 
+
+D
+
+wπ (bu, bλ), e 
+
+E
+
+.
+
+Taking absolute values and maximizing over the catalog gives 
+
+sup 
+
+> π∈Πcat
+
+L(π; ( bz + e, bτ , bm), bλ) − L (π; ( bz, bτ , bm), bλ) = max 
+
+> π∈Πcat
+
+D
+
+wπ (bu, bλ), e 
+
+E
+
+= Φ Πcat (e; bu, bλ).
+
+This proves the first equality claim. 
+
+Part II. Geometric representation. The support-function representation follows from the signed sensitivity set. By definition, 
+
+σWΠcat (e) = sup 
+
+> v∈W Πcat
+
+⟨v, e ⟩.
+
+Because a linear functional achieves its supremum over a finite convex hull at an extreme point, 
+
+sup 
+
+> v∈W Πcat
+
+⟨v, e ⟩ = max 
+
+> π∈Πcat
+
+max {⟨ wπ , e ⟩, −⟨ wπ , e ⟩} = max 
+
+> π∈Πcat
+
+|⟨ wπ , e ⟩| = Φ Πcat (e; bu, bλ).
+
+Thus the decision-calibrated score is the support function of the convex hull of the signed policy sensitivities. 
+
+Part III. Minimality characterization. This part formalizes a simple requirement. A valid scalar certifi-cate must contain every signed sensitivity direction that can appear in the catalog. Let B be any lower-semicontinuous sublinear scalar certificate satisfying the uniform catalog-validity condition. Define its polar set 
+
+KB = {v : ⟨v, e ⟩ ≤ B(e) for all e}.
+
+This set is closed and convex because it is an intersection of closed halfspaces. A standard polar representation for closed sublinear functions gives 
+
+B(e) = σKB (e) = sup 
+
+> v∈K B
+
+⟨v, e ⟩.
+
+For completeness, the representation follows from Fenchel–Moreau duality. A closed sublinear function is equal to its biconjugate, and its convex conjugate is the indicator of KB . Therefore B(e) = sup v {⟨ v, e ⟩ − 
+
+B⋆(v)} = sup v∈K B ⟨v, e ⟩.It remains to identify which sets KB are valid for the pacing catalog. The certificate condition and Assumption 2 imply that, for every policy π and every error e,
+
+D
+
+wπ (bu, bλ), e 
+
+E
+
+≤ B(e).
+
+Equivalently, 
+
+⟨wπ , e ⟩ ≤ B(e) and ⟨− wπ , e ⟩ ≤ B(e) for all e. 
+
+By the definition of KB , this means wπ ∈ K B and −wπ ∈ K B for every π. Since KB is convex, 
+
+WΠcat (bu, bλ) ⊆ K B .
+
+Support functions are monotone under set inclusion, so 
+
+ΦΠcat (e; bu, bλ) = σWΠcat (e) ≤ σKB (e) = B(e) for all e. 
+
+This proves that every coherent uniformly valid scalar certificate must dominate the dual-weighted score.   
+
+> 1Corresponding author: shekharp@erau.edu
+
+26 Finally, suppose equality holds for all e. Then σKB = σWΠcat . Closed convex sets are uniquely determined by their support functions, so KB = WΠcat . If KB = WΠcat , then B = σKB = σWΠcat = Φ Πcat . This proves that the dual-weighted score is the unique minimal coherent scalar certificate for the catalog. 
+
+Part IV. Conformal validity. For the calibration claim, condition on the training data, the fitted forecasting model, the nominal pacing solutions, and the dual prices used to compute the scores. Under Assumption 1, the calibration scores 
+
+Sdc 1 , . . . , S dc 
+
+> n
+
+and the test-block score 
+
+Sdc  
+
+> n+1
+
+= max 
+
+> π∈Πcat
+
+D
+
+wπ (bu, bλ), z − bz
+
+E
+
+are exchangeable. Split conformal prediction therefore gives the rank guarantee 
+
+P Sdc  
+
+> n+1
+
+≤ bqdc 1−α
+
+ ≥ 1 − α, 
+
+where bqdc 1−α is the order statistic in Eq. (6) . By Assumption 2, the inventory-dependent Lagrangian error for policy π is exactly 
+
+L(π; ( z, bτ , bm), bλ) − L (π; ( bz, bτ , bm), bλ) = 
+
+D
+
+wπ (bu, bλ), z − bz
+
+E
+
+.
+
+Taking the maximum over π ∈ Πcat gives the event in the theorem. If the downstream functions are differentiable rather than affine, the same proof applies to the first-order term and the bound gains the usual Taylor remainder L2
+
+2 ∥z − bz∥2
+
+whenever the Hessian norm is bounded by L2 on the relevant uncertainty neighborhood. 
+
+C.4 Proof of Theorem 5.2 
+
+Let PS and PN be the orthogonal projections onto S and N . By assumption, every catalog sensitivity vector lies in S. Therefore, for any forecast error e = eS + eN and any policy π ∈ Πcat ,
+
+⟨wπ , e ⟩ = ⟨wπ , e S ⟩ + ⟨wπ , e N ⟩ = ⟨wπ , e S ⟩,
+
+because wπ ⊥ eN . Maximizing over π ∈ Πcat gives 
+
+ΦΠcat (e; bu, bλ) = max 
+
+> π∈Πcat
+
+|⟨ wπ , e ⟩| = max 
+
+> π∈Πcat
+
+|⟨ wπ , e S ⟩| = Φ Πcat (eS ; bu, bλ).
+
+This proves that the score ignores nuisance directions orthogonal to all pacing sensitivities. In contrast, by the Pythagorean theorem, 
+
+∥e∥22 = ∥eS ∥22 + ∥eN ∥22,
+
+so a generic Euclidean residual score pays for both decision-relevant and nuisance forecast error. We now give the explicit separation construction. Fix an integer m ≥ 1 and a scale σ > 0. Let the inventory forecast live in Rm+1 . Let the pacing catalog contain a single policy with sensitivity vector 
+
+w = e1 = (1 , 0, . . . , 0) .
+
+The decision-relevant subspace is S = span {e1}, and the nuisance subspace is the span of the remaining m
+
+coordinate vectors. Let each calibration block and the test block have forecast error 
+
+e = ( ξ0, σξ 1, . . . , σξ m),
+
+where ξ0, ξ 1, . . . , ξ m are independent Rademacher random variables. The calibration and test errors are exchangeable because they are independent draws from the same distribution.   
+
+> 1Corresponding author: shekharp@erau.edu
+
+27 The decision-calibrated score is 
+
+ΦΠcat (e) = |⟨ e1, e ⟩| = |ξ0| = 1 .
+
+Thus every calibration score equals 1, and the split-conformal radius based on the decision-calibrated score is 
+
+qdc 1−α = 1 .
+
+This radius has coverage one and, by Theorem 4.1, is the sharp radius for the catalog Lagrangian forecast error. For a generic Euclidean residual score, 
+
+Sgen (e) = ∥e∥2 = p1 + mσ 2.
+
+Every generic calibration score is also equal to this value, because the Rademacher signs change direction but not Euclidean length. Therefore, 
+
+qgen 1−α = p1 + mσ 2.
+
+Therefore, 
+
+qgen 1−α
+
+qdc 1−α
+
+= p1 + mσ 2.
+
+For any target gap A > 1, choose m and σ such that mσ 2 ≥ A2 − 1. Then qgen 1−α ≥ Aq dc 1−α. The generic certificate is valid, but its excess slack is caused entirely by nuisance inventory directions that do not change any catalog policy’s downstream Lagrangian value. This proves the claimed high-dimensional separation. 
+
+C.5 Proof of Theorem 5.3 
+
+Let E be the simultaneous event in Assumption 3. Then 
+
+P(E) ≥ 1 − α − ατ − αm.
+
+Work on this event. For every policy π and constraint j,
+
+gj (π; u⋆) ≤ bgj (π) + bqgj 
+
+> 1−αcomp
+
++ ρg,j (π).
+
+The selected policy bπ satisfies the robust constraints in Eq. (7), so 
+
+bgj (bπ) + bqgj 
+
+> 1−αcomp
+
++ ρg,j (bπ) ≤ 0.
+
+Combining the two inequalities yields gj (bπ; u⋆) ≤ 0 for all j.For regret, define 
+
+∆V (π) = bqV 
+
+> 1−αcomp
+
++ ρV (π).
+
+On the same event, 
+
+V (π; u⋆) ≤ bV (π) + ∆ V (π), V (π; u⋆) ≥ bV (π) − ∆V (π).
+
+Because Eq. (7) is solved to error εopt ,
+
+bV (bπ) − ∆V (bπ) ≥ bV (π⋆
+
+> rob
+
+) − ∆V (π⋆
+
+> rob
+
+) − εopt .
+
+Therefore, 
+
+V (π⋆
+
+> rob
+
+; u⋆) − V (bπ; u⋆) ≤ bV (π⋆
+
+> rob
+
+) + ∆ V (π⋆
+
+> rob
+
+) −
+
+n bV (bπ) − ∆V (bπ)
+
+o
+
+≤ 2∆ V (π⋆
+
+> rob
+
+) + εopt 
+
+≤ 2 sup 
+
+> π∈Πcat
+
+∆V (π) + εopt .
+
+This proves the claimed bound.   
+
+> 1Corresponding author: shekharp@erau.edu
+
+28 C.6 Proof of Theorem A.2 
+
+Because the constraint contribution is affine in the inventory forecast error, the realized constraint value under perturbation e is 
+
+gj (π; e) = bgj (π) + ⟨aπ,j , e ⟩.
+
+The uncertainty set contains a perturbation whose inner product with aπ,j has magnitude δ. Choose the sign that increases the constraint value, so that 
+
+⟨aπ,j , e ⟩ = δ. 
+
+If the point-forecast margin is smaller than δ, then 
+
+bgj (π) + δ > 0.
+
+Thus gj (π; e) > 0 for a plausible future in the same decision-calibrated uncertainty set. This proves that slack at least δ is necessary for certification over that set. The statement is sharp in the affine case because slack equal to the supremum of |⟨ aπ,j , e ⟩| is also sufficient for that constraint. 
+
+C.7 Proof of Proposition A.3 
+
+Let π⋆ ∈ arg inf π∈Π R(π). Because Πcat is an η-net under dpace , there exists πC ∈ Πcat with 
+
+dpace (πC , π ⋆) ≤ η. 
+
+Lipschitzness gives 
+
+R(πC ) ≤ R(π⋆) + LΠη. 
+
+Since the best catalog policy has risk no larger than R(πC ),
+
+inf 
+
+> π∈Πcat
+
+R(π) ≤ R(πC ) ≤ inf  
+
+> π∈Π
+
+R(π) + LΠη.   
+
+> 1Corresponding author: shekharp@erau.edu
+
+29

@@ -1,0 +1,213 @@
+Title: MIDSim: Simulating Multi-Channel Information Diffusion in Social Media with LLM-Powered Multi-Agent System
+
+URL Source: https://arxiv.org/pdf/2606.13140v2
+
+Published Time: Tue, 16 Jun 2026 02:16:02 GMT
+
+Number of Pages: 5
+
+Markdown Content:
+# MIDSim: Simulating Multi-Channel Information Diffusion in Social Media with LLM-Powered Multi-Agent System 
+
+## Lexi Liu 
+
+State Key Laboratory of AI Safety, Institute of Computing Technology, Chinese Academy of Sciences University of Chinese Academy of Sciences, Beijing,China liulexi2004@outlook.com 
+
+## Qi Cao ∗
+
+State Key Laboratory of AI Safety, Institute of Computing Technology, Chinese Academy of Sciences Beijing, China caoqi@ict.ac.cn 
+
+## Yuanhao Liu 
+
+State Key Laboratory of AI Safety, Institute of Computing Technology, Chinese Academy of Sciences Beijing, China liuyuanhao20z@ict.ac.cn 
+
+## Huawei Shen ∗
+
+State Key Laboratory of AI Safety, Institute of Computing Technology, Chinese Academy of Sciences Beijing, China shenhuawei@ict.ac.cn 
+
+## Xueqi Cheng 
+
+State Key Laboratory of AI Safety, Institute of Computing Technology, Chinese Academy of Sciences Beijing, China cxq@ict.ac.cn 
+
+Abstract 
+
+Information diffusion in social media shapes public opinion and collective behavior, making its modeling and simulation an impor-tant research problem. Existing studies have investigated informa-tion diffusion through epidemic-based, cascade-based, and point process models. However, they predominantly focus on diffusion through social links, overlooking other diffusion channels enabled by platform algorithms (e.g., recommender systems) and failing to capture user behavioral complexity. To address these limitations, we propose an LLM-powered multi-agent system for simulating multi-channel information diffusion, where large language mod-els instantiate personalized user agents and the diffusion process jointly models social and algorithmic exposure streams. We further construct three real-world diffusion dataset spanning Sina Weibo, RedNote, and Twitter, containing diffusion records, user profiles, historical posts, and social relationships. Experimental results on real diffusion events show that our proposed framework realisti-cally simulate macro diffusion phenomenon and generate diverse comment content, significantly outperforming baselines. 
+
+CCS Concepts 
+
+• Human-centered computing → Social media .
+
+Keywords 
+
+Information Diffusion, Multi-Agent Systems, Diffusion Simulation  
+
+> ∗Corresponding author. Permission to make digital or hard copies of all or part of this work for personal or classroom use is granted without fee provided that copies are not made or distributed for profit or commercial advantage and that copies bear this notice and the full citation on the first page. Copyrights for components of this work owned by others than the author(s) must be honored. Abstracting with credit is permitted. To copy otherwise, or republish, to post on servers or to redistribute to lists, requires prior specific permission and/or a fee. Request permissions from permissions@acm.org.
+> Conference’17, Washington, DC, USA
+> ©2026 Copyright held by the owner/author(s). Publication rights licensed to ACM. ACM ISBN 978-x-xxxx-xxxx-x/YYYY/MM https://doi.org/10.1145/nnnnnnn.nnnnnnn
+
+ACM Reference Format: 
+
+Lexi Liu, Qi Cao, Yuanhao Liu, Huawei Shen, and Xueqi Cheng. 2026. MID-Sim: Simulating Multi-Channel Information Diffusion in Social Media with LLM-Powered Multi-Agent System. In . ACM, New York, NY, USA, 5 pages. https://doi.org/10.1145/nnnnnnn.nnnnnnn 
+
+1 Introduction 
+
+Social media platforms have become major infrastructures for infor-mation dissemination, shaping the emergence, spread, and evolu-tion of opinions. Understanding how information propagates across these platforms is essential for studying collective behaviors and social dynamics. Consequently, the modeling and simulation of information diffusion have attracted extensive research attention. Existing studies have investigated information diffusion through a variety of modeling paradigms, including epidemic-based mod-els [ 9, 23 ], point process models [ 17 , 33 ], and cascade-based mod-els [ 2, 4, 8, 10 , 19 , 31 , 32 ]. While epidemic-based and point-process models are effective for characterizing aggregate diffusion dynam-ics, they provide limited insight into the underlying propagation process. In contrast, cascade-based models, such as Independent Cascade (IC) [ 4, 8, 31 , 32 ] and Linear Threshold (LT) [ 2, 10 , 19 ], explicitly model diffusion as a propagation process over social net-works, providing an intuitive and interpretable framework. Despite their success, cascade-based models assume that infor-mation diffusion is primarily governed by social links. However, on modern social media platforms, users increasingly discover and consume information through algorithmic channels, such as recom-mendation and research feeds, in addition to their social networks. This shift challenges the assumption underlying existing models, limiting their ability to faithfully characterize real-world diffusion processes. Moreover, users are often represented by simplified prop-agation probabilities, overlooking the behavioral complexity and diversity observed in real-world information diffusion. To solve these limitations, we propose an LLM-powered multi-agent system for multi-channel i nformation d iffusion sim ulator (MIDSim). Leveraging the strong behavioral simulation capabilities of LLMs [ 7 , 12 , 14 , 21 , 24 , 27 ], MIDSim represents social media users  
+
+> arXiv:2606.13140v2 [cs.SI] 15 Jun 2026 Conference’17, July 2017, Washington, DC, USA Liu et al.
+
+Figure 1: Framework of MIDSim, consisting of user agents and multi-channel diffusion simulation. Orange dashed lines represent social diffusion streams, whereas blue dashed lines represent algorithmic diffusion streams. 
+
+as personalized LLM-powered agents grounded in their profiles and historical behaviors, rather than simplified behavioral assumptions. Furthermore, MIDSim models information exposure through both social channels (e.g., follow feeds and notifications) and algorithmic channels (e.g., recommendation and search feeds). Together, these designs provide a unified framework for realistically simulating information diffusion on modern social media platforms. To enable realistic evaluation, we construct three real-world diffusion datasets spanning Sina Weibo, RedNote, and Twitter, con-taining diffusion records, user profiles, historical posts, and social relationships. Experimental results on these real diffusion events show that our proposed MIDSim not only accurately reproduces macro diffusion phenomenon but also generates realistic and di-verse user comments, significantly outperforming baselines. These results highlight the importance of modeling information diffusion as a multi-channel process while capturing complex user behaviors through personalized agents. 
+
+2 Methodology 
+
+As shown in Figure 1, MIDSim simulates the diffusion of an ob-served social media event with LLM-based user agents and multi-channel diffusion simulation. Starting from event-related posts, MIDSim simulates the evolution of an event time by step. At each step, agents are exposed to content through social and algorithmic channels, decide whether and how to engage with it, and generate new content that becomes part of the evolving diffusion process. 
+
+2.1 User Agent 
+
+Different from simplified probabilistic diffusion models such as IC and LT, MIDSim represents social media users as personalized agents following multi-agent system frameworks [ 22 , 25 , 26 , 30 ]. Given an agent set 𝐴 = {𝑎 1, 𝑎 2, . . . , 𝑎 𝑁 }, each agent 𝑎 𝑖 corresponds to one user and makes diffusion-related decisions based on its profile, memory, current observation, and available actions. 
+
+2.1.1 Profile. For real-data-driven simulation, each profile is ini-tialized from observable platform data, including user bio and social relations, as well as behavioral features such as activity level, inter-est tags, and historical summaries. The activity level is computed as 
+
+𝑎𝑐𝑡 𝑖 = Norm (log (1 + 𝑥 𝑖 )) , where 𝑥 𝑖 denotes the number of interac-tions or statuses of user 𝑖 . For lengthy posts and followed accounts, we use Qwen [ 15 ] to generate compact interest tags and historical summaries for agent personalization. 
+
+2.1.2 Memory and Decision-making. Following common designs, each agent maintains recent interaction records and summarized long-term memories. Relevant memories are retrieved with BGE embeddings [ 29 ] and combined with the profile and current obser-vation as the decision context. The agent then forms a behavioral intention and selects actions from the action space. 
+
+2.1.3 Action Space. The action space includes browsing content from exposure streams, deciding whether and how to propagate con-tent, generating personalized text, interacting with eligible users, and maintaining attention to subsequent related content. 
+
+2.2 Algorithm Module 
+
+The algorithm module models platform-algorithm-driven exposure, which complements social diffusion by delivering content beyond users’ direct social links. It contains two simplified components: recommendation for feed-based passive exposure and search for user-initiated content retrieval. 
+
+2.2.1 Recommendation Algorithm. We do not aim to reproduce a specific platform recommender. Instead, we approximate recom-mendation exposure with an LLM-based interest matching and reranking procedure. Since the complete platform content space is MIDSim: Simulating Multi-Channel Information Diffusion in Social Media with LLM-Powered Multi-Agent System Conference’17, July 2017, Washington, DC, USA 
+
+inaccessible, we construct a substitute global content pool from two sources: posts sampled from platform-specific interest categories to cover users’ general interests, and fine-grained candidates from topics adjacent to the target topic to capture event-related interests. Before simulation, each user is assigned an initial candidate list from this pool. To handle the LLM context limit, we apply a hierar-chical filtering to reduce the candidate space. During simulation, the reduced candidate pool is combined with target-topic-related content and reranked by the LLM according to interest relevance and content quality, forming the final recommendation list. 
+
+2.2.2 Search Algorithm. Search exposure is implemented as a stan-dard dense retrieval process. Given a query, we encode the query and candidate posts into dense representations, rank candidates by cosine similarity, and return the top-ranked posts as search results. 
+
+2.3 Multi-Channel Information Diffusion 
+
+MIDSim provides a simulation environment for multi-channel infor-mation diffusion. It manages the injection, exposure, propagation, and state updates of event-related information over time, thereby capturing the temporal evolution of diffusion under the joint effects of social relations and platform mechanisms. At each simulation step, agents are sampled as online or offline according to their ac-tivity levels; only online agents can receive exposed content and participate in propagation. 
+
+2.3.1 Social Diffusion Stream. The social stream models exposure from observed social links and direct interactions. It includes follow-feed exposure, where online agents sample recent and previously unseen posts from followed users with probability 𝑝 𝑠 , and notifica-tion exposure, where replies, comments, and mentions are delivered to the target agents. When notifications exceed the attention budget 
+
+𝐵 att , the simulator samples a subset for processing. 
+
+2.3.2 Algorithmic Diffusion Stream. The algorithmic stream mod-els platform-mediated exposure beyond observed social links, in-cluding recommendation feed and search results. Recommendation feed represents passive system-pushed exposure: online agents receive recommended content with probability 𝑝 𝑎 , and the rec-ommendation module selects previously unviewed posts from the candidate set. To reflect variable feed length and bounded attention, the number of recommended items 𝐿 follows a truncated geometric distribution with maximum length 𝐾 :
+
+𝑃 (𝐿 = 𝑙 ) =
+
+(
+
+(1 − 𝛼 )𝛼 𝑙 −1, 1 ≤ 𝑙 < 𝐾, 𝛼 𝐾 −1, 𝑙 = 𝐾 . (1) Search represents active information-seeking exposure. When the current observation is insufficient for decision-making, the agent is triggered to generate a query, and the algorithm retrieves relevant posts as supplementary exposure. 
+
+2.3.3 Simulation Scheduling. The diffusion process advances in discrete but non-uniform time steps. Real diffusion events are typi-cally bursty, with dense posts and feedback in the early stage and sparse activity in the later long-tail stage. Uniform time division would merge many early events into a few steps and delay feedback that could influence subsequent diffusion. MIDSim therefore uses finer temporal granularity in the early stage and longer windows 
+
+Table 1: Statistics of dataset. 
+
+Platform #Propagations #Posts #Users #Relations Sina Weibo 114 23 130 209 RedNote 1,257 110 1,476 1,933 Twitter 1,674 44 1,067 25,643 in the later stage. For step 𝑡 , its weight, duration, and cumulative boundary are defined as 
+
+𝑤 𝑡 = 𝑒 𝜌𝑡 , Δ𝜏 𝑡 = 𝐷𝑤 𝑡 
+
+Í𝑇 𝑖 =1 𝑤 𝑖 
+
+, 𝜏 𝑡 =
+
+> 𝑡
+
+∑︁ 
+
+> 𝑘 =1
+
+Δ𝜏 𝑘 , (2) where 𝑡 = 1, . . . ,𝑇 , 𝜌 > 0, 𝐷 is the total diffusion period, and 𝜏 0 = 0.Since 𝑤 𝑡 increases with 𝑡 , early steps correspond to shorter real-time windows and later steps to longer ones. The online probability is linearly mapped from the activity level. Thus, more active users are more likely to participate in exposure and propagation. 
+
+3 Experiments 
+
+This section describes the datasets, experimental settings, simula-tion quality, ablation studies and and case study. 
+
+3.1 Data Collection 
+
+To enable realistic implementation and evaluation, we construct three real-world diffusion datasets from Sina Weibo, RedNote, and Twitter, as existing public datasets often lack detailed information required for personalized agent construction and diffusion simu-lation. Data collection is conducted in accordance with relevant privacy regulations and platform policies. Centered on the ICLR 2026 reviewer leak event that began on November 27, 2025, we collect event-related posts through keyword search and record platform-specific interactions, including reposts on Sina Weibo, comments on RedNote, and quotes, retweets, replies on Twitter. We further parse @mentions from interaction content to enrich diffusion records. For users involved in the diffusion process, we collect profiles, historical posts, and follow relations. To mitigate the impact of incomplete social links, we exclude RedNote users whose social relations are not publicly accessible. Dataset statistics are reported in Table 1. 
+
+3.2 Experimental Settings 
+
+3.2.1 Baselines. We compare MIDSim with 7 representative base-lines, including IC-based models (IC [ 8], IC-M [ 5], IC-N [ 4 ], ICI [ 31 ]) and LT-based models (LT [ 10 ], LT-C [ 2 ], F-TM [ 1]). Following com-mon practice [ 31 ], the propagation probability or influence weight of edge (𝑢, 𝑣 ) is set to 1/| 𝑁 𝑖𝑛 𝑣 |, with other parameters kept as default. The result is obtained from 1000 Monte Carlo simulations, and both the mean and standard deviation are reported. 
+
+3.2.2 Evaluation Metrics. We evaluate MIDSim on both diffusion prediction and text generation. For diffusion prediction, we adopt the commonly used MAPE [ 6 , 16 ] and MRSE [ 3 , 31 ]. For text gen-eration, following established practice [ 13 ], we evaluate the di-versity from lexical (TTR [ 18 ], Distinct-n [ 20 ] with 𝑛 = 3, and Conference’17, July 2017, Washington, DC, USA Liu et al. 
+
+Table 2: Prediction performance of different models (best results in bold and second-best results in italics). 
+
+Platform Metric IC-based models LT-based models MIDSim IC IC-M IC-N ICI LT LT-C F-TM Qwen2.5-14B Llama-3.1-8B Sina Weibo MAPE 0.586 ±0.044 0.593 ±0.044 0.670 ±0.058 0.662 ±0.036 0.499 ±0.052 0.625 ±0.046 0.600 ±0.041 0.047 ±0.041 0.070 ±0.040 
+
+MRSE 0.345 ±0.051 0.354 ±0.053 0.453 ±0.079 0.441 ±0.047 0.251 ±0.052 0.392 ±0.058 0.362 ±0.049 0.003 ±0.003 0.006 ±0.005 
+
+RedNote MAPE 0.821 ±0.009 0.835 ±0.009 0.858 ±0.013 0.853 ±0.008 0.783 ±0.008 0.837 ±0.008 0.825 ±0.008 0.037 ±0.021 0.022 ±0.017 
+
+MRSE 0.675 ±0.015 0.697 ±0.015 0.736 ±0.023 0.728 ±0.014 0.613 ±0.013 0.701 ±0.014 0.681 ±0.015 0.002 ±0.002 0.001 ±0.001 
+
+Twitter MAPE 0.619 ±0.097 0.928 ±0.013 0.738 ±0.080 0.814 ±0.045 0.294 ±0.224 0.422 ±0.203 0.218 ±0.033 0.024 ±0.028 0.031 ±0.027 
+
+MRSE 0.393 ±0.120 0.861 ±0.024 0.552 ±0.116 0.665 ±0.071 0.137 ±0.163 0.220 ±0.187 0.049 ±0.015 0.001 ±0.002 0.001 ±0.002 
+
+Table 3: Diversity and fidelity of generated text.                                                              
+
+> Platform Setting TTR Distinct Self-BLEU Div 𝑠𝑒𝑚 Div 𝑠𝑦𝑛 Similarity Sina Weibo Real Data 0.841 0.998 0.991 0.562 0.738 1.000 w/o Profile 0.351 ±0.052 0.370 ±0.064 0.109 ±0.154 0.026 ±0.037 0.048 ±0.069 0.425 ±0.004
+> w/ Profile 0.561 ±0.022 0.748 ±0.045 0.852 ±0.052 0.336 ±0.039 0.382 ±0.049 0.454 ±0.011
+> RedNote Real Data 0.722 0.964 0.983 0.540 0.708 1.000 w/o Profile 0.147 ±0.007 0.163 ±0.007 0.262 ±0.009 0.016 ±0.003 0.029 ±0.004 0.427 ±0.001
+> w/ Profile 0.416 ±0.004 0.730 ±0.007 0.298 ±0.003 0.431 ±0.006 0.347 ±0.006 0.467 ±0.000
+> Twitter Real Data 0.607 0.902 0.950 0.404 0.133 1.000 w/o Profile 0.287 ±0.015 0.339 ±0.018 0.570 ±0.020 0.146 ±0.003 0.003 ±0.000 0.566 ±0.001
+> w/ Profile 0.333 ±0.014 0.507 ±0.018 0.732 ±0.024 0.217 ±0.010 0.062 ±0.011 0.640 ±0.006
+
+Self-BLEU [ 34 ]), semantic (Div 𝑠𝑒𝑚 [13 ]), syntactic (Div 𝑠𝑦𝑛 [13 ]) per-spectives, and evaluate fidelity from text embedding similarity [ 29 ]. Metrics are computed at the post level and then averaged. 
+
+3.2.3 Implementation. MIDSim is built on YuLan-OneSim [ 28 ], us-ing Qwen2.5-14B-Instruct [ 15 ] and Llama-3.1-8B-Instruct [ 11 ] as backbone LLMs (temperature = 0). BGE-1.5 [ 29 ] is adopted for em-beddings. We set 𝐵 att = 10 , 𝐾 = 5, 𝛼 ∈ [ 0.2, 0.5], with 𝜌 = 1.6, 𝑇 = 8
+
+and 𝐷 = 24 for scheduling; (𝑝 𝑠 , 𝑝 𝑎 ) = (1, 1) for Sina Weibo/RedNote and (0.055 , 1) for Twitter. Each setting is evaluated over 3 indepen-dent runs, with mean and standard deviation reported. Implemen-tation details are available via the anonymous link 1.
+
+3.3 Simulation Quality 
+
+3.3.1 Prediction Performance. Table 2 reports the prediction per-formance of total diffusion volumes. MIDSim achieves the lowest errors across all platforms under all evaluation metrics, signifi-cantly outperforming representative IC- and LT-based baselines. We also observe that, while MIDSim delivers consistently strong performance, simulation quality remains influenced by the choice of backbone LLM. Generally, Qwen2.5-14B achieves better results than Llama-3.1-8B, possibly due to differences in their underlying reasoning and instruction-following capabilities. 
+
+3.3.2 Text Generation. Table 3 reports the linguistic diversity and semantic fidelity of text generated by Qwen2.5-14B, while similar results are observed for Llama-3.1-8B and omitted due to space limitations. Compared with the w/o Profile baseline, incorporating user profiles consistently improves lexical, semantic, and syntactic diversity, as well as semantic similarity, bringing generated com-ments closer to real user data. This suggests that personalized user modeling plays an important role in generating realistic and diverse content during the diffusion process. 
+
+> 1
+
+https://anonymous.4open.science/r/MIDSim-anonymous/ 
+
+(a) Exposure channels (b) Recommendation strategies 
+
+Figure 2: Ablation study with Qwen2.5-14B. 
+
+3.4 Ablation Study 
+
+3.4.1 Effect of Exposure Channels. To analyze the contribution of different exposure channels, we compare Soc-only (follow feeds and notifications), Alg-only (recommendation and search feeds), and MIDSim (the full framework with both channels). As shown in Figure 2(a), MIDSim consistently achieves the best performance across all platforms, highlighting the complementary roles of so-cial and algorithmic diffusion channels. Among the single-channel variants, Soc-only performs better on Sina Weibo, indicating the important role of social exposure. In contrast, Alg-only outperforms Soc-only on RedNote and Twitter, suggesting a stronger influence of algorithmic exposure on these platforms. 
+
+3.4.2 Effect of Recommendation Strategies. We further examine how different recommendation strategies affect diffusion simula-tion by replacing the default interest-based recommendation with popularity-based and random recommendation. As shown in Fig-ure 2(b), interest-based recommendation consistently achieves the best performance. This finding highlights the importance of interest alignment in information diffusion and reflecting the interest-driven nature of modern recommendation systems. 
+
+3.5 Case Study 
+
+Figure 3 presents a case study of a RedNote post, comparing sim-ulated and real diffusion examples. Since the original content is in Chinese, English translations are provided for illustration. The simulated comments largely align with real diffusion in stance, pri-marily expressing supportive or neutral attitudes, while missing some opposing views observed in the real data. This observation suggests a tendency of current LLM-based agents to favor agree-able responses, highlighting the importance of better modeling dissenting and opposing viewpoints in future research. 
+
+4 Conclusions 
+
+In this paper, we propose MIDSim, an LLM-powered multi-agent framework for simulating multi-channel information diffusion that MIDSim: Simulating Multi-Channel Information Diffusion in Social Media with LLM-Powered Multi-Agent System Conference’17, July 2017, Washington, DC, USA 
+
+Figure 3: Case study of simulation under a RedNote post. 
+
+jointly models social and algorithmic exposure. To support real-istic evaluation, we construct three real-world diffusion datasets spanning Sina Weibo, RedNote, and Twitter. Extensive experiments on real diffusion events demonstrate the effectiveness of MIDSim, highlighting the potential of LLM-driven agents for modeling com-plex information propagation. Future work includes broader cross-platform evaluation and more realistic modeling of user behaviors, recommendation mechanisms, and interaction diversity. 
+
+References 
+
+[1] Nicola Barbieri and Francesco Bonchi. 2014. Influence maximization with viral product design. In Proceedings of the 2014 SIAM International Conference on Data Mining . 55–63. [2] Smriti Bhagat, Amit Goyal, and Laks VS Lakshmanan. 2012. Maximizing prod-uct adoption in social networks. In Proceedings of the Fifth ACM International Conference on Web Search and Data Mining . 603–612. [3] Qi Cao, Huawei Shen, Jinhua Gao, Bingzheng Wei, and Xueqi Cheng. 2020. Popularity prediction on social platforms with coupled graph neural networks. In Proceedings of the 13th international conference on web search and data mining .70–78. [4] Wei Chen, Alex Collins, Rachel Cummings, Te Ke, Zhenming Liu, David Rincon, Xiaorui Sun, Yajun Wang, Wei Wei, and Yifei Yuan. 2011. Influence maximiza-tion in social networks when negative opinions may emerge and propagate. In 
+
+Proceedings of the 2011 SIAM International Conference on Data Mining . 379–390. [5] Wei Chen, Wei Lu, and Ning Zhang. 2012. Time-critical influence maximization in social networks with time-delayed diffusion process. In Proceedings of the AAAI Conference on Artificial Intelligence . 591–598. [6] Zhangtao Cheng, Fan Zhou, Xovee Xu, Kunpeng Zhang, Goce Trajcevski, Ting Zhong, and Philip S Yu. 2024. Information cascade popularity prediction via probabilistic diffusion. IEEE Transactions on Knowledge and Data Engineering 36, 12 (2024), 8541–8555. [7] Chen Gao, Xiaochong Lan, Zhihong Lu, Jinzhu Mao, Jinghua Piao, Huandong Wang, Depeng Jin, and Yong Li. 2023. S 3: Social-network simulation system with large language model-empowered agents. arXiv preprint arXiv:2307.14984 (2023). [8] Jacob Goldenberg, Barak Libai, and Eitan Muller. 2001. Talk of the network: A complex systems look at the underlying process of word-of-mouth. Marketing letters 12, 3 (2001), 211–223. [9] Sreeraag Govindankutty and Shynu Padinjappurath Gopalan. 2024. Epidemic modeling for misinformation spread in digital networks through a social intelli-gence approach. Scientific Reports 14, 1 (2024), 19100. [10] Mark Granovetter. 1978. Threshold models of collective behavior. American journal of sociology 83, 6 (1978), 1420–1443. [11] Aaron Grattafiori, Abhimanyu Dubey, Abhinav Jauhri, Abhinav Pandey, Abhishek Kadian, Ahmad Al-Dahle, Aiesha Letman, Akhil Mathur, Alan Schelten, Alex Vaughan, et al . 2024. The llama 3 herd of models. arXiv preprint arXiv:2407.21783 
+
+(2024). [12] Taicheng Guo, Xiuying Chen, Yaqi Wang, Ruidi Chang, Shichao Pei, Nitesh V Chawla, Olaf Wiest, and Xiangliang Zhang. 2024. Large language model based multi-agents: A survey of progress and challenges. In Proceedings of the Thirty-Third International Joint Conference on Artificial Intelligence . 8048–8057. [13] Yanzhu Guo, Guokan Shang, Michalis Vazirgiannis, and Chloé Clavel. 2024. The curious decline of linguistic diversity: Training language models on synthetic text. In Findings of the Association for Computational Linguistics: NAACL 2024 .3589–3604. [14] Zhang Guozhen, Yu Zihan, Li Nian, Yu Fudan, Long Qingyue, Jin Depeng, and Li Yong. 2024. Human behavior simulation: Objectives, methodologies, and open problems. arXiv preprint arXiv:2412.07788 (2024). [15] Binyuan Hui, Jian Yang, Zeyu Cui, Jiaxi Yang, Dayiheng Liu, Lei Zhang, Tianyu Liu, Jiajun Zhang, Bowen Yu, Keming Lu, et al . 2024. Qwen2. 5-coder technical report. arXiv preprint arXiv:2409.12186 (2024). [16] Xin Jing, Yichen Jing, Yuhuan Lu, Bangchao Deng, Xueqin Chen, and Dingqi Yang. 2025. Casft: Future trend modeling for information popularity prediction with dynamic cues-driven diffusion models. In Proceedings of the AAAI Conference on Artificial Intelligence , Vol. 39. 11906–11914. [17] Xin Jing, Yichen Jing, Yuhuan Lu, Bangchao Deng, Sikun Yang, and Dingqi Yang. 2025. On your mark, get set, predict! Modeling continuous-time dynamics of cascades for information popularity prediction. IEEE Transactions on Knowledge and Data Engineering (2025). [18] Webdell Johnson. 1944. Studies in language behavior: A program of research. 
+
+Psychological Monographs 56, 2 (1944), 1–15. [19] David Kempe, Jon Kleinberg, and Éva Tardos. 2003. Maximizing the spread of influence through a social network. In Proceedings of the ninth ACM SIGKDD International Conference on Knowledge Discovery and Data Mining . 137–146. [20] Jiwei Li, Michel Galley, Chris Brockett, Jianfeng Gao, and William B Dolan. 2016. A diversity-promoting objective function for neural conversation models. In 
+
+Proceedings of the 2016 Conference of the North American Chapter of the Association for Computational Linguistics: Human Language Technologies . 110–119. [21] Nian Li, Chen Gao, Mingyu Li, Yong Li, and Qingmin Liao. 2024. Econagent: Large language model-empowered agents for simulating macroeconomic activities. In 
+
+Proceedings of the 62nd Annual Meeting of the Association for Computational Linguistics (Volume 1: Long Papers) . 15523–15536. [22] Ziyue Lin, Yi Shan, Lin Gao, Xinghua Jia, and Siming Chen. 2025. Simspark: Interactive simulation of social media behaviors. Proceedings of the ACM on Human-Computer Interaction (2025), 1–32. [23] Zewen Liu, Guancheng Wan, B Aditya Prakash, Max SY Lau, and Wei Jin. 2024. A review of graph neural networks in epidemic modeling. In Proceedings of the 30th ACM SIGKDD Conference on Knowledge Discovery and Data Mining . 6577–6587. [24] Xinyi Mou, Zhongyu Wei, and Xuan-Jing Huang. 2024. Unveiling the truth and facilitating change: Towards agent-based large-scale social movement simulation. In Findings of the Association for Computational Linguistics: ACL 2024 . 4789–4809. [25] Joon Sung Park, Joseph O’Brien, Carrie Jun Cai, Meredith Ringel Morris, Percy Liang, and Michael S Bernstein. 2023. Generative agents: Interactive simulacra of human behavior. In Proceedings of the 36th Annual ACM Symposium on User Interface Software and Technology . 1–22. [26] Jinghua Piao, Yuwei Yan, Jun Zhang, Nian Li, Junbo Yan, Xiaochong Lan, Zhihong Lu, Zhiheng Zheng, Jing Yi Wang, Di Zhou, et al . 2025. AgentSociety: Large-scale simulation of LLM-driven generative agents advances understanding of human behaviors and society. arXiv preprint arXiv:2502.08691 (2025). [27] Petter Törnberg, Diliara Valeeva, Justus Uitermark, and Christopher Bail. 2023. Simulating social media using large language models to evaluate alternative news feed algorithms. arXiv preprint arXiv:2310.05984 (2023). [28] Lei Wang, Heyang Gao, Xiaohe Bo, Xu Chen, and Ji-Rong Wen. 2025. Yulan-onesim: Towards the next generation of social simulator with large language models. In Workshop on Scaling Environments for Agents .[29] Shitao Xiao, Zheng Liu, Peitian Zhang, Niklas Muennighoff, Defu Lian, and Jian-Yun Nie. 2024. C-pack: Packed resources for general chinese embeddings. In Proceedings of the 47th international ACM SIGIR conference on research and development in information retrieval . 641–649. [30] Yuwei Yan, Qingbin Zeng, Zhiheng Zheng, Jingzhe Yuan, Jie Feng, Jun Zhang, Fengli Xu, and Yong Li. 2024. Opencity: A scalable platform to simulate urban activities with massive llm agents. arXiv preprint arXiv:2410.21286 (2024). [31] Shiqi Zhang, Jiachen Sun, Wenqing Lin, Xiaokui Xiao, Yiqian Huang, and Bo Tang. 2024. Information diffusion meets invitation mechanism. In Companion Proceedings of the ACM Web Conference 2024 . 383–392. [32] Shuai Zhang, Chuan Zhou, Yang Aron Liu, Peng Zhang, Xixun Lin, and Zhi-Ming Ma. 2024. Neural jump-diffusion temporal point processes. In Forty-first International Conference on Machine Learning .[33] Xi Zhang, Akshay Aravamudan, and Georgios C Anagnostopoulos. 2022. Any-time information cascade popularity prediction via self-exciting processes. In 
+
+International Conference on Machine Learning . 26028–26047. [34] Yaoming Zhu, Sidi Lu, Lei Zheng, Jiaxian Guo, Weinan Zhang, Jun Wang, and Yong Yu. 2018. Texygen: A benchmarking platform for text generation models. In The 41st International ACM SIGIR Conference on Research and Development in Information Retrieval . 1097–1100.

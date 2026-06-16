@@ -1,0 +1,54 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2606.10125v1/fig-001.webp",
+      "caption": "Figure 1: Domain discovery learning curves (mean ±1 s.d. over 5 seeds). Left : Domains Covered vs. annotation budget (7 total). All methods start from an identical supply-gap-only seed (n0 = 5). Algorithm 1 is the only method to reach 6-domain coverage at n = 10 (zero variance across seeds); Dist-to-Threshold reaches 6 domains at n = 15; Random never reaches 6 within the budget. The horizontal dotted line marks the 6-domain level. Right : Non-Seed Domain Score (mean SemanticScore on non-supply-gap domains). Algorithm 1 leads at every budget level, finishing at 0.691 vs. 0.643 for Dist-to-Threshold.",
+      "page": 15,
+      "index": 1,
+      "width": 932,
+      "height": 375
+    },
+    {
+      "url": "assets/figures/arxiv/2606.10125v1/fig-002.webp",
+      "caption": "Figure 4: Realistic GP experiment: SemanticScore (left) and Non-Seed Domain Score (right) vs. annotation budget. Labels are computed by calling the LLM on each annotated example and scoring with the production formula (Equation 19). Algorithm 1 uses these real GP labels to drive acquisition; Random selects uniformly. The DDL schema is included in all prompts.",
+      "page": 18,
+      "index": 2,
+      "width": 932,
+      "height": 390
+    },
+    {
+      "url": "assets/figures/arxiv/2606.10125v1/fig-003.webp",
+      "caption": "Table 4: Realistic GP experiment: SemanticScore and Non-Seed Domain Score at each labeled-set size. GP labels come from LLM scoring (Equation 19); DDL included in all prompts. Best per row in bold.",
+      "page": 19,
+      "index": 3,
+      "width": 552,
+      "height": 338
+    },
+    {
+      "url": "assets/figures/arxiv/2606.10125v1/fig-004.webp",
+      "caption": "Table 2: End-to-end LLM SemanticScore and Non-Seed Domain Score at each labeled-set size. Best per row in bold. Algorithm 1 trails at n ≤ 10 on overall SemanticScore because with only 5 seed examples it yields less focused context. The advantage emerges from n = 20 as the labeled bank gains cross-domain coverage.",
+      "page": 17,
+      "index": 4,
+      "width": 672,
+      "height": 337
+    },
+    {
+      "url": "assets/figures/arxiv/2606.10125v1/fig-005.webp",
+      "caption": "Figure 2: Annotation efficiency: Domains Covered vs. annotation budget (7 total). Algorithm 1 reaches 6-domain coverage at n = 10 (the earliest of any method); Dist-to-Threshold reaches 6 domains at n = 15; Random peaks at 5.8 and never reaches 6. No method achieves full 7-domain coverage within the n = 50 budget.",
+      "page": 16,
+      "index": 5,
+      "width": 686,
+      "height": 339
+    },
+    {
+      "url": "assets/figures/arxiv/2606.10125v1/fig-006.webp",
+      "caption": "Figure 3: End-to-end LLM SemanticScore and Non-Seed Domain Score vs. annotation budget (shaded bands: ±1 bootstrap SE over 10 seeds). Algorithm 1 trails at n ≤ 10 on overall SemanticScore but leads from n = 20 onward, finishing at 0.583 vs. 0.548 for Dist-to-Threshold and 0.524 for Random. The Non-Seed Domain Score (right) shows Algorithm 1’s cross-domain advantage emerging from n = 15, peaking at 0.633 at n = 35, and finishing at 0.647 vs. 0.578 for Dist-to-Threshold.",
+      "page": 16,
+      "index": 6,
+      "width": 932,
+      "height": 244
+    }
+  ]
+}

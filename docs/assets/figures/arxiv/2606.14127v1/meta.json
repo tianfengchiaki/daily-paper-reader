@@ -1,0 +1,38 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2606.14127v1/fig-001.webp",
+      "caption": "Table 4: Hyperparameter values used in production training and serving.",
+      "page": 11,
+      "index": 1,
+      "width": 499,
+      "height": 599
+    },
+    {
+      "url": "assets/figures/arxiv/2606.14127v1/fig-002.webp",
+      "caption": "Figure 3: Five-month continuous-training auto-evaluation, plotted as candidate-minus-deployed deltas on each week’s held-out evaluation slice— the quantity the auto-promotion gate actually consumes. Top three panels: reward-like deltas (Δ𝑟main, Δ𝑆pos, Δ𝑟rand). Bottom four: stability deltas (top-10 entropy, surprisal, average rewrite length, length-cap stop rate). The dashed vertical line marks an early-March upgrade of the production multimodal relevance model, visible as a single-week disturbance in Δ𝑟main and Δ𝑟rand that resolves once subsequent candidates retrain against the new reward target.",
+      "page": 8,
+      "index": 2,
+      "width": 489,
+      "height": 560
+    },
+    {
+      "url": "assets/figures/arxiv/2606.14127v1/fig-003.webp",
+      "caption": "Figure 1: End-to-end system. Five blocks: (1) weekly offline training loop producing candidate𝜃 ′ ; (2) production-aligned reward computation ingesting content-safety scores S1–4, behavioral weights 𝑤±, and the deployed multimodal text-and-MM relevance score 𝑠 ( ·) ; (3) auto-promotion gate over three reward-like and four stability metrics; (4) near-line rewrite inference feeding an in-memory KV cache; and (5) additive parallel-path consumption at recall, rawrank, and finerank, where the rewriter contributes a new signal alongside the original signals rather than replacing them. Cache-miss falls back to the original ranking pathway, bounding the blast radius of rewriter failures.",
+      "page": 4,
+      "index": 3,
+      "width": 882,
+      "height": 679
+    },
+    {
+      "url": "assets/figures/arxiv/2606.14127v1/fig-004.webp",
+      "caption": "Figure 2: Semi-online MPO phase loop. Within a phase 𝑝 , 𝑁 rollouts per training instance are sampled once and scored, and only a small preferencepair subset (top-𝑘 chosen × bottom-𝑘 rejected) is reused across many gradient steps in one MPO epoch; phase boundaries apply a cosine warm restart on the learning rate. Restricting the gradient pass to the preference-pair subset— rather than to all rolled-out trajectories—is the principal source of trainingstep efficiency relative to per-step preference-gradient methods.",
+      "page": 5,
+      "index": 4,
+      "width": 446,
+      "height": 296
+    }
+  ]
+}

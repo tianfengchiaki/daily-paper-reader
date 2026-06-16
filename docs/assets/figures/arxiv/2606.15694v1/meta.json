@@ -1,0 +1,46 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2606.15694v1/fig-001.webp",
+      "caption": "Fig. 4. Impact of the number of retrieved demonstrations (K) and the number of voting candidates (M) on MELD and CH-SIMS v2.0. The best trade-off is achieved with K = 3 and a stable voting setting around M = 8.",
+      "page": 11,
+      "index": 1,
+      "width": 652,
+      "height": 350
+    },
+    {
+      "url": "assets/figures/arxiv/2606.15694v1/fig-002.webp",
+      "caption": "Fig. 1. Illustration of sentiment analysis results from different prompts using ChatGLM3-6B. MAF adaptively retrieves multimodal demonstrations aligned with the query, yielding more accurate and consistent predictions.",
+      "page": 2,
+      "index": 2,
+      "width": 725,
+      "height": 190
+    },
+    {
+      "url": "assets/figures/arxiv/2606.15694v1/fig-003.webp",
+      "caption": "Table 2. Performance comparison of MAF against baseline methods. Within each backbone block, the best results are highlighted in bold.",
+      "page": 10,
+      "index": 3,
+      "width": 725,
+      "height": 561
+    },
+    {
+      "url": "assets/figures/arxiv/2606.15694v1/fig-004.webp",
+      "caption": "Fig. 2. The overview of the MAF framework.",
+      "page": 4,
+      "index": 4,
+      "width": 725,
+      "height": 269
+    },
+    {
+      "url": "assets/figures/arxiv/2606.15694v1/fig-005.webp",
+      "caption": "Fig. 3. Illustration of the few-shot prompt used in our work.",
+      "page": 5,
+      "index": 5,
+      "width": 725,
+      "height": 519
+    }
+  ]
+}

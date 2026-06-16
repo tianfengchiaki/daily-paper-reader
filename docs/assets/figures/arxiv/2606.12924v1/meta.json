@@ -1,0 +1,30 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2606.12924v1/fig-001.webp",
+      "caption": "Figure 1: Two-agent simulation. Either agent is replaceable, enabling controlled architecture comparisons.",
+      "page": 3,
+      "index": 1,
+      "width": 328,
+      "height": 415
+    },
+    {
+      "url": "assets/figures/arxiv/2606.12924v1/fig-002.webp",
+      "caption": "Figure 2: Buyer Agent query generation loop. Each turn: check budget, prepare context from three memory streams (queries/SRPs/CHATs), call LLM, produce one action type. Cart additions are validated against the current SRP.",
+      "page": 3,
+      "index": 2,
+      "width": 389,
+      "height": 583
+    },
+    {
+      "url": "assets/figures/arxiv/2606.12924v1/fig-003.webp",
+      "caption": "Table 1: Dataset distribution across 14 buckets. Each bucket is defined by shopping/browsing style, patience level, and mission count. Five combinations are excluded as less relevant (e.g., multi-mission patient strict). Patient buyers receive 10 turns/mission; impatient buyers only 4.",
+      "page": 4,
+      "index": 3,
+      "width": 414,
+      "height": 452
+    }
+  ]
+}

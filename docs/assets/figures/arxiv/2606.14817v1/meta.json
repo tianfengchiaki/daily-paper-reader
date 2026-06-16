@@ -1,0 +1,62 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2606.14817v1/fig-001.webp",
+      "caption": "Table 1. Evaluation metrics and criteria used in the system.",
+      "page": 6,
+      "index": 1,
+      "width": 725,
+      "height": 242
+    },
+    {
+      "url": "assets/figures/arxiv/2606.14817v1/fig-002.webp",
+      "caption": "Table 2. Tolerance ranges for the FKGL score (⌊x⌋ denote the mathematical floor function of real number x).",
+      "page": 7,
+      "index": 2,
+      "width": 725,
+      "height": 557
+    },
+    {
+      "url": "assets/figures/arxiv/2606.14817v1/fig-003.webp",
+      "caption": "Fig. 5. Evaluation of the FKGL metric for different models and tolerance ranges.",
+      "page": 10,
+      "index": 3,
+      "width": 616,
+      "height": 333
+    },
+    {
+      "url": "assets/figures/arxiv/2606.14817v1/fig-004.webp",
+      "caption": "Fig. 2. Obtained average relevance and groundedness for different prompt techniques with and without using the RAG module of the system.",
+      "page": 8,
+      "index": 4,
+      "width": 616,
+      "height": 304
+    },
+    {
+      "url": "assets/figures/arxiv/2606.14817v1/fig-005.webp",
+      "caption": "Fig. 3. Obtained average relevance and groundedness for different selected LLMs with and without using the RAG module of the system.",
+      "page": 8,
+      "index": 5,
+      "width": 616,
+      "height": 277
+    },
+    {
+      "url": "assets/figures/arxiv/2606.14817v1/fig-006.webp",
+      "caption": "Fig. 1. Designed architecture of reading content recommendation system.",
+      "page": 4,
+      "index": 6,
+      "width": 510,
+      "height": 522
+    },
+    {
+      "url": "assets/figures/arxiv/2606.14817v1/fig-007.webp",
+      "caption": "Fig. 4. Evaluation of the FKGL metric for different prompting techniques and tolerance ranges.",
+      "page": 9,
+      "index": 7,
+      "width": 616,
+      "height": 331
+    }
+  ]
+}

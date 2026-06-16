@@ -1,0 +1,86 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2606.15331v1/fig-001.webp",
+      "caption": "Figure 3: Structure of the interleaved reasoning endogenous chain-of-thought model. At each decoding step, the fine-grained hidden state is first used to predict a coarse-grained semantic embedding, which is then fused with the decoder contextual state via a gating injection module. The resulting enhanced fine-grained representation is passed to the fine-grained prediction head to output the final recommendation.",
+      "page": 6,
+      "index": 1,
+      "width": 844,
+      "height": 450
+    },
+    {
+      "url": "assets/figures/arxiv/2606.15331v1/fig-002.webp",
+      "caption": "Table 4: Comparison of Time and Space Complexity",
+      "page": 11,
+      "index": 2,
+      "width": 732,
+      "height": 411
+    },
+    {
+      "url": "assets/figures/arxiv/2606.15331v1/fig-003.webp",
+      "caption": "Figure 6: Baseline Performance of Single-Granularity Coding",
+      "page": 10,
+      "index": 3,
+      "width": 492,
+      "height": 404
+    },
+    {
+      "url": "assets/figures/arxiv/2606.15331v1/fig-004.webp",
+      "caption": "Figure 7: Analysis of Supervision Task Weight Parameters",
+      "page": 10,
+      "index": 4,
+      "width": 492,
+      "height": 473
+    },
+    {
+      "url": "assets/figures/arxiv/2606.15331v1/fig-005.webp",
+      "caption": "Figure 1: Structure of Holistic Semantic Encoding",
+      "page": 3,
+      "index": 5,
+      "width": 790,
+      "height": 554
+    },
+    {
+      "url": "assets/figures/arxiv/2606.15331v1/fig-006.webp",
+      "caption": "Table 3: Ablation Study",
+      "page": 8,
+      "index": 6,
+      "width": 714,
+      "height": 226
+    },
+    {
+      "url": "assets/figures/arxiv/2606.15331v1/fig-007.webp",
+      "caption": "Table 2: Overall Performance Comparison",
+      "page": 8,
+      "index": 7,
+      "width": 864,
+      "height": 317
+    },
+    {
+      "url": "assets/figures/arxiv/2606.15331v1/fig-008.webp",
+      "caption": "Figure 4: Relative improvement (%) over the baseline (w/o aux) on Beauty and Instruments. Orange: w/o Interleaved; blue-green: HoloRec; red bars indicate negative changes. Both subplots share the same x-axis range (–2% to 16%). Exact percentage labels are shown on each bar.",
+      "page": 9,
+      "index": 8,
+      "width": 459,
+      "height": 456
+    },
+    {
+      "url": "assets/figures/arxiv/2606.15331v1/fig-009.webp",
+      "caption": "Figure 5: Performance comparison by sequence length on the Beauty dataset",
+      "page": 9,
+      "index": 9,
+      "width": 492,
+      "height": 450
+    },
+    {
+      "url": "assets/figures/arxiv/2606.15331v1/fig-010.webp",
+      "caption": "Figure 2: Model structure for multi-granularity supervised alignment training. The fine-grained prediction head outputs the final recommendation, while the coarse-grained head provides hierarchical supervision only during training.",
+      "page": 5,
+      "index": 10,
+      "width": 794,
+      "height": 382
+    }
+  ]
+}

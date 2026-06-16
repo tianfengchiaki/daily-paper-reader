@@ -1,0 +1,22 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2606.13140v2/fig-001.webp",
+      "caption": "Figure 3: Case study of simulation under a RedNote post.",
+      "page": 5,
+      "index": 1,
+      "width": 456,
+      "height": 361
+    },
+    {
+      "url": "assets/figures/arxiv/2606.13140v2/fig-002.webp",
+      "caption": "Figure 1: Framework of MIDSim, consisting of user agents and multi-channel diffusion simulation. Orange dashed lines represent social diffusion streams, whereas blue dashed lines represent algorithmic diffusion streams.",
+      "page": 2,
+      "index": 2,
+      "width": 926,
+      "height": 429
+    }
+  ]
+}

@@ -1,0 +1,254 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2606.13717v1/fig-001.webp",
+      "caption": "Figure 1.1: An illustration of a personalized CIA system, highlighting the three core challenges addressed in this thesis: (1) Personal Information Extraction, which focuses on extracting users’ personal contexts by accurately identifying personal entities from conversational texts; (2) Personalized Response Generation, which involves developing a CIA model that utilizes the extracted context to generate personalized responses; and (3) Conversation Evaluation, which concerns evaluating CIA systems by considering whole conversation context, diverse interaction trajectories, and provide fine-grained performance insights.",
+      "page": 11,
+      "index": 1,
+      "width": 740,
+      "height": 192
+    },
+    {
+      "url": "assets/figures/arxiv/2606.13717v1/fig-002.webp",
+      "caption": "Figure 2.1: Annotation interface for the entity-mention selection task (Stage 1). To keep the cognitive load low, only multiple-choice questions were used. Possible answer entities are linked to their corresponding Wikipedia article.",
+      "page": 30,
+      "index": 2,
+      "width": 736,
+      "height": 442
+    },
+    {
+      "url": "assets/figures/arxiv/2606.13717v1/fig-003.webp",
+      "caption": "Figure 5.3: Breakdown analysis comparing BARCOR and UNICRS. Left: FACE evaluation results for each aspect. Right: Scores of Understanding aspect per system turn.",
+      "page": 107,
+      "index": 3,
+      "width": 738,
+      "height": 279
+    },
+    {
+      "url": "assets/figures/arxiv/2606.13717v1/fig-004.webp",
+      "caption": "Table 4.4: Lexical diversity scores of synthetic dialogue generation. Significance against all baselines is marked by +.",
+      "page": 75,
+      "index": 4,
+      "width": 723,
+      "height": 293
+    },
+    {
+      "url": "assets/figures/arxiv/2606.13717v1/fig-005.webp",
+      "caption": "Figure 4.3: Lexical Diversity of user and assistant utterances.",
+      "page": 75,
+      "index": 5,
+      "width": 669,
+      "height": 413
+    },
+    {
+      "url": "assets/figures/arxiv/2606.13717v1/fig-006.webp",
+      "caption": "Figure 4.1: A snippet from a multi-session dialogue. User preferences are extracted and stored in memory to generate personalized recommendations in subsequent sessions.",
+      "page": 54,
+      "index": 6,
+      "width": 724,
+      "height": 381
+    },
+    {
+      "url": "assets/figures/arxiv/2606.13717v1/fig-007.webp",
+      "caption": "Table 4.8: Recommendation results. Significance against Standard is marked by +.",
+      "page": 78,
+      "index": 7,
+      "width": 642,
+      "height": 196
+    },
+    {
+      "url": "assets/figures/arxiv/2606.13717v1/fig-008.webp",
+      "caption": "Table 4.7: Human evaluation results of recommendations.",
+      "page": 78,
+      "index": 8,
+      "width": 629,
+      "height": 196
+    },
+    {
+      "url": "assets/figures/arxiv/2606.13717v1/fig-009.webp",
+      "caption": "Table 4.3: Lexical diversity scores. Significance against all baselines is marked by +.",
+      "page": 74,
+      "index": 9,
+      "width": 658,
+      "height": 379
+    },
+    {
+      "url": "assets/figures/arxiv/2606.13717v1/fig-010.webp",
+      "caption": "Table 5.5: Results on generalizability of FACE to chitchat conversations. All FACE correlations are statistically significant with p < 0.01.",
+      "page": 106,
+      "index": 10,
+      "width": 648,
+      "height": 402
+    },
+    {
+      "url": "assets/figures/arxiv/2606.13717v1/fig-011.webp",
+      "caption": "Table 2.3: Breakdown of entity linking results for named entities (FNE) and concepts (FC).",
+      "page": 35,
+      "index": 11,
+      "width": 736,
+      "height": 273
+    },
+    {
+      "url": "assets/figures/arxiv/2606.13717v1/fig-012.webp",
+      "caption": "Table 2.2: Entity linking results on the ConEL dataset.",
+      "page": 35,
+      "index": 12,
+      "width": 738,
+      "height": 187
+    },
+    {
+      "url": "assets/figures/arxiv/2606.13717v1/fig-013.webp",
+      "caption": "Figure 3.2: Annotation interface for identifying personal entity mentions (stage 1 of annotation process).",
+      "page": 45,
+      "index": 13,
+      "width": 744,
+      "height": 448
+    },
+    {
+      "url": "assets/figures/arxiv/2606.13717v1/fig-014.webp",
+      "caption": "Figure 4.2: Overview of our dialogue collection method (LAPS).",
+      "page": 60,
+      "index": 14,
+      "width": 736,
+      "height": 408
+    },
+    {
+      "url": "assets/figures/arxiv/2606.13717v1/fig-015.webp",
+      "caption": "Table 3.4: Overall entity linking results, annotating both personal entities (PE) and concepts and named entities (EL).",
+      "page": 50,
+      "index": 15,
+      "width": 677,
+      "height": 356
+    },
+    {
+      "url": "assets/figures/arxiv/2606.13717v1/fig-016.webp",
+      "caption": "Figure 4.4: LAPS collects diverse and high-quality dialogues compared to other dialogue collection methods.",
+      "page": 77,
+      "index": 16,
+      "width": 669,
+      "height": 419
+    },
+    {
+      "url": "assets/figures/arxiv/2606.13717v1/fig-017.webp",
+      "caption": "Table 4.6: Preference extraction results. Domain adapt. represents the model is first fine-tuned on the recipe domain and then further fine-tuned on the movie domain.",
+      "page": 77,
+      "index": 17,
+      "width": 759,
+      "height": 225
+    },
+    {
+      "url": "assets/figures/arxiv/2606.13717v1/fig-018.webp",
+      "caption": "Table 5.1: Inter-annotator agreement of CRSArena-Eval and ABReDial [Siro et al., 2023] based on Pearson’s r, Spearman’s ρ, and Krippendorff’s α correlations.",
+      "page": 99,
+      "index": 18,
+      "width": 696,
+      "height": 342
+    },
+    {
+      "url": "assets/figures/arxiv/2606.13717v1/fig-019.webp",
+      "caption": "Table 5.3: System ranking correlations on CRSArena-Eval, averaged over corresponding aspects. All FACE correlations are statistically significant with p < 0.05.",
+      "page": 104,
+      "index": 19,
+      "width": 612,
+      "height": 342
+    },
+    {
+      "url": "assets/figures/arxiv/2606.13717v1/fig-020.webp",
+      "caption": "Figure 5.4: Sample efficiency of different evaluation methods for the overall aspect on CRSArena-Eval.",
+      "page": 109,
+      "index": 20,
+      "width": 639,
+      "height": 277
+    },
+    {
+      "url": "assets/figures/arxiv/2606.13717v1/fig-021.webp",
+      "caption": "Table 2.4: Entity linking results on TREC CAsT raw and rewritten dialogues.",
+      "page": 36,
+      "index": 21,
+      "width": 502,
+      "height": 252
+    },
+    {
+      "url": "assets/figures/arxiv/2606.13717v1/fig-022.webp",
+      "caption": "Table 3.3: Concept and named entity linking results. FMD and FEL represent the micro-averaged F1 scores for mention detection and entity linking, respectively.",
+      "page": 49,
+      "index": 22,
+      "width": 727,
+      "height": 267
+    },
+    {
+      "url": "assets/figures/arxiv/2606.13717v1/fig-023.webp",
+      "caption": "Figure 1.2: Thesis structure and connections between chapters.",
+      "page": 19,
+      "index": 23,
+      "width": 737,
+      "height": 325
+    },
+    {
+      "url": "assets/figures/arxiv/2606.13717v1/fig-024.webp",
+      "caption": "Figure 2.2: Annotation interface for mapping a personal entity mention (“my guitar”) to the corresponding explicit entity mention in the conversation (“Gibson Les Paul”).",
+      "page": 32,
+      "index": 24,
+      "width": 736,
+      "height": 323
+    },
+    {
+      "url": "assets/figures/arxiv/2606.13717v1/fig-025.webp",
+      "caption": "Table 4.2: Statistics of LAPS dataset.",
+      "page": 73,
+      "index": 25,
+      "width": 746,
+      "height": 337
+    },
+    {
+      "url": "assets/figures/arxiv/2606.13717v1/fig-026.webp",
+      "caption": "Figure 5.2: Distribution of human annotation scores for seven aspects across nine systems in CRSArena-Eval.",
+      "page": 100,
+      "index": 26,
+      "width": 718,
+      "height": 276
+    },
+    {
+      "url": "assets/figures/arxiv/2606.13717v1/fig-027.webp",
+      "caption": "Table 5.4: Results on generalizability of FACE to other LLMs. CRSRD and -KG represent CRSArena-Eval (RD) and (KG), respectively. All FACE annotation correlations are statistically significant with p < 0.01.",
+      "page": 105,
+      "index": 27,
+      "width": 710,
+      "height": 310
+    },
+    {
+      "url": "assets/figures/arxiv/2606.13717v1/fig-028.webp",
+      "caption": "Figure 3.1: Example of entity linking in conversations.",
+      "page": 41,
+      "index": 28,
+      "width": 744,
+      "height": 350
+    },
+    {
+      "url": "assets/figures/arxiv/2606.13717v1/fig-029.webp",
+      "caption": "Table 4.5: UniEval scores. Significance against all baselines is marked by +.",
+      "page": 76,
+      "index": 29,
+      "width": 642,
+      "height": 360
+    },
+    {
+      "url": "assets/figures/arxiv/2606.13717v1/fig-030.webp",
+      "caption": "Table 2.5: Entity linking results on a sample of the WoW collection containing references to personal entities. The left block shows the results of the original EL methods and the right block represents the results of modified EL methods, where personal entities are also annotated.",
+      "page": 37,
+      "index": 30,
+      "width": 685,
+      "height": 223
+    },
+    {
+      "url": "assets/figures/arxiv/2606.13717v1/fig-031.webp",
+      "caption": "Table 3.2: Personal entity linking results. Micro-averaged precision, recall, and F1 scores are computed.",
+      "page": 48,
+      "index": 31,
+      "width": 727,
+      "height": 181
+    }
+  ]
+}

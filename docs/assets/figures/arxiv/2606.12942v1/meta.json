@@ -1,0 +1,62 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2606.12942v1/fig-001.webp",
+      "caption": "Table 6: Generalisation to two off-the-shelf multimodal IR benchmarks at N=10 (30 queries each). The top block is zero-shot (Baby→benchmark); the bottom block fine-tunes the same PRISMR/PRISMR (β-mode) checkpoint for two epochs on the benchmark’s training split. Parse rate transfers cleanly in both regimes. In-list ranking quality does not transfer zero-shot, but recovers substantially after a brief in-domain fine-tune; even so, fine-tuned PRISMR is statistically tied with the (training-free) constrained-decoding baseline on these short (N=10) image-only / document-page rerank tasks.",
+      "page": 15,
+      "index": 1,
+      "width": 802,
+      "height": 265
+    },
+    {
+      "url": "assets/figures/arxiv/2606.12942v1/fig-002.webp",
+      "caption": "Figure 1: Conventional generative listwise ranking feeds all multimodal candidates into the decoder context, causing attention dilution and parse collapse as the list grows.",
+      "page": 2,
+      "index": 2,
+      "width": 824,
+      "height": 248
+    },
+    {
+      "url": "assets/figures/arxiv/2606.12942v1/fig-003.webp",
+      "caption": "Table 2: Listwise ranking on Qwen3-VL-8B (Baby_Products, 1 image/review, 30 validation products per cell). PRISMR outperforms prompt-based baselines at every N . The bottom block reports the two synthesis modes of the same trained PRISMR checkpoint.",
+      "page": 7,
+      "index": 3,
+      "width": 830,
+      "height": 422
+    },
+    {
+      "url": "assets/figures/arxiv/2606.12942v1/fig-004.webp",
+      "caption": "Figure 4: Parse rate of the score-by-score Base model on Qwen3-VL-8B + Baby_Products at N = 20 under different image-density settings. Parse rate is low in all cases and decreases as more images are included, indicating that multimodal context exacerbates listwise parse collapse.",
+      "page": 14,
+      "index": 4,
+      "width": 520,
+      "height": 306
+    },
+    {
+      "url": "assets/figures/arxiv/2606.12942v1/fig-005.webp",
+      "caption": "Figure 3: Left: NDCG@10 vs. list length N . Both PRISMR modes are produced by the same checkpoint trained at N=50 (dotted line). α-mode performs best in range (N≤50), while β-mode is more robust for extrapolation (N > 50), motivating the default switch at N=50. The resulting PRISMR envelope outperforms the trained baselines across all N . Right: per-product latency on a single B200 (batch size 1, mean over 5 products). PRISMR is consistently faster than constraineddecoding Base, with speed-up increasing from 1.1× at N=10 to 1.7× at N=50.",
+      "page": 8,
+      "index": 5,
+      "width": 808,
+      "height": 283
+    },
+    {
+      "url": "assets/figures/arxiv/2606.12942v1/fig-006.webp",
+      "caption": "Figure 2: Overview of PRISMR. A shared hypernetwork Hϕ maps each multimodal candidate di to an item-specific LoRA adapter (Ai, Bi). The N adapters are combined by one of two zero-cost synthesis modes of the same checkpoint—rank-dimension concatenation (α-mode) or mean pooling (β-mode)—yielding a composite increment ∆W mounted on the frozen LMM for listwise decoding. PRISMR uses α-mode for N≤50 and β-mode for N>50 by default.",
+      "page": 4,
+      "index": 6,
+      "width": 818,
+      "height": 290
+    },
+    {
+      "url": "assets/figures/arxiv/2606.12942v1/fig-007.webp",
+      "caption": "Table 3: Pointwise ranking performance under different prompt-internalization strategies and modalities. Here, sys denotes internalizing only the system prompt into the LoRA, while all denotes internalizing the full prompt.",
+      "page": 9,
+      "index": 7,
+      "width": 736,
+      "height": 299
+    }
+  ]
+}

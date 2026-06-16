@@ -1,0 +1,62 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2606.15330v1/fig-001.webp",
+      "caption": "Figure 4: Token-level distribution analysis.",
+      "page": 6,
+      "index": 1,
+      "width": 471,
+      "height": 264
+    },
+    {
+      "url": "assets/figures/arxiv/2606.15330v1/fig-002.webp",
+      "caption": "Figure 3: Overview of the OneBar framework.",
+      "page": 3,
+      "index": 2,
+      "width": 1016,
+      "height": 374
+    },
+    {
+      "url": "assets/figures/arxiv/2606.15330v1/fig-003.webp",
+      "caption": "Table 4: Comprehensive offline ablation study.",
+      "page": 8,
+      "index": 3,
+      "width": 506,
+      "height": 454
+    },
+    {
+      "url": "assets/figures/arxiv/2606.15330v1/fig-004.webp",
+      "caption": "Table 3: Offline generation-quality metrics. ED-HR@8 counts a query as a hit when the edit distance to a positive query is no larger than 2. Lower ED@8 is better.",
+      "page": 8,
+      "index": 4,
+      "width": 1056,
+      "height": 188
+    },
+    {
+      "url": "assets/figures/arxiv/2606.15330v1/fig-005.webp",
+      "caption": "Figure 9: Online gains of OneBar across different user activity levels.",
+      "page": 12,
+      "index": 5,
+      "width": 472,
+      "height": 259
+    },
+    {
+      "url": "assets/figures/arxiv/2606.15330v1/fig-006.webp",
+      "caption": "Figure 5: Evidence-field missingness and HR@8 under availability slices. Gray bars show empirical missingness, while HR− and HR+ denote HR@8 when the field is absent or present, respectively.",
+      "page": 9,
+      "index": 6,
+      "width": 432,
+      "height": 311
+    },
+    {
+      "url": "assets/figures/arxiv/2606.15330v1/fig-007.webp",
+      "caption": "Figure 6: Hit rate across training stages under different beam sizes.",
+      "page": 9,
+      "index": 7,
+      "width": 417,
+      "height": 306
+    }
+  ]
+}

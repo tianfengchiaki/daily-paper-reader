@@ -1,0 +1,30 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2606.16703v1/fig-001.webp",
+      "caption": "Figure 1: Comparison of three paradigms for adapting LLMs into item embedding generators.",
+      "page": 1,
+      "index": 1,
+      "width": 493,
+      "height": 481
+    },
+    {
+      "url": "assets/figures/arxiv/2606.16703v1/fig-002.webp",
+      "caption": "Table 2: Overall and long-tail performance comparison on three datasets. The best results are highlighted in bold, the second-best results are underlined, and “*” indicates the statistically significant improvements (i.e., two-sided t-test with p < 0.05) over the best baseline.",
+      "page": 7,
+      "index": 2,
+      "width": 941,
+      "height": 490
+    },
+    {
+      "url": "assets/figures/arxiv/2606.16703v1/fig-003.webp",
+      "caption": "Figure 2: Overview of the proposed ReaEmb framework.",
+      "page": 3,
+      "index": 3,
+      "width": 896,
+      "height": 785
+    }
+  ]
+}

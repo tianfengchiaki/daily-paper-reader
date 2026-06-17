@@ -1,0 +1,70 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2606.16053v1/fig-001.webp",
+      "caption": "Table 3. Human validation of LLM annotations by theory block. Inter-annotator agreement is reported as Krippendorff’s 𝛼 and Fleiss’s 𝜅 across 57 multiply-coded videos. LLM performance is evaluated against human majority vote using accuracy, alongside macro-averaged precision, recall, and F1 score.a",
+      "page": 6,
+      "index": 1,
+      "width": 796,
+      "height": 423
+    },
+    {
+      "url": "assets/figures/arxiv/2606.16053v1/fig-002.webp",
+      "caption": "Table 4. Held-out predictive CatBoost performance across five grouped account splits. Block A reports the main video engagement outcomes (𝑅2 and Root Mean Square Error), while Block B reports two comment-section activity outcomes on the subset of videos with sufficient comment sections (Area Under the Curve and Average Precision of the predicted class). In each cell, ± gives the split-to-split standard deviation on the same metric scale as the reported mean.",
+      "page": 11,
+      "index": 2,
+      "width": 975,
+      "height": 342
+    },
+    {
+      "url": "assets/figures/arxiv/2606.16053v1/fig-003.webp",
+      "caption": "Table 5. Recurrent top-five predictor variables across outcomes. Rows are the union of the top five CatBoost predictors for each outcome, including the two controls. For categorical predictors, each cell reports the strongest significant stage-2 effect-coded level contrast within that variable, with the coefficient shown first and the level label second. These coefficients are deviations on the log(1 + 𝑦) scale from the adjusted mean of that categorical variable in the outcome-specific mixed model, conditional on the other selected predictors and the account random intercept. Thus a value such as+0.10 indicates a modest upward deviation for that level, whereas +0.55 indicates a substantially larger upward deviation. ‘NC’ indicates that the predictor variable recurred in stage 1, but no single category level emerged as a clear dominant contrast in the smaller stage-2 model for that outcome. Asterisks indicate ∗𝑝 < .05, ∗∗𝑝 < .01, ∗∗∗𝑝 < .001.",
+      "page": 15,
+      "index": 3,
+      "width": 975,
+      "height": 425
+    },
+    {
+      "url": "assets/figures/arxiv/2606.16053v1/fig-004.webp",
+      "caption": "Figure 1. Examples of TikTok videos in the corpus, from tourism and retail promotions to food, public-facing organizational content, music, activity prompts, and service advertising.",
+      "page": 2,
+      "index": 4,
+      "width": 975,
+      "height": 212
+    },
+    {
+      "url": "assets/figures/arxiv/2606.16053v1/fig-005.webp",
+      "caption": "Figure 4. Structural similarity, modal-profile agreement, and relative like performance. Panels A and B summarize each video’s full coded profile as the percentage of the 75 modeled content features whose values agree with either the corpus-modal or account-modal profile. Because the features are categorical, the “modal profile” is the reference profile formed by taking the most common value of each feature, either across the full corpus or within each account. Small gray points are individual videos; larger colored points are account averages, sized by follower count and colored by the number of videos available for that account. The vertical axis rescales residuals from a controls-only model of log10 (likes + 1) on follower count and video age so that 1×marks the baseline expectation, values above it indicate overperformance, and values below it indicate underperformance. Panels C and D decompose this aggregate result with grouped account-split CatBoost scenarios: for each variable, a binary modal-agreement indicator is toggled from 0 to 1 on held-out videos while all remaining features are left unchanged. The four strongest positive and negative stable variables are shown here. Points show the resulting average predicted change, and horizontal lines show approximate split-based 95% intervals. Red points indicate that agreement with the modal value is favorable; blue points indicate that divergence is more favorable. Greater structural similarity is positively associated with relative like performance overall, but the lower panels show that this net pattern is carried mainly by a subset of high-leverage packaging variables rather than by uniform conformity across the entire codebook.",
+      "page": 13,
+      "index": 5,
+      "width": 975,
+      "height": 549
+    },
+    {
+      "url": "assets/figures/arxiv/2606.16053v1/fig-006.webp",
+      "caption": "Figure 3. Modeled design contrasts across breadth and stability for likes (A) and comment count (B). Each point is one predictor variable, colored by codebook block. The horizontal axis shows the split-averaged contrast between the highestperforming common level of that variable and the mean prediction for its remaining levels in grouped account-split CatBoost scenarios on held-out videos; the vertical axis shows how widely that best level is distributed across accounts. Point size shows relative variable importance. Transparency is binary: opaque points have an approximate split-based 95% lower bound above zero, while transparent points do not. For likes, audio source, intent, and setting combine relatively large modeled contrasts with broad coverage, whereas stylized makeup is narrower and less stable. For comments, call-to-action (CTA) type has the largest modeled contrast, led by engagement bait.",
+      "page": 12,
+      "index": 6,
+      "width": 975,
+      "height": 350
+    },
+    {
+      "url": "assets/figures/arxiv/2606.16053v1/fig-007.webp",
+      "caption": "Table 6. One-variable-at-a-time adjusted contrasts by variable, expressed as percentages of the adjusted outcome mean. Each cell shows the contrast between the highest-performing common level of that variable and the mean of its remaining common levels after adjustment for follower count, video age, and account differences; for example, the first likes value, 30, means a contrast equal to about 30% of the average adjusted likes level. Stars mark Bonferroni-corrected likelihood-ratio comparisons between the baseline and full models across the full table of variable-outcome tests.",
+      "page": 24,
+      "index": 7,
+      "width": 979,
+      "height": 1052
+    },
+    {
+      "url": "assets/figures/arxiv/2606.16053v1/fig-008.webp",
+      "caption": "Figure 2. Shared configuration space of 9,649 videos from 30 purposively sampled Estonian brand and organizational TikTok accounts. Each point is a video positioned by a fixed t-SNE layout over pairwise Hamming distances across all coded variables; size tracks like count in A–F and comment count in G–I. A: video likes. B: account centroids, sized by follower count and colored by mean likes on A’s scale. C–F: Labovian hook strategy, video format, communicative intent, and Peircean sign mode. G–I: dominant comment stance, most common emoji, and maximal reply-thread length. Likes, comments, and thread length use clipped linear scaling at the 2nd and 98th percentiles, compressing tails without removing observations. The map reveals a structured but continuous repertoire: entertainment- and promotion-oriented configurations occupy partly distinct regions, and audience responses vary systematically across the same design space.",
+      "page": 9,
+      "index": 8,
+      "width": 975,
+      "height": 844
+    }
+  ]
+}

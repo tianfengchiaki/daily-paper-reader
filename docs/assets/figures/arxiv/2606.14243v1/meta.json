@@ -1,0 +1,46 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2606.14243v1/fig-001.webp",
+      "caption": "Table 1: Main results on four knowledge-intensive benchmarks. We report EM/F1 or ACC across datasets and base models. Best values are in bold.",
+      "page": 6,
+      "index": 1,
+      "width": 787,
+      "height": 367
+    },
+    {
+      "url": "assets/figures/arxiv/2606.14243v1/fig-002.webp",
+      "caption": "Table 7: Impact of retriever choice for routing. We compare the BM25 router used in the main experiments with SGPT-based dense retrieval. SGPT improves StrategyQA but does not consistently improve the other benchmarks, while using more GPU memory.",
+      "page": 15,
+      "index": 2,
+      "width": 762,
+      "height": 273
+    },
+    {
+      "url": "assets/figures/arxiv/2606.14243v1/fig-003.webp",
+      "caption": "Figure 4: KV-cache reuse substantially improves autoregressive inference efficiency. We report the inference latency (top) and GPU memory footprint (bottom) for two base models (Llama-3.2-1B and Qwen2.5-1.5B) across four benchmarks, comparing Reuse KV-cache vs. No KV-cache reuse. KV-cache reuse consistently reduces both time and memory across all datasets.",
+      "page": 7,
+      "index": 3,
+      "width": 447,
+      "height": 341
+    },
+    {
+      "url": "assets/figures/arxiv/2606.14243v1/fig-004.webp",
+      "caption": "Table 3: Performance (EM) when reusing KV-cache while introducing experts into different portions of FFN layers. Here, x% denotes inserting experts into the final x% of FFN layers, while ONLY-LAST inserts experts only into the final-layer FFN. Only-last preserves KV-cache compatibility and achieves the best overall accuracy across datasets.",
+      "page": 8,
+      "index": 4,
+      "width": 461,
+      "height": 273
+    },
+    {
+      "url": "assets/figures/arxiv/2606.14243v1/fig-005.webp",
+      "caption": "Figure 2: Comparison of architectures between the dense model, traditional Mixture-of-Experts (MoE), and the proposed Decoupled Mixture-of-Experts (DMoE). In the MoE architecture, the feed-forward layers of a dense model are replaced with a coupled router-expert network. In contrast, DMoE decouples both the router and experts from the base model. During inference, DMoE retrieves and updates relevant experts when knowledge injection is required, enabling adaptive and non-destructive knowledge integration.",
+      "page": 4,
+      "index": 5,
+      "width": 944,
+      "height": 421
+    }
+  ]
+}

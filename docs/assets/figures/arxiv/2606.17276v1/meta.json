@@ -1,0 +1,86 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2606.17276v1/fig-001.webp",
+      "caption": "Figure 12: Training sample of semantic neighbor generation with semantic IDs. Given the instruction and input, the LLM is trained to generate the output autoregressively using teacher forcing.",
+      "page": 14,
+      "index": 1,
+      "width": 950,
+      "height": 246
+    },
+    {
+      "url": "assets/figures/arxiv/2606.17276v1/fig-002.webp",
+      "caption": "Figure 11: Training sample of semantic neighbor generation with term IDs. Given the instruction and input, the LLM is trained to generate the output autoregressively using teacher forcing.",
+      "page": 14,
+      "index": 2,
+      "width": 950,
+      "height": 271
+    },
+    {
+      "url": "assets/figures/arxiv/2606.17276v1/fig-003.webp",
+      "caption": "Figure 9: Training sample of collaborative neighbor generation with term IDs. Given the instruction and input, the LLM is trained to generate the output autoregressively using teacher forcing.",
+      "page": 13,
+      "index": 3,
+      "width": 950,
+      "height": 271
+    },
+    {
+      "url": "assets/figures/arxiv/2606.17276v1/fig-004.webp",
+      "caption": "Figure 10: Training sample of collaborative neighbor generation with semantic IDs. Given the instruction and input, the LLM is trained to generate the output autoregressively using teacher forcing.",
+      "page": 13,
+      "index": 4,
+      "width": 950,
+      "height": 250
+    },
+    {
+      "url": "assets/figures/arxiv/2606.17276v1/fig-005.webp",
+      "caption": "Figure 3: One-hop memorization and performance. LLMs trained solely with next-item prediction exhibit stronger one-hop memorization than TIGER, a nonLLM-based model (see (a)). The relative improvement of LLMs over TIGER is larger for one-hopmemorization-benefiting users than for non-one-hopmemorization-benefiting users in 5/6 settings (see (b)).",
+      "page": 4,
+      "index": 5,
+      "width": 452,
+      "height": 630
+    },
+    {
+      "url": "assets/figures/arxiv/2606.17276v1/fig-006.webp",
+      "caption": "Figure 18: Generalization to other semantic IDs (SIDs). The observation that LLMs rely more heavily on one-hop memorization than TIGER, as well as the effectiveness of IIRG in reducing memorization and improving recommendation performance, also holds under Residual-K-Means (R-K-Means) SIDs.",
+      "page": 19,
+      "index": 6,
+      "width": 934,
+      "height": 187
+    },
+    {
+      "url": "assets/figures/arxiv/2606.17276v1/fig-007.webp",
+      "caption": "Figure 8: Training sample of next-item prediction with semantic IDs. Given the instruction and input, the LLM is trained to generate the output autoregressively using teacher forcing.",
+      "page": 12,
+      "index": 7,
+      "width": 950,
+      "height": 206
+    },
+    {
+      "url": "assets/figures/arxiv/2606.17276v1/fig-008.webp",
+      "caption": "Figure 7: Training sample of next-item prediction with term IDs. Given the instruction and input, the LLM is trained to generate the output autoregressively using teacher forcing.",
+      "page": 12,
+      "index": 8,
+      "width": 950,
+      "height": 208
+    },
+    {
+      "url": "assets/figures/arxiv/2606.17276v1/fig-009.webp",
+      "caption": "Figure 4: Overview of IIRG. To train LLM-based GR models, IIRG uses three tasks and jointly optimizes them:",
+      "page": 5,
+      "index": 9,
+      "width": 794,
+      "height": 283
+    },
+    {
+      "url": "assets/figures/arxiv/2606.17276v1/fig-010.webp",
+      "caption": "Figure 13: Informativeness of our proposed neighbors. The ratio of users benefiting from our collaborative and semantic neighbors is comparable to that of users benefiting from one-hop memorization (see (a)). Moreover, the three neighbor types have a Jaccard similarity below 0.5, suggesting that they are not merely redundant (see (b)). In addition, among non-memorization-benefiting users, our neighbors benefit a group of users comparable in size to the memorization-benefiting group (see (c)).",
+      "page": 16,
+      "index": 10,
+      "width": 929,
+      "height": 296
+    }
+  ]
+}

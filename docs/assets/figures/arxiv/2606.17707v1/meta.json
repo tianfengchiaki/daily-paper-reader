@@ -1,0 +1,126 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2606.17707v1/fig-001.webp",
+      "caption": "Fig. 6. Gini coefficient of item exposure over 15 closed-loop simulation cycles on Toys and Games (left) and",
+      "page": 15,
+      "index": 1,
+      "width": 811,
+      "height": 273
+    },
+    {
+      "url": "assets/figures/arxiv/2606.17707v1/fig-002.webp",
+      "caption": "Fig. 14. Prompt D: Reflection-Based Persona Updating",
+      "page": 30,
+      "index": 2,
+      "width": 827,
+      "height": 627
+    },
+    {
+      "url": "assets/figures/arxiv/2606.17707v1/fig-003.webp",
+      "caption": "Fig. 13. Prompt C: Simulated User Decision Making",
+      "page": 29,
+      "index": 3,
+      "width": 827,
+      "height": 748
+    },
+    {
+      "url": "assets/figures/arxiv/2606.17707v1/fig-004.webp",
+      "caption": "Fig. 5. Item coverage and category coverage at three hierarchy levels across 15 simulation cycles. The top row",
+      "page": 14,
+      "index": 4,
+      "width": 705,
+      "height": 217
+    },
+    {
+      "url": "assets/figures/arxiv/2606.17707v1/fig-005.webp",
+      "caption": "Fig. 1. Overview of information cocoon formation and recommendation paradigms. (a) A closed feedback",
+      "page": 3,
+      "index": 5,
+      "width": 822,
+      "height": 260
+    },
+    {
+      "url": "assets/figures/arxiv/2606.17707v1/fig-006.webp",
+      "caption": "Fig. 12. Prompt A: User Persona Construction (Part II)",
+      "page": 28,
+      "index": 6,
+      "width": 827,
+      "height": 956
+    },
+    {
+      "url": "assets/figures/arxiv/2606.17707v1/fig-007.webp",
+      "caption": "Fig. 4. Average pairwise Jaccard similarity across 15 simulation cycles on Office Products (left) and Toys and",
+      "page": 13,
+      "index": 7,
+      "width": 811,
+      "height": 273
+    },
+    {
+      "url": "assets/figures/arxiv/2606.17707v1/fig-008.webp",
+      "caption": "Fig. 9. Code layer entropy (top) and active code count per cycle (bottom) for OneRec at 0.5B, 1.5B, and 3B",
+      "page": 19,
+      "index": 8,
+      "width": 812,
+      "height": 426
+    },
+    {
+      "url": "assets/figures/arxiv/2606.17707v1/fig-009.webp",
+      "caption": "Fig. 8. Number of unique generated code prefixes per layer across 15 simulation cycles under SID (solid) and",
+      "page": 17,
+      "index": 9,
+      "width": 806,
+      "height": 261
+    },
+    {
+      "url": "assets/figures/arxiv/2606.17707v1/fig-010.webp",
+      "caption": "Fig. 16. Example B: Item Description Example of Office Products dataset",
+      "page": 32,
+      "index": 10,
+      "width": 827,
+      "height": 225
+    },
+    {
+      "url": "assets/figures/arxiv/2606.17707v1/fig-011.webp",
+      "caption": "Fig. 11. Prompt A: User Persona Construction (Part I)",
+      "page": 27,
+      "index": 11,
+      "width": 827,
+      "height": 992
+    },
+    {
+      "url": "assets/figures/arxiv/2606.17707v1/fig-012.webp",
+      "caption": "Fig. 15. Example A: User Profile Example of Toys&Games dataset",
+      "page": 31,
+      "index": 12,
+      "width": 827,
+      "height": 929
+    },
+    {
+      "url": "assets/figures/arxiv/2606.17707v1/fig-013.webp",
+      "caption": "Fig. 10. Code rank-frequency distribution at cycle 15 for each model scale on Toys and Games (log scale).",
+      "page": 20,
+      "index": 13,
+      "width": 812,
+      "height": 260
+    },
+    {
+      "url": "assets/figures/arxiv/2606.17707v1/fig-014.webp",
+      "caption": "Fig. 2. Overview of the RecLoop closed-loop simulation framework. The framework couples a recommender",
+      "page": 5,
+      "index": 14,
+      "width": 821,
+      "height": 352
+    },
+    {
+      "url": "assets/figures/arxiv/2606.17707v1/fig-015.webp",
+      "caption": "Fig. 7. Layer-wise code entropy across simulation cycles for TIGER and OneRec on the Office Products",
+      "page": 16,
+      "index": 15,
+      "width": 811,
+      "height": 239
+    }
+  ]
+}

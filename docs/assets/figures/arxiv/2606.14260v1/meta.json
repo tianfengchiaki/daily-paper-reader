@@ -1,0 +1,38 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2606.14260v1/fig-001.webp",
+      "caption": "Table 1 Performance comparison on Amazon Industrial, Amazon Office, and Mercari datasets.",
+      "page": 7,
+      "index": 1,
+      "width": 1022,
+      "height": 817
+    },
+    {
+      "url": "assets/figures/arxiv/2606.14260v1/fig-002.webp",
+      "caption": "Figure 1 Three architectural variants of ChronoID: (a) Early Fusion, which fuses modalities before quantization; (b) Late Fusion, which quantizes text and time independently; and (c) Parallel Quantization, which utilizes independent codebooks to capture decoupled item facets.",
+      "page": 3,
+      "index": 2,
+      "width": 848,
+      "height": 542
+    },
+    {
+      "url": "assets/figures/arxiv/2606.14260v1/fig-003.webp",
+      "caption": "Table 9 Configurations for codebook training and SFT in ChronoID.",
+      "page": 17,
+      "index": 3,
+      "width": 572,
+      "height": 311
+    },
+    {
+      "url": "assets/figures/arxiv/2606.14260v1/fig-004.webp",
+      "caption": "Table 8 Ablation study on explicit high-level temporal features (Industrial dataset). ”+ Tags” denotes the inclusion of explicit binary indicators for weekends, seasons, and holidays.",
+      "page": 16,
+      "index": 4,
+      "width": 972,
+      "height": 350
+    }
+  ]
+}

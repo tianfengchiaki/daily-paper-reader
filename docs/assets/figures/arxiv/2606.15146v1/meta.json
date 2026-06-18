@@ -1,0 +1,14 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2606.15146v1/fig-001.webp",
+      "caption": "Figure 1: Comparison of cumulative Recall@k and RMSE. Columns 1 and 3 show the metrics in the final round for varying k. Columns 2 and 4 show changes in the metrics over T rounds for k = 10.",
+      "page": 4,
+      "index": 1,
+      "width": 1046,
+      "height": 427
+    }
+  ]
+}

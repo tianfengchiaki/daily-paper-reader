@@ -1,0 +1,38 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2606.17443v1/fig-001.webp",
+      "caption": "Figure 2: Experiment 1 Summary—Conditional Monopoly. (a) IAI = 10.0: the real brand is recommended in 100% of trials across all models when products have identical specs. (b) BOR≈ 2–5%: brand advantage disappears when the fictional brand has better specs. (c) Step-function transition: win rate jumps from <6% at L0 to 64–80% at L1 (the smallest advantage tested). (d) Variance decomposition: product parameters explain 82.4% of ranking variance, position 6.5%, and brand only 1.2%.",
+      "page": 6,
+      "index": 1,
+      "width": 950,
+      "height": 400
+    },
+    {
+      "url": "assets/figures/arxiv/2606.17443v1/fig-002.webp",
+      "caption": "Figure 3: Experiment 2 Summary. (a) BR heatmap by bias × model. (b) Authority intensity curves: Claude inverted-U, GPT linear, Gemini saturated. (c) Stacking paradox. (d) Bias Surplus Value in rating-point equivalents.",
+      "page": 7,
+      "index": 2,
+      "width": 950,
+      "height": 817
+    },
+    {
+      "url": "assets/figures/arxiv/2606.17443v1/fig-003.webp",
+      "caption": "Figure 4: Experiment 3 Summary. (a) U-shaped ISR trajectory. (b) Incumbent rank recovery. (c) Per-brand payoff decay. (d) HHI market concentration. (e) KL divergence by model. (f) Subcategory variation.",
+      "page": 8,
+      "index": 3,
+      "width": 950,
+      "height": 592
+    },
+    {
+      "url": "assets/figures/arxiv/2606.17443v1/fig-004.webp",
+      "caption": "Table 11: Full breakthrough rates for search goods vs. experience goods (skincare). L0 = identical specs; L1 = minimal advantage. The step-function pattern (L0→L1 jump) replicates across all categories.",
+      "page": 16,
+      "index": 4,
+      "width": 467,
+      "height": 280
+    }
+  ]
+}

@@ -1,0 +1,78 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2606.13905v1/fig-001.webp",
+      "caption": "Table 2: Results on BRIGHT benchmark (nDCG@10). All query reformulation baselines use GPT-4.1 as the backbone language model. Best scores in bold, second-best underlined.",
+      "page": 6,
+      "index": 1,
+      "width": 906,
+      "height": 572
+    },
+    {
+      "url": "assets/figures/arxiv/2606.13905v1/fig-002.webp",
+      "caption": "Table 3: Case study illustrating how iterative corpusgrounded feedback refines query reformulation. Red marks vague phrases in the zero-shot query reformulation. Green marks domain-specific vocabulary acquired through iterative corpus-grounded feedback with ADORE.",
+      "page": 7,
+      "index": 2,
+      "width": 461,
+      "height": 571
+    },
+    {
+      "url": "assets/figures/arxiv/2606.13905v1/fig-003.webp",
+      "caption": "Table 7: Performance of ADORE across iterative rounds (nDCG@10). Each column represents the cumulative query expansion after k rounds. Best score per dataset in bold. Standard deviation across queries shown in parentheses.",
+      "page": 13,
+      "index": 3,
+      "width": 806,
+      "height": 477
+    },
+    {
+      "url": "assets/figures/arxiv/2606.13905v1/fig-004.webp",
+      "caption": "Table 8: Results on TREC Deep Learning and BEIR benchmarks using BGE-base-en-v1.5 as the dense retriever (nDCG@10). All query reformulation baselines use GPT-4.1 as the backbone language model. Best scores in bold, second-best underlined.",
+      "page": 13,
+      "index": 4,
+      "width": 904,
+      "height": 416
+    },
+    {
+      "url": "assets/figures/arxiv/2606.13905v1/fig-005.webp",
+      "caption": "Figure 2: Per-round retrieval effectiveness on TREC DL 2020. (a) nDCG@10 at each round. (b) Average gain in relevant documents within the top-10 relative to the original query, stratified by TREC relevance grade.",
+      "page": 8,
+      "index": 5,
+      "width": 808,
+      "height": 267
+    },
+    {
+      "url": "assets/figures/arxiv/2606.13905v1/fig-006.webp",
+      "caption": "Figure 1: Overview of ADORE. Each round consists of three stages: Adapt generates corpus-calibrated pseudopassages conditioned on structured feedback from prior rounds, Observe retrieves documents from the target corpus, and Evaluate assesses the results to produce structured feedback for the next iteration.",
+      "page": 4,
+      "index": 6,
+      "width": 855,
+      "height": 362
+    },
+    {
+      "url": "assets/figures/arxiv/2606.13905v1/fig-007.webp",
+      "caption": "Figure 4: Feedback-conditioned reformulation prompt.",
+      "page": 12,
+      "index": 7,
+      "width": 950,
+      "height": 725
+    },
+    {
+      "url": "assets/figures/arxiv/2606.13905v1/fig-008.webp",
+      "caption": "Figure 3: Zero-shot reformulation prompt.",
+      "page": 12,
+      "index": 8,
+      "width": 950,
+      "height": 223
+    },
+    {
+      "url": "assets/figures/arxiv/2606.13905v1/fig-009.webp",
+      "caption": "Table 1: Results on TREC Deep Learning and BEIR benchmarks (nDCG@10). All query reformulation baselines use GPT-4.1 as the backbone language model. Best scores in bold, second-best underlined.",
+      "page": 5,
+      "index": 9,
+      "width": 944,
+      "height": 530
+    }
+  ]
+}

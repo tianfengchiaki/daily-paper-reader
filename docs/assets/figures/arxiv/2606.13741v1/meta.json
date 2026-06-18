@@ -1,0 +1,62 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2606.13741v1/fig-001.webp",
+      "caption": "Figure 4: Sampling allows us to visualize trade-offs between short-term and long-term KPIs as well as the overall recommended discount level. The sales discount rate (sDR) is given by 1 - (GMV after discount/GMV before discount).",
+      "page": 6,
+      "index": 1,
+      "width": 736,
+      "height": 365
+    },
+    {
+      "url": "assets/figures/arxiv/2606.13741v1/fig-002.webp",
+      "caption": "Table 4: Summary statistics by experiment wave. Each row represents a distinct experiment wave; rows with multiple markets indicate concurrent A/B tests run in parallel, contributing to the total of 23 A/B tests.",
+      "page": 11,
+      "index": 2,
+      "width": 648,
+      "height": 334
+    },
+    {
+      "url": "assets/figures/arxiv/2606.13741v1/fig-003.webp",
+      "caption": "Figure 1: Example articles with daily sales. The gray-shaded areas represent periods with sales events during which we can observe larger fluctuations and particularly large jumps in observed sales compared to the times outside the events.",
+      "page": 2,
+      "index": 3,
+      "width": 882,
+      "height": 190
+    },
+    {
+      "url": "assets/figures/arxiv/2606.13741v1/fig-004.webp",
+      "caption": "Table 1: Features used with the demand forecast.",
+      "page": 7,
+      "index": 4,
+      "width": 694,
+      "height": 345
+    },
+    {
+      "url": "assets/figures/arxiv/2606.13741v1/fig-005.webp",
+      "caption": "Figure 2: Upload frequency and discount variation (2-week rolling averages, normalized to mean one) since 2023 in Germany. Upload frequency is defined as the ratio of price uploads to the number of products; discount variation is the standard deviation of weekly discounts across the assortment. Periods of sales events are marked in gray. Sales events exhibit both higher upload frequency and greater discount variation, reflecting more frequent price updates and a wider range of offered discounts. Year-week is dropped for anonymity.",
+      "page": 3,
+      "index": 5,
+      "width": 882,
+      "height": 260
+    },
+    {
+      "url": "assets/figures/arxiv/2606.13741v1/fig-006.webp",
+      "caption": "Figure 3: Algorithm Architecture with Optimizer and Forecaster: Demand model f forecasts demand q over a time horizon 0 : t for market m provided discount d and covariates x. The optimizer consumes the persisted data grid in a subsequent stage and selects the optimal discount level d based on the objective function.",
+      "page": 3,
+      "index": 6,
+      "width": 882,
+      "height": 313
+    },
+    {
+      "url": "assets/figures/arxiv/2606.13741v1/fig-007.webp",
+      "caption": "Table 2: Comparison of the candidate models. The metrics are calculated over 212 different days between 2024-05-01 and 2024-12-01 spanning half a year and capturing at least one of each major sales event. We report the mean and standard deviation over the 212 days.",
+      "page": 9,
+      "index": 7,
+      "width": 682,
+      "height": 196
+    }
+  ]
+}

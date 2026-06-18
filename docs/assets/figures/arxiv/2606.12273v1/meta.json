@@ -1,0 +1,46 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2606.12273v1/fig-001.webp",
+      "caption": "Table 2: The main benchmark results across different math and coding tasks on Dream-v0-Instruct-7B. Best results are in bold, and second best are underlined.",
+      "page": 6,
+      "index": 1,
+      "width": 898,
+      "height": 478
+    },
+    {
+      "url": "assets/figures/arxiv/2606.12273v1/fig-002.webp",
+      "caption": "Table 3: Ablation results on MATH500 with different block sizes under a predefined length of 512.",
+      "page": 7,
+      "index": 2,
+      "width": 450,
+      "height": 311
+    },
+    {
+      "url": "assets/figures/arxiv/2606.12273v1/fig-003.webp",
+      "caption": "Figure 1: Attention dynamics during the denoising process on Dream-v0-Instruct-7B (Ye et al., 2025). Figure (a) to (d) display the attention distributions among tokens at randomly selected denoising steps. Figure (e) to (h) illustrate how the attention of a randomly chosen token towards other tokens changes throughout the denoising process. The red dashed lines indicate the steps at which the corresponding token is unmasked.",
+      "page": 3,
+      "index": 3,
+      "width": 909,
+      "height": 469
+    },
+    {
+      "url": "assets/figures/arxiv/2606.12273v1/fig-004.webp",
+      "caption": "Table 4: Results on GSM8K and MATH500 benchmarks for LLaDA-8B-Instruct (Nie et al., 2025).",
+      "page": 8,
+      "index": 4,
+      "width": 469,
+      "height": 338
+    },
+    {
+      "url": "assets/figures/arxiv/2606.12273v1/fig-005.webp",
+      "caption": "Table 9: Results on general NLP benchmarks. CSQA denotes CommonsenseQA.",
+      "page": 9,
+      "index": 5,
+      "width": 383,
+      "height": 350
+    }
+  ]
+}

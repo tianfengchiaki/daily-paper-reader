@@ -1,0 +1,70 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2606.12871v1/fig-001.webp",
+      "caption": "Figure 1: DailyReport structure. We construct daily search tasks and cascade rubrics for evaluating search agents.",
+      "page": 2,
+      "index": 1,
+      "width": 798,
+      "height": 456
+    },
+    {
+      "url": "assets/figures/arxiv/2606.12871v1/fig-002.webp",
+      "caption": "Table 3: Evaluation results of 17 system settings on DailyReport across three categories. Bold values indicate the highest score in each column, while underlined denotes the second highest.",
+      "page": 7,
+      "index": 2,
+      "width": 812,
+      "height": 433
+    },
+    {
+      "url": "assets/figures/arxiv/2606.12871v1/fig-003.webp",
+      "caption": "Figure 5: Domain distribution. The heatmap reports the average UserPref scores of different systems on analysis-centric and retrieval-centric tasks across 10 high-level domains.",
+      "page": 10,
+      "index": 3,
+      "width": 811,
+      "height": 335
+    },
+    {
+      "url": "assets/figures/arxiv/2606.12871v1/fig-004.webp",
+      "caption": "Table 6: Detailed analysis of solving traces. Reference Accuracy evaluates the factual reliability of cited references. Refer-Claim Consistency measures whether generated claims are accurately supported by their cited references. Web Search counts calls to web search tools such as Serper for retrieving search results and snippets, while Web Content Mining counts calls to webpage-fetching tools such as Jina for accessing full webpage content. Both types of calls are treated as important search-tool operations for evidence gathering. Results for some closed-source Deep Research Agents are partially omitted, as they do not expose the internal traces (e.g., search queries, visited URLs) required for reliable measurement of certain metrics.",
+      "page": 14,
+      "index": 4,
+      "width": 812,
+      "height": 367
+    },
+    {
+      "url": "assets/figures/arxiv/2606.12871v1/fig-005.webp",
+      "caption": "Figure 4: Trace Analysis. Avg_Search_Calls measures the total number of search-tool calls. Reference_Ratio measures the proportion of claims that are supported by references, Reference_Support measures the factual accuracy of claims with references, and No_Reference_Support measures the factual accuracy of claims without references.",
+      "page": 8,
+      "index": 5,
+      "width": 798,
+      "height": 278
+    },
+    {
+      "url": "assets/figures/arxiv/2606.12871v1/fig-006.webp",
+      "caption": "Figure 3: Task type effect across three dimensions. For each model, we report the difference ∆ = Avganalysis −Avgretrieval between its average scores on 50 analysis-centric and 100 retrievalcentric tasks. Blue bars indicate ∆ > 0 and stronger analysis-centric task performance, while yellow bars indicate the opposite.",
+      "page": 8,
+      "index": 6,
+      "width": 811,
+      "height": 212
+    },
+    {
+      "url": "assets/figures/arxiv/2606.12871v1/fig-007.webp",
+      "caption": "Figure 2: Detailed characteristics of daily search tasks in DailyReport. The benchmark comprises 150 expert-curated tasks with 3,546 detailed rubrics across 10 high-level domains and 35 fine-grained categories. It evaluates search agents in daily user scenarios and aligns closely with predominant real-world user demands.",
+      "page": 4,
+      "index": 7,
+      "width": 812,
+      "height": 434
+    },
+    {
+      "url": "assets/figures/arxiv/2606.12871v1/fig-008.webp",
+      "caption": "Table 2: Three disentangled evaluation dimensions which are designed to be strictly orthogonal.",
+      "page": 5,
+      "index": 8,
+      "width": 827,
+      "height": 191
+    }
+  ]
+}

@@ -1,0 +1,318 @@
+Title: Contextual Bandits for Maximizing Stimulated Word-of-Mouth Rewards
+
+URL Source: https://arxiv.org/pdf/2606.15146v1
+
+Published Time: Tue, 16 Jun 2026 00:29:55 GMT
+
+Number of Pages: 5
+
+Markdown Content:
+# Contextual Bandits for Maximizing Stimulated Word-of-Mouth Rewards 
+
+# Ahmed Sayeed Faruk, Elena Zheleva 
+
+Department of Computer Science, University of Illinois at Chicago Chicago, IL, USA 
+
+{afaruk2, ezheleva }@uic.edu 
+
+Abstract 
+
+Stimulated word-of-mouth is a strategy that promotes infor-mation sharing through prompts or incentives. Optimizing stimulated word-of-mouth through social networks requires identifying and targeting connected users who are most sus-ceptible to spillover, a phenomenon where the influence of recommendations extends beyond the immediate audience to impact their connected users. The probability of spillover varies across individuals, and their connections, leading to heterogeneity. Understanding and accurately estimating the spillover probabilities among users in social networks is cru-cial for improving the effectiveness of stimulated word-of-mouth. To address this, we present a novel contextual multi-armed bandit framework that learns individual spillover prob-abilities and ranks connected users to maximize rewards from stimulated word-of-mouth. Experiments on real-world net-work datasets demonstrate that accounting for spillover het-erogeneity enhances the targeting precision of top-k con-nected users, boosting rewards and outperforming baseline methods that do not learn individual spillover effects. 
+
+# Introduction 
+
+Stimulated word-of-mouth involves intentionally encourag-ing consumers to share information about a product or ser-vice, often using prompts or incentives provided by com-panies or marketers. Unlike organic word-of-mouth, which occurs naturally, stimulated word-of-mouth is facilitated through mechanisms such as rewards, discounts, or refer-ral bonuses. Loyalty programs offering points for referrals exemplify this strategy. The proliferation of social networks has amplified the potential of stimulated word-of-mouth by simplifying the process of engaging and influencing con-sumers. For example, Alibaba integrates Sina Weibo (Chi-nese social network) into its e-commerce ecosystem, reflect-ing a trend where social platforms and marketplaces con-verge to enhance consumer influence and connectivity (Zhao et al. 2022). Network spillover occurs when an action, such as a rec-ommendation, on one user affects other users in a network, spreading information, behaviors, or attitudes. The impact of spillover is observed in numerous recommendation net-works, such as social media, e-commerce, or content plat-
+
+Copyright © 2025, Association for the Advancement of Artificial Intelligence (www.aaai.org). All rights reserved. 
+
+forms (Hollebeek et al. 2023; Kuang et al. 2019; Xu, Nico-lau, and Luo 2022). These spillover effects are heteroge-neous, varying with users’ network positions, connections, and individual traits. For example, in a social network, shar-ing a recommendation can result in adoption by some friends and in lack of interest by others. Predicting and leveraging these heterogeneous spillover effects is crucial for optimiz-ing stimulated word-of-mouth in networks. Here, we present preliminary work which leverages contextual multi-armed bandits (CMAB) for estimating such effects. Contextual multi-armed bandits consider the scenario where decision-makers can observe the context of each pos-sible recommendation (i.e., the arm) and infer the rewards of choosing a particular arm by observing the rewards of sequential recommendations. However, few works explore CMAB in networks where the recommendations can affect not only the direct object of recommendation but also its neighbors through spillover (Faruk and Zheleva 2023; Iacob, Cautis, and Maniu 2022; Vaswani et al. 2017; Wen et al. 2017; Wilder et al. 2018). While there is research that in-tegrates CMAB with recommendation-dependent heteroge-neous spillover in networks, it assumes that spillover prob-abilities are known (Faruk and Zheleva 2023). In contrast, our focus is on learning these probabilities. The current literature on stimulated word-of-mouth over-looks the potential of leveraging the heterogeneous spillover effect, leading to sub-optimal performance and user satis-faction (Gao et al. 2022). To address this limitation, it is necessary to develop models that can learn and adapt to the varying spillover probabilities across different users in a net-work. This paper presents a novel framework to learn het-erogeneous spillover probabilities in networks with the goal of recommending to each user the top-k neighbors that are most likely to adopt the recommendation that the user them-selves adopted. By advancing our understanding of these effects, we aim to enhance the performance of recommen-dation systems, delivering more effective and personalized user experiences while maximizing the rewards of stimu-lated word-of-mouth. 
+
+# Related Work 
+
+Link weight prediction focuses on estimating the numeri-cal value (e.g., strength, capacity) associated with an edge in a network (Fu et al. 2018). Previous studies have inves-
+
+> arXiv:2606.15146v1 [cs.LG] 13 Jun 2026
+
+tigated learning influence probabilities (Goyal, Bonchi, and Lakshmanan 2010). However, these concepts differ from the spillover probability considered in this work, which is tied to specific recommendations and spreads from the recom-mended user to its neighbor. In contrast, link weight or in-fluence probabilities may exist independently of any recom-mendation. Learning edge probabilities in networks has been studied using bandits framework for problems such as probabilis-tic maximum coverage and social influence maximization in viral marketing (Chen, Wang, and Yuan 2013). However, most bandit research on networks (Iacob, Cautis, and Ma-niu 2022; Vaswani et al. 2017; Wen et al. 2017; Wilder et al. 2018) do not account for spillover effects. Faruk and Zhel-eva (2023) incorporate spillover effects in a bandit frame-work but assume that the spillover probabilities are given, without addressing the challenge of learning them. While extensive research exists on top-k recommendation problems (Jamali and Ester 2009; Song, Meyer, and Tao 2015; Yang et al. 2012), limited attention has been given to identifying top-k neighbors in social networks for stim-ulated word-of-mouth. Aramayo, Schiappacasse, and Goic (2023) investigated the top-k ad recommendation problem using a CMAB framework. However, their approach cannot be applied to the top-k neighbor recommendation problem, as they assume a fixed number of possible ads, whereas users in networks have varying numbers of neighbors. A triad-based word-of-mouth recommendation model for socialized e-commerce focuses on recommending top-k relevant prod-ucts to a user for sharing with all neighbors (Gao et al. 2022). In contrast, our work focuses on recommending top-k neigh-bors for sharing the same product. 
+
+# Problem Description 
+
+Data model 
+
+We represent the data as a bidirected attributed network 
+
+G = ( V, E ), where V = {v1, v 2, . . . , v n} is the set of n
+
+nodes, and E = {eij | 1 ≤ i, j ≤ n} is the set of edges, with 
+
+eij denoting an edge between nodes vi and vj . The neighbor-hood of a node vi is defined as Ni = {vj ∈ V | eij ∈ E},and each vj ∈ N i is a neighbor of vi. Each node vi is as-sociated with a d-dimensional attribute vector, denoted by 
+
+vi.X . Let vi.y ∈ { 0, 1} denote the activation status of node 
+
+vi. Specifically, vi.y = 1 indicates that vi is activated, while 
+
+vi.y = 0 indicates no activation. 
+
+Direct recommendation and spillover 
+
+Direct recommendation refers to a system recommending a product directly to a targeted node in a network. A node activated due to such a recommendation is referred to as a system-activated node. Spillover occurs when a system-activated node impacts the activation of its neighbors by sharing the product. We assume that each user can only try to activate k neighbors (e.g., due to the cost incurred by the user or the structure of the system-imposed sharing incentive) and the system’s goal is to aid the user in pick-ing the neighbors which are most likely to activate. Each edge eij ∈ E is associated with a spillover probability 
+
+eij .p ∈ [0 , 1] , which represents the probability of activating node vj due to spillover from system-activated node vi. The spillover probability can be asymmetric, i.e., eij .p ̸ = eji .p ,reflecting heterogeneity in spillover. 
+
+Problem 1 Spillover probability prediction for top-k
+
+neighbor recommendation Given an attributed network 
+
+G = ( V, E ), learn eij .p over T rounds such that the rewards associated with recommending the top-k neighbors of node 
+
+vi are maximized after T rounds. 
+
+For each system-activated node vi, the system’s objective is to rank vi’s neighbors by their spillover probabilities eij .p ,and select the top-k nodes to maximize the total rewards. Recommending the top-k neighbors based on the learned 
+
+eij .p maximizes spillover rewards. 
+
+# Contextual bandits that learn individual spillover probabilities 
+
+We consider a stochastic 2-armed contextual bandit setup over T rounds. The set of arms is denoted as A = {a0, a 1}.At each round i ∈ {1, 2, . . . , T }, a node vi ∈ V ar-rives, and the learning agent observes the attributes of vi
+
+and its neighbors vj ∈ N i. Without loss of generality, we only consider the nodes that the system was able to acti-vate with its recommendations. The attribute vector eij .X 
+
+is referred to as the context vector for edge eij ∈ E. It includes vi.X , vj .X and other relevant information, such as the product attributes. Each edge eij is associated with two possible arms: a0 and a1, where a0 corresponds to not recommending and a1 corresponds to recommending the neighboring node vj to node vi. We denote the assigned arm with eij .t for edge eij . A reward is generated for rec-ommending a neighboring node, corresponding to the ac-tivation of an inactive neighbor vj due to spillover from the system-activated node vi. For example, a reward of 1 is assigned to the system-activated node if a neighbor-ing node is activated due to spillover; otherwise, the re-ward is 0. The rewards are cumulative when multiple neigh-bors are activated. We assume that the reward for an action 
+
+eij .a on edge eij is a function of the context vector eij .X 
+
+and the action that needs to be learned: R(eij .X, e ij .a ) = 
+
+F (eij .X, e ij .a ) + ξij , where ξij is zero-mean noise. The system recommends the top-k neighbors based on the high-est predicted rewards of a1 arm, R(eij .X, a 1). The es-timated spillover probability corresponds to the probabil-ity that the reward R(eij .X, a 1) coming from neighbor 
+
+vj is 1. The predicted set of top-k neighbors is defined as Ni ← arg top kvj
+
+R(eij .X, a 1). We define the optimal set of top-k neighbors as N ∗ 
+
+> i
+
+← arg top kvj
+
+R(e∗ 
+
+> ij
+
+.X, a 1),where e∗ 
+
+> ij
+
+s yield maximum expected rewards for neigh-bor vj at round i. Therefore, the cumulative regret of ban-dit learning over T rounds is formulated as: Regret ←
+
+PTi=1 (P 
+
+> a∈N∗
+> i
+
+R(eia .X, a 1) − P 
+
+> b∈Ni
+
+R(eib .X, a 1)) . The objective of the contextual bandit is to learn a strategy for selecting the top-k neighbors such that the expected regret is minimized. The pseudo-code of our framework is included in Al-gorithm 1. The framework leverages CMAB algorithms to learn spillover probability for top-k neighbor recommen-dations which operate in two distinct phases: exploration and exploitation. The exploration phase aims to diversify edge selections, which lasts for the initial z% of the total T
+
+rounds. In this phase, k neighbors are randomly selected and recommended to the system-activated node. After the ex-ploration phase, the algorithm transitions to the exploitation phase. Here, the top-k neighbors are recommended based on the descending order of their estimated reward for arm a1,as predicted by the CMAB algorithm. 
+
+# Experiments 
+
+In this section, we evaluate the performance of SpillCB on real-world network datasets. 
+
+Data representation 
+
+Real-world datasets. We consider two real-world at-tributed network datasets: Flickr 1 and Facebook 1. We con-sider the concatenation of vi.X and vj .X as the attribute vector for each edge eij ∈ E. The spillover probability 
+
+eij .p for each edge eij ∈ E is synthetically generated as a weighted function of cosine similarity(CS), level similar-ity(LS), topological overlap(TO), diffusion importance(DI), and degree product(DP), following (Qian et al. 2017): 
+
+eij .p ← f (w0 + w1 ∗ CS (vi, v j ) + w2 ∗ LS (vi, v j )+ 
+
+w3 ∗ T O (vi, v j ) + w4 ∗ DI (vi, v j ) + w5 ∗ DP (vi, v j )) 
+
+where w ∼ N (5 , 2) are the weights sampled from a normal distribution, and f is a min-max scaling function for normal-ization. 
+
+Evaluation metrics 
+
+We evaluate the performance of the SpillCB using the fol-lowing metrics: 
+
+Recall@ k The bandit recall, Recall @k quantifies the 
+
+SpillCB ’s ability to correctly identify top-k neighbors. It is defined as the ratio of correctly predicted neighbors be-longing to the true top-k neighbors to the total number of true top-k neighbors, i.e., Recall @k = PTi=1     
+
+> |Ni∩N∗
+> i||N∗
+> i|
+
+Root Mean Squared Error ( RM SE ) To evaluate the ac-curacy of the learned spillover probabilities, we compute the 
+
+RM SE on a randomly sampled subset of edges, E ⊂ E
+
+from the network. In each round i, RM SE is calculated as: RM SE =
+
+r P     
+
+> exy ∈E(ˆ exy .p −exy .p )2
+> |S|
+
+where ˆexy .p =
+
+g(E[R(exy .X, a 1)]) is the estimated spillover probability derived from the estimated rewards E[R(exy .X, a 1)] and g
+
+is a function to convert the estimated rewards to a probabil-ity. The function calculates z-score over the set of edges E in each round i and then uses a standard normal distribution’s cumulative distribution function to convert the z-score to a probability. 
+
+> 1All datasets available at https://renchi.ac.cn/datasets/
+
+Algorithm 1: Learning heterogeneous spillover to maximize word-of-mouth rewards ( SpillCB ) 
+
+> 1:
+
+Input: Number of rounds T , off-the-shelf CMAB (e.g., LinUCB) hyperparameters, exploration ratio z, k 
+
+> 2:
+
+Output: Top-k neighbor recommendations for each node vi that gets activated by the system in each round i 
+
+> 3:
+
+for each arm a ∈ A do  
+
+> 4:
+
+Initialize arm parameters  
+
+> 5:
+
+end for  
+
+> 6:
+
+for each round i ∈ { 1, 2, 3, . . . , T } do  
+
+> 7:
+
+A node vi arrives with context vectors for edges eij ,
+
+{eij,a .X }a∈A and gets activated by the system  
+
+> 8:
+
+Estimate expected rewards of each edge eij for a1,
+
+E[R(eij .X, a 1)] using off-the-shelf CMAB algorithm  
+
+> 9:
+
+if i ≤ z ∗ T then ▷ Exploration phase  
+
+> 10:
+
+Find Ni = arg random kvj
+
+E[R(eij .X, a 1)]  
+
+> 11:
+
+else ▷ Exploitation phase  
+
+> 12:
+
+Find Ni = arg top kvj
+
+E[R(eij .X, a 1)]  
+
+> 13:
+
+end if  
+
+> 14:
+
+for vj ∈ Ni do  
+
+> 15:
+
+eij .t ← a1 
+
+> 16:
+
+Record R(eij .X, a 1); update parameters for a1 
+
+> 17:
+
+end for  
+
+> 18:
+
+end for 
+
+Main algorithms and baselines 
+
+We evaluate the performance of our proposed algorithm by comparing it with several baseline approaches: 
+
+Random This baseline randomly selects k neighbors for recommendation to each system-activated node. 
+
+Similarity-based (Similarity) This method recommends neighbors based on their proximity to the system-activated node. The top-k neighbors are chosen based on the ascend-ing order of the Euclidean distance between the attribute vectors of the system-activated node and its neighbors. 
+
+Ridge regression (Ridge) This method ranks and recom-mends the top-k neighbors based on link weight prediction scores obtained via ridge regression. All existing edges E
+
+are labeled with 1, while |E| non-existing edges are ran-domly sampled and labeled with 0. Each edge, whether ex-isting or non-existing, is represented by a concatenated at-tribute vector of its two nodes. A ridge regression model is trained on these labeled edges to generate link weight pre-diction scores. The top-k neighbors of a system-activated node are recommended based on the descending order of their edge scores. 
+
+GraphSage. This approach utilizes node embeddings gen-erated from the GraphSAGE algorithm (Hamilton, Ying, and Leskovec 2017). The approach is similar to the Ridge method, except that the concatenated embeddings are passed through a neural network-based scoring function to generate link weight scores for each edge in the network. Figure 1: Comparison of cumulative Recall @k and RM SE . Columns 1 and 3 show the metrics in the final round for varying k. Columns 2 and 4 show changes in the metrics over T rounds for k = 10 .
+
+SpillCB CMAB : z%. This is our proposed framework, and we consider several variants. We denote the SpillCB as 
+
+SpillCB LinU CB : z% and SpillCB EEN et : z% when the underlying off-the-shelf CMAB algorithm is LinUCB (Li et al. 2010) and EENet (Ban et al. 2022), respectively. We also vary the amount of exploration z%.
+
+Experimental setup 
+
+Prior to the start of a bandit experiment, we set vi.y = 0 
+
+for all nodes vi ∈ V , and eij .t = 0 for all edges eij ∈ E.In each round, we consider the system activates each arrival node and all of its neighbors are inactive. Therefore, our ex-periments allow re-activation, enabling each node to be ac-tivated by multiple neighbors. All experiments are repeated 
+
+5 times, and we report the average results across these rep-etitions. To compute RM SE in each round, we sample a fixed subset of edges with size |S| = 500 . We set α = 0 .5
+
+for both Ridge and LinUCB methods. For EE-Net (Ban et al. 2022), we follow their default setup and perform a grid search for the learning rate over {0.001 , 0.01 , 0.1} in their exploitation neural network. The optimal parameters for each dataset are selected from the grid search results. We experiment with z ∈ { 0, 20 } and refer to these configu-rations as SpillCB CM AB : 0% and SpillCB CM AB : 20% ,respectively. We report the corresponding Recall @k and 
+
+RM SE for k = 10 across all rounds in Fig 1. To under-stand the impact varying k, experiments are conducted for 
+
+k ∈ { 5, 10 , 15 , 20 , 25 }. Results for Recall @k and RM SE 
+
+are reported in the final round of the bandit experiments in Figure 1. 
+
+Experimental results 
+
+As Figure 1 shows, the Recall @k of all methods increases as k increases which is expected. Our proposed methods, 
+
+SpillCB LinU CB and SpillCB EEN et , consistently outper-form baseline approaches in Recall @k across all values of 
+
+k on both datasets. A larger k leads to lower RM SE be-cause it allows for the exploration of more edges, thereby accelerating the learning process. For instance, the RM SE 
+
+decreases by 8.72% and 9.31% on the Flickr and Face-book datasets, respectively, as k increases from 5 to 25 
+
+in SpillCB LinU CB : 0% . Similarly, RM SE reductions of 
+
+10 .04% and 5.47% are observed on the Flickr and Facebook datasets, respectively, for SpillCB EEN et : 0% .As the number of rounds ( T ) increases, Recall @10 
+
+improves, while the corresponding RM SE decreases in 
+
+SpillCB for both datasets. This trend occurs because more edges are explored over rounds, enabling more efficient ban-dit learning. Moreover, increasing the exploration phase ( z)results in a reduction in RM SE , albeit sometimes at the ex-pense of lower Recall @10 in SpillCB . For instance, when the exploration phase increases from 0% to 20% , the cumu-lative average RM SE in the final round decreases by 2.23% 
+
+for SpillCB LinU CB on the Flickr dataset and by 8.04% 
+
+for SpillCB EEN et on the Facebook dataset. However, this comes with corresponding decreases of 4.2% and 1.73% in 
+
+Recall @10 .These results highlight the trade-offs between the explo-ration and exploitation phases in our framework and empha-size the robustness of balancing these factors to optimize performance. 
+
+# Conclusion and Future Work 
+
+We present a novel contextual bandit framework, SpillCB ,designed to model and learn heterogeneous spillover prob-abilities in networks. Our approach leverages these proba-bilities to optimize word-of-mouth rewards by recommend-ing top-k neighbors. Our preliminary results look promising. Our next steps include considering more datasets and base-lines to further understand the strengths and limitations of the proposed approach. Acknowledgments 
+
+This research was funded in part by NSF under grant no. 2047899 and DARPA under contract number HR001121C0168. 
+
+# References 
+
+Aramayo, N.; Schiappacasse, M.; and Goic, M. 2023. Amultiarmed bandit approach for house ads recommenda-tions. Marketing Science , 42(2): 271–292. Ban, Y.; Yan, Y.; Banerjee, A.; and He, J. 2022. EE-Net: Exploitation-Exploration Neural Networks in Contex-tual Bandits. In International Conference on Learning Rep-resentations .Chen, W.; Wang, Y.; and Yuan, Y. 2013. Combinatorial multi-armed bandit: General framework and applications. In International conference on machine learning , 151–159. PMLR. Faruk, A. S.; and Zheleva, E. 2023. Leveraging heteroge-neous spillover effects in maximizing contextual bandit re-wards. arXiv preprint arXiv:2310.10259 .Fu, C.; Zhao, M.; Fan, L.; Chen, X.; Chen, J.; Wu, Z.; Xia, Y.; and Xuan, Q. 2018. Link weight prediction using super-vised learning methods and its application to yelp layered network. IEEE Transactions on Knowledge and Data Engi-neering , 30(8): 1507–1518. Gao, C.; Huang, C.; Yu, D.; Fu, H.; Lin, T.-H.; Jin, D.; and Li, Y. 2022. Item recommendation for word-of-mouth sce-nario in social E-commerce. IEEE Transactions on Knowl-edge and Data Engineering , 34(6): 2798–2809. Goyal, A.; Bonchi, F.; and Lakshmanan, L. V. 2010. Learn-ing influence probabilities in social networks. In Proceed-ings of the third ACM international conference on Web search and data mining , 241–250. Hamilton, W.; Ying, Z.; and Leskovec, J. 2017. Inductive representation learning on large graphs. Advances in neural information processing systems , 30. Hollebeek, L. D.; Kulikovskaja, V.; Hubert, M.; and Grunert, K. G. 2023. Exploring a customer engagement spillover ef-fect on social media: the moderating role of customer con-scientiousness. Internet Research , 33(4): 1573–1596. Iacob, A.; Cautis, B.; and Maniu, S. 2022. Contextual Ban-dits for Advertising Campaigns: A Diffusion-Model Inde-pendent Approach. In Proceedings of the 2022 SIAM In-ternational Conference on Data Mining (SDM) , 513–521. SIAM. Jamali, M.; and Ester, M. 2009. Using a trust network to improve top-n recommendation. In Proceedings of the third ACM conference on Recommender systems , 181–188. Kuang, L.; Huang, N.; Hong, Y.; and Yan, Z. 2019. Spillover effects of financial incentives on non-incentivized user en-gagement: Evidence from an online knowledge exchange platform. Journal of Management Information Systems ,36(1): 289–320. Li, L.; Chu, W.; Langford, J.; and Schapire, R. E. 2010. A contextual-bandit approach to personalized news article rec-ommendation. In Proceedings of the 19th international con-ference on World wide web , 661–670. Qian, Y.; Li, Y.; Zhang, M.; Ma, G.; and Lu, F. 2017. Quan-tifying edge significance on maintaining global connectivity. 
+
+Scientific reports , 7(1): 45380. Song, D.; Meyer, D. A.; and Tao, D. 2015. Top-k link recom-mendation in social networks. In 2015 IEEE International Conference on Data Mining , 389–398. IEEE. Vaswani, S.; Kveton, B.; Wen, Z.; Ghavamzadeh, M.; Lak-shmanan, L. V.; and Schmidt, M. 2017. Model-independent online learning for influence maximization. In International Conference on Machine Learning , 3530–3539. PMLR. Wen, Z.; Kveton, B.; Valko, M.; and Vaswani, S. 2017. Online influence maximization under independent cascade model with semi-bandit feedback. Advances in neural infor-mation processing systems , 30. Wilder, B.; Immorlica, N.; Rice, E.; and Tambe, M. 2018. Maximizing influence in an unknown social network. In 
+
+Proceedings of the AAAI Conference on Artificial Intelli-gence , volume 32. Xu, Y.; Nicolau, J. L.; and Luo, P. 2022. Travelers’ re-actions toward recommendations from neighboring rooms: Spillover effect on room bookings. Tourism Management ,88: 104427. Yang, X.; Steck, H.; Guo, Y.; and Liu, Y. 2012. On top-k recommendation using social networks. In Proceedings of the sixth ACM conference on Recommender systems , 67–74. Zhao, J.; Su, B.; Rao, X.; and Chen, Z. 2022. A cross-platform personalized recommender system for connecting e-commerce and social network. Future Internet , 15(1): 13.

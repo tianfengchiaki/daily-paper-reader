@@ -1,0 +1,22 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2606.20065v1/fig-001.webp",
+      "caption": "Table 3. Average per-brand visibility by prompt category (macro-average across brands), overall and per engine. Comparison and brand-research prompts name the brand in 46% and 91% of cases respectively, which inflates their mention rate; the four categories above the rule are under 1% branded.",
+      "page": 9,
+      "index": 1,
+      "width": 1005,
+      "height": 225
+    },
+    {
+      "url": "assets/figures/arxiv/2606.20065v1/fig-002.webp",
+      "caption": "Table 4. Empirical findings reported in this paper (top) and designed v1.1 protocols (bottom).",
+      "page": 12,
+      "index": 2,
+      "width": 1019,
+      "height": 492
+    }
+  ]
+}

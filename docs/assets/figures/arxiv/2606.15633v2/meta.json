@@ -1,0 +1,38 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2606.15633v2/fig-001.webp",
+      "caption": "Figure 5: We plot the change in 𝑟attn (𝑢) for nodes corrected by increasing model size (top) and fine-tuning (bottom), alongside nodes that stayed correct. Positive changes indicate improvements in attention rank, i.e., relevant neighborsmoving to lower ranks.While both groups show improved attention ranking with increasing ¯𝛿𝑢 , the Correct→Correct cases exhibit smaller changes. This indicates that while mitigation strategiesgenerally improveattentionalignment, they induce larger rank shifts for nodes whose predictions are corrected.",
+      "page": 7,
+      "index": 1,
+      "width": 494,
+      "height": 336
+    },
+    {
+      "url": "assets/figures/arxiv/2606.15633v2/fig-002.webp",
+      "caption": "Figure 8: A real-world prompt using raw text attributes. The model must reason over both local text content and neighbor context, guided by the system instruction.",
+      "page": 13,
+      "index": 2,
+      "width": 506,
+      "height": 334
+    },
+    {
+      "url": "assets/figures/arxiv/2606.15633v2/fig-003.webp",
+      "caption": "Figure 7: A semi-synthetic prompt where node features are replaced by labels. The system instruction enforces a concise output format.",
+      "page": 13,
+      "index": 3,
+      "width": 506,
+      "height": 313
+    },
+    {
+      "url": "assets/figures/arxiv/2606.15633v2/fig-004.webp",
+      "caption": "Figure 2: Each plot reports the attention strength 𝜎 (𝑠attn (𝑢,𝑣)) vs. serialization gap 𝛿𝑢,𝑣 for ER, SBM, and BA graphs for different linearizations (bar colors). Attention decays sharply with increasing sequence gap across all graphs. Crucially, even RCM fails to prevent the large gaps that drive this decay, highlighting the intrinsic distortion of sequence-based serialization.",
+      "page": 4,
+      "index": 4,
+      "width": 891,
+      "height": 255
+    }
+  ]
+}

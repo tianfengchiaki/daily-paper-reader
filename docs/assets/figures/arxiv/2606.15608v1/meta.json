@@ -1,0 +1,62 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2606.15608v1/fig-001.webp",
+      "caption": "Fig. 1. Top: Current MLLM-based judge approaches can be grouped into three categories: Token Probability Scoring, Fine-grained Decomposition, and MLLM-as-a-Judge Prompting, covering both quality and safety evaluation. Bottom: Imperceptible adversarial perturbations can deceive MLLM judges to yield inflated quality or safety scores.",
+      "page": 1,
+      "index": 1,
+      "width": 526,
+      "height": 558
+    },
+    {
+      "url": "assets/figures/arxiv/2606.15608v1/fig-002.webp",
+      "caption": "TABLE III EVALUATION RESULTS FOR THE ROBUSTMLLMJUDGE FRAMEWORK UNDER THE IMAGE SAFETY ASSESSMENT SETTING ON T2I-RISKYPROMPT DATASET. MGSIA METHOD IS EVALUATED UNDER THREE PROXY SAMPLE CONFIGURATIONS.",
+      "page": 11,
+      "index": 2,
+      "width": 908,
+      "height": 302
+    },
+    {
+      "url": "assets/figures/arxiv/2606.15608v1/fig-003.webp",
+      "caption": "TABLE IV GRAY-BOX TRANSFERABILITY RESULTS FOR ATTACKS ACROSS THE LLAVA-1.5 AND QWEN2.5-VL MODEL FAMILIES ON GENAI-BENCH DATASET. THE TABLE SHOWS THE PERFORMANCE OF MGSIA GENERATED ON SOURCE MODELS (7B) WHILE EVALUATED ON LARGER TARGET MODELS (13B, 32B).",
+      "page": 11,
+      "index": 3,
+      "width": 996,
+      "height": 345
+    },
+    {
+      "url": "assets/figures/arxiv/2606.15608v1/fig-004.webp",
+      "caption": "Fig. 5. Visualization of the Qwen2.5-VL’s latent space on the HADES dataset, contrasting the adversarial shifts from MGSIA and baseline methods w.r.t. the direction of judge score ascent.",
+      "page": 10,
+      "index": 4,
+      "width": 516,
+      "height": 402
+    },
+    {
+      "url": "assets/figures/arxiv/2606.15608v1/fig-005.webp",
+      "caption": "TABLE X EFFECTIVENESS OF DEFENSE STRATEGIES IN REDUCING THE INFLATED SCORES OF MGSIA AND THREE BASELINES.",
+      "page": 13,
+      "index": 5,
+      "width": 965,
+      "height": 189
+    },
+    {
+      "url": "assets/figures/arxiv/2606.15608v1/fig-006.webp",
+      "caption": "TABLE I EVALUATION RESULTS FOR THE ROBUSTMLLMJUDGE FRAMEWORK, WHERE NINE BASELINE ATTACKS ALONGSIDE OUR PROPOSED MGSIA ARE EVALUATED AGAINST SIX DIFFERENT METHODS OF THREE MLLM JUDGE APPROACHES UNDER THE IMAGE QUALITY ASSESSMENT SETTING ON GENAI-BENCH. LLAVA-1.5-7B AND QWEN2.5-VL-7B ARE USED AS THE MLLMS IN THESE JUDGES. THE (RED) AND (GREEN) VALUES INDICATE INCREASED AND DECREASED JUDGE SCORES AGAINST THE BENIGN BASELINE, RESPECTIVELY. ALL ADVERSARIAL PERTURBATIONS ARE CONSTRAINED BY A BUDGET OF ϵ = 8/255. THE BEST AND SECOND-BEST RESULTS ARE HIGHLIGHTED IN BOLD AND UNDERLINED, RESPECTIVELY.",
+      "page": 8,
+      "index": 6,
+      "width": 996,
+      "height": 609
+    },
+    {
+      "url": "assets/figures/arxiv/2606.15608v1/fig-007.webp",
+      "caption": "TABLE VII ABLATION STUDY OF ASI SURROGATE QUERY AND ANSWER DESIGNS FOR QUALITY EVALUATION ON GENAI-BENCH AND SAFETY EVALUATION ON T2I-RISKYPROMPT.",
+      "page": 12,
+      "index": 7,
+      "width": 877,
+      "height": 198
+    }
+  ]
+}

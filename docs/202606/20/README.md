@@ -1,0 +1,40 @@
+# 日报 · 2026-06-20
+
+- 生成时间：2026-06-20 20:14:17 UTC
+- 当次推荐总数：24
+- 精读区：12
+- 速读区：12
+
+## 今日简报（AI）
+今日精读12篇速读12篇，重点推荐《Interactor》与《DRIVE》两篇高分论文。最值得关注的方向是强化学习驱动的广告描述生成（Interactor）及分布式检索增强竞价策略（DRIVE）。建议下一步深入探索RL在搜索广告与检索系统中的应用。
+
+## 精读区
+1. [Interactor: Agentic RL oriented Iterative Creation for Ad Description Generation in Sponsored Search](/202606/20/2606.15911v1-interactor-agentic-rl-oriented-iterative-creation-for-ad-description-generation-in-sponsored-search) （10.0/10）
+2. [DRIVE: Distributional and Retrieval-Augmented Bidding with Value Evaluation](/202606/20/2606.14192v1-drive-distributional-and-retrieval-augmented-bidding-with-value-evaluation) （9.0/10）
+3. [Contextual Bandits for Maximizing Stimulated Word-of-Mouth Rewards](/202606/20/2606.15146v1-contextual-bandits-for-maximizing-stimulated-word-of-mouth-rewards) （9.0/10）
+4. [Attribute Inference from Interactive Targeted Ads](/202606/20/2606.15209v1-attribute-inference-from-interactive-targeted-ads) （9.0/10）
+5. [Modeling Engagement with Brand and Organizational TikTok Videos Using Machine-Assisted Theory-Ensemble Annotation](/202606/20/2606.16053v1-modeling-engagement-with-brand-and-organizational-tiktok-videos-using-machine-assisted-theory-ensemble-annotation) （9.0/10）
+6. [GRACE: Boosting Video MLLMs with Grounded Action-Centric Evidence for Viewer Sentiment Prediction](/202606/20/2606.16198v1-grace-boosting-video-mllms-with-grounded-action-centric-evidence-for-viewer-sentiment-prediction) （9.0/10）
+7. [Integrated Marketing Attribution: A Bayesian Framework for Privacy-Safe Granular Measurement Anchored in MMM](/202606/20/2606.16878v1-integrated-marketing-attribution-a-bayesian-framework-for-privacy-safe-granular-measurement-anchored-in-mmm) （9.0/10）
+8. [Integrated Marketing Attribution: A Bayesian Framework for Privacy-Safe Granular Measurement Anchored in MMM](/202606/20/2606.16878v2-integrated-marketing-attribution-a-bayesian-framework-for-privacy-safe-granular-measurement-anchored-in-mmm) （9.0/10）
+9. [JourneyFormer: Encoding Airbnb Guest Journey with Sequence Modeling](/202606/20/2606.19108v1-journeyformer-encoding-airbnb-guest-journey-with-sequence-modeling) （9.0/10）
+10. [Token Factory: Efficiently Integrating Diverse Signals into Large Recommendation Models](/202606/20/2606.19635v1-token-factory-efficiently-integrating-diverse-signals-into-large-recommendation-models) （9.0/10）
+11. [Generative Engine Optimization at Scale: Measuring Brand Visibility Across AI Search Engines](/202606/20/2606.20065v1-generative-engine-optimization-at-scale-measuring-brand-visibility-across-ai-search-engines) （9.0/10）
+12. [Structuring and Tokenizing Distributed User Interest Context for Generative Recommendation](/202606/20/2606.20554v1-structuring-and-tokenizing-distributed-user-interest-context-for-generative-recommendation) （9.0/10）
+
+## 速读区
+1. [Retrieval-as-a-Service:A System-Oriented Analysis of Industrial Retrieval Pipelines in Web Systems](/202606/20/2606.14932v1-retrieval-as-a-servicea-system-oriented-analysis-of-industrial-retrieval-pipelines-in-web-systems) （8.0/10）
+2. [LLM-Powered Virtual Population for Demand Simulation and Pricing](/202606/20/2606.16183v1-llm-powered-virtual-population-for-demand-simulation-and-pricing) （8.0/10）
+3. [SpecAlign: Efficient Specification-Grounded Alignment of Large Language Models via Synthetic Data](/202606/20/2606.16276v2-specalign-efficient-specification-grounded-alignment-of-large-language-models-via-synthetic-data) （8.0/10）
+4. [Whose hotel does the AI recommend? An algorithm audit of reputation signals in LLM-assisted hotel selection](/202606/20/2606.16344v1-whose-hotel-does-the-ai-recommend-an-algorithm-audit-of-reputation-signals-in-llm-assisted-hotel-selection) （8.0/10）
+5. [Distilling Examples into Task Instructions: Enhanced In-Context Learning for Real-World B2B Conversations](/202606/20/2606.15641v1-distilling-examples-into-task-instructions-enhanced-in-context-learning-for-real-world-b2b-conversations) （7.0/10）
+6. [One Sequential Recommendation Model Pretrained from Synthetic Priors Predicts Multiple Datasets](/202606/20/2606.15752v1-one-sequential-recommendation-model-pretrained-from-synthetic-priors-predicts-multiple-datasets) （7.0/10）
+7. [DYNA : Dynamic Episodic Memory Networks for Augmenting Large Language Models with Temporal Knowledge Graphs in Continuous Learning](/202606/20/2606.15778v1-dyna--dynamic-episodic-memory-networks-for-augmenting-large-language-models-with-temporal-knowledge-graphs-in-continuous-learning) （7.0/10）
+8. [RetailBench: Benchmarking long horizon reasoning and coherent decision making of LLM agents in realistic retail environments](/202606/20/2606.15862v1-retailbench-benchmarking-long-horizon-reasoning-and-coherent-decision-making-of-llm-agents-in-realistic-retail-environments) （7.0/10）
+9. [Revisiting Filtered ANN Benchmarks: A Hardness-Controlled Benchmark Generator for Realistic Evaluation](/202606/20/2606.14193v1-revisiting-filtered-ann-benchmarks-a-hardness-controlled-benchmark-generator-for-realistic-evaluation) （6.0/10）
+10. [ChronoID: Infusing Explicit Temporal Signals into Semantic IDs for Generative Recommendation](/202606/20/2606.14260v1-chronoid-infusing-explicit-temporal-signals-into-semantic-ids-for-generative-recommendation) （6.0/10）
+11. [Abstracting Cross-Domain Action Sequences into Interpretable Workflows](/202606/20/2606.14654v1-abstracting-cross-domain-action-sequences-into-interpretable-workflows) （6.0/10）
+12. [Equity with Efficiency: An Empirical Study of Tokenizers for Multilingual Large Language Models](/202606/20/2606.15044v1-equity-with-efficiency-an-empirical-study-of-tokenizers-for-multilingual-large-language-models) （6.0/10）
+
+---
+使用键盘方向键可在日报/论文之间快速切换。

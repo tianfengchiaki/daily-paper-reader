@@ -1,0 +1,126 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2606.16276v2/fig-001.webp",
+      "caption": "Figure 1. The example demonstrates how the model specification defines the alignment of the language model output.",
+      "page": 2,
+      "index": 1,
+      "width": 475,
+      "height": 417
+    },
+    {
+      "url": "assets/figures/arxiv/2606.16276v2/fig-002.webp",
+      "caption": "Table 2. Specification compliance results measured by RCS. Absolute scores and improvements are reported for the base model and SpecAlign . The final row reports Mean ± Std. in the form Base / SpecAlign . Abs. denotes the absolute improvement (SpecAlign - Base), and ∆ denotes the relative improvement percentage.",
+      "page": 7,
+      "index": 2,
+      "width": 968,
+      "height": 914
+    },
+    {
+      "url": "assets/figures/arxiv/2606.16276v2/fig-003.webp",
+      "caption": "Table 6. Cost breakdown for a single successful interaction episode. Input and output token counts are averaged over successful episodes. Prices are reported per million tokens.",
+      "page": 29,
+      "index": 3,
+      "width": 952,
+      "height": 223
+    },
+    {
+      "url": "assets/figures/arxiv/2606.16276v2/fig-004.webp",
+      "caption": "Figure 13. Evaluation interface and guidelines for SimpleQA.",
+      "page": 34,
+      "index": 4,
+      "width": 964,
+      "height": 710
+    },
+    {
+      "url": "assets/figures/arxiv/2606.16276v2/fig-005.webp",
+      "caption": "Figure 12. Evaluation interface and guidelines for XSTest.",
+      "page": 33,
+      "index": 5,
+      "width": 914,
+      "height": 775
+    },
+    {
+      "url": "assets/figures/arxiv/2606.16276v2/fig-006.webp",
+      "caption": "Figure 14. Full spec of the case.",
+      "page": 35,
+      "index": 6,
+      "width": 960,
+      "height": 375
+    },
+    {
+      "url": "assets/figures/arxiv/2606.16276v2/fig-007.webp",
+      "caption": "Table 3. Safety robustness and general capability performance. Parentheses show Base scores. Each benchmark reports SpecAlign and ∆ (SpecAlign − Base). Arrows indicate whether lower or higher scores are better; green indicates improvement and red degradation.",
+      "page": 8,
+      "index": 7,
+      "width": 964,
+      "height": 773
+    },
+    {
+      "url": "assets/figures/arxiv/2606.16276v2/fig-008.webp",
+      "caption": "Figure 2. Overview of the SpecAlign framework. SpecAlign consists of three stages: (1) Rule Annotation, which enriches raw safety and behavior rules with structured tags; (2) Specification Generation, which composes diverse and prioritized rule sets under structural constraints; and (3)Multi-Agent Adversarial Data Synthesis, where planner, attacker, and defender agents engage in iterative interactions with role switching and an experience pool to generate specification-aware preference data for downstream alignment.",
+      "page": 4,
+      "index": 8,
+      "width": 909,
+      "height": 382
+    },
+    {
+      "url": "assets/figures/arxiv/2606.16276v2/fig-009.webp",
+      "caption": "Figure 15. This case shows a failed interaction episode under the target model specification. Although the planner and attacker aim to steer the conversation toward prioritizing immediate emotional relief over broader responsibilities, the defender response remains balanced and cautious, emphasizing moderation and responsibility. As a result, no specification violation is triggered by the safety judge in this round, and the episode is marked as failed and proceeds to the next interaction round.",
+      "page": 36,
+      "index": 9,
+      "width": 960,
+      "height": 1119
+    },
+    {
+      "url": "assets/figures/arxiv/2606.16276v2/fig-010.webp",
+      "caption": "Figure 11. Evaluation interface and guidelines for FalseReject.",
+      "page": 32,
+      "index": 10,
+      "width": 914,
+      "height": 606
+    },
+    {
+      "url": "assets/figures/arxiv/2606.16276v2/fig-011.webp",
+      "caption": "Figure 10. Evaluation interface and guidelines for Beaver-Unsafe.",
+      "page": 32,
+      "index": 11,
+      "width": 964,
+      "height": 652
+    },
+    {
+      "url": "assets/figures/arxiv/2606.16276v2/fig-012.webp",
+      "caption": "Figure 4. RCS comparison across Base, SFT-only, and SpecAlign on three backbone models.",
+      "page": 9,
+      "index": 12,
+      "width": 800,
+      "height": 217
+    },
+    {
+      "url": "assets/figures/arxiv/2606.16276v2/fig-013.webp",
+      "caption": "Figure 3. Distribution analysis of SpecAlign . (a) Distribution of different structural stages. (b) Self-BLEU distribution measuring lexical diversity. (c) Cosine similarity distributions between different promptresponse pairs.",
+      "page": 9,
+      "index": 13,
+      "width": 1073,
+      "height": 250
+    },
+    {
+      "url": "assets/figures/arxiv/2606.16276v2/fig-014.webp",
+      "caption": "Figure 9. Evaluation interface and guidelines for Spec Compliance.",
+      "page": 31,
+      "index": 14,
+      "width": 964,
+      "height": 677
+    },
+    {
+      "url": "assets/figures/arxiv/2606.16276v2/fig-015.webp",
+      "caption": "Table 8. Complete Model Specification Framework",
+      "page": 48,
+      "index": 15,
+      "width": 917,
+      "height": 1308
+    }
+  ]
+}

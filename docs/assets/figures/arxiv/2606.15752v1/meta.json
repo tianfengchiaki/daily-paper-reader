@@ -1,0 +1,38 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2606.15752v1/fig-001.webp",
+      "caption": "Figure 2: Structural alignment between SASRec item embeddings (◦) and low-rank transition statistics (△) across three datasets. Each panel shows the item–item cosine similarity matrix within a single embedding space, where brighter colors indicate more similar items.",
+      "page": 2,
+      "index": 1,
+      "width": 502,
+      "height": 375
+    },
+    {
+      "url": "assets/figures/arxiv/2606.15752v1/fig-002.webp",
+      "caption": "Table 1: Main results on five benchmarks. We report top-𝑘 ranking metrics for standard trained-on-target sequential recommenders and training-free baselines, along with SRPFN (evaluated with |𝐷support | = 16). The best and second-best results in each row are denoted in bold and underlined, respectively. †: baselines trained on the target domain training split. ‡: training-free baselines computed from the target domain training split without gradient updates.",
+      "page": 7,
+      "index": 2,
+      "width": 1006,
+      "height": 629
+    },
+    {
+      "url": "assets/figures/arxiv/2606.15752v1/fig-003.webp",
+      "caption": "Table 9: Full-catalog ranking results across five datasets. The best and second-best results in each row are denoted in bold and underlined, respectively.",
+      "page": 12,
+      "index": 3,
+      "width": 422,
+      "height": 540
+    },
+    {
+      "url": "assets/figures/arxiv/2606.15752v1/fig-004.webp",
+      "caption": "Figure 4: Architecture of the encoder (Section 4.3.1) step 𝑡 . The encoder takes five low-rank embeddings as input: the user collaborative embedding ucf (𝑢), the collaborative embeddings of the previous and current items icf (𝑖𝑢,𝑡−1) and icf (𝑖𝑢,𝑡 ), and the source- and destination-side transition embeddings isrc (𝑖𝑢,𝑡−1) and idst (𝑖𝑢,𝑡 ). ⊞ denotes feature concatenation.",
+      "page": 5,
+      "index": 4,
+      "width": 498,
+      "height": 300
+    }
+  ]
+}

@@ -1,0 +1,70 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2606.15044v1/fig-001.webp",
+      "caption": "Figure 1: Efficiency-equity Pareto front of the evaluated tokenizers. Values beside markers indicate the patch size for BLT, morpheme inventory size for MYTE, and vocabulary size for BPE and PA BPE.",
+      "page": 6,
+      "index": 1,
+      "width": 902,
+      "height": 542
+    },
+    {
+      "url": "assets/figures/arxiv/2606.15044v1/fig-002.webp",
+      "caption": "Table 8: Per-language sentence counts in the tokenizer training dataset.",
+      "page": 11,
+      "index": 2,
+      "width": 343,
+      "height": 436
+    },
+    {
+      "url": "assets/figures/arxiv/2606.15044v1/fig-003.webp",
+      "caption": "Figure 2: Per-language token counts on the FLORES+ training dataset by Parity-aware BPE tokenizers of varying vocabulary sizes.",
+      "page": 7,
+      "index": 3,
+      "width": 461,
+      "height": 550
+    },
+    {
+      "url": "assets/figures/arxiv/2606.15044v1/fig-004.webp",
+      "caption": "Table 13: Per-language XCOPA scores. Expected accuracy of a random classifier = 50.00.",
+      "page": 14,
+      "index": 4,
+      "width": 691,
+      "height": 198
+    },
+    {
+      "url": "assets/figures/arxiv/2606.15044v1/fig-005.webp",
+      "caption": "Table 11: Per-language sentence counts in the finetuning dataset.",
+      "page": 12,
+      "index": 5,
+      "width": 342,
+      "height": 407
+    },
+    {
+      "url": "assets/figures/arxiv/2606.15044v1/fig-006.webp",
+      "caption": "Table 9: Word frequencies in FineWeb2 and relative frequencies after temperature sampling (τ = 1.21). Temperature sampling boosts the relative proportion of low-resource SEA languages while keeping English at 89.7%, matching Llama 2’s pretraining data distribution.",
+      "page": 12,
+      "index": 6,
+      "width": 810,
+      "height": 408
+    },
+    {
+      "url": "assets/figures/arxiv/2606.15044v1/fig-007.webp",
+      "caption": "Table 10: Per-language sentence counts in the language model training dataset after temperature sampling.",
+      "page": 12,
+      "index": 7,
+      "width": 347,
+      "height": 436
+    },
+    {
+      "url": "assets/figures/arxiv/2606.15044v1/fig-008.webp",
+      "caption": "Table 3: Intrinsic evaluation of tokenizers on identical training data. Compression rate and tokenizer parity values are macro-averaged across languages. The best result is in bold and the second-best is underlined. Legend: CR = Compression Rate, TP = Tokenizer Parity.",
+      "page": 5,
+      "index": 8,
+      "width": 397,
+      "height": 459
+    }
+  ]
+}

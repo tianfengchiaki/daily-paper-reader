@@ -1,0 +1,915 @@
+Title: LLM-Powered Virtual Population for Demand Simulation and Pricing
+
+URL Source: https://arxiv.org/pdf/2606.16183v1
+
+Published Time: Tue, 16 Jun 2026 01:39:18 GMT
+
+Number of Pages: 18
+
+Markdown Content:
+# LLM-Powered Virtual Population for Demand Simulation and Pricing 
+
+Chengpiao Huang ∗ Kaizheng Wang †
+
+June 16, 2026 
+
+Abstract 
+
+We develop an LLM-powered virtual population model that simulates demand for pricing decisions, in settings where products are described by rich unstructured information, such as text descriptions and images, and where decision makers need not only mean-demand predic-tions but also uncertainty estimates for counterfactual prices. Our model represents exposed customers as draws from a finite mixture of customer personas. For each persona, product, and candidate price, an LLM elicits a persona-level purchase probability using both structured persona information and unstructured product information. These probabilities are aggregated through calibrated mixture weights to form a predictive distribution of aggregate demand. The resulting simulator can evaluate counterfactual prices under various pricing objectives, including expected revenue and risk-aware criteria such as conditional value at risk. We test the frame-work on an online H&M fashion dataset with product descriptions and images. The calibrated LLM-based simulator achieves the best overall predictive performance among the models con-sidered, and supports sample-efficient pricing decisions. Our framework provides a practical way to use LLMs as demand simulators for products with limited historical demand data but rich product information. By producing a full predictive demand distribution rather than only a point forecast, it enables managers to compare candidate prices, quantify demand uncertainty, and choose prices that target either average-case revenue or risk-aware objectives. 
+
+Keywords: Large language models, demand simulation, pricing, risk-aware decision-making 
+
+# 1 Introduction 
+
+Demand modeling is a central problem in pricing. Classical approaches typically rely on explicitly specified parametric (e.g., linear) demand models (Broder and Rusmevichientong, 2012; Keskin and Zeevi, 2014; Cohen et al., 2020; Ban and Keskin, 2021). While these models offer interpretability and strong theoretical foundations, they impose restrictive assumptions on functional forms, and often struggle to capture rich product information such as detailed text descriptions and images. Recent advances in LLMs offer a new opportunity to address this challenge. Unlike traditional parametric demand models, LLMs can directly process rich, unstructured product representations, including images and text descriptions of varying lengths (Bommasani et al., 2021). This flexibility allows demand responses to depend on information that is difficult to encode in fixed-dimensional feature vectors. As a result, LLMs offer a different modeling paradigm: instead of manually speci-fying a demand function over a pre-defined set of covariates, we delegate feature construction and modeling to the LLM.           
+
+> ∗Department of Industrial Engineering and Operations Research, Columbia University. Email: cheng-piao.huang@columbia.edu.
+> †Department of Industrial Engineering and Operations Research and Data Science Institute, Columbia University. Email: kaizheng.wang@columbia.edu.
+
+1
+
+> arXiv:2606.16183v1 [cs.LG] 15 Jun 2026
+
+In addition, LLMs provide a flexible framework for risk-aware decision-making. Traditional de-mand models typically focus on estimating mean demand and therefore lead naturally to objectives such as the expected revenue. In practice, however, decision makers often care not only about av-erage performance but also about the uncertainty and risk of pricing decisions. As LLMs naturally generate probability distributions, they support modeling the entire demand distribution rather than only its mean. This makes it possible to evaluate and optimize risk-aware objectives, such as conditional value at risk (CVaR), in addition to the standard expected revenue. In this paper, we propose an LLM-based framework for demand simulation in pricing that incorporates rich unstructured product information, including text and images. The key idea is to elicit persona-level purchase probabilities from an LLM and aggregate them into a demand distribution. Our simulator allows for counterfactual evaluation of prices for new products. As our framework models the entire demand distribution, it supports not only the standard expected revenue objective, but also risk-aware pricing objectives such as CVaR. Using an online sales dataset from H&M, we show that the fitted simulator is well-aligned with the observed data. 
+
+Related works. Our work lies at the intersection of pricing, LLM-based simulation, and risk-aware decision-making. Below we give a review of the related works, which is by no means exhaus-tive. Pricing and demand estimation are central topics in operations research. Classical models typi-cally impose a structured demand model, such as a parametric and feature-based model, and then design pricing policies that balance learning and revenue maximization (Broder and Rusmevichien-tong, 2012; Keskin and Zeevi, 2014; Cohen et al., 2020; Ban and Keskin, 2021). While these models offer interpretability, tractable optimization, and strong theoretical foundations, they impose re-strictive assumptions on functional forms, and often struggle to capture rich product information such as detailed text descriptions and images. A growing literature uses LLMs to simulate human behavior in various areas, including economic and social science experiments (Aher et al., 2023; Chen et al., 2023; Horton, 2023; Ziems et al., 2024) and market research (Brand et al., 2023; Gui and Toubia, 2023; Goli and Singh, 2024). This line of work suggests that LLMs can serve as flexible simulators of heterogeneous human responses, while also emphasizing the need for validation and calibration against observed data. Motivated by this, a number of related works study how LLM-generated synthetic data should be calibrated (Leng et al., 2024; Bui et al., 2025; Wang et al., 2026a; Huang et al., 2025; Yin and Xin, 2026; Fan et al., 2026; Lu et al., 2026) so that synthetic response distributions better align with real populations. Our work has a similar spirit, where we calibrate and aggregate LLM-simulated outputs to construct a demand distribution for pricing. A number of recent works have also used LLMs or AI agents in operations and supply chains. One line of work uses LLMs or transformer directly as decision-makers for inventory control, supply-chain optimization, and other operational tasks (Chen et al., 2021; Li et al., 2023; Duan et al., 2025; Liu et al., 2025; Wang et al., 2025; Baek et al., 2026b). Another line uses LLMs to simulate operational environments or generate synthetic data for downstream decisions (Baek et al., 2026a; Wang and Zhang, 2026). Our work belongs to the latter: we use LLMs to simulate customer purchase behavior and fit a demand distribution, and the final pricing decision is made by optimizing an objective over the fitted distribution. Our work is also related to the literature on risk-aware decision-making, which accounts for ad-verse outcomes beyond average performance (Shapiro et al., 2021). A large stream of work studies coherent risk measures and tail-risk objectives, including CVaR, which admits tractable reformula-tions and has become a standard criterion for risk-aware optimization (Artzner et al., 1999; Rock-2afellar and Uryasev, 2000). Recent data-driven work further studies risk-aware decision-making with contextual information, sample-based approximations, profit-risk constraints, and distributionally robust shortfall-risk formulations (Lin et al., 2022; Guo and Xu, 2018; Tao et al., 2025). A comple-mentary line connects uncertainty quantification to downstream decisions, including conformal risk control and prediction-set-based decision rules that optimize robust risk under coverage guarantees (Angelopoulos et al., 2024; Wang and Dobriban, 2026). In contrast to works that train a model for one prespecified risk criterion or shifted scenario distribution, our framework directly models a full predictive demand distribution, which can then be reused for multiple pricing objectives. Recent works also apply generative models, such as diffusion, flow-based, and decision-focused generative models, to scenario generation and robust or risk-sensitive decision-making (Wang et al., 2026b; Cheng et al., 2026). 
+
+# 2 Problem Setup and Methodology 
+
+2.1 Background 
+
+Our goal is to build a simulator for customer demand that can be used to design and evaluate downstream decision-making algorithms, such as pricing policies. Given a product u, rich product information (such as detailed text descriptions and images), and a posted price p, the simulator specifies a demand distribution from which demand samples can be generated. To build this simulator, we assume access to historical data on realized demand under different prices. Let {uj : j ∈ J } denote the products. For each product j ∈ J , we observe rich product information, together with historical price-demand pairs Dj = {(pj,i , d j,i ) : i ∈ I j }, where pj,i is the posted price for product j in instance i (e.g., on a day), and dj,i is the corresponding demand. Our goal is to use the dataset S 
+
+> j∈J
+
+Dj to construct a demand simulator that generalizes across products and prices while conditioning on rich unstructured product information. Traditional para-metric demand models, which rely on fixed-dimensional feature representations and pre-specified functional forms, are not well suited to this setting. In particular, they cannot naturally accommo-date variable-length text descriptions or image inputs. To handle rich product information such as text descriptions and images, we use an LLM to simulate purchase decisions for heterogeneous customer groups, then aggregate these simulated decisions into an aggregate demand model. This approach captures customer heterogeneity without imposing restrictive parametric assumptions on preferences or price sensitivity. We now introduce our model. 
+
+2.2 Persona-Based Modeling 
+
+A virtual population. Consider an e-commerce platform on which a product u is displayed at a posted price p. On a given day, suppose that N customers are exposed to the product infor-mation through search, browsing, or recommendation. We view these customers as independent draws from a virtual population. With probability π0, a customer is not actively interested in the product and therefore does not purchase, regardless of price. Otherwise, the customer belongs to one of K interested customer types, described by profiles {xk}Kk=1 , with population proportions 
+
+{πk}Kk=1 . Conditional on being an interested type-k customer, the customer purchases one unit with probability q(xk, u, p ).3Under this construction, the marginal purchase probability of an exposed customer is 
+
+> K
+
+X
+
+> k=1
+
+πk(1 − π0)q(xk, u, p ).
+
+Equivalently, if we define αk = πk(1 − π0) for k ∈ [K] and αK+1 = π0, then α ∈ ∆K and the virtual population can be represented as a mixture of K active personas plus one inactive dummy persona. Figure 1 illustrates this aggregation logic. 
+
+> Figure 1: Virtual Population Induced by LLM Personas
+
+We now describe how we use an LLM to simulate this virtual population. We first construct a collection of customer personas x1, ..., x K . Each persona represents a behavioral archetype charac-terized by demographic and purchasing attributes, such as age group, engagement frequency, typical paid price, and top purchase product category. For each persona xk, product u, and candidate price 
+
+p, we query the LLM for a purchase probability. The prompt includes persona characteristics, prod-uct information (text and image), and price p, and asks for the likelihood q(xk, u, p ) ∈ [0 , 1] that persona xk purchases product u at price p.From a modeling perspective, the LLM-generated purchase probabilities {q(xk, u, p )}Kk=1 can be interpreted as persona- and price-dependent behavioral features . Unlike traditional parametric de-mand models, which rely on fixed-dimensional product covariates and impose prespecified functional forms over price, the LLM implicitly maps rich product information, customer attributes, and price into a feature space. This feature space varies across personas and prices, and can flexibly adapt to unstructured product information. To aggregate demand across heterogeneous customer personas x1, ..., x K , we assume that exposed customers make independent binary purchase decisions. For a given product u and price p, we model each customer’s purchase probability as a convex combination of persona-level probabilities: 
+
+qα(u, p ) = 
+
+> K
+
+X
+
+> k=1
+
+αkq(xk, u, p ) + αK+1 · 0,
+
+where α = ( α1, . . . , α K , α K+1 ) ∈ ∆K denotes the mixture weights. The (K + 1) -th persona is a dummy persona that never buys, which captures baseline non-purchase behavior. The weights α
+
+represent the relative contribution of each persona to the aggregate demand and will be estimated from historical data. Under this model, if N customers are exposed to product u at price p, then the aggregate demand follows the distribution 
+
+QN, α(u, p ) = Binomial ( N, q α(u, p )) . (2.1) 4Monotone calibration. The LLM-simulated purchase probabilities q(xk, u, p ) may be system-atically biased even when they contain useful ordinal information. Prior works have shown that language-model confidence scores and verbalized probabilities can be miscalibrated, although they often retain useful ranking information and can be improved by elicitation or post-hoc calibration (Jiang et al., 2021; Tian et al., 2023; Plaut et al., 2024; Wang et al., 2024; Kapoor et al., 2024). To adjust for such systematic bias, we also consider a monotone calibrated version of the persona-level purchase probabilities. Let σ(z) = 1 /(1 + e−z ) denote the sigmoid function, which monotonically transforms a real number to a number in [0 , 1] . Its inverse function is σ−1(q) = log( q 
+
+> 1−q
+
+). For parameters a ∈ R and b > 0, define the monotone transformation 
+
+Ta,b (q) = σ  a + b · σ−1(q) , ∀q ∈ [0 , 1] .
+
+The parameter a shifts the overall level of purchase probability, while b controls the strength of the LLM’s implied probability scale. The restriction b > 0 preserves the ordering of purchase probabilities across products and personas. The calibrated aggregate purchase probability is 
+
+qcal 
+
+> α,a,b
+
+(u, p ) = 
+
+> K
+
+X
+
+> k=1
+
+αkTa,b 
+
+ q(xk, u, p ) + αK+1 · 0,
+
+and the corresponding calibrated demand model is 
+
+Qcal 
+
+> N, α,a,b
+
+(u, p ) = Binomial  N, q cal 
+
+> α,a,b
+
+(u, p ) . (2.2) The original model QN, α(u, p ) in (2.1) is recovered by setting a = 0 and b = 1 . Intuitively, the calibration operates on the log-odds scale. The intercept a captures a global level bias in the LLM probabilities: a negative value lowers all active-persona purchase probabilities, while a positive value raises them. The slope b acts like an inverse-temperature parameter. When b < 1, extreme LLM probabilities are shrunk toward 1/2; when b > 1, differences between low and high LLM probabilities are amplified. The constraint b > 0 preserves the LLM-implied ranking across personas, products, and prices, so calibration corrects the scale of the probabilities without discarding their ordinal information. 
+
+2.3 Persona Weights Estimation 
+
+We estimate the persona mixture weights α and the exposure parameter N from the historical dataset D by maximum likelihood. A natural formulation is 
+
+min   
+
+> α∈∆K, N ∈Z+
+
+− X
+
+> j∈J
+
+X
+
+> i∈I j
+
+log ℓ  dj,i N, q α(uj , p j,i ) , (2.3) where ℓ(d | N, q ) = P (z = d), with z ∼ Binomial( N, q ), is the likelihood function for the binomial distribution. In practice, however, the data may be truncated : we only observe product-price pairs with positive realized demand. This is indeed the case in our dataset (Ling et al., 2022). To account for this, we instead solve 
+
+min   
+
+> α∈∆K, N ∈Z+
+
+− X
+
+> j∈J
+
+X
+
+> i∈I j
+
+log eℓ  dj,i N, q α(uj , p j,i ) , (2.4) where eℓ(d | N, q ) = P (z = d | z > 0) with z ∼ Binomial( N, q ). Thus, eℓ is the likelihood conditional on observing strictly positive demand. Lemma 2.1 below shows that this conditional likelihood admits an equivalent tractable form. 5Lemma 2.1 (Equivalent truncated objective) . Fix q ∈ (0 , 1] , N ∈ Z+ and d ∈ [N ]. Define 
+
+f (d | N, q ) = −d log q − (N − d) log(1 − q) + log 1 − (1 − q)N  . (2.5) 
+
+For z ∼ Binomial( N, q ), it holds that 
+
+− log P (z = d | z > 0) = f (d | N, q ) − log 
+
+Nd
+
+
+
+.
+
+Moreover, q 7 → f (d | N, q ) is a convex function for q ∈ (0 , 1/2] .Proof of Lemma 2.1. See Appendix A. By Lemma 2.1, and because α 7 → qα(u, p ) is linear, the following optimization problem is convex for each fixed N :
+
+min 
+
+> α
+
+X
+
+> j∈J
+
+X
+
+> i∈I j
+
+
+
+f  dj,i N, q α(uj , p j,i ) − log 
+
+ Ndj,i 
+
+ 
+
+s.t. qα(uj , p j,i ) ≤ 12 , ∀j ∈ J , ∀i ∈ I j , (2.6) 
+
+α ∈ ∆K .
+
+Here, the constraint qα(uj , p j,i ) ≤ 12 guarantees the convexity of the problem. It is motivated by the fact that most customers do not purchase, and thus we expect these purchase probabilities to be well below 1/2 in practical applications. This leads to the estimation procedure in Algorithm 1. 
+
+Algorithm 1 Persona Weights and Exposure Optimization 
+
+Input: Product-price-demand data {(uj , p j,i , d j,i ) : i ∈ I j , j ∈ J } , LLM-simulated purchase prob-abilities {q(xk, u j , p j,i ) : k ∈ [K], i ∈ I j , j ∈ J } , and maximum exposure Nmax .
+
+For N = 1 , ..., N max :
+
+If the demand is always observed, solve the optimization problem (2.3); if zero demand is trun-cated, solve the optimization problem (2.6). Get an optimal solution bα(N ) and optimal value V (N ).Find bN = argmin N ∈[Nmax ] V (N ) and set bα = bα( bN ).
+
+Output: ( bN , bα).For the calibrated model Qcal 
+
+> N, α,a,b
+
+, we estimate (N, α, a, b ) by the same likelihood principle, replacing qα(u, p ) in (2.3) or (2.6) with qcal 
+
+> α,a,b
+
+(u, p ). For fixed (a, b, N ), optimization over α has the same form as above after replacing the purchase probabilities by their calibrated version. In implementation, we alternate between fitting the mixture weights α and updating the calibration parameters (a, b ).
+
+2.4 Demand Simulation and Pricing 
+
+Once the unknown parameters are estimated, the demand simulator is fully specified and can gener-ate demand for new products under counterfactual prices. Given a product u and candidate price p,we first query the LLM for persona-level purchase probabilities {q(xk, u, p )}Kk=1 . We then combine these probabilities using the estimated mixture weights and sample synthetic demand from 
+
+bQ(u, p ) = Q bN , bα(u, p ) = Binomial   bN , q bα(u, p ),
+
+6or bQ(u, p ) = Qcal  
+
+> bN , bα,ba, bb
+
+(u, p ) = Binomial 
+
+ bN , q cal 
+
+> bα,ba, bb
+
+(u, p )
+
+
+
+.
+
+Repeating this procedure over a grid of prices yields a synthetic demand curve that can be used to evaluate downstream decision-making algorithms, such as dynamic pricing policies, for new products and counterfactual scenarios. The simulator also induces a pricing rule. Let F be a functional that maps a demand distribution to a scalar objective, such as expected revenue or a risk-aware criterion. Given a product u, we choose 
+
+bp = argmax 
+
+> p
+
+F
+
+ bQ(u, p )
+
+
+
+.
+
+We now give two examples of F .
+
+Example 2.1 (Expected revenue) . The expected revenue is defined by 
+
+F  Q(u, p ) = p · Ed∼Q (u,p ) [d] ,
+
+Example 2.2 (Conditional value at risk) . The conditional value at risk (CVaR) of the revenue is defined as follows. Let d ∼ Q (u, p ), then the revenue is R = p · d. Given a tail probability parameter 
+
+τ ∈ (0 , 1) , we define CVaR by 
+
+CVaR τ (R) = E [R | R ≤ quantile τ (R)] ,
+
+which measures the average revenue in the worst τ fraction of outcomes. 
+
+# 3 Numerical Experiments 
+
+In this section, we test our framework on real data. The code is available at https://github.com/ ch3702/LLM-demand-simulator .
+
+3.1 Dataset 
+
+We use an H&M Personalized Fashion Recommendations dataset (Ling et al., 2022). The dataset covers customer transactions from September 2018 to September 2020, and consists of the following three types of information. First, transaction records provide the purchase date, customer ID, product ID, price, and sales channel. Second, product metadata includes product IDs, names, types, text descriptions, and images. Third, customer records contain demographic and behavioral attributes such as age and fashion-news engagement. 
+
+Products. We focus on products in the trousers category sold through the online channel, in the one-year span of September 20, 2018 to September 19, 2019. To obtain a set of products with nontrivial price variation, we restrict attention to items observed at at least five distinct prices and rank products by transaction volume. We take the top 100 products. For each product, we aggregate transactions to the (date , product , price ) level and define daily demand as the number of purchases observed for that triple. 1    
+
+> 1In the dataset, the prices are normalized to lie in [0 ,1] . Following the suggestion of https://www.kaggle.com/ c/h-and-m-personalized-fashion-recommendations/discussion/310496 , we rescale the prices by 590 .
+
+7Personas. To represent heterogeneous customer preferences, we partition historical customers into cells using age, purchase frequency, typical paid price, and dominant product category. Each cell is treated as a persona. We keep the top K = 50 personas with the most customers, and add a dummy persona that never makes a purchase. 
+
+3.2 LLM Simulation Procedure 
+
+We use GPT-5-mini (OpenAI, 2025) to simulate customers. We query it with prompts that consist of (i) persona description, (ii) product name, text descriptions and product image, and (iii) candidate prices. The LLM is asked to return persona-specific purchase probabilities at each candidate price. An illustrative prompt is shown in Figure 2. Figure 3 shows the associated product image. A typical 
+
+> Figure 2: Illustrative Prompt for Eliciting Persona-Level Purchase Probabilities
+
+You are a customer of H&M in the years 2018-2019. Your age is 25-34. You make about 1 to 6 purchases per month. Your typical paid price is between 18.98 and 22.93. Most of your purchases are in: Trousers. Task: Given a product and a list of prices, return the probability you would buy at each price. Output JSON exactly: {"prices": [...], "p_buy": [...], "reason": "<=30 words"}. Product name: Julia RW Skinny Denim TRS Product type: Trousers Product color: Light Blue Detailed description: 5-pocket jeans in superstretch washed denim with a reg-ular waist and super-skinny legs. Offered prices (USD): [11.99, 12.99, 13.99, 14.99, 15.99, 16.14, 16.66, 16.99, 17.99, 19.99] 
+
+> Figure 3: Illustrative Product Image Provided to the LLM
+
+8LLM response is given in Figure 4. 
+
+Figure 4: Illustrative LLM Response 
+
+{"prices":[11.99, 12.99, 13.99, 14.99, 15.99, 16.14, 16.66, 16.99, 17.99, 19.99], "p_buy":[0.95, 0.93, 0.90, 0.86, 0.80, 0.78, 0.75, 0.72, 0.68, 0.64], "reason":"I’m a frequent H&M trousers buyer who usually pays $19-23; dis-counts sharply raise likelihood, decreasing as price approaches my usual spend."} 
+
+3.3 Illustrative Use Case 
+
+We now present a simple use case to illustrate how a fitted LLM-based simulator is used for coun-terfactual demand simulation and pricing. Consider one H&M trousers product in our study; its product image and the prompt used to elicit persona-level purchase probabilities are shown later in Figures 2 and 3. Once the simulator is fitted, it can generate a predicted demand distribution for any candidate counterfactual price. 
+
+Figure 5: Simulated Demand Distribution under Different Prices                  
+
+> (a) Price $11.99 0246810
+> 0.00
+> 0.05
+> 0.10
+> 0.15
+> 0.20
+> 0.25
+> 0.30
+> 0.35 (b) Price $16.14 0246810
+> 0.00
+> 0.05
+> 0.10
+> 0.15
+> 0.20
+> 0.25
+> 0.30
+> 0.35 (c) Price $19.99 0246810
+> 0.00
+> 0.05
+> 0.10
+> 0.15
+> 0.20
+> 0.25
+> 0.30
+> 0.35
+
+As shown in Figure 5, the simulator describes how the entire predictive demand distribution shifts with price, rather than only how mean demand changes. This distributional output can then be mapped to different pricing objectives. In Figure 6, we compare two examples: expected revenue and the 0.25 -level CVaR of revenue. This example highlights the main practical value of the framework. The optimal price depends on the objective: the price that maximizes expected revenue need not be the same as the price that performs best under a risk-aware objective. Because the simulator generates a full predictive distribution, it supports both average-case and risk-aware evaluation of counterfactual prices for new products. 
+
+3.4 Experiments on Demand Prediction 
+
+Next, we will evaluate our models’ performance on demand prediction and pricing. We first consider demand prediction. We split the 100 products J into a training set Jtr and a testing set Jte , with 
+
+|J tr | = 60 and |J te | = 40 . The training set Jtr is used to fit the demand models (2.1) and (2.2) 9Figure 6: Pricing Objectives under Counterfactual Prices             
+
+> (a) Expected Revenue 12 14 16 18 20
+> Price
+> 0
+> 5
+> 10
+> 15
+> 20
+> 25
+> 30 (b) 0.25 -Level CVaR of Revenue 12 14 16 18 20
+> Price
+> 0
+> 5
+> 10
+> 15
+> 20
+> 25
+> 30
+
+using the truncated likelihood objective (2.6). The models are then evaluated on the testing set Jte 
+
+by comparing the true demand samples and predicted demand distributions. 
+
+Evaluation metrics. We evaluate the fit of a distributional model using the continuous ranked probability score and the probability integral transform .
+
+• The continuous ranked probability score (CRPS) is proposed by Matheson and Winkler (1976) to measure the quality of a distributional forecast. CRPS of a predicted distribution bP with respect to a real sample z ∼ P is defined by 
+
+d( bP, z ) = Ez′∼ bP |z′ − z| − 12 Ez′,z ′′ ∼ bP |z′ − z′′ |.
+
+It has the property that Ez∼P 
+
+d( bP, z ) ≥ Ez∼P 
+
+d(P, z ) for all bP, and equality holds if and only if bP = P. In our setting, we evaluate a predicted demand distribution bQ(u, p ) with respect to the testing set Jte by computing 
+
+CRPS( bQ) = 1
+
+P 
+
+> j∈J te
+
+|I j |
+
+X
+
+> j∈J te
+
+X
+
+> i∈I j
+
+d  bQ+(uj , p j,i ), d j,i 
+
+.
+
+Here, bQ+(u, p ) denotes the zero-truncated version of bQ(u, p ), that is, bQ+(u, p ) = Law( z | z > 0) 
+
+where z ∼ bQ(u, p ). This accounts for the fact that we only observe positive demand samples. Lower CRPS indicates more accurate distribution fit. 
+
+• We also evaluate distributional fit using the randomized probability integral transform (PIT). Let bF + 
+
+> u,p
+
+denote the cumulative distribution function (CDF) of bQ+(u, p ), that is, bF +
+
+> u,p
+
+(d) = 
+
+Pz∼ bQ+(u,p )(z ≤ d). Let bF +
+
+> u,p
+
+(d−) = Pz∼ bQ+(u,p )(z < d ). Define 
+
+Yj,i = bF +  
+
+> uj,p j,i
+
+(dj,i −) + Vj,i 
+
+h bF +  
+
+> uj,p j,i
+
+(dj,i ) − bF +  
+
+> uj,p j,i
+
+(dj,i −)
+
+i
+
+,
+
+where Vj,i ∼ U (0 , 1) i.i.d. If the predicted distribution is accurate, then we expect {Yj,i } to be approximately i.i.d. U(0 , 1) . We summarize the deviation of {Yj,i } from U(0 , 1) by the 10 Kolmogorov–Smirnov distance 
+
+KS -PIT( bQ) = sup 
+
+> t∈[0 ,1]
+
+1
+
+P 
+
+> j∈J te
+
+|I j |
+
+X
+
+> j∈J te
+
+X
+
+> i∈I j
+
+1{Yj,i ≤ t} − t ,
+
+where smaller values indicate better calibration. Additionally, we report the mean absolute error (MAE) and root mean squared error (RMSE) that measures the accuracy for mean prediction. Let bμ+(u, p ) denote the mean of bQ+(u, p ). We compute 
+
+MAE( bQ) = 1
+
+P 
+
+> j∈J te
+
+|I j |
+
+X
+
+> j∈J te
+
+X
+
+> i∈I j
+
+bμ+(uj , p j,i ) − dj,i ,
+
+RMSE( bQ) = 
+
+vuut 1
+
+P 
+
+> j∈J te
+
+|I j |
+
+X
+
+> j∈J te
+
+X
+
+> i∈I j
+
+(bμ+(uj , p j,i ) − dj,i )2.
+
+Benchmark models. We compare the proposed LLM-based simulators against two distributional benchmarks. The first is an embedding-based binomial model. Let emb (u) denote a product em-bedding constructed from product text and image information, and let emb (xk) denote a persona embedding. These embeddings are constructed using the vision-language encoder model SigLIP 2 (Tschannen et al., 2025). After standardizing product embeddings, persona embeddings, and prices, the persona-level purchase probability is modeled as 
+
+qemb  
+
+> θ
+
+(xk, u, p ) = σ
+
+θ⊤
+
+
+
+1
+
+p
+
+emb (u)
+
+emb (xk)
+
+ ,
+
+and the aggregate purchase probability is 
+
+qemb 
+
+> α,θ
+
+(u, p ) = 
+
+> K
+
+X
+
+> k=1
+
+αkqemb  
+
+> θ
+
+(xk, u, p ) + αK+1 · 0.
+
+The resulting predictive distribution is 
+
+Qemb 
+
+> N, α,θ
+
+(u, p ) = Binomial( N, q emb 
+
+> α,θ
+
+(u, p )) . (3.1) When fitting the three binomial models (2.1), (2.2) and (3.1), to reduce computational cost, we search over N ∈ { 100 , 150 , 200 , 250 } in Algorithm 1. The second benchmark is a normally distributed demand model based on the product embedding and price, which mainly targets modeling the mean demand and does not incorporate persona information. With the same standardized product embedding emb (u) and price p, we fit 
+
+Qnormal  
+
+> β,τ
+
+(u, p ) = N
+
+β⊤
+
+
+
+1
+
+p
+
+emb (u)
+
+ , τ 2
+
+ (3.2) For distributional evaluation, we convert this continuous model into a discrete demand distribution by rounding and truncating below zero. When evaluating mean prediction metrics MAE and RMSE, we use the unrounded mean. 11 Results for demand prediction. In Table 1, we report the distributional fit metrics CRPS 
+
+and KS PIT , as well as mean prediction metrics MAE and RMSE , averaged over 10 random train-test splits. For all metrics, smaller values denote better results. Here LLM and LLM-cal refer to the mixture-of-persona model (2.1) and its logit-calibrated version (2.2), respectively, and emb and 
+
+normal are the benchmark embedding-based model (3.1) and normally distributed model (3.2), respectively. 
+
+> Table 1: Demand Distributional Fit and Mean Prediction Metrics
+
+CRPS KS -PIT MAE RMSE 
+
+LLM 1.00 0.32 1.44 1.87 
+
+LLM-cal 0.94 0.30 1.38 1.79 
+
+emb 0.99 0.32 1.44 1.86 
+
+normal 1.19 0.43 1.46 1.86 
+
+We observe that LLM-cal has the best overall performance, while LLM and emb have similar per-formance. This shows that the ordinal information contained in LLM-elicited purchase probabilities can provide additional benefits over using embeddings only, but to realize them, some calibration, such as the logit calibration used by LLM-cal , is necessary. Moreover, these three methods consis-tently outperform normal , demonstrating the advantages of persona-based modeling. 
+
+3.5 Experiments on Pricing 
+
+We now turn to a pricing experiment. In particular, we study the sample efficiency of LLM-cal 
+
+to learn a good pricing policy. As the performance evaluation for pricing requires counterfactual demand distributions at different prices, which are not directly available in the dataset, we fit a demand distribution model from the dataset to serve as the ground truth distribution. Because 
+
+LLM-cal has the best distributional fit in the previous section, we use it to fit a ground truth distribution. Specifically, we split the 100 products J into three subsets J1, J2 and J3, with |J 1| = 60 ,
+
+|J 2| = 25 and |J 3| = 15 . The first subset J1 is used to fit a “ground truth” LLM-cal demand distribution bQ∗. We generate synthetic demand samples from bQ∗ at the observed product-price pairs in J2: eDj = {(uj , p j,i , edj,i ) : i ∈ I j }, edj,i ∼ bQ∗(uj , p j,i ), j ∈ J 2.
+
+For a training fraction ρ ∈ (0 , 1] , let eS2(ρ) be a random subset containing a ρ fraction of the synthetic samples in S
+
+> j∈J 2
+
+eDj . Using eS2(ρ), we fit an estimated simulator 
+
+bQρ(u, p ) = Qcal  
+
+> bNρ,bαρ,baρ,bbρ
+
+(u, p ),
+
+where estimation uses the standard likelihood (2.3). Varying ρ allows us to evaluate how many synthetic samples from J2 are needed to learn a pricing model with good out-of-sample decision quality. We then evaluate pricing on the held-out products J3. For each j ∈ J 3, let Ωj = {pj,i : i ∈ I j }
+
+denote the collection of prices for product j observed in the real data. The optimal price under an objective F is 
+
+p∗ 
+
+> j
+
+= argmax 
+
+> p∈Ωj
+
+F   bQ∗(uj , p ),
+
+12 while the price induced by the estimated simulator bQρ is 
+
+pρj = argmax 
+
+> p∈Ωj
+
+F   bQρ(uj , p ).
+
+We measure pricing quality by mean performance ratio under the ground-truth demand model: 
+
+Ratio F (ρ) = 1
+
+|J 3|
+
+X
+
+> j∈J 3
+
+F   bQ∗(uj , p ρj )
+
+F   bQ∗(uj , p ∗ 
+
+> j
+
+) .
+
+We consider expected revenue and CVaR 0.25 as the pricing objectives. Larger values of Ratio F (ρ)
+
+indicate that the model trained on eS2(ρ) has learned a pricing policy closer to the ground-truth optimal policy. 
+
+Results for pricing. In Figure 7, we plot Ratio F (ρ) as a function of the training fraction ρ ∈{0.01 , 0.025 , 0.05 } ∪ { 0.1 · m : m ∈ [8] }, averaged over 10 random three-way splits of data. We observe that for ρ = 0 .025 , the learned pricing policy already achieves a relative performance of over 90% for the expected revenue, and 87% for the 0.25 -level CVaR. On average the dataset eS2
+
+with ρ = 1 has approximately 2923 samples and 25 products in total, so ρ = 0 .025 translates to 
+
+73 samples, that is, less than 3 samples per product on average. This shows that our modeling framework is highly sample efficient. 
+
+Figure 7: Pricing Sample Efficiency of the LLM-cal Model 
+
+(a) Expected Revenue 0.0 0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8   
+
+> Fraction of data used for training Q
+> 0.75
+> 0.80
+> 0.85
+> 0.90
+> 0.95
+> 1.00
+> Mean performance ratio
+
+(b) 0.25 -Level CVaR of Revenue 0.0 0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8  
+
+> Fraction of data used for training Q
+> 0.75
+> 0.80
+> 0.85
+> 0.90
+> 0.95
+> 1.00
+> Mean performance ratio
+
+# 4 Discussions 
+
+This paper develops an LLM-based demand simulator for pricing that can incorporate rich product information including text descriptions and images. The framework aggregates LLM-generated persona-level purchase probabilities into a tractable stochastic demand model that is useful for downstream pricing decisions. Numerical experiments show that the fitted simulator is reasonably well aligned with the observed data and gives strong pricing performance under both expected-revenue and CVaR objectives. 13 Acknolwedgement 
+
+This research is supported by the 2025–2026 Deming Doctoral Fellowship from the Deming Center for Operational Innovation and Excellence at Columbia Business School. 14 A Proof of Lemma 2.1 
+
+By definition, 
+
+− log P (z = d | z > 0) = − log P(z = d)1 − P(z = 0) = log P(z = d) + log (1 − P(z = 0)) = − log 
+
+ Nd
+
+
+
+qd(1 − q)N −d
+
+
+
++ log 1 − (1 − q)N 
+
+= − log 
+
+Nd
+
+
+
+− d log q − (N − d) log(1 − q) + log 1 − (1 − q)N  .
+
+Since − log  Nd
+
+ is a constant independent of q, then it suffices to prove that the function 
+
+Ld(q) = −d log q − (N − d) log(1 − q) + log 1 − (1 − q)N 
+
+= −(d − 1) log q − (N − d) log(1 − q) + log 
+
+"N −1X
+
+> r=0
+
+(1 − q)r
+
+#
+
+is convex on (0 , 1/2] . For every d ≥ 1,
+
+Ld(q) = L1(q) + ( d − 1) log 1 − qq .
+
+Since q 7 → log 1−qq is convex on (0 , 1/2] , then it suffices to prove that the function L1(q) is convex. We now prove that the function L1(q) is in fact convex on (0 , 1) . Let A(t) = PN −1 
+
+> r=0
+
+tr, then 
+
+A′(t) = PN −1 
+
+> r=1
+
+rt r−1 and A′′ (t) = PN −1 
+
+> r=2
+
+r(r − 1) tr−2. We have 
+
+L′
+
+> 1
+
+(q) = N − 11 − q − A′(1 − q)
+
+A(1 − q) ,L′′  
+
+> 1
+
+(q) = N − 1(1 − q)2 + A′′ (1 − q)
+
+A(1 − q) −
+
+ A′(1 − q)
+
+A(1 − q)
+
+2
+
+. (A.1) Define a discrete random variable R with distribution 
+
+P(R = r) = (1 − q)r
+
+PN −1 
+
+> s=0
+
+(1 − q)s , ∀r ∈ { 0, 1, ..., N − 1}.
+
+We observe that 
+
+E [R] = 
+
+PN −1 
+
+> r=0
+
+r(1 − q)r
+
+PN −1 
+
+> r=0
+
+(1 − q)r = A′(1 − q)
+
+A(1 − q) · (1 − q), (A.2) 
+
+E [R(R − 1)] = 
+
+PN −1 
+
+> r=0
+
+r(r − 1)(1 − q)r
+
+PN −1 
+
+> r=0
+
+(1 − q)r = A′′ (1 − q)
+
+A(1 − q) · (1 − q)2. (A.3) Substituting (A.2) and (A.3) into (A.1) yields that for all q ∈ (0 , 1) ,
+
+L′′  
+
+> 1
+
+(q) = N − 1(1 − q)2 + E[R2] − E[R](1 − q)2 − E[R]2
+
+(1 − q)2
+
+= N − 1 + var( R) − E[R](1 − q)2 > 0
+
+because E[R] < N − 1. Thus, L1(q) is strongly convex on (0 , 1) . This completes the proof. 15 References 
+
+Aher, G. V. , Arriaga, R. I. and Kalai, A. T. (2023). Using large language models to simulate multiple humans and replicate human subject studies. In Proceedings of the 40th International Conference on Machine Learning (A. Krause, E. Brunskill, K. Cho, B. Engelhardt, S. Sabato and J. Scarlett, eds.), vol. 202 of Proceedings of Machine Learning Research . PMLR. 
+
+Angelopoulos, A. , Bates, S. , Fisch, A. , Lei, L. and Schuster, T. (2024). Conformal risk control. In International conference on learning representations , vol. 2024. 
+
+Artzner, P. , Delbaen, F. , Eber, J.-M. and Heath, D. (1999). Coherent measures of risk. 
+
+Mathematical finance 9 203–228. 
+
+Baek, J. , Chen, Y. , Chi, Z. and Ma, W. (2026a). Evaluating LLM-persona generated distribu-tions for decision-making. arXiv preprint arXiv:2602.06357 .
+
+Baek, J. , Fu, Y. , Ma, W. and Peng, T. (2026b). AI agents for inventory control: Human-LLM-OR complementarity. arXiv preprint arXiv:2602.12631 .
+
+Ban, G.-Y. and Keskin, N. B. (2021). Personalized dynamic pricing with machine learning: High-dimensional features and heterogeneous elasticity. Management Science 67 5549–5568. 
+
+Bommasani, R. , Hudson, D. A. , Adeli, E. , Altman, R. , Arora, S. , von Arx, S. , Bern-stein, M. S. , Bohg, J. , Bosselut, A. , Brunskill, E. et al. (2021). On the opportunities and risks of foundation models. arXiv preprint arXiv:2108.07258 .
+
+Brand, J. , Israeli, A. and Ngwe, D. (2023). Using llms for market research. Harvard business school marketing unit working paper .
+
+Broder, J. and Rusmevichientong, P. (2012). Dynamic pricing under a general parametric choice model. Operations Research 60 965–980. 
+
+Bui, N. , Nguyen, H. T. , Kumar, S. , Theodore, J. , Qiu, W. , Nguyen, V. A. and Ying, R. (2025). Mixture-of-personas language models for population simulation. In Findings of the Association for Computational Linguistics: ACL 2025 .
+
+Chen, L. , Lu, K. , Rajeswaran, A. , Lee, K. , Grover, A. , Laskin, M. , Abbeel, P. , Srini-vas, A. and Mordatch, I. (2021). Decision transformer: Reinforcement learning via sequence modeling. Advances in neural information processing systems 34 15084–15097. 
+
+Chen, Y. , Liu, T. X. , Shan, Y. and Zhong, S. (2023). The emergence of economic rationality of GPT. Proceedings of the National Academy of Sciences 120 e2316205120. 
+
+Cheng, X. , Zhu, Y. and Xie, Y. (2026). Generative models for decision-making under distribu-tional shift. arXiv preprint arXiv:2604.04342 .
+
+Cohen, M. C. , Lobel, I. and Paes Leme, R. (2020). Feature-based dynamic pricing. Management Science 66 4921–4943. 
+
+Duan, Y. , Hu, Y. and Jiang, J. (2025). Ask, clarify, optimize: Human-LLM agent collaboration for smarter inventory control. arXiv preprint arXiv:2601.00121 .
+
+Fan, G. J. , Huang, C. , Peng, T. , Wang, K. and Wu, Y. (2026). SYN-DIGITS: A synthetic control framework for calibrated digital twin simulation. arXiv preprint arXiv:2604.07513 .16 Goli, A. and Singh, A. (2024). Frontiers: Can large language models capture human preferences? 
+
+Marketing Science 43 709–722. 
+
+Gui, G. and Toubia, O. (2023). The challenge of using LLMs to simulate human behavior: A causal inference perspective. arXiv preprint arXiv:2312.15524 .
+
+Guo, S. and Xu, H. (2018). Distributionally robust shortfall risk optimization model and its approximation. Mathematical Programming 1–26. 
+
+Horton, J. J. (2023). Large language models as simulated economic agents: What can we learn from homo silicus? Tech. rep., National Bureau of Economic Research. 
+
+Huang, C. , Wu, Y. and Wang, K. (2025). How many human survey respondents is a large lan-guage model worth? an uncertainty quantification perspective. arXiv preprint arXiv:2502.17773 
+
+.
+
+Jiang, Z. , Araki, J. , Ding, H. and Neubig, G. (2021). How can we know when language models know? On the calibration of language models for question answering. Transactions of the Association for Computational Linguistics 9 962–977. 
+
+Kapoor, S. , Gruver, N. , Roberts, M. , Pal, A. , Dooley, S. , Goldblum, M. and Wilson, A. (2024). Calibration-tuning: Teaching large language models to know what they don’t know. In Proceedings of the 1st Workshop on Uncertainty-Aware NLP (UncertaiNLP 2024) .
+
+Keskin, N. B. and Zeevi, A. (2014). Dynamic pricing with an unknown demand model: Asymp-totically optimal semi-myopic policies. Operations Research 62 1142–1167. 
+
+Leng, Y. , Sang, Y. and Agarwal, A. (2024). Reduce disparity between LLMs and humans: Optimal LLM sample calibration. Available at SSRN 4802019 .
+
+Li, B. , Mellou, K. , Zhang, B. , Pathuri, J. and Menache, I. (2023). Large language models for supply chain optimization. arXiv preprint arXiv:2307.03875 .
+
+Lin, S. , Chen, Y. F. , Li, Y. and Shen, Z.-J. M. (2022). Data-driven newsvendor problems regularized by a profit risk constraint. Production and Operations Management 31 1630–1644. 
+
+Ling, C. G. , ElizabethHMGroup , FridaRim , inversion , Ferrando, J. , Maggie , neu-raloverflow and xlsrln (2022). H&m personalized fashion recommendations. https: //kaggle.com/competitions/h-and-m-personalized-fashion-recommendations . Kaggle. 
+
+Liu, J. , Chen, Z. and Zhong, Y. (2025). Large language newsvendor: Decision biases and cognitive mechanisms. arXiv preprint arXiv:2512.12552 .
+
+Lu, C. , Wang, M. , Zhang, D. J. and Zhang, H. (2026). Generative augmented inference. arXiv preprint arXiv:2604.14575 .
+
+Matheson, J. E. and Winkler, R. L. (1976). Scoring rules for continuous probability distribu-tions. Management science 22 1087–1096. 
+
+OpenAI (2025). Introducing GPT-5. URL https://openai.com/index/introducing-gpt-5/ 
+
+17 Plaut, B. , Khanh, N. X. and Trinh, T. (2024). Probabilities of chat LLMs are miscalibrated but still predict correctness on multiple-choice Q&A. Transactions on Machine Learning Research 
+
+ArXiv:2402.13213. 
+
+Rockafellar, R. T. and Uryasev, S. (2000). Optimization of conditional value-at-risk. Journal of risk 2 21–42. 
+
+Shapiro, A. , Dentcheva, D. and Ruszczynski, A. (2021). Lectures on stochastic programming: modeling and theory . SIAM. 
+
+Tao, Y. , Delage, E. and Xu, H. (2025). Risk-averse decision making with contextual information: Model, sample average approximation, and kernelization. arXiv preprint arXiv:2502.16607 .
+
+Tian, K. , Mitchell, E. , Zhou, A. , Sharma, A. , Rafailov, R. , Yao, H. , Finn, C. and Man-ning, C. D. (2023). Just ask for calibration: Strategies for eliciting calibrated confidence scores from language models fine-tuned with human feedback. In Proceedings of the 2023 Conference on Empirical Methods in Natural Language Processing .
+
+Tschannen, M. , Gritsenko, A. , Wang, X. , Naeem, M. F. , Alabdulmohsin, I. ,
+
+Parthasarathy, N. , Evans, T. , Beyer, L. , Xia, Y. , Mustafa, B. et al. (2025). SigLIP 2: Multilingual vision-language encoders with improved semantic understanding, localization, and dense features. arXiv preprint arXiv:2502.14786 .
+
+Wang, C. , Szarvas, G. , Balazs, G. , Danchenko, P. and Ernst, P. (2024). Calibrating verbalized probabilities for large language models. arXiv preprint arXiv:2410.06707 .
+
+Wang, H. , Chen, G. , Talluri, K. and Li, X. (2025). OMGPT: A sequence modeling framework for data-driven operational decision making. arXiv preprint arXiv:2505.13580 .
+
+Wang, M. , Zhang, D. J. and Zhang, H. (2026a). Large language models for market research: A data-augmentation approach. Marketing Science .
+
+Wang, P. Z. , Chen, S. , Liang, J. , Fioretto, F. and Zhu, S. (2026b). Gen-DFL: Decision-focused generative learning for robust decision making. In The Fourteenth International Confer-ence on Learning Representations .
+
+Wang, T. and Dobriban, E. (2026). Optimal decision-making based on prediction sets. arXiv preprint arXiv:2602.00989 .
+
+Wang, Y. and Zhang, X. (2026). Optimizing service operations via LLM-powered multi-agent simulation. arXiv preprint arXiv:2604.04383 .
+
+Yin, Q. and Xin, L. (2026). Synthetic but not infinite: How much LLM-generated data to use in market research. Available at SSRN 6078686 .
+
+Ziems, C. , Held, W. , Shaikh, O. , Chen, J. , Zhang, Z. and Yang, D. (2024). Can large language models transform computational social science? Computational Linguistics 50 237– 291. 18

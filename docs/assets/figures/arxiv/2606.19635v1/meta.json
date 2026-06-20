@@ -1,0 +1,70 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2606.19635v1/fig-001.webp",
+      "caption": "Figure 1: Illustration of Generative Retrieval for next video recommendation from [4]. The input prompt is a sequence of interleaved SID tokens, text, and custom tokens for numerical features.",
+      "page": 1,
+      "index": 1,
+      "width": 506,
+      "height": 335
+    },
+    {
+      "url": "assets/figures/arxiv/2606.19635v1/fig-002.webp",
+      "caption": "Figure 6: ROC AUC comparison.",
+      "page": 6,
+      "index": 2,
+      "width": 506,
+      "height": 432
+    },
+    {
+      "url": "assets/figures/arxiv/2606.19635v1/fig-003.webp",
+      "caption": "Figure 2: Token Factory Architecture. Traditional signals are transformed into \"soft tokens\" as another modality and integrated with textual tokens in the prompt.",
+      "page": 2,
+      "index": 3,
+      "width": 506,
+      "height": 374
+    },
+    {
+      "url": "assets/figures/arxiv/2606.19635v1/fig-004.webp",
+      "caption": "Figure 9: Max attention scores across all layers/heads for textual SID inputs",
+      "page": 7,
+      "index": 4,
+      "width": 506,
+      "height": 308
+    },
+    {
+      "url": "assets/figures/arxiv/2606.19635v1/fig-005.webp",
+      "caption": "Figure 10: Mean attention scores across all layers/heads for textual SID inputs",
+      "page": 7,
+      "index": 5,
+      "width": 506,
+      "height": 310
+    },
+    {
+      "url": "assets/figures/arxiv/2606.19635v1/fig-006.webp",
+      "caption": "Figure 3: Token maker for user watch history.",
+      "page": 3,
+      "index": 6,
+      "width": 506,
+      "height": 381
+    },
+    {
+      "url": "assets/figures/arxiv/2606.19635v1/fig-007.webp",
+      "caption": "Figure 4: ROC AUC comparison between baseline (black line) and treatment (red line), keeping the same batch size.",
+      "page": 5,
+      "index": 7,
+      "width": 506,
+      "height": 379
+    },
+    {
+      "url": "assets/figures/arxiv/2606.19635v1/fig-008.webp",
+      "caption": "Figure 5: ROC AUC comparison between baseline (black line) and treatment (red line), with increased batch size.",
+      "page": 5,
+      "index": 8,
+      "width": 506,
+      "height": 325
+    }
+  ]
+}

@@ -1,0 +1,38 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2606.14193v1/fig-001.webp",
+      "caption": "Figure 3: Spearman rank correlation between query hardness estimates (𝛼-Hardness (ours) or baseline proxies: selectivity and",
+      "page": 6,
+      "index": 1,
+      "width": 1048,
+      "height": 249
+    },
+    {
+      "url": "assets/figures/arxiv/2606.14193v1/fig-002.webp",
+      "caption": "Figure 6: Recall–QPS trade-off curves for five hybrid query processing strategies (Post-Filtering and four hybrid-native indices)",
+      "page": 10,
+      "index": 2,
+      "width": 992,
+      "height": 448
+    },
+    {
+      "url": "assets/figures/arxiv/2606.14193v1/fig-003.webp",
+      "caption": "Figure 8: Recall–QPS trade-offs on four semi-real datasets for Post-Filtering and RWalks, comparing the original workload",
+      "page": 12,
+      "index": 3,
+      "width": 1009,
+      "height": 193
+    },
+    {
+      "url": "assets/figures/arxiv/2606.14193v1/fig-004.webp",
+      "caption": "Figure 5: Comparison of 𝛼-Hardness distribution cover-",
+      "page": 9,
+      "index": 4,
+      "width": 496,
+      "height": 265
+    }
+  ]
+}

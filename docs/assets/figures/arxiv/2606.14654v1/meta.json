@@ -1,0 +1,94 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2606.14654v1/fig-001.webp",
+      "caption": "Figure 1: We propose an LLM-based framework for hierarchical abstraction of user action sequences into interpretable high-level activities (WorkflowView). The left panel illustrates raw action sequences from three domains. WorkflowView enables downstream inferences with task-specific steerability, such as reconstructing user intent in browsers, predicting student dropout in MOOCs, and privacy-preserving categorization of document-centric workflows.",
+      "page": 1,
+      "index": 1,
+      "width": 422,
+      "height": 285
+    },
+    {
+      "url": "assets/figures/arxiv/2606.14654v1/fig-002.webp",
+      "caption": "Figure 2: Dropout prediction performance using WorkflowView. The plots show the weighted F1 score, precision, and recall in response to the variations in ‘start time’ (i.e., time when the action sequences are modeled) and ‘end time’ (i.e., time before the last action until which the action sequences are modeled). For comparison, we include the scores corresponding to baselines where only the ‘majority’ class would be predicted (i.e., all dropout) and predictions based on biased ‘random’ guesses as per prior class probabilities. The best F1 score (F1 = 0.89; Precision = 0.81; Recall = 0.97) correspond to a start time of 6 days and an end time of 24 hours. The number of few-shot examples provided to WorkflowView were 3 for this analysis; Figure 3 below shows the sensitivity to the number of few-shot examples.",
+      "page": 6,
+      "index": 2,
+      "width": 953,
+      "height": 272
+    },
+    {
+      "url": "assets/figures/arxiv/2606.14654v1/fig-003.webp",
+      "caption": "Figure 3: Variation in predictive performance of WorkflowView (weighted F1, precision, and recall) on the MOOC dropout prediction task, in response to the number of few-shot examples considered (N ∈ {0, 1, 3, 5, 10, 20}).",
+      "page": 6,
+      "index": 3,
+      "width": 446,
+      "height": 327
+    },
+    {
+      "url": "assets/figures/arxiv/2606.14654v1/fig-004.webp",
+      "caption": "Table 7: WorkflowView Layer 1 prompt for browser task inference; obtaining natural language descriptions from action sequences.",
+      "page": 15,
+      "index": 4,
+      "width": 942,
+      "height": 500
+    },
+    {
+      "url": "assets/figures/arxiv/2606.14654v1/fig-005.webp",
+      "caption": "Table 8: WorkflowView Layer 2 Prompt for browser task inference; obtaining succinct summary of user intent.",
+      "page": 15,
+      "index": 5,
+      "width": 942,
+      "height": 563
+    },
+    {
+      "url": "assets/figures/arxiv/2606.14654v1/fig-006.webp",
+      "caption": "Figure 4: Activities users do in the context of document editing, at most 30 minutes before (left, in blue) and after (right, in red) prompting the integrated AI tool and accepting its output. The action sequences are processed using WorkflowView to discover the high-level categories; corresponding definitions are provided in the adjoining table.",
+      "page": 7,
+      "index": 6,
+      "width": 500,
+      "height": 408
+    },
+    {
+      "url": "assets/figures/arxiv/2606.14654v1/fig-007.webp",
+      "caption": "Figure 5: Illustrative multimodal extension of WorkflowView for task inference using browser snapshots and UI click logs. In this example, task inference is performed unobtrusively as the user interacts with the application. The visual modality complements the textual action sequence by grounding descriptions in on-screen context (e.g., visible content and time spent), leading to more accurate and informative inferences than action sequences alone.",
+      "page": 8,
+      "index": 7,
+      "width": 450,
+      "height": 365
+    },
+    {
+      "url": "assets/figures/arxiv/2606.14654v1/fig-008.webp",
+      "caption": "Table 2: Qualitative example of task description generated using WorkflowView using the action sequence, and the corresponding ground-truth task description.",
+      "page": 4,
+      "index": 8,
+      "width": 471,
+      "height": 455
+    },
+    {
+      "url": "assets/figures/arxiv/2606.14654v1/fig-009.webp",
+      "caption": "Table 11: Qualitative examples of task descriptions generated using WorkflowView from the action sequences, and the corresponding ground-truth task descriptions. 17",
+      "page": 17,
+      "index": 9,
+      "width": 919,
+      "height": 1499
+    },
+    {
+      "url": "assets/figures/arxiv/2606.14654v1/fig-010.webp",
+      "caption": "Table 9: WorkflowView Layer for MOOC student dropout prediction; obtaining natural language descriptions.",
+      "page": 16,
+      "index": 10,
+      "width": 942,
+      "height": 507
+    },
+    {
+      "url": "assets/figures/arxiv/2606.14654v1/fig-011.webp",
+      "caption": "Table 10: WorkflowView Layer 2 for MOOC student dropout prediction; obtaining succinct activity summary.",
+      "page": 16,
+      "index": 11,
+      "width": 942,
+      "height": 424
+    }
+  ]
+}

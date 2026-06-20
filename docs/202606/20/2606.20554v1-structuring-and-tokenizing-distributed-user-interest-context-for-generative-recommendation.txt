@@ -1,0 +1,1083 @@
+Title: Structuring and Tokenizing Distributed User Interest Context for Generative Recommendation
+
+URL Source: https://arxiv.org/pdf/2606.20554v1
+
+Published Time: Fri, 19 Jun 2026 01:20:19 GMT
+
+Number of Pages: 17
+
+Markdown Content:
+# Structuring and Tokenizing Distributed User Interest Context for Generative Recommendation 
+
+Ruizhong Qiu 1,∗, Yinglong Xia 2, Dongqi Fu 2, Hanqing Zeng 2, Ren Chen 2, Xiangjun Fan 2, Hong Li 2, Hong Yan 2, Hanghang Tong 11University of Illinois Urbana–Champaign, 2Meta MRS 
+
+> ∗
+
+Work done during an internship at Meta 
+
+Generative recommendation is an emerging paradigm that has shown promise in industrial recom-mendation systems, aiming to predict users’ next interactions from their historical behaviors. At the core of generative recommendation lies item tokenization, which bridges item semantics and recommendation models. However, existing methods often struggle to effectively organize and inject 
+
+complex user-behavioral and item-semantic contexts into recommendation models simultaneously. On the one hand, existing graph-based integration methods, such as graph serialization and graph neural networks, either suffer from scalability issues or exploit only local graph information. On the other hand, existing semantic tokenization methods typically rely on heuristics and lack explicit supervision signals, which may lead to inaccurate or suboptimal semantic representations. To address these limitations in user interest context modeling, we propose G2Rec , a scalable framework that unifies holistic graph-based user co-engagement modeling with semantic tokenization for industrial-scale generative recommendation. First , we construct a sparsified item-item co-engagement graph with 
+
+O (M log M ) edges as the item schema, where M denotes the total number of interactions. Second ,we design a scalable “soft” clustering algorithm with time complexity O(ρM log M ) per iteration to extract distributed interest prototypes from the constructed graph, where ρ is a small constant representing the sparsity of the soft cluster membership distribution rather than a hard one-to-one assignment. Third , based on the interest prototypes and item interest profiles extracted by soft cluster-ing, we tokenize these profiles together with users’ interested items to train a generative sequential recommendation model. Overall, G2Rec enables recommendation models to capture holistic and semantically grounded user interest prototypes without requiring ground-truth user interests, thereby providing more comprehensive and accurate modeling of user behavior contexts in industrial sequential recommendation. Online deployment across product surfaces and extensive experiments on public datasets demonstrate the superiority of G2Rec over existing methods.  
+
+> Keywords:
+
+Generative Recommendation, Tokenization, Graph Clustering 
+
+# 1 Introduction 
+
+Generative recommendation (GR) (Geng et al., 2022; Gao et al., 2023; Zhu et al., 2023; Hou et al., 2024; Deng et al., 2025) has emerged as a promising paradigm in the field of industrial recommender systems. By leveraging the autoregressive nature of user behavior, GR aims to predict the next interactions of users based on their historical contexts using large language model (LLM) architectures, thereby providing users with a more personalized and responsive experience. This approach has shown considerable potential in various scenarios, including e-commerce, online advertising, and content streaming, where understanding the sequential nature of user behavior is crucial for delivering relevant recommendations. By modeling the temporal dependencies between user interactions, GR seeks to capture the underlying preferences and interests that drive user behavior, ultimately leading to more accurate and effective recommendations. At the core of GR is item tokenization to bridge item semantics and the GR model. However, existing GR methods often struggle to effectively incorporate complex user-behavioral and item-semantic contexts simultaneously into the recommendation model. On the one hand, while there exist graph integration methods to leverage the relational information from user-item relational graphs, they suffer from scalability issues or 1
+
+> arXiv:2606.20554v1 [cs.IR] 18 Jun 2026
+
+only utilize local graph information. For instance, graph serialization methods transform the graph into a sequence, but the long serialization can incur expensive computation of LLMs. Graph neural networks (GNNs), on the other hand, typically perceive only a small subgraph for each user, but they cannot fully exploit the holistic graph information. These limitations hinder the effectiveness of graph-based methods in industry-scale generative sequential recommendation. Another parallel line of work is semantic tokenization , which aims to represent each item as a few semantic tokens. However, they typically rely on heuristic learning objectives and lack supervision signals for semantic tokens. Consequently, these methods may not be guaranteed to learn accurate semantic representations, leading to suboptimal performance in recommendation tasks. To address these critical limitations in this complex context modeling, we propose Sparse Co-Engagement Graph Schema for Generative Rec ommendation (G2Rec ), a novel method that bridges holistic graph-based co-engagement modeling and semantic tokenization in industry-scale generative sequential recommendation. Systematically, our method G2Rec first constructs an item-item co-engagement graph, capturing the complex relationships between user behavior and items with empirical efficiency and theoretical accuracy. We then design a “soft” clustering algorithm in G2Rec to obtain item interest prototypes from the constructed graph, where each cluster represents an interest prototype, and each item serving as a node has the soft cluster membership distribution over clusters (but not a hard-assigned one-to-one exclusive membership). Finally, based on the item interest profiles extracted from the soft clustering, G2Rec tokenizes the item semantics along with the original user engagement sequence to train the generative sequential recommendation models. Our proposed method G2Rec offers several advantages over existing methods. Firstly, it provides a more comprehensive and accurate modeling of user behavior by incorporating both graph-based co-engagement contexts and semantic item representations. Secondly, our method is highly scalable, allowing for efficient processing of large-scale graphs and user sequences. Finally, the use of clustering algorithms ensures that the learned semantic tokens are accurate and meaningful, without relying on explicit labels or heuristics. We conduct extensive experiments on public datasets and online deployment on product surfaces to evaluate the performance of G2Rec. The results demonstrate the superiority of our method over many existing generative recommendation methods, highlighting its potential for real-world applications in industry-scale generative recommendation.  
+
+> Main contributions.
+
+We summarize the main contributions of this work as follows. 
+
+• Sparse graph schema as co-engagement contexts. We propose a sparsified item co-engagement graph as the item schema. We show that sampling O (M log M ) co-engagements suffices to approximately preserve structural information ( Theorem 2), where M is the total number of interactions. This is substantially sparser than the original co-engagement graph of quadratic size O( M 2).
+
+• Scalable soft graph clustering. We propose a scalable soft graph clustering algorithm. It is based on our proposed differentiable modularity objective function, which can be computed in nearly linear time 
+
+O( ρM log M ) and can be accelerated by GPUs, where ρ is a small sparsity constant. 
+
+• Clustering-based item interest profiling. We propose (i) using the clusters of the item-item co-engagement graph as item interest prototypes and (ii) leveraging the soft cluster membership of each item as the item interest profile for user behavioral information beyond item feature similarity. 
+
+• Interest profile tokenization for GR. We introduce a novel representation of user interaction history sequences: alternating between items and item interest profiles, allowing the generative recommender to effectively learn user interest transition patterns. 
+
+• Strong online performance. Large-scale online A/B tests on Meta’s product surfaces show the superiority of G2Rec. 
+
+# 2 Preliminaries 
+
+2.1 Notations 
+
+Let U denote the complete set of users, where each user is represented as u ∈ U . Similarly, let I denote the universe of items, with i ∈ I denoting a particular item. Each item i ∈ I has an embedding vector xi ∈ Rd,2where d denotes the embedding dimensionality. Let X := [ x1, . . . , x |I| ]⊤ ∈ R|I|× d denote the item embedding matrix. For each user u ∈ U , we record the past interactions of the user u as a sequence Iu = [ i1, . . . , i N ] of items, where N denotes the number of items that user u has interacted with in the past, and each ij ∈ I 
+
+(j = 1 , . . . , N ) denotes an item that user u has interacted with. We call sequence Iu the interaction history 
+
+of user u and assume S 
+
+> u∈U
+
+Iu = I to avoid cold start. Let M := P 
+
+> u∈U
+
+|I u| denote the total number of interactions. These interactions can be of various forms (such as clicks, views, comments, and purchases), and they reflect the user behavioral patterns to be learned by the recommender system. 
+
+2.2 Problem Definition 
+
+The objective of a generative recommender system is to predict an item that a user will probably interact with next, from a sequence of items that the user has interacted with in the past. The task is formally defined in Problem 1.  
+
+> Problem
+
+1 (generative sequential recommendation) . Input: (i) a user u ∈ U ; (ii) an integer N specifying the length of the interaction history of user u; (iii) a sequence Iu = [ i1, . . . , i N ] of items that user u has interacted with in the past; (iv) the embedding xi of each item i ∈ I u. Output: rank the candidate items I by the likelihood of each item to be the next interaction of user u.
+
+# 3 Proposed Framework: G2Rec 
+
+In this section, we introduce our proposed method Sparse Co-Engagement Graph Schema for G enerative Rec ommendation (G2Rec). We describe our graph construction procedure in Section 3.1, our new scalable soft graph clustering method in Section 3.2, and our graph-based co-engagement tokenization in Section 3.3. We will discuss industry-scale deployment in Section 4. 
+
+3.1 User Behavior Modeling via a Sparsified Item Co-Engagement Graph 
+
+In this subsection, we describe how we construct a graph to capture user behavioral patterns. We will use the graph for item interest profiling in Section 3.2. In existing graph-based recommendation methods, user behavior is often modeled using the user-item bipartite graph. In the bipartite graph, users and items are represented as nodes, and edges connect users to the items they have interacted with. However, for industry-scale applications with massive user bases, this can be extremely computationally expensive, especially when the user has a long interaction history.  
+
+> Co-engagement graph.
+
+To address this critical limitation, we propose eliminating user nodes from the constructed graph and model user behavior using an item-item graph instead. By eliminating users from the graph, we can focus on the more static item relationships, reducing the need for frequent updates. In this work, we propose the item-item co-engagement graph as a natural definition of the item-item graph. The two items i, j ∈ I are said to be co-engaged if there exists a user u ∈ U such that u has interacted with both items i and j (i.e., i ∈ I u and j ∈ I u); the user u here is not necessarily unique. The co-engagement graph captures the patterns of items being interacted with together, allowing us to model user behavior without explicitly representing users. Formally, in the item-item co-engagement graph G∗ = ( I, E∗), items I serve as nodes of G∗, and co-engagements 
+
+E∗ serve as edges of G∗. Let E∗ ⊆ I × I denote the set of item-item co-engagements: 
+
+E∗ := [
+
+> u∈U
+
+Iu × I u = {(i, j ) : ∃u ∈ U s.t. i ∈ I u, j ∈ I u}, (1) where × denotes the Cartesian product between sets. The item-item co-engagement graph G∗ provides a powerful tool for modeling user behavior patterns beyond item feature similarity. For example, consider two items: a smartphone and a phone case. While they may not be similar in terms of their features, they are often co-engaged by users who purchase a new phone and then look for accessories to go with it. The co-engagement graph can capture such patterns, providing insightful information that complements item feature information. 3From a theoretical perspective, the interaction history sequence of each user can be represented as a path on the item-item co-engagement graph, as formally stated in Observation 1. Hence, edges on the item-item co-engagement graph encode the user interest transition behaviors.  
+
+> Observation
+
+1 (expressiveness) . For any user u ∈ U , their interaction history sequence Iu = [ i1, . . . , i N ] is a path on the co-engagement graph G∗ = ( I, E∗). That is, (it, i t+1 ) ∈ E ∗ for all t = 1 , . . . , N − 1. □ 
+
+> Graph sparsification.
+
+Nonetheless, since |E ∗| can be as large as O(M 2), using the original graph G∗ would be computationally prohibitive in industrial scenarios. To ensure scalability, we propose a theoretically grounded approach to sparsifying the graph. Our goal is to approximately preserve the graph Laplacian, which encodes essential structural information of the graph (Ng et al., 2001). Formally, given m ≪ N 2, we define the sparsified co-engagement graph as G := ( I, E) where we sample only m co-engagements to include in E for each user: 
+
+E := [
+
+> u∈U
+
+sample( Iu × I u, m ), (2) where sample ( · , m ) denotes sampling to size m with replacement to form an undirected graph. We will use the sparsified graph G for item interest profiling in Section 3.2. As implied by the following Theorem 2, we theoretically show that |E| = O(M log M ) suffices to preserve the graph Laplacian, which is nearly linear w.r.t. the total number M of interactions. Notably, this is substantially sparser than |E ∗| = O( M 2). 
+
+> Theorem
+
+2 (nearly linear complexity) . Suppose that every user has N interactions. Let LE∗ be the Laplacian of E∗, and let LE be the Laplacian of E with edge weights N (N −1) 2m to match the total edge weights of L∗. Given any 0 < δ < 1 and ϵ > 0, if we use 
+
+m := 
+
+l
+
+2N
+
+ 13ϵ + 1
+
+ϵ2
+
+
+
+log 2|I| 
+
+δ
+
+m
+
+,
+
+then |E| ≤ O( M log M ), and with probability at least 1 − δ,
+
+(1 − ϵ)LE∗ ⪯ LE ⪯ (1 + ϵ)LE∗ ,
+
+where ⪯ denotes the Loewner order. 
+
+3.2 Item Interest Profiling via Soft Graph Clustering 
+
+In this subsection, we elaborate on how we leverage the item-item co-engagement graph to compute item interest profiles. A key challenge in processing the co-engagement graph G is that some co-engagement relationships can be random. To address this challenge, we propose to employ graph clustering to extract meaningful co-engagements. The intuition is that if a group of items is frequently co-engaged with each other (i.e., they belong to the same cluster in the graph), their co-engagements are more likely to be meaningful. Hence, we propose to use the clusters of the co-engagement graph G, which should provide reliable information for the recommendation model to learn. We call these clusters item interest prototypes , which can be interpreted as the underlying interest categories. Furthermore, as shown in Observation 1, the co-engagement graph encodes user interest transition behaviors. Therefore, by treating each cluster as an item interest prototype, we can help the recommendation model to gain insights into the underlying interest transitions that drive user behavior. However, since existing graph clustering algorithms (e.g., Louvain (Blondel et al., 2008), Leiden (Traag et al., 2019)) typically assume each node belongs to only one cluster, they are unsuitable for capturing complex interests where each item can correspond to multiple interest prototypes simultaneously. For instance, a short-form video of an avocado toast recipe may attract both users interested in “healthy eating” and those interested in “morning routines”. To bridge this gap, we propose to employ soft graph clustering instead, which allows for continuous cluster memberships and differentiable optimization. 4Nevertheless, existing soft graph clustering methods (e.g., Yu et al. (2005)) are typically not sufficiently scalable for industrial use cases. To enable scalable soft graph clustering, we propose a differentiable objective for soft graph clustering that generalizes the classic notion of graph modularity (Newman, 2006), which allows end-to-end gradient-based optimization and can thus be solved efficiently on GPUs. For each item i ∈ I , we aim to find a membership distribution pi ∈ RC , where C denotes the number of interest prototypes, and pi,a represents the probability that item i belongs to interest prototype a ∈{1, . . . , C }. We call pi the item interest profile of item i. To ensure PCa=1 pi,a = 1 , we use parameterization 
+
+pi := softmax (zi), where logits zi ∈ RC are the variables to be optimized. We initialize and sparsify the variables using the Leiden algorithm (Traag et al., 2019). Collectively, p1, . . . , p |I| form a soft membership 
+
+matrix P := [ p1, . . . , p |I| ]T ∈ R|I|× C .Next, we introduce our differentiable objective for soft graph clustering. Let A ∈ { 0, 1}|I|×|I| denote the adjacency matrix of the co-engagement graph G, and let k ∈ N|I| denote the degree vector (i.e., ki := P 
+
+> j
+
+Ai,j 
+
+is the degree of each item i ∈ I ). Recall that given a hard (cluster) membership h ∈ { 1, . . . , C }|I| (i.e., hi is the interest prototype that item i belongs to), the classic graph modularity Qhard (Newman, 2006) is defined as 
+
+Qhard (h) := 1
+
+|E| 
+
+X
+
+> i,j ∈I
+
+
+
+Ai,j − γ kikj
+
+|E| 
+
+
+
+1[hi=hj ], (3) where kikj 
+
+> |E|
+
+is the expected number of edges between i, j in a random graph under the Newman–Girvan null model theory (Newman and Girvan, 2004), and γ > 0 denotes the clustering resolution. Here, we adopt the duplicate representation of the undirected graph G, i.e., (i, j ) and (j, i ) are both in E.However, we cannot directly use Qhard to optimize a soft membership P because 1[hi=hj ] is not a differentiable operation. To address the non-differentiability, we propose to maximize the expected modularity under distribution P as a differentiable objective, which we show admits a simple closed form.  
+
+> Proposition
+
+3 (closed form) . The expected modularity is 
+
+Qsoft (P ) := E 
+
+> h∼P
+
+[Qhard (h)] = 
+
+ 1
+
+|E| 
+
+X
+
+> (i,j )∈E
+
+p⊤ 
+
+> i
+
+pj
+
+
+
+− γ ∥P ⊤k∥22
+
+|E| 2 . (4) We call this objective Qsoft the soft modularity . It can be computed efficiently on GPUs when E and P are sparse, as shown in Proposition 4.  
+
+> Proposition
+
+4 (nearly linear complexity) . If each row of P has ≤ ρ nonzero entries, then Qsoft (P ) can be computed in time 
+
+O( ρ|E| ) = O( ρM log M ). (5) The soft modularity objective Qsoft can be interpreted as follows. The inner product p⊤ 
+
+> i
+
+pj = PCa=1 pi,a pj,a 
+
+represents the probability that items i and j belong to the same interest prototype under the soft membership distribution P , serving as a continuous analog to the term 1[hi=hj ] in hard modularity. The intuition behind 
+
+Qsoft is to encourage high co-membership probabilities p⊤ 
+
+> i
+
+pj for item pairs (i, j ) that are heavily co-engaged, while penalizing over-membership to item pairs that are not expected to be connected according to the Newman–Girvan null model theory (Newman and Girvan, 2004). Furthermore, unlike the original modularity 
+
+Qhard , our proposed Qsoft is fully differentiable w.r.t. P , making it suitable as an objective function for optimizing the item interest profiles P .
+
+3.3 Interest Profile Tokenization for Generative Sequential Recommendation 
+
+In this subsection, we describe how to incorporate item interest profiles into generative sequential recommen-dation. 5Interest profile tokenization. As soft item interest profiles are continuous, we use continuous tokens to represent interest profiles. Before introducing our interest profile tokenization, we first introduce the tokenization of item interest prototypes. For each interest prototype a ∈ { 1, . . . , C }, we define the interest prototype embedding 
+
+va ∈ Rd of a as the weighted average of the embeddings of the items of interest prototype a:
+
+va := 
+
+P 
+
+> i∈I
+
+pi,a xi
+
+P 
+
+> i∈I
+
+pi,a 
+
+, a ∈ { 1, . . . , C }. (6) Let V := [ v1, . . . , v C ]⊤ ∈ RC×d denote the interest prototype embedding matrix. Then, Equation (6) can be rewritten into the matrix form as V = P ⊤XP ⊤1 and can be computed efficiently as P is sparse. Next, we define the interest profile token yi of each item i ∈ I as the weighted average of embeddings va of prototypes a of item i:
+
+yi := 
+
+> C
+
+X
+
+> a=1
+
+pi,a va, i ∈ I . (7) Let Y := [ y1, . . . , y |I| ]⊤ ∈ R|I|× d denote the interest profile token matrix. Then, Equation (7) can be rewritten into the matrix form as Y = P V , which can be computed efficiently as P is sparse.  
+
+> Sequence formulation.
+
+Our key idea is to design a new sequence format that takes item interest profiles into account. Specifically, given the interaction history sequence Iu = [ i1, . . . , i N ] of a user u ∈ U , we define a user interest transition sequence as follows: 
+
+Ru := [ ⟨BOS ⟩, x i1 , y i1 , . . . , x iN , y iN ], (8) where ⟨BOS ⟩ denotes a beginning sequence. Here, yi1 , . . . , y iN can be interpreted as the graph-based semantic tokenization of the items i1, . . . , i N , respectively.  
+
+> Training objectives.
+
+Let F denote the generative sequential recommender that autoregressively predicts the next-token distribution. Our goal here is to predict the next item it+1 ∈ I that user u will interact with next, given the user interaction history sequence [i1, . . . , i t] (t = 1 , 2, . . . ). Hence, for each t = 1 , . . . , N − 1, we use the cross entropy loss w.r.t. to train the generative recommender F :
+
+Lt 
+
+> item
+
+:= − log F (it+1 | ⟨ BOS ⟩, x i1 , y i1 , . . . , x it , y it ) (9) 
+
+= − log F (it+1 | (Ru)≤2t+1 ). (10) Furthermore, to help the recommender understand user interest transition behaviors, we also train the recommender to predict the interest of each interaction. Since the ground-truth user interests are not available, we instead propose using the item interest profile as the soft label in the cross entropy loss for each t = 1 , . . . , N :
+
+Lt 
+
+> profile
+
+:= −
+
+> C
+
+X
+
+> a=1
+
+pit,a log F (a | ⟨ BOS ⟩, x i1 , y i1 , . . . , x it ) (11) 
+
+= −
+
+> C
+
+X
+
+> a=1
+
+pit,a log F (a | (Ru)≤2t). (12) Together, we train the recommender F using a weighted combination of the two losses simultaneously: 
+
+Lt := Lt 
+
+> item
+
++ λLt
+
+> profile
+
+, (13) where λ > 0 is a hyperparameter to control the weight of Lt
+
+> profile
+
+.
+
+# 4 Industrial Deployment 
+
+We have successfully productionized our G2Rec on multiple product surfaces at Meta. Considering the huge user base (billions of monthly active users (Isaac, 2023)) of Meta products (e.g., Instagram Reels), a main 6Table 1 Statistics of public datasets. 
+
+Dataset #Users #Items #Interacts Sparsity Beauty 22,363 12,101 198,502 99.93% Sports 25,598 18,357 296,337 99.95% Toys 19,412 11,924 167,597 99.93% Yelp 30,431 20,033 316,354 99.95% 
+
+Table 2 Comparison with baseline methods on public datasets (best marked in bold). Our proposed G2Rec consistently outperforms all baseline methods on all four datasets.  
+
+> Method Type
+
+→ Classic Sequential / Tokenization-Based Graph-Based  
+
+> Dataset
+
+↓ Metric ↓ POP MF GRU4Rec SASRec BERT4Rec Caser EAGER LightGCN HeLLM G2Rec (Ours) Beauty Recall@1 0.0678 0.0405 0.1870 0.1531 0.1337 0.1337 0.1213 0.1435 0.1690 0.2067 
+
+Recall@5 0.2105 0.1461 0.3741 0.3640 0.3032 0.3125 0.2678 0.3081 0.2802 0.3917 
+
+Recall@10 0.3386 0.2311 0.4696 0.4739 0.3942 0.4106 0.3663 0.4042 0.3413 0.4892 
+
+NDCG@5 0.1391 0.0934 0.2848 0.2622 0.2219 0.2268 0.1962 0.2286 0.2278 0.3035 
+
+NDCG@10 0.1803 0.1207 0.3156 0.2975 0.2512 0.2584 0.2278 0.2596 0.2474 0.3334 
+
+MRR 0.1558 0.1096 0.2852 0.2614 0.2263 0.2308 0.2060 0.2340 0.2359 0.3034 
+
+Sports Recall@1 0.0763 0.0489 0.1455 0.1255 0.1135 0.1160 0.0417 0.1226 0.1021 0.1750 
+
+Recall@5 0.2293 0.1603 0.3466 0.3375 0.2866 0.3055 0.1398 0.2841 0.2214 0.3903 
+
+Recall@10 0.3423 0.2491 0.4622 0.4722 0.4014 0.4299 0.2232 0.3855 0.2946 0.5093 
+
+NDCG@5 0.1538 0.1048 0.2497 0.2341 0.2020 0.2126 0.0906 0.2056 0.1641 0.2869 
+
+NDCG@10 0.1902 0.1334 0.2869 0.2775 0.2390 0.2527 0.1174 0.2383 0.1875 0.3254 
+
+MRR 0.1660 0.1202 0.2520 0.2378 0.2100 0.2191 0.1078 0.2133 0.1750 0.2867 
+
+Toys Recall@1 0.0585 0.0257 0.1878 0.1262 0.1114 0.0997 0.1201 0.1310 0.1507 0.2006 
+
+Recall@5 0.1977 0.0978 0.3682 0.3344 0.2614 0.2795 0.2717 0.2799 0.2717 0.3779 
+
+Recall@10 0.3008 0.1715 0.4663 0.4493 0.3540 0.3896 0.3777 0.3721 0.3375 0.4691 
+
+NDCG@5 0.1286 0.0614 0.2820 0.2327 0.1885 0.1919 0.1977 0.2078 0.2147 0.2931 
+
+NDCG@10 0.1618 0.0850 0.3136 0.2698 0.2183 0.2274 0.2319 0.2374 0.2359 0.3225 
+
+MRR 0.1430 0.0819 0.2842 0.2338 0.1967 0.1973 0.2075 0.2154 0.2228 0.2942 
+
+Yelp Recall@1 0.0801 0.0624 0.2375 0.2405 0.2188 0.2053 0.0976 0.2696 0.2148 0.2558 Recall@5 0.2415 0.2036 0.5745 0.5976 0.5111 0.5437 0.2903 0.5517 0.4053 0.6105 
+
+Recall@10 0.3609 0.3153 0.7373 0.7597 0.6661 0.7265 0.4088 0.6756 0.4909 0.7736 
+
+NDCG@5 0.1622 0.1333 0.4113 0.4252 0.3696 0.3784 0.1960 0.4165 0.3160 0.4398 
+
+NDCG@10 0.2007 0.1692 0.4642 0.4778 0.4198 0.4375 0.2343 0.4566 0.3436 0.4927 
+
+MRR 0.1740 0.1470 0.3927 0.4026 0.3595 0.3630 0.2009 0.4025 0.3142 0.4180 Average Rank → 8.62 9.75 2.46 2.83 6.35 5.23 7.94 4.50 6.27 1.04 
+
+challenge in deployment lies in scalability and real-time efficiency. To ensure the timeliness of item interest profiles, we have implemented an in-house high performance graph processing engine that can efficiently execute the graph clustering algorithm (Blondel et al., 2008) in a distributed environment. We run the graph clustering algorithm periodically offline, so the execution time of the graph clustering algorithm has no impact on the response time to users. 
+
+# 5 Experiments 
+
+We conduct extensive experiments on both public datasets and our product surfaces to answer the following research questions: 
+
+RQ1: How does the proposed G2Rec compare with state-of-the-art recommendation methods offline? 
+
+RQ2: How does the proposed G2Rec perform on Meta’s product surfaces online? 
+
+RQ3: How does the proposed G2Rec influence the efficiency in training and inference, respectively? 
+
+RQ4: How do the proposed soft graph clustering and item interest profiling influence recommendation quality? 75.1 Experimental Settings 
+
+In this subsection, we describe the experimental settings in our offline empirical evaluation on public datasets.  
+
+> Public datasets.
+
+To evaluate our proposed G2Rec, we conduct experiments on four widely-used public real-world datasets: Beauty, Sports, Toys, and Yelp. Beauty, Sports, and Toys are sub-categories from the Amazon review data collection (McAuley et al., 2015), which is collected from Amazon, a popular online shopping platform. Yelp is another popular online platform that provides crowd-sourced reviews about businesses, and the Yelp dataset (Asghar, 2016) is collected from Yelp. In our experiments, we use Yelp data from January 1st, 2019 onwards. The dataset statistics are summarized in Table 1. We can see that all of these datasets are highly sparse, which ensures that these datasets are sufficiently challenging for evaluating the performance under the sequential recommendation setting.  
+
+> Baseline methods.
+
+To comprehensively benchmark the performance of our proposed G2Rec, we compare our G2Rec with six strong baseline methods, including classic methods, sequential / tokenization-based methods, and graph-based methods. We briefly describe the baseline methods as follows. (i) Classic methods: POP 
+
+is a heuristic method that ranks items based on their popularity, which is known to be a strong baseline in recommendation (e.g., Yoo et al. (2025b)). Matrix factorization MF (Koren et al., 2009) is the most classic recommendation method; we use the Bayesian Personalized Ranking (BPR) loss (Rendle et al., 2012) here. (ii) Sequential methods: GRU4Rec (Hidasi et al., 2015) utilizes the GRU recurrent neural network (Cho et al., 2014) for modeling sequences and subsequently makes recommendation predictions. SASRec (Kang and McAuley, 2018) uses multi-head self-attention (Vaswani et al., 2017) to handle intricate sequential data.  
+
+> BERT4Rec
+
+(Sun et al., 2019) uses the cloze objective function from BERT (Devlin et al., 2019) to enable self-supervised learning instead of autoregressively predicting only the next item. Caser (Tang and Wang, 2018) combines both horizontal and vertical convolution operations to more effectively capture complex interactions within user interaction history sequences. EAGER (Wang et al., 2024b) is a two-stream generative recommender with behavior-semantic collaboration. (iii) Graph-based methods. LightGCN (He et al., 2020) is a strong graph convolutional network for collaborative filtering. HeLLM (Guo et al., 2025) uses hypergraphs to enhance LLM-based recommenders.  
+
+> Evaluation protocol & metrics.
+
+For sequential recommendation evaluation, we sort user interactions by their timestamps in ascending order to form user interaction history sequences. To ensure a reliable evaluation, we employ a 5-core setting to exclude items with fewer than 5 interactions, following previous works (e.g., Rendle et al. (2010); Sun et al. (2019)). Following previous works (e.g., Kang and McAuley (2018); Ren et al. (2020)), we adopt the leave-one-out approach to split the dataset. Specifically, for the interaction history sequence of each user, we used the last item as the test data, the second-to-last item as the validation data, and the rest of the sequence as the training data. To evaluate the ranking capability of our proposed G2Rec, we form the test set as follows: for each user, we use the last item they interacted with as the positive item and randomly sample 99 items from the remaining items as negative items. We use Recall@1, Recall@5, Recall@10, NDCG@5, NDCG@10, and the mean reciprocal rank (MRR) as metrics.  
+
+> Implementation details.
+
+We use Llama 2 13B as the recommender model backbone and finetune it for 3 epochs using low-rank adapters (LoRA) with 16 ranks and rank dropout rate 0.05. We initialize the model parameters using the Xavier initialization and optimize the model parameters using the Adam optimizer with initial learning rate 0.0003 and the cosine learning rate schedule with 100 warmup steps. We use SASRec embeddings with d = 64 as item embeddings and limit the maximum sequence length to 50 for all methods on all datasets to avoid out-of-memory errors and to ensure a fair comparison. To control the number of interest prototypes, we use γ = 0 .8 for Beauty and Toys and γ = 1 for Sports and Yelp. For baseline methods, we use the open-source code released by their authors and adapt the code to our experimental settings. 
+
+5.2 Offline Testing 
+
+To answer RQ1, we compare our proposed G2Rec with baseline methods to evaluate the recommendation performance. The results presented in Table 2 and Figure 1 demonstrate the effectiveness of our proposed method G2Rec in comparison to all six baseline methods across all four public datasets. Our G2Rec consistently outperforms all baseline methods across all six metrics on all four datasets, achieving the highest recall, NDCG, 81 4 7 10  
+
+> Cutoff k
+> 0.00
+> 0.10
+> 0.20
+> 0.30
+> 0.40
+> 0.50
+> Recall@ k
+> G2Rec (Ours)
+> GRU4Rec
+> SASRec
+> LightGCN
+> Caser
+> BERT4Rec
+> HeLLM
+> EAGER
+> POP
+> MF
+
+(a) Beauty. 1 4 7 10   
+
+> Cutoff k
+> 0.00
+> 0.10
+> 0.20
+> 0.30
+> 0.40
+> 0.50
+> Recall@ k
+> G2Rec (Ours)
+> GRU4Rec
+> SASRec
+> LightGCN
+> Caser
+> BERT4Rec
+> HeLLM
+> EAGER
+> POP
+> MF
+
+(b) Sports. 1 4 7 10   
+
+> Cutoff k
+> 0.00
+> 0.15
+> 0.30
+> 0.45
+> Recall@ k
+> G2Rec (Ours)
+> GRU4Rec
+> SASRec
+> LightGCN
+> Caser
+> BERT4Rec
+> HeLLM
+> EAGER
+> POP
+> MF
+
+(c) Toys. 1 4 7 10   
+
+> Cutoff k
+> 0.00
+> 0.15
+> 0.30
+> 0.45
+> 0.60
+> 0.75
+> Recall@ k
+> G2Rec (Ours)
+> GRU4Rec
+> SASRec
+> LightGCN
+> Caser
+> BERT4Rec
+> HeLLM
+> EAGER
+> POP
+> MF
+
+(d) Yelp. 
+
+Figure 1 Our G2Rec consistently outperforms all baselines on all four datasets under various cutoffs. 
+
+Table 3 Training and inference time per batch. Our interest profile tokens have only negligible impact on training and inference time. 
+
+Method Training Inference Item-Only 0.763 0.0534 G2Rec (Ours) 0.806 0.0561 Overhead +0.043 +0.0027 and MRR. We observe that the performance gap between our G2Rec and the best-performing baseline method is significant. For instance, our proposed G2Rec achieves 14.9% higher NDCG@5 than the best-performing baseline on the Sports dataset. As these datasets are large-scale datasets with diverse user behavior patterns, the results suggest that our method is capable of handling complex user behavior data and can effectively capture the underlying patterns. In terms of average rank, our G2Rec achieves the top rank across all datasets, indicating its overall superiority over the baseline methods; in stark contrast, the average rank of the baseline methods varies across datasets. Overall, the results demonstrate the effectiveness of our proposed G2Rec in modeling user behavior patterns and item relationships using the co-engagement graph. This suggests that our G2Rec can model item relationships and user behavior patterns using the co-engagement graph and provides a substantial advantage over existing methods. 
+
+5.3 Large-Scale Online Testing 
+
+We have productized our proposed G2Rec on multiple product surfaces at Meta. While some internal modifications were made to adapt it for deployment on each product surface, the core methodology remains consistent with the proposed framework. To answer RQ2, we evaluate our proposed G2Rec via both short-term (7-day) and long-term online A/B testing. (Due to the corporate policy, we are unable to disclose the detailed settings.) We have observed 
+
+consistent improvement in terms of a wide range of top-line metrics on user engagement , content diversity , and 
+
+serving efficiency . In particular, product launches with our holistic interest modeling lead to > 0.03% in-session improvement and exhibit solid wins ( 0.06% to 0.19% ) in terms of multiple user engagement metrics such as total time-spent, likes, shares, etc. These results provide strong evidence that our proposed G2Rec considerably enhances user experience by accurately capturing user behavioral patterns and interest prototypes. 
+
+5.4 Efficiency Study 
+
+In addition to evaluating the effectiveness of our proposed G2Rec, we also investigate its efficiency as efficiency is important in industrial scenarios. Table 3 reports the training and inference time per batch for our method and the item-only baseline on the Beauty dataset. The results show that incorporating interest profile tokens into the model has only a negligible impact on both training and inference time. Specifically, our method requires only 0.043 seconds more per batch during training and only 0.0027 seconds more per batch during inference compared to the item-only baseline. This suggests that our approach can be efficiently integrated into industrial recommendation systems without incurring significant computational overhead. This efficiency is due to the fact that our interest profile tokens are computed offline using the co-engagement graph, and then simply concatenated with the item embeddings during training and inference. This design allows us to leverage the structural information captured by the co-engagement graph without requiring expensive 9Table 4 Ablation study on soft graph clustering. Our soft graph clustering algorithm consistently outperforms hard graph clustering on all datasets in terms of modularity.  
+
+> Method
+
+Beauty Sports Toys Yelp Hard (Leiden) 0.419 0.365 0.437 0.691  
+
+> Soft
+
+(Ours) 0.499 0.452 0.550 0.757 0.0 0.5 1.0  
+
+> Weight of the profile loss
+> 0.287
+> 0.289
+> 0.291
+> 0.293
+> MRR
+
+Ablation study on     
+
+> Figure 2 Ablation study on the weight λof Lt
+> profile . This confirms the efficacy of our proposed interest profiling.
+
+online computations. Overall, these results demonstrate that our approach offers a good balance between effectiveness and efficiency, making it a practical solution for industrial recommender systems. 
+
+5.5 Ablation Studies 
+
+To answer RQ4, we conduct ablation studies on our proposed soft graph clustering and item interest profiling.  
+
+> Efficacy of soft graph clustering.
+
+We conduct an ablation study to evaluate the efficacy of our soft graph clustering algorithm. We compare our method with hard graph clustering produced by the Leiden algorithm (Traag et al., 2019). As shown in Table 4, the results demonstrate that our soft graph clustering algorithm consistently outperforms hard graph clustering in terms of modularity, a widely-used metric for evaluating the quality of graph clustering. The improvements are significant across all datasets (for example, 23.8% improvement in modularity score on the Sports dataset). This suggests that our soft graph clustering algorithm is able to capture more nuanced and complex item interest profiles in the co-engagement graph, which is essential for accurately modeling user interests. These results validate the design choice of using soft graph clustering in our proposed G2Rec and highlight its importance in achieving high-quality item interest profiles.  
+
+> Efficacy of item interest profiling.
+
+To verify the efficacy of our interest profile loss Lt
+
+> profile
+
+, we conduct an ablation study to investigate the impact of Lt 
+
+> profile
+
+on the overall recommendation performance of our propsed G2Rec. Specifically, we compare the MRRs under various weights λ on the Beauty dataset. The results are shown in Figure 2. As can be seen from the figure, as the weight λ increases, the recommendation metric MRR also improves. This demonstrates the efficacy of our proposed interest profile loss Lt 
+
+> profile
+
+in capturing the complex relationships between items and enhancing the accuracy of recommendations. Notably, when 
+
+λ = 0 (which means that the interest profile loss is not used), the MRR is significantly lower than when λ > 0.This suggests that the interest profile loss plays a crucial role in improving the recommendation performance of our proposed G2Rec. Overall, our ablation study demonstrates the importance of the interest profile loss in our proposed G2Rec and highlights its efficacy in improving the quality of recommendations in real-world applications. 10 6 Related Work 
+
+6.1 Generative Recommendation 
+
+Generative recommendation formulates recommendation tasks as sequential generation problems, aiming to predict user preferences by generating sequences of recommended items rather than simply ranking predefined candidates (Deng et al., 2025). Recent studies have employed deep generative models, particularly autoregressive language models, to directly rank candidate items (Hou et al., 2024), predict user ratings (Gao et al., 2023), and retrieve relevant information (Zhu et al., 2023). P5 (Geng et al., 2022) conceptualizes recommendation as a language processing task, integrating various recommendation scenarios within a unified sequence-to-sequence framework. This approach effectively leverages multiple sources of information, facilitating richer and more nuanced user modeling. However, bridging the gap between natural language processing and discrete user and item indexing remains challenging. Hua et al. (2023) explored several indexing methods, including sequential indexing, collaborative indexing, semantic indexing, and hybrid indexing, to incorporate indexing mechanisms into generative models. More recent studies (Xiao et al., 2025; Wang et al., 2024b; Xu et al., 2024a; Li et al., 2023) incorporated both semantic and collaborative information into index tokenization. Despite demonstrating promising outcomes, these approaches continue to face difficulties in fully capturing complex user behavioral patterns and detailed item semantic information. 
+
+6.2 Graphs in Recommendation 
+
+Graph-based recommendation approaches leverage the inherent relational structure among users and items to capture complex connectivity patterns that traditional methods often overlook. Recent advances in GNNs have propelled significant progress in this area, allowing models to integrate both structural and feature-based information into embedding learning. Notably, Graph Convolutional Matrix Completion (GCMC) (Van Den Berg et al., 2017) introduces a graph auto-encoder framework that facilitates differentiable message passing over bipartite user-item graphs. Neural Graph Collaborative Filtering (NGCF) (Wang et al., 2019) explored learning user and item embeddings by propagating neighbor information in user-item graphs. LightGCN (He et al., 2020) then enhanced this idea by adopting linear neighbor information aggregation. Despite their effectiveness, GNN-based methods typically perceive only a small subgraph centered around individual users or items, limiting their capacity to fully exploit holistic graph information and potentially overlooking valuable global structural insights. More recently, researchers have begun integrating LLMs with GNNs to enhance recommendation performance by leveraging the relational modeling capabilities of GNNs and the natural language understanding strengths of LLMs. Existing approaches generally fall into three categories: graph-augmented LLM (Ma et al., 2024a; Wang et al., 2024a; Ma et al., 2024b), LLM-augmented graph (Wang et al., 2023b; Liu et al., 2025a; Jeon et al., 2025), and LLM-graph collaboration (Runfeng et al., 2023; Zhao et al., 2024). 
+
+# 7 Conclusion & Future Work 
+
+In this paper, we introduced G2Rec, a scalable item schema designed to enhance generative sequential recommendation systems by effectively integrating holistic graph-based co-engagement modeling for semantic tokenization. Our approach addresses the limitations of existing methods, which often struggle with scalability and the accurate incorporation of complex user-behavioral and item-semantic information. By constructing an item-item co-engagement graph and employing a soft clustering algorithm, G2Rec derives interest prototypes that transform user interaction history sequences into the more informative item interest profiles. This transformation allows the recommendation model to capture comprehensive and semantic user interest profiles without relying on predefined ground-truth interests. Our extensive experiments on public datasets, along with successful online deployment on product surfaces, demonstrate the superiority of G2Rec over current state-of-the-art methods. The results highlight that G2Rec have the ability to provide more accurate and holistic modeling of user behavior, ultimately leading to improved recommendation performance in industrial applications. G2Rec represents a significant step forward in the field of generative sequential recommendation, offering a scalable and effective solution for industry-scale applications. Future work may explore further enhancements to the framework, such as incorporating additional data sources or refining the clustering 11 algorithm to capture even more nuanced interests. 
+
+# References 
+
+Nabiha Asghar. Yelp dataset challenge: Review rating prediction. arXiv preprint arXiv:1605.05362 , 2016. Wenxuan Bao, Ruxi Deng, Ruizhong Qiu, Tianxin Wei, Hanghang Tong, and Jingrui He. Latte: Collaborative test-time adaptation of vision-language models in federated learning. In Proceedings of the IEEE/CVF International Conference on Computer Vision , 2025. Vincent D. Blondel, Jean-Loup Guillaume, Renaud Lambiotte, and Etienne Lefebvre. Fast unfolding of community hierarchies in large networks. CoRR , abs/0803.0476, 2008. http://arxiv.org/abs/0803.0476 .Eunice Chan, Zhining Liu, Ruizhong Qiu, Yuheng Zhang, Ross Maciejewski, and Hanghang Tong. Group fairness via group consensus. In The 2024 ACM Conference on Fairness, Accountability, and Transparency , pages 1788–1808, 2024. Lingjie Chen, Ruizhong Qiu, Siyu Yuan, Zhining Liu, Tianxin Wei, Hyunsik Yoo, Zhichen Zeng, Deqing Yang, and Hanghang Tong. WAPITI: A watermark for finetuned open-source LLMs, 2024. Kyunghyun Cho, Bart Van Merriënboer, Dzmitry Bahdanau, and Yoshua Bengio. On the properties of neural machine translation: Encoder-decoder approaches. arXiv preprint arXiv:1409.1259 , 2014. Jiaxin Deng, Shiyao Wang, Kuo Cai, Lejian Ren, Qigen Hu, Weifeng Ding, Qiang Luo, and Guorui Zhou. Onerec: Unifying retrieve and rank with generative recommender and iterative preference alignment. arXiv preprint arXiv:2502.18965 , 2025. Jacob Devlin, Ming-Wei Chang, Kenton Lee, and Kristina Toutanova. BERT: Pre-training of deep bidirectional transformers for language understanding. In Proceedings of the 2019 conference of the North American chapter of the association for computational linguistics: human language technologies, volume 1 (long and short papers) , pages 4171–4186, 2019. Yunfan Gao, Tao Sheng, Youlin Xiang, Yun Xiong, Haofen Wang, and Jiawei Zhang. Chat-rec: Towards interactive and explainable llms-augmented recommender system. arXiv preprint arXiv:2303.14524 , 2023. Shijie Geng, Shuchang Liu, Zuohui Fu, Yingqiang Ge, and Yongfeng Zhang. Recommendation as language processing (rlp): A unified pretrain, personalized prompt & predict paradigm (p5). In Proceedings of the 16th ACM conference on recommender systems , pages 299–315, 2022. Xu Guo, Tong Zhang, Yuanzhi Wang, Chenxu Wang, Fuyun Wang, Xudong Wang, Xiaoya Zhang, Xin Liu, and Zhen Cui. Multi-modal hypergraph enhanced LLM learning for recommendation. arXiv preprint arXiv:2504.10541 , 2025. Xiangnan He, Kuan Deng, Xiang Wang, Yan Li, Yongdong Zhang, and Meng Wang. LightGCN: Simplifying and powering graph convolution network for recommendation. In Proceedings of the 43rd International ACM SIGIR conference on research and development in Information Retrieval , pages 639–648, 2020. Xinyu He, Jian Kang, Ruizhong Qiu, Fei Wang, Jose Sepulveda, and Hanghang Tong. On the sensitivity of individual fairness: Measures and robust algorithms. In Proceedings of the 33rd ACM International Conference on Information and Knowledge Management , pages 829–838, 2024. Balázs Hidasi, Alexandros Karatzoglou, Linas Baltrunas, and Domonkos Tikk. Session-based recommendations with recurrent neural networks. arXiv preprint arXiv:1511.06939 , 2015. Yupeng Hou, Junjie Zhang, Zihan Lin, Hongyu Lu, Ruobing Xie, Julian McAuley, and Wayne Xin Zhao. Large language models are zero-shot rankers for recommender systems. In European Conference on Information Retrieval ,pages 364–381. Springer, 2024. Wenyue Hua, Shuyuan Xu, Yingqiang Ge, and Yongfeng Zhang. How to index item ids for recommendation foundation models. In Proceedings of the Annual International ACM SIGIR Conference on Research and Development in Information Retrieval in the Asia Pacific Region , pages 195–204, 2023. Mike Isaac. Meta profit is up 16% to $7.8 billion in recent quarter. The New York Times (Digital Edition) , 2023. Minhye Jeon, Seokho Ahn, and Young-Duk Seo. Topic-aware knowledge graph with large language models for interoperability in recommender systems. In Proceedings of the 40th ACM/SIGAPP Symposium on Applied Computing , pages 795–802, 2025. 
+
+12 Wang-Cheng Kang and Julian McAuley. Self-attentive sequential recommendation. In 2018 IEEE international conference on data mining (ICDM) , pages 197–206. IEEE, 2018. Yehuda Koren, Robert Bell, and Chris Volinsky. Matrix factorization techniques for recommender systems. Computer ,42(8):30–37, 2009. Ting-Wei Li, Ruizhong Qiu, and Hanghang Tong. Model-free graph data selection under distribution shift, 2025. Xinhang Li, Chong Chen, Xiangyu Zhao, Yong Zhang, and Chunxiao Xing. E4SRec: An elegant effective efficient extensible solution of large language models for sequential recommendation. arXiv preprint arXiv:2312.02443 , 2023. Xiao Lin, Zhining Liu, Dongqi Fu, Ruizhong Qiu, and Hanghang Tong. BackTime: Backdoor attacks on multivariate time series forecasting. In Advances in Neural Information Processing Systems , volume 37, 2024. Xiao Lin, Zhining Liu, Ze Yang, Gaotang Li, Ruizhong Qiu, Shuke Wang, Hui Liu, Haotian Li, Sumit Keswani, Vishwa Pardeshi, et al. Moralise: A structured benchmark for moral alignment in visual language models, 2025. Fan Liu, Yaqi Liu, Huilin Chen, Zhiyong Cheng, Liqiang Nie, and Mohan Kankanhalli. Understanding before recommendation: Semantic aspect-aware review exploitation via large language models. ACM Transactions on Information Systems , 43(2):1–26, 2025a. Lihui Liu, Zihao Wang, Ruizhong Qiu, Yikun Ban, Eunice Chan, Yangqiu Song, Jingrui He, and Hanghang Tong. Logic query of thoughts: Guiding large language models to answer complex logic queries with knowledge graphs, 2024a. Zhining Liu, Zhichen Zeng, Ruizhong Qiu, Hyunsik Yoo, David Zhou, Zhe Xu, Yada Zhu, Kommy Weldemariam, Jingrui He, and Hanghang Tong. Topological augmentation for class-imbalanced node classification, 2023. Zhining Liu, Ruizhong Qiu, Zhichen Zeng, Hyunsik Yoo, David Zhou, Zhe Xu, Yada Zhu, Kommy Weldemariam, Jingrui He, and Hanghang Tong. Class-imbalanced graph learning without class rebalancing. In Proceedings of the 41st International Conference on Machine Learning , 2024b. Zhining Liu, Ruizhong Qiu, Zhichen Zeng, Yada Zhu, Hendrik Hamann, and Hanghang Tong. AIM: Attributing, interpreting, mitigating data unfairness. In Proceedings of the 30th ACM SIGKDD Conference on Knowledge Discovery and Data Mining , pages 2014–2025, 2024c. Zhining Liu, Ze Yang, Xiao Lin, Ruizhong Qiu, Tianxin Wei, Yada Zhu, Hendrik Hamann, Jingrui He, and Hanghang Tong. Breaking silos: Adaptive model fusion unlocks better time series forecasting. In Proceedings of the 42nd International Conference on Machine Learning , 2025b. Luyi Ma, Xiaohan Li, Zezhong Fan, Kai Zhao, Jianpeng Xu, Jason Cho, Praveen Kanumala, Kaushiki Nag, Sushant Kumar, and Kannan Achan. Triple modality fusion: Aligning visual, textual, and graph data with large language models for multi-behavior recommendations. arXiv preprint arXiv:2410.12228 , 2024a. Qiyao Ma, Xubin Ren, and Chao Huang. Xrec: Large language models for explainable recommendation. arXiv preprint arXiv:2406.02377 , 2024b. Julian McAuley, Christopher Targett, Qinfeng Shi, and Anton Van Den Hengel. Image-based recommendations on styles and substitutes. In Proceedings of the 38th international ACM SIGIR conference on research and development in information retrieval , pages 43–52, 2015. Mark E. J. Newman. Modularity and community structure in networks. Proceedings of the national academy of sciences , 103(23):8577–8582, 2006. Mark E. J. Newman and Michelle Girvan. Finding and evaluating community structure in networks. Physical Review E, 69(2):026113, 2004. Andrew Ng, Michael Jordan, and Yair Weiss. On spectral clustering: Analysis and an algorithm. Advances in Neural Information Processing Systems , 14, 2001. Ruizhong Qiu and Hanghang Tong. Gradient compressed sensing: A query-efficient gradient estimator for high-dimensional zeroth-order optimization. In Proceedings of the 41st International Conference on Machine Learning ,2024. Ruizhong Qiu, Zhiqing Sun, and Yiming Yang. DIMES: A differentiable meta solver for combinatorial optimization problems. In Advances in Neural Information Processing Systems , volume 35, pages 25531–25546, 2022. 
+
+13 Ruizhong Qiu, Dingsu Wang, Lei Ying, H Vincent Poor, Yifang Zhang, and Hanghang Tong. Reconstructing graph diffusion history from a single snapshot. In Proceedings of the 29th ACM SIGKDD Conference on Knowledge Discovery and Data Mining , pages 1978–1988, 2023. Ruizhong Qiu, Jun-Gi Jang, Xiao Lin, Lihui Liu, and Hanghang Tong. TUCKET: A tensor time series data structure for efficient and accurate factor analysis over time ranges. Proceedings of the VLDB Endowment , 17(13), 2024. Ruizhong Qiu, Gaotang Li, Tianxin Wei, Jingrui He, and Hanghang Tong. Saffron-1: Safety inference scaling, 2025a. Ruizhong Qiu, Zhe Xu, Wenxuan Bao, and Hanghang Tong. Ask, and it shall be given: On the Turing completeness of prompting. In 13th International Conference on Learning Representations , 2025b. Ruizhong Qiu, Weiliang Will Zeng, Hanghang Tong, James Ezick, and Christopher Lott. How efficient is LLM-generated code? A rigorous & high-standard benchmark. In 13th International Conference on Learning Representations , 2025c. Ruiyang Ren, Zhaoyang Liu, Yaliang Li, Wayne Xin Zhao, Hui Wang, Bolin Ding, and Ji-Rong Wen. Sequential recommendation with self-attentive multi-adversarial network. In Proceedings of the 43rd international ACM SIGIR conference on research and development in information retrieval , pages 89–98, 2020. Steffen Rendle, Christoph Freudenthaler, and Lars Schmidt-Thieme. Factorizing personalized markov chains for next-basket recommendation. In Proceedings of the 19th international conference on World wide web , pages 811–820, 2010. Steffen Rendle, Christoph Freudenthaler, Zeno Gantner, and Lars Schmidt-Thieme. BPR: Bayesian personalized ranking from implicit feedback. arXiv preprint arXiv:1205.2618 , 2012. Xie Runfeng, Cui Xiangyang, Yan Zhou, Wang Xin, Xuan Zhanwei, Zhang Kai, et al. Lkpnr: Llm and kg for personalized news recommendation framework. arXiv preprint arXiv:2308.12028 , 2023. Fei Sun, Jun Liu, Jian Wu, Changhua Pei, Xiao Lin, Wenwu Ou, and Peng Jiang. BERT4Rec: Sequential recommen-dation with bidirectional encoder representations from transformer. In Proceedings of the 28th ACM international conference on information and knowledge management , pages 1441–1450, 2019. Jiaxi Tang and Ke Wang. Personalized top-n sequential recommendation via convolutional sequence embedding. In 
+
+Proceedings of the eleventh ACM international conference on web search and data mining , pages 565–573, 2018. Vincent A. Traag, Ludo Waltman, and Nees Jan Van Eck. From Louvain to Leiden: Guaranteeing well-connected communities. Scientific reports , 9(1):1–12, 2019. Rianne Van Den Berg, N Kipf Thomas, and Max Welling. Graph convolutional matrix completion. arXiv preprint arXiv:1706.02263 , 2(8):9, 2017. Ashish Vaswani, Noam Shazeer, Niki Parmar, Jakob Uszkoreit, Llion Jones, Aidan N. Gomez, Łukasz Kaiser, and Illia Polosukhin. Attention is all you need. Advances in neural information processing systems , 30, 2017. Dingsu Wang, Yuchen Yan, Ruizhong Qiu, Yada Zhu, Kaiyu Guan, Andrew Margenot, and Hanghang Tong. Networked time series imputation via position-aware graph enhanced variational autoencoders. In Proceedings of the 29th ACM SIGKDD Conference on Knowledge Discovery and Data Mining , pages 2256–2268, 2023a. Xiang Wang, Xiangnan He, Meng Wang, Fuli Feng, and Tat-Seng Chua. Neural graph collaborative filtering. In 
+
+Proceedings of the 42nd international ACM SIGIR conference on Research and development in Information Retrieval ,pages 165–174, 2019. Xinfeng Wang, Jin Cui, Fumiyo Fukumoto, and Yoshimi Suzuki. Enhancing high-order interaction awareness in llm-based recommender model. arXiv preprint arXiv:2409.19979 , 2024a. Yan Wang, Zhixuan Chu, Xin Ouyang, Simeng Wang, Hongyan Hao, Yue Shen, Jinjie Gu, Siqiao Xue, James Y Zhang, Qing Cui, et al. Enhancing recommender systems with large language model reasoning graphs. arXiv preprint arXiv:2308.10835 , 2023b. Ye Wang, Jiahao Xun, Minjie Hong, Jieming Zhu, Tao Jin, Wang Lin, Haoyuan Li, Linjun Li, Yan Xia, Zhou Zhao, et al. EAGER: Two-stream generative recommender with behavior-semantic collaboration. In Proceedings of the 30th ACM SIGKDD Conference on Knowledge Discovery and Data Mining , pages 3245–3254, 2024b. Tianxin Wei, Ruizhong Qiu, Yifan Chen, Yunzhe Qi, Jiacheng Lin, Wenju Xu, Sreyashi Nag, Ruirui Li, Hanqing Lu, Zhengyang Wang, Chen Luo, Hui Liu, Suhang Wang, Jingrui He, Qi He, and Xianfeng Tang. Robust watermarking for diffusion models: A unified multi-dimensional recipe, 2024. 
+
+14 Ziwei Wu, Lecheng Zheng, Yuancheng Yu, Ruizhong Qiu, John Birge, and Jingrui He. Fair anomaly detection for imbalanced groups, 2024. Longtao Xiao, Haozhao Wang, Cheng Wang, Linfei Ji, Yifan Wang, Jieming Zhu, Zhenhua Dong, Rui Zhang, and Ruixuan Li. Progressive collaborative and semantic knowledge fusion for generative recommendation. arXiv preprint arXiv:2502.06269 , 2025. Wujiang Xu, Qitian Wu, Zujie Liang, Jiaojiao Han, Xuying Ning, Yunxiao Shi, Wenfang Lin, and Yongfeng Zhang. SLMRec: Distilling large language models into small for sequential recommendation. arXiv preprint arXiv:2405.17890 ,2024a. Zhe Xu, Ruizhong Qiu, Yuzhong Chen, Huiyuan Chen, Xiran Fan, Menghai Pan, Zhichen Zeng, Mahashweta Das, and Hanghang Tong. Discrete-state continuous-time diffusion for graph generation. In Advances in Neural Information Processing Systems , volume 37, 2024b. Hyunsik Yoo, Zhichen Zeng, Jian Kang, Ruizhong Qiu, David Zhou, Zhining Liu, Fei Wang, Charlie Xu, Eunice Chan, and Hanghang Tong. Ensuring user-side fairness in dynamic recommender systems. In Proceedings of the ACM on Web Conference 2024 , pages 3667–3678, 2024. Hyunsik Yoo, SeongKu Kang, Ruizhong Qiu, Charlie Xu, Fei Wang, and Hanghang Tong. Embracing plasticity: Balancing stability and plasticity in continual recommender systems. In Proceedings of the 48th International ACM SIGIR Conference on Research and Development in Information Retrieval , 2025a. Hyunsik Yoo, Ruizhong Qiu, Charlie Xu, Fei Wang, and Hanghang Tong. Generalizable recommender system during temporal popularity distribution shifts. In Proceedings of the 31st ACM SIGKDD Conference on Knowledge Discovery and Data Mining , 2025b. Kai Yu, Shipeng Yu, and Volker Tresp. Soft clustering on graphs. Advances in neural information processing systems ,18, 2005. Zhichen Zeng, Ruizhong Qiu, Zhe Xu, Zhining Liu, Yuchen Yan, Tianxin Wei, Lei Ying, Jingrui He, and Hanghang Tong. Graph mixup on approximate Gromov–Wasserstein geodesics. In Proceedings of the 41st International Conference on Machine Learning , 2024. Zhichen Zeng, Ruizhong Qiu, Wenxuan Bao, Tianxin Wei, Xiao Lin, Yuchen Yan, Tarek F. Abdelzaher, Jiawei Han, and Hanghang Tong. Pave your own path: Graph gradual domain adaptation on fused Gromov–Wasserstein geodesics, 2025. Ziwei Zhao, Fake Lin, Xi Zhu, Zhi Zheng, Tong Xu, Shitian Shen, Xueying Li, Zikai Yin, and Enhong Chen. Dynllm: when large language models meet dynamic graph recommendation. arXiv preprint arXiv:2405.07580 , 2024. Yutao Zhu, Huaying Yuan, Shuting Wang, Jiongnan Liu, Wenhan Liu, Chenlong Deng, Haonan Chen, Zheng Liu, Zhicheng Dou, and Ji-Rong Wen. Large language models for information retrieval: A survey. arXiv preprint arXiv:2308.07107 , 2023. Jiaru Zou, Yikun Ban, Zihao Li, Yunzhe Qi, Ruizhong Qiu, Ling Yang, and Jingrui He. Transformer copilot: Learning from the mistake log in LLM fine-tuning, 2025. 
+
+# Appendix 
+
+# A Proof of Theorem 2 
+
+Setup and conventions. We treat the co-engagement graph as undirected . Since every user has N interactions, the co-engagements of each user u ∈ U form a complete graph (clique) KIu on the N items in Iu, with 
+
+ N
+
+> 2
+
+ = N (N −1) 2 undirected edges. For an undirected edge {i, j }, write bij := ei − ej ∈ R|I| , where ei denotes the i-th standard basis vector; this edge contributes the rank-one term bij bT 
+
+> ij
+
+to the graph Laplacian. Self-loops 
+
+(i, i ) satisfy bii = 0 and thus contribute nothing, so we discard them and identify the sampling domain Iu × I u
+
+with the  N
+
+> 2
+
+ undirected edges of KIu . Accordingly, 
+
+LE∗ = X
+
+> u∈U
+
+X
+
+> {i,j }⊆I u
+
+bij bT 
+
+> ij
+
+, LE = N (N − 1) 2m
+
+X
+
+> u∈U
+> m
+
+X
+
+> ℓ=1
+
+biuℓ juℓ bT  
+
+> iuℓjuℓ
+
+,
+
+15 where, for each user u, the edges {iuℓ , j uℓ }mℓ=1 are drawn independently and uniformly with replacement from the  N
+
+> 2
+
+ edges of KIu . The reweighting factor N (N −1) 2m =  N
+
+> 2
+
+/m rescales the m samples back to the total edge weight  N
+
+> 2
+
+ of each user’s clique, which (as we verify below) makes LE an unbiased estimator of LE∗ . Without loss of generality, we assume that G∗ is connected; otherwise, the argument below applies verbatim to each connected component. 
+
+Auxiliary lemma. We will use the following Lemma 5. 
+
+Lemma 5 (effective resistance) . Let L†E∗ denote the Moore–Penrose pseudoinverse of LE∗ . For every co-engaged pair {i, j } (i.e., {i, j } ⊆ I u for some u ∈ U ), 
+
+bT 
+
+> ij
+
+L†E∗ bij ≤ 2
+
+N .
+
+Proof of Lemma 5. The quantity bT 
+
+> ij
+
+L†E∗ bij is the effective resistance between items i and j in G∗. The clique 
+
+KIu is a subgraph of G∗, and adding edges (here, the remaining co-engagements) can only decrease effective resistance by Rayleigh’s monotonicity law. Hence, it suffices to bound the effective resistance within KN = KIu
+
+alone. The Laplacian of KN is LKN = N I − 11 T on the N vertices of the clique, whose pseudoinverse acts as  
+
+> 1
+> N
+
+on the subspace orthogonal to 1. Since bij ⊥ 1, we have bT 
+
+> ij
+
+L† 
+
+> KN
+
+bij = 1 
+
+> N
+
+∥bij ∥22 = 2 
+
+> N
+
+. The claim follows. 
+
+Theorem proof. We are now ready to prove Theorem 2. 
+
+Proof of Theorem 2. First, fix a user u and a single draw {i, j } uniform over the  N
+
+> 2
+
+ edges of KIu . Then 
+
+E
+
+h N (N −1) 2m bij bT
+
+> ij
+
+i
+
+= N (N − 1) 2m · 1
+
+ N
+
+> 2
+
+ X
+
+> {i,j }⊆I u
+
+bij bT 
+
+> ij
+
+= 1
+
+m
+
+X
+
+> {i,j }⊆I u
+
+bij bT 
+
+> ij
+
+.
+
+Summing over the m independent draws of user u and then over all users gives E[LE ] = LE∗ .Enumerate all n := |U| m draws as ℓ = 1 , . . . , n , and let Xℓ := N (N −1) 2m biℓjℓ bT 
+
+> iℓjℓ
+
+be the reweighted contribution of the ℓ-th draw, so that LE = Pnℓ=1 Xℓ and the Xℓ are independent. Define 
+
+Yℓ := ( L†E∗ )1/2Xℓ(L†E∗ )1/2, ¯Y := 
+
+> n
+
+X
+
+> ℓ=1
+
+Yℓ = ( L†E∗ )1/2LE (L†E∗ )1/2.
+
+Let Π := ( L†E∗ )1/2LE∗ (L†E∗ )1/2 be the orthogonal projection onto range (LE∗ ). By unbiasedness, E[ ¯Y ] = Π ,and Π = I on range( LE∗ ).Write w := N (N −1) 2m . Each Yℓ ⪰ 0, and by Lemma 5, 
+
+∥Yℓ∥2 = w b T 
+
+> ij
+
+L†E∗ bij ≤ N (N − 1) 2m · 2
+
+N = N − 1
+
+m ≤ Nm =: R. 
+
+Since bT 
+
+> ij
+
+L†E∗ bij ≤ 2 
+
+> N
+
+, each Yℓ satisfies Y 2 
+
+> ℓ
+
+= ( w b T 
+
+> ij
+
+L†E∗ bij ) Yℓ ⪯ Nm Yℓ. Taking expectations and summing, and using E[Z2 
+
+> ℓ
+
+] ⪯ E[Y 2 
+
+> ℓ
+
+] for the centered matrices Zℓ := Yℓ − E[Yℓ],
+
+v := 
+
+> n
+
+X
+
+> ℓ=1
+
+E[Z2 
+
+> ℓ
+
+] 2
+
+≤
+
+> n
+
+X
+
+> ℓ=1
+
+E[Y 2 
+
+> ℓ
+
+] 2
+
+≤ Nm
+
+> n
+
+X
+
+> ℓ=1
+
+E[Yℓ] 2
+
+= Nm ∥Π∥2 = Nm .
+
+The matrices Zℓ = Yℓ − E[Yℓ] are independent, symmetric, and centered, of size d = |I| , with ∥Zℓ∥2 ≤ R = Nm
+
+and variance proxy v ≤ Nm . By the matrix Bernstein inequality, 
+
+P{∥ ¯Y − Π∥2 ≥ ϵ} ≤ 2|I| exp 
+
+
+
+− ϵ2/2 
+
+> Nm
+
++ ϵ
+
+> 3
+> Nm
+
+
+
+.
+
+16 The right-hand side is at most δ whenever 
+
+ϵ2/2 
+
+> Nm
+
+(1 + ϵ 
+
+> 3
+
+) ≥ log 2|I| 
+
+δ ⇐⇒ m ≥ 2N (1 + ϵ/ 3) 
+
+ϵ2 log 2|I| 
+
+δ = 2 N
+
+ 1
+
+ϵ2 + 13ϵ
+
+
+
+log 2|I| 
+
+δ .
+
+The choice m = 2N ( 13ϵ + 1 
+
+> ϵ2
+
+) log 2|I| 
+
+> δ
+
+ satisfies this, so ∥ ¯Y − Π∥2 ≤ ϵ with probability at least 1 − δ.Finally, the inequality ∥ ¯Y − Π∥2 ≤ ϵ is equivalent to (1 − ϵ)Π ⪯ ¯Y ⪯ (1 + ϵ)Π . Conjugating by L1/2 
+
+> E∗
+
+and using 
+
+L1/2 
+
+> E∗
+
+ΠL1/2 
+
+> E∗
+
+= LE∗ together with L1/2 
+
+> E∗
+
+¯Y L 1/2 
+
+> E∗
+
+= LE (valid since range( LE ) ⊆ range( LE∗ )), we obtain 
+
+(1 − ϵ)LE∗ ⪯ LE ⪯ (1 + ϵ)LE∗ .
+
+Since every user contributes m sampled edges and M = |U| N ,
+
+|E| = |U| m = O 
+
+
+
+|U| N log 2|I| 
+
+> δ
+
+
+
+= O 
+
+
+
+M log 2|I| 
+
+> δ
+
+
+
+= O( M log M ),
+
+where we used |I| ≤ M and treated ϵ, δ as constants. This completes the proof. 
+
+# B Proof of Proposition 3 
+
+Proof. By the linearity of expectation, 
+
+Qsoft (P ) = E 
+
+> h∼P
+
+[Qhard (h)] (14) 
+
+= E
+
+> h∼P
+
+ 1
+
+|E| 
+
+X
+
+> i,j ∈I
+
+
+
+Ai,j − γ kikj
+
+|E| 
+
+
+
+1[hi=hj ]
+
+
+
+(15) 
+
+= 1
+
+|E| 
+
+X
+
+> i,j ∈I
+
+
+
+Ai,j − γ kikj
+
+|E| 
+
+
+
+E 
+
+> h∼P
+
+[1 [hi=hj ]] (16) 
+
+= 12|E| 
+
+X
+
+> i,j ∈I
+
+
+
+Ai,j − γ kikj
+
+2|E| 
+
+ CX
+
+> a=1
+
+pi,a pj,a (17) 
+
+= 1
+
+|E| 
+
+X
+
+> i,j ∈I
+
+
+
+Ai,j − γ kikj
+
+|E| 
+
+
+
+p⊤ 
+
+> i
+
+pj (18) 
+
+=
+
+ 1
+
+|E| 
+
+X
+
+> (i,j )∈E
+
+p⊤ 
+
+> i
+
+pj
+
+
+
+− γ ∥P ⊤k∥22
+
+|E| 2 .
+
+# C Proof of Proposition 4 
+
+Proof. Since each row of P has ≤ ρ nonzero entries, then P 
+
+> (i,j )∈E
+
+pT 
+
+> i
+
+pj needs time P 
+
+> (i,j )∈E
+
+O (ρ) = ρ|E| .Since P has ≤ ρ|I| nonzero entries, then ∥P Tk∥22 needs time O(ρ|I| ) ≤ O(ρ|E| ). Hence, the conclusion follows from Theorem 2. 17

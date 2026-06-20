@@ -1,0 +1,423 @@
+Title: ChronoID: Infusing Explicit Temporal Signals into Semantic IDs for Generative Recommendation
+
+URL Source: https://arxiv.org/pdf/2606.14260v1
+
+Published Time: Mon, 15 Jun 2026 00:46:49 GMT
+
+Number of Pages: 17
+
+Markdown Content:
+# ChronoID: Infusing Explicit Temporal Signals into Semantic IDs for Generative Recommendation 
+
+Dongdong Nian 1, Dongqi Fu 2, Chenliang Xu 1, Yinglong Xia 2, Hong Li 2, Hong Yan 2, Jian Kang 31University of Rochester, 2Meta MRS, 3MBZUAI Semantic IDs are crucial in generative recommendation, but with a fundamental limitation: tempo-ral information is not well incorporated into semantic IDs. Instead, time influences recommendation only implicitly (e.g., through session construction heuristics, preference alignment, or sequence order), while existing semantic ID learning remains entirely time-agnostic. This design conflates interactions occurring under distinct temporal contexts into identical semantic representations, implicitly assum-ing that item semantics and user intent are temporally stationary. Such an assumption is misaligned with real-world recommendation scenarios, where evolving interaction rhythms play a central role. In this work, we investigate where and how the explicit time should be incorporated into semantic ID for generative recommendation. First, we systematically characterize the design space along three orthogonal dimensions of temporal signals and present a unified framework, ChronoID, for time-aware semantic ID learning. Then, by contributing a new time-explicit generation recommendation bench-mark, ChronoID answers the questions: what is the effective way of infusing time, how to design the architecture, and where does the gain come from.  
+
+> Date:
+
+June 15, 2026  
+
+> Correspondence:
+
+Jian Kang at jian.kang@@mbzuai.ac.ae 
+
+# 1 Introduction 
+
+Recent advances in generative recommendation systems (Deldjoo et al., 2024; Hou et al., 2025a) have demon-strated the promise of replacing traditional multi-stage pipelines with end-to-end sequence generations. Meth-ods such as OneRec (Deng et al., 2025) and MiniOneRec (Kong et al., 2025) reformulate recommendation as a conditional generation paradigm over discrete semantic IDs (SIDs) (Rajput et al., 2023), enabling the unified modeling of retrieval, ranking, and diversification. Despite their empirical success, these approaches share a critical and largely overlooked limitation: temporal information is not explicitly modeled at the level of semantic abstraction. In existing generative recommendation frameworks, temporal signals are incorporated only implicitly or indirectly. For instance, OneRec (Deng et al., 2025) relies on session construction heuristics and reward modeling based on user behavior, where time influences which interactions are sampled and how preferences are aligned. However, these mechanisms operate exclusively at the data selection and optimization stages. The semantic IDs themselves, learned via vector quantization of item representations, remain fundamentally time-agnostic. As a result, temporal dynamics do not enter the tokenization layer that defines the discrete vocabulary over which generation is performed. The open-source nature of MiniOneRec (Kong et al., 2025) makes the issue even more transparent. It constructs semantic IDs by applying residual vector quantization to item textual embeddings, followed by large language model–based sequence generation. Within this framework, temporal awareness is restricted to sequence order and relative positional encodings. While such signals capture when interactions occur within a user history, they fail to encode temporal infor-mation, i.e., the evolution of item meaning, relevance, or user intent over time. Consequently, interactions with the same item across vastly different temporal contexts are mapped to identical semantic IDs, limiting the expressiveness and adaptability of generative recommendation models. These observations reveal a fun-damental gap in current approaches: time is modeled at the sequence and optimization levels, but excluded from semantic abstraction itself .1
+
+> arXiv:2606.14260v1 [cs.IR] 12 Jun 2026
+
+Guided by this motivation, we investigate multiple architectural strategies for incorporating temporal infor-mation into semantic ID learning. These strategies reflect different inductive biases regarding the relationship between content and time, ranging from (1) time embedding schemes to (2) temporal-semantic fusion strate-gies and (3) codebook quantization mechanisms. By systematically exploring these designs, we aim to answer a fundamental question: Where and how should time enter semantic abstraction to enable effective generative recommendation? Building upon this perspective, we make the following contributions. 
+
+> First
+
+, we present a unified framework for time-aware semantic ID learning (named ChronoID ) and systemati-cally characterize its design space along three orthogonal dimensions in section 3: (1) the form of temporal encoding (absolute timestamps versus relative time intervals), (2) the fusion order between temporal context and item semantics (early fusion before quantization versus late fusion at the discrete ID level), and (3) the structure of the quantizer (residual versus parallel quantization). Each design choice corresponds to a distinct inductive bias regarding how time interacts with semantic abstraction. 
+
+> Second
+
+, to facilitate a rigorous evaluation of time-aware semantic IDs, we strictly define the time-aware generative tasks and extend the real-world time-implicit benchmarks from (Hou et al., 2024; Kong et al., 2025) in section 4, which not only ensures that discrete semantic IDs are learned without future information leakage during training, supervised fine-tuning, validation, and testing sets, and also provides a more rigorous and realistic evaluation for the next-item generation task. 
+
+> Third
+
+, with the multi-design-space framework and the extended time-explicit benchmark, we conduct extensive evaluations and demonstrate that (1) incorporating time-explicit information into the semantic IDs substan-tially improves generative recommendation performance in section 5.2; (2) relative time intervals serve as a more effective representation for modeling temporal semantic IDs compared to absolute timestamps in sec-tion 5.3; (3) late fusion of time is superior to early fusion in aligning the highly heterogeneous feature spaces of item semantics and temporal signals, while more complex fusion architectures provide marginal benefits over simple concatenation in section 5.4; (4) parallel quantization yields more discriminative and high-quality identifiers than residual quantization for time-aware semantic ID generation in section 5.5; (5) the perfor-mance improvements are driven by enriched temporal-textual semantics rather than simply expanding the ID representation space in section C.1; (6) temporal signals are indispensable, as removing or zero-padding them leads to significant degradation due to the introduction of out-of-distribution noise in section C.2; and (7) atomic timestamps provide sufficient information for the model to internalize high-level temporal patterns (e.g., holidays and seasons) in section C.3. 
+
+# 2 Preliminary 
+
+In this section, we provide a formal definition of the generative recommendation task and review the standard Semantic ID learning paradigm, which serves as the foundation for our proposed time-aware techniques.  
+
+> Generative Recommendation.
+
+Let U and I denote the sets of users and items, respectively. For each user 
+
+u ∈ U , the interaction history is represented as a chronologically ordered sequence Su = ( i1, i 2, . . . , i t), where 
+
+it ∈ I is the item interacted with at timestamp t. The objective is to learn a model fθ that predicts the next item in+1 by the conditional probability: 
+
+P (zn+1 | z≤n) = 
+
+> K
+
+∏
+
+> k=1
+
+P (zn+1 ,k | z≤n, z n+1 ,<k ). (1) where zi = ( zi, 1, z i, 2, . . . , z i,K ) is the discrete semantic ID of item i, consisting of K hierarchical or parallel tokens.  
+
+> Semantic ID via Quantization.
+
+In general, semantic IDs are assigned by discretizing continuous item represen-tations into a sequence of codebook indices. Given an item i and its textual description (e.g., title, category), a pre-trained LLM is typically used to extract a high-dimensional embedding ei ∈ Rd.A quantizer Q (most commonly a Residual-Quantized VAE, or RQ-VAE) (Lee et al., 2022) then maps an embeddin hi to a discrete space using a set of K codebooks {C 1, . . . , CK }. In the residual quantization 2paradigm, the ID tokens are generated such that each subsequent token refines the quantization error of the previous layers: 
+
+ˆhi =
+
+> K
+
+∑
+
+> k=1
+
+ck,z i,k , zi,k = arg min   
+
+> j∈{ 1,...,V }
+
+∥rk−1 − ck,j ∥22 (2) where rk−1 is the residual from the (k − 1) -th layer and ck,j is the j-th code vector in the k-th codebook. However, despite its effectiveness, the aforementioned paradigm relies on a static mapping hi → zi, where the embedding ei is derived solely from textual content. This assumes the identity of an item in the latent space is invariant to the temporal context of the interaction. In the following sections, we describe how to move beyond this static assumption by incorporating temporal information directly into the semantic ID learning process. 
+
+# 3 ChronoID: Learning Time-Aware Semantic IDs for Recommendation 
+
+Here, we introduce ChronoID, a unified framework for learning the effective time-aware semantic IDs for generative recommendation. In general, as shown in figure 1, ChronoID first produces a time embedding for each user-item interaction, then fuses the time embedding with the item embedding, and quantizes the fused embedding to extract the semantic ID via codebook training; Systematically, ChronoID suggests that the design space of semantic ID learning involves three key design dimensions regarding (1) how to learn time embedding , (2) how to fuse item embedding and time embedding , and (3) how to quantize an embedding to obtain the semantic ID . Finally, the semantic IDs are the inputs to the large language model for supervised fine-tuning (SFT) and inference (Kong et al., 2025).    
+
+> Figure 1 Three architectural variants of ChronoID: (a) Early Fusion , which fuses modalities before quantization; (b)
+> Late Fusion , which quantizes text and time independently; and (c) Parallel Quantization , which utilizes independent codebooks to capture decoupled item facets.
+
+3.1 Design Dimension I: Time Embedding 
+
+Different from existing generative recommendation models that implicitly encode temporal information through sequence order, we treat temporal information as a first-class member in learning semantic IDs. 3Our intuition is that item semantics, such as price, seasonal trends, and user preferences could evolve over time. Thus, a high-quality encoding of temporal information could affect the quality of next-item generation, leading to a better profiling of both users and items. To capture the temporal relationship between events, time is first transformed into a time embedding by a time encoder. We consider the classic sinusoidal positional encoding to encode time as a temporal position of when an interaction happens (Vaswani et al., 2017; Xu et al., 2019). Mathematically, the d-dimensional time embedding ht of a timestamp t is computed as 
+
+ht [2 i] = sin 
+
+( t
+
+10000 2i/d
+
+)
+
+, ht [2 i + 1] = cos 
+
+( t
+
+10000 2i/d
+
+)
+
+(3) where i ∈ { 1, . . . , d }. 
+
+> Choice 1: Absolute timestamp as input.
+
+A natural choice of input to the time encoder is the UNIX timestamp of a user interacts with an item, which we refer to as absolute time. Such a timestamp reflects the global temporal position of the event in the user-item interaction data, which captures the global trends. Besides, a key intuition of encoding time with sinusoidal function is that the inner product of two time embeddings naturally reflects the time span of two events, which helps model the frequency and recency of user-item interactions. Thus, absolute time could serve as the canonical choice of input to the time encoder.  
+
+> Choice 2: Relative time as input.
+
+In contrast, we argue that time embedding based on absolute time may not be the optimal choice for semantic ID. The main reason is that the time embedding is later quantized into discrete semantic IDs, and the quantized semantic ID will be input to a generative model for sequence generation. During this process, there is no explicit inner product between two sinusoidal time embeddings, thus unable to correctly model the frequency and recency of user interactions. To this end, an alternative choice of input is the relative time between two consecutive interactions with respect to a user, in order to explicit encode time spans between interactions into semantic IDs. Specifically, for the i-th interaction made by an user u, we define the relative time as ∆tu,i = tu,i − tu,i −1, where tu,i is the absolute time (i.e., UNIX timestamp) of the i-th interaction made by the user u, and ∆tu, 1 = tu, 1 is defined as the initial relative timestamp made by the user u.An illustrative example of absolute time and relative time can be found in section A. 
+
+3.2 Design Dimension II: Fusion Strategy 
+
+After temporal information is encoded, a critical design question is when such information should be fused with item embeddings for semantic ID quantization. We distinguish between two fusion orders: (1) fuse-then-quantize and (2) quantize-then-fuse.  
+
+> Strategy 1: Early fusion (Fuse-then-quantize).
+
+In the early fusion setting, temporal information is treated as an inherent component of the item interaction and is fused with textual semantics prior to discretization. Suppose the item embedding of an item is hitem and the time embedding of an user interacting with this item is ht. We concatenate the time and item embedding into one embedding h = [ hitem || ht]. Then we feed h into a vector quantization model Q to obtain the semantic ID SID = Q (h). 
+
+> Strategy 2: Late fusion (Quantize-then-fuse).
+
+In contrast to early fusion, late fusion will discretize item em-bedding and time embedding independently and combine them at the semantic ID level. For an item with item embedding hitem and the time embedding ht of an user interacting with this item, we use two different vector quantization models Qitem and Qtime to obtain the quantized item ID ID item = Qitem (hitem ) and time ID ID time = Qtime (ht). Then the semantic ID SID is defined as the concatenation of the item ID and time ID, i.e., SID = [ ID item || ID time ].
+
+3.3 Design Dimension III: Quantization Mechanism 
+
+In orthogonal to the fusion order, another key design is the quantization model. We investigate two different types of quantization models based on residual codebooks and parallel codebooks.  
+
+> Type 1: Residual quantization.
+
+The key idea of residual quantization, such as RQ-VAE (Lee et al., 2022), is to map an embedding to a semantic ID using K different codebooks {C 1, . . . , CK }. Each codebook will be 4learned in a sequential order by using the residual to from the previous layer, as shown in Equation (2). In the case that K = 1 for RQ-VAE, it naturally degenerates to VQ-VAE (Van Den Oord et al., 2017).  
+
+> Type 2: Parallel quantization.
+
+Different from residual quantization, parallel quantization (Qu et al., 2025) uses 
+
+K independent codebooks and encoders to discretize the fused representation, such that different encoders and codebooks capture different views of the input item. For a codebook in the codebook set Ck ∈ {C i}Ki=1 ,it contains V learnable code vectors Ck = {ck, 1, . . . , ck,V }. Each codebook Ck independently quantizes an input embedding h by 
+
+zk = arg min   
+
+> j∈{ 1,...,V }
+
+∥h − ck,j ∥22 (4) Then the final semantic ID SID of an item is the concatenation of all zk, k ∈ { 1, . . . , K }
+
+SID = ( z1, . . . , z K ) (5) In ChronoID, the input to parallel quantization model is the early fused embedding h = [ hitem || ht].
+
+# 4 Time-Aware Generative Recommendation Benchmarks 
+
+To the best of our knowledge, the large-scale, text-rich, time-rigorous, and open-source recommendation datasets are limited, like Mercari (Li et al., 2025), which is a customer-to-customer dataset with short-term temporal information. To facilitate a rigorous evaluation, beyond Mercari (Li et al., 2025), based on the time-implicit business-to-customer datasets (Amazon Industrial and Office (Hou et al., 2024; Kong et al., 2025)), we construct a time-explicit benchmark by splitting the original datasets using time information. Therefore, the learning of item semantic IDs is strictly partitioned by time, which ensures that discrete semantic IDs are learned without future information leakage during codebook training, supervised fine-tuning, validation, and testing, and provides a more rigorous and realistic evaluation for next-item generation. We define a fixed 
+
+and global temporal cutoff (e.g., 01/01/2028) to strictly partition interactions for all users. This cutoff is applied across three distinct stages to prevent any look-ahead bias: • Codebook Training : We strictly use interactions that occurred before the cutoff. No interactions on or after 01/01/2018, are involved in learning the item representations. • Supervised Fine-Tuning (SFT) Training : For every training instance (historical sequence, target item), we guarantee that the interaction timestamp of target item is strictly before the cutoff date. • SFT Testing : All target items to be predicted are guaranteed to occur on or after the fixed cutoff. Under this protocol, the inclusion of users depends on their interaction timestamps relative to the cutoff. For instance, a user whose interactions all occurred before the cutoff will be used exclusively for train-ing, whereas a user whose first interaction occurred on or after the cutoff will appear only in the test set. Details for the raw data characteristics, the formulation of training and fine-tuning datasets, the resulting data statistics, and future improvements can be found in section B. 
+
+# 5 Experiments 
+
+Here, we evaluate ChronoID to answer the following questions: • RQ1 (Effectiveness): Does time-explicit semantic ID improve the performance of generative recommenda-tion more than time-implicit baselines? • RQ2 (Time Embedding): Comparing absolute timestamp vs. relative time, which is the better input for modeling interaction dynamics in time embedding? • RQ3 (Fusion Strategy): Comparing early fusion vs. late fusion, which is better aligned with the hetergeneous modalities of item semantics and time? • RQ4 (Quantization Mechanism): Is the parallel quantization better than the residual quantization for mul-timodal semantic ID generation? 5Furthermore, we investigate whether ChronoID’s gains are driven by enriched temporal-textual semantics or simply increasing ID digits in section C.1; we evaluate the necessity of temporal signals by comparing ChronoID against variants where these signals are entirely removed or replaced with constant zero-padding in section C.2; we explore whether explicit high-level temporal features, such as seasons and holidays, provide additional gains over raw atomic timestamps in section C.3. Detailed experimental configurations and hyperparameter analysis are in section D. 
+
+5.1 Experiment Setup 
+
+To systematically answer the research questions, we decompose our framework into three key architectural dimensions. This allows us to isolate the impact of temporal encoding, fusion strategy, and quantization structure. 
+
+Baselines. We compare our framework against five representative baselines: (1) SASRec (Kang and McAuley, 2018), a classic self-attentive sequential model that captures user preferences from interaction sequences via unidirectional self-attention; (2) ActionPiece (Hou et al., 2025b), a recent generative recommendation method that applies BPE-style tokenization to action sequences, merging frequently co-occurring items into composite tokens; (3) HSTU (Zhai et al., 2024), a highly optimized transformer architecture to capture long-term user interests efficiently; (4) MiniOneRec (Kong et al., 2025), a competitive and efficient baseline for generative recommendation; and (5) TokenRec (Qu et al., 2025), a generative recommendation framework that utilizes parallel quantizers. 
+
+Metrics. We employ two widely used top-K metrics: Hit Rate (HR@K) and Normalized Discounted Cumula-tive Gain (NDCG@K). Following the standard leave-one-out evaluation protocol, each test instance contains exactly one ground-truth item. HR@K measures the proportion of test instances where the ground-truth item is present within the top-K recommended list. It is defined as: HR@ K = 1
+
+> N
+
+∑Nu=1 I(rank u ≤ K) where N is the total number of users in the test set, rank u denotes the predicted rank of the target item for user u, and I(·)
+
+is the indicator function. NDCG@K considers the specific position of the ground-truth item. It assigns higher weights to items ranked closer to the top using a logarithmic decay: N DCG @K = 1
+
+> N
+
+∑Nu=1  
+
+> log (2)
+> log (rank u+1)
+
+,if rank u ≤ K else 0. In our leave-one-out setting, since there is only one relevant item per user, the Ideal Discounted Cumulative Gain (IDCG) simplifies to 1/ log 2(1 + 1) = 1 , thus the denominator is omitted. 
+
+Time Embedding. We compare two methods for encoding temporal signals into the embedding space: Abso-lute Time ( Tabs ): Projects the Unix timestamp into a high-dimensional vector to capture global seasonality. 
+
+Relative Time ( Trel ): Encodes the relative time interval between consecutive interactions, capturing the localized user rhythm. 
+
+Fusion Strategy. This dimension investigates the optimal stage to integrate multimodal signals: Early Fu-sion : Text and time embeddings are concatenated into a single composite feature vector zjoint = [ htext || htime ]
+
+before being passed to the quantization layer. Late Fusion : Text and time are processed by independent quantization pipelines. Their respective discrete IDs are generated separately and concatenated to form the final Semantic ID. 
+
+Quantization Mechanism. We evaluate two different discrete bottleneck structures: Residual Codebooks :Follows a coarse-to-fine hierarchical quantization where each subsequent codebook predicts the residual error of the previous one. Parallel Codebooks : Features are quantized by multiple independent codebooks in parallel, allowing different codebooks to capture decoupled item facets. 
+
+5.2 Overall Effectiveness (RQ1) 
+
+Our main results of the effectiveness of ChronoID is shown in table 1. From the table, it is evident that ChronoID consistently outperforms both the discriminative model (SASRec & HSTU) and the generative recommendation baselines (ActionPiece, MiniOneRec & TokenRec). Notably, compared to MiniOneRec, ChronoID with parallel quantization and relative time achieves a 36 .1% relative improvement in HR@3 6(12 .60 vs. 9.26 ) on the Industrial dataset and 40 .1% relative improvement in HR@3 ( 8.42 % in HR@3 vs. 
+
+6.01 %) on the Office dataset. These results highlight the insufficiency of solely relying on the time-implicit textual semantics and the importance of integrating explicit time in semantic IDs.      
+
+> Dataset Architecture Strategy (Fusion, Time) @3 @5 @10 HR
+
+↑ NDCG ↑ HR ↑ NDCG ↑ HR ↑ NDCG ↑
+
+> Industrial Baselines
+
+SASRec (Kang and McAuley, 2018) ID-based 7.99 7.12 9.30 7.68 10.68 8.46 ActionPiece (Hou et al., 2025b) ID-based 8.55 7.53 10.21 8.52 12.31 9.20 HSTU (Zhai et al., 2024) Random Absolute Time 5.11 3.93 7.05 4.73 8.64 5.25 MiniOneRec (Kong et al., 2025) Text + Random Absolute Time 9.26 8.44 10.95 9.14 13.53 10.01 TokenRec (Qu et al., 2025) Text + Random Absolute Time 8.20 7.44 9.01 7.77 10.54 8.26 
+
+> ChronoID
+
+Residual Quantization Early, Absolute Time 7.44 6.72 8.91 7.32 11.33 8.08 (Ours) Early, Relative Time 10.62 9.56 11.95 10.11 14.29 10.86 Late, Absolute Time 10.10 8.93 11.52 9.52 13.06 10.03 Late, Relative Time 10.43 9.28 11.68 9.79 13.20 10.29 Parallel Quantization N/A, Absolute Time 11.22 9.84 12.74 10.48 14.77 11.13 N/A, Relative Time 12.60 11.15 13.75 11.62 16.22 12.41 Office Baselines 
+
+SASRec (Kang and McAuley, 2018) ID-based 6.81 6.07 7.40 6.20 9.18 6.95 ActionPiece (Hou et al., 2025b) ID-based 5.01 3.49 5.24 3.28 8.42 4.30 HSTU (Zhai et al., 2024) Random Absolute Time 3.43 2.70 4.64 3.11 7.04 3.96 MiniOneRec (Kong et al., 2025) Text + Random Absolute Time 6.01 4.89 7.22 5.42 9.53 6.22 TokenRec (Qu et al., 2025) Text + Random Absolute Time 7.54 6.40 9.10 7.06 12.10 8.01 
+
+> ChronoID
+
+Residual Quantization Early, Absolute Time 4.82 3.90 5.88 4.34 7.98 5.02 (Ours) Early, Relative Time 8.04 6.88 9.46 7.46 12.24 8.34 Late, Absolute Time 7.74 6.66 9.00 7.20 10.70 7.74 Late, Relative Time 8.22 6.86 9.68 7.46 11.71 8.12 Parallel Quantization N/A, Absolute Time 7.52 6.14 9.44 6.92 12.30 7.84 N/A, Relative Time 8.42 7.08 10.74 8.04 13.59 8.95 Mercari Baselines 
+
+SASRec (Kang and McAuley, 2018) ID-based 0.07 0.04 0.13 0.06 0.20 0.09 ActionPiece (Hou et al., 2025b) ID-based 0.13 0.10 0.13 0.10 0.20 0.13 HSTU (Zhai et al., 2024) Random Absolute Time 0.02 0.01 0.02 0.01 0.03 0.01 MiniOneRec (Kong et al., 2025) Text + Random Absolute Time 1.61 1.08 2.42 1.43 2.98 1.82 TokenRec (Qu et al., 2025) Text + Random Absolute Time 1.34 1.04 1.51 1.16 1.77 1.26 
+
+> ChronoID
+
+Residual Quantization Early, Absolute Time 1.79 1.41 2.47 1.65 3.35 1.97 (Ours) Early, Relative Time 2.16 1.69 2.72 1.91 3.82 2.28 Late, Absolute Time 1.96 1.58 2.69 1.81 3.58 2.10 Late, Relative Time 2.49 1.87 2.95 2.02 3.93 2.30 Parallel Quantization N/A, Absolute Time 2.07 1.65 3.08 2.36 3.26 2.74 N/A, Relative Time 3.28 2.59 4.34 3.03 5.78 3.50 
+
+Table 1 Performance comparison on Amazon Industrial, Amazon Office, and Mercari datasets. 
+
+5.3 Impact of Time Embeddings (RQ2) 
+
+For RQ2, we investigate the efficacy of different time embeddings using either absolute timestamp and relative time in ChronoID. As shown in table 1, we can observe that time embeddings based on relative time consistently and significantly outperforms its counterpart using absolute timestamp across all architectural configurations and datasets. The most distinct improvement is when early fusion and residual quantization is applied on the Industrial dataset, which shows 42.7% improvement for HR@3. We attribute this improvement to two major factors. First, while absolute timestamp captures global seasonality, sequential user behavior is more heavily influenced by the interaction rhythm (e.g., the gap between browsing and purchasing) which can be modeled by relative time. Second, while absolute timestamps contain seasonality, user behavior in sequential recommendation is more heavily influenced by the interval between actions (e.g., immediate re-purchase vs. periodic replacement). Absolute timestamp inherently suffers from potential distribution shift because timestamps are monotonically increasing and non-repeating. In contrast, relative time provides a more robust and generalizable representation to model the time intervals for long-term sequence generation. Both factors reflect the importance of the time intervals for modeling interaction rhythm, which are naturally 7(a) Parallel Quantization (b) Residual Quantization, Absolute Time     
+
+> (c) Residual Quantization, Relative Time
+> Figure 2 t-SNE visualization of item embeddings for the top-10 most frequent Semantic IDs. Compared to (b) Absolute Timestamp ( Tabs ), the (a) Parallel Quantization strategy and the (c) Relative Time Interval ( Trel ) strategy yields much tighter clusters with clearer boundaries, indicating a more discriminative semantic space.
+
+supported by relative time. To further investigate how time embedings affects the learned representation space, we visualize the item embeddings associated with the top-10 most frequent semantic IDs using t-SNE. As illustrated in figure 2 ((b) and (c)), the time embeddings generated with relative time is more clustered (i.e., clearer cluster boundaries and higher intra-cluster density) compared to those generated with absolute timestamp. In figure 2 (b), clusters are more scattered and even overlap with each other more often, indicating that time embeddings from absolute timestamp is not helpful in differentiating items. 
+
+5.4 Impact of Fusion Strategy (RQ3) 
+
+We investigate the impact of early fusion (fuse-then-quantize) and late fusion (quantize-then-fuse) for genera-tive recommendation. From table 1, we can observe that ChronoID with late fusion consistently outperforms ChronoID with early fusion. We attribute the substantial improvement to the fact that the textual semantics of an item and temporal information of an user-item interaction exist in highly heterogeneous feature spaces. Early fusion forces the model to compress these two distributions into a single codebook, which might lead to collapse that fails to capture the nuances of either text or time accurately. On the contrary, late fusion allow textual semantics and temporal information to preserve its unique information, ensuring that the resulting semantic ID are more informative for both modalities. To further explore other possible early fusion methods other than the simple concatenation, we conduct additional experiments on the Industrial dataset by evaluating two alternative fusion mechanisms on relative time: (i) MLP-based, which processes concatenated text and time embeddings through a 2-layer MLP before entering the RQ-VAE encoder; and (ii) Cross-Attention, where the item text embedding acts as the Query (Q) to attend to temporal signals (K, V). Our results in table 2 reveal that these more sophisticated strategies achieve performance comparable to simple concatenation. 
+
+Method HR@3 NDCG@3 HR@5 NDCG@5 HR@10 NDCG@10 
+
+Early Fusion (Concatenation) 10.62 9.56 11.95 10.11 14.29 10.86 
+
+MLP-based Fusion 10.53 9.47 11.84 10.16 13.55 10.62 Cross-Attention Fusion 10.72 9.50 11.05 10.20 12.49 10.76   
+
+> Table 2 Ablation study on different fusion architectures on the Industrial dataset (relative time). We compare our simple concatenation with more complex fusion mechanisms.
+
+85.5 Impact of Quantization Mechanism (RQ4) 
+
+We further evaluate the impact of different quantization mechanisms, whose results are shown in Table table 1. From the results, we observe that parallel quantization with relative time is consistently the best performing design choice. Apart from the advantage introduced by using relative time, we believe the fundamental advantage of parallel quantization lies in its flexibility in modeling both textual semantics and temporal information in one semantic ID. While RQ-VAE is highly effective for capturing the hierarchical, coarse-to-fine information, it enforces a rigid residual constraint where each subsequent codebook must account for the error from the previous one. However, time do not explicitly show an hierarchy, and the multimodal information (i.e., textual semantics and temporal information) are better to be characterized by independent facets rather than a hierarchy. Parallel quantization can naturally learn decoupled views of an item in different set of codebooks. This flexibility prevents error propagation in residual quantization and allows for generating more informative semantic ID for both textual semantics and temporal information when a temporal-aware generative recommendation needs to integrate heterogeneous information. We further visualize the item embeddings generated by using residual quantization and parallel quantization with absolute timestamp using t-SNE. As shown in figure 2. Comparing figure 2 (a) and figure 2 (b), it is clear that parallel quantization yields more compact clusters, while clusters by residual quantization are more dispersed and intertwined. This further supports that residual quantization, which models hierarchical infor-mation, forces subsequent codebooks to model residuals that may contain noise from preceding modalities, leading to a fuzzy semantic space. 
+
+# 6 Related Work 
+
+Generative recommendation marks a paradigm shift from classical discriminative models to generating a sequence of tokens where items are represented as discrete tokens. TIGER (Rajput et al., 2023) is a seminal work that uses a RQ-VAE to discretize item embeddings into hierarchical semantic IDs. LETTER (Wang et al., 2024) then improves token quality through better alignment with textual descriptions, while Min-iOneRec (Kong et al., 2025) investigates the scaling laws of generative recommendation and proposes a post-training pipelines for large language model-based backbones. Recent works like Forge (Fu et al., 2025) and DAS (Ye et al., 2025) further extends the capability of discrete IDs to handle large-scale item libraries and cross-domain alignment. A key step in generative recommendation is to discretize the embeddings via vector quantization. Majority of existing works (Rajput et al., 2023; Kong et al., 2025) employs residual code-books like RQ-VAE (Lee et al., 2022) to capture hierarchical semantics. TokenRec (Qu et al., 2025) instead introduces the parallel quantization strategy with multiple parallel codebooks to capture different views of an item. Capturing the temporal information in recommendation has been a long-standing challenge. Existing works mainly employ sequence-based models for modeling temporal information. For example, GRU4Rec (Hi-dasi et al., 2015) uses Gated Recurrent Unit, Prompt-TPP (Xue et al., 2023) and ATPP (Wang et al., 2021) capture temporal information by modeling the temporal user-item interactions as temporal point process. Beyond applying the Transformer (Vaswani et al., 2017) architecture, TiM4Rec (Fan et al., 2025) is built on the Mamba (Gu and Dao, 2024) architecture that enhances temporal modeling while preserving linear-time efficiency, it explicitly injects temporal information into the state-space formulation and achieves a better accuracy–efficiency trade-off. TPAB (Yoo et al., 2025) is architecture-agnostic and builds on standard rec-ommendation backbones, introducing a disentangled representation framework that separates intrinsic item properties from time-varying popularity, with temporal modeling applied only to the popularity component. Seminal work like TiSASRec (Li et al., 2020), on the other hand, incorporate time interval information in the training data and trains a Transformer to learn the attention weights for items in the sequence, but not in a generative recommendation way. Different from existing works in both generative recommendation and temporal recommendation, to our best knowledge, our work is the first to bridge the gap between static item semantics and dynamic nature of user-item interactions by integrating the temporal information into the semantic ID learning process. 97 Conclusion 
+
+In this work, we address a fundamental limitation in current generative recommendation systems: semantic IDs are learned in a time-agnostic manner. To bridge this gap, we introduce ChronoID, a unified framework designed to learn time-aware semantic IDs. By systematically exploring a design space defined by three orthogonal dimensions, temporal encoding schemes, fusion strategies, and quantization structures, we provide a comprehensive analysis of how time should be integrated into semantic abstraction. Our empirical results on time-aware benchmarks demonstrate that incorporating temporal signals at the semantic ID level yields substantial performance gains. Specifically, our findings suggest that relative time encoding, coupled with early fusion and parallel quantization, produces the most robust and expressive semantic representations for next-item generation. 10 References 
+
+Yashar Deldjoo, Zhankui He, Julian McAuley, Anton Korikov, Scott Sanner, Arnau Ramisa, René Vidal, Maheswaran Sathiamoorthy, Atoosa Kasirzadeh, and Silvia Milano. A review of modern recommender systems using generative models (gen-recsys). In Proceedings of the 30th ACM SIGKDD conference on Knowledge Discovery and Data Mining , pages 6448–6458, 2024. Jiaxin Deng, Shiyao Wang, Kuo Cai, Lejian Ren, Qigen Hu, Weifeng Ding, Qiang Luo, and Guorui Zhou. Onerec: Unifying retrieve and rank with generative recommender and iterative preference alignment. arXiv preprint arXiv:2502.18965 , 2025. Hao Fan, Mengyi Zhu, Yanrong Hu, Hailin Feng, Zhijie He, Hongjiu Liu, and Qingyang Liu. Tim4rec: An efficient sequential recommendation model based on time-aware structured state space duality model. Neurocomputing , page 131270, 2025. Kairui Fu, Tao Zhang, Shuwen Xiao, Ziyang Wang, Xinming Zhang, Chenchi Zhang, Yuliang Yan, Junjun Zheng, Yu Li, Zhihong Chen, et al. Forge: Forming semantic identifiers for generative retrieval in industrial datasets. 
+
+arXiv preprint arXiv:2509.20904 , 2025. Albert Gu and Tri Dao. Mamba: Linear-time sequence modeling with selective state spaces. In First conference on language modeling , 2024. Balázs Hidasi, Alexandros Karatzoglou, Linas Baltrunas, and Domonkos Tikk. Session-based recommendations with recurrent neural networks. arXiv preprint arXiv:1511.06939 , 2015. Min Hou, Le Wu, Yuxin Liao, Yonghui Yang, Zhen Zhang, Changlong Zheng, Han Wu, and Richang Hong. A survey on generative recommendation: Data, model, and tasks. arXiv preprint arXiv:2510.27157 , 2025a. Yupeng Hou, Jiacheng Li, Zhankui He, An Yan, Xiusi Chen, and Julian McAuley. Bridging language and items for retrieval and recommendation. arXiv preprint arXiv:2403.03952 , 2024. Yupeng Hou, Jianmo Ni, Zhankui He, Noveen Sachdeva, Wang-Cheng Kang, Ed H. Chi, Julian McAuley, and Derek Zhiyuan Cheng. ActionPiece: Contextually tokenizing action sequences for generative recommendation. In ICML , 2025b. Wang-Cheng Kang and Julian McAuley. Self-attentive sequential recommendation. In 2018 IEEE International Conference on Data Mining (ICDM) , pages 197–206, 2018. doi: 10.1109/ICDM.2018.00035. Xiaoyu Kong, Leheng Sheng, Junfei Tan, Yuxin Chen, Jiancan Wu, An Zhang, Xiang Wang, and Xiangnan He. Minionerec: An open-source framework for scaling generative recommendation. arXiv preprint arXiv:2510.24431 ,2025. Doyup Lee, Chiheon Kim, Saehoon Kim, Minsu Cho, and Wook-Shin Han. Autoregressive image generation using residual quantization. In Proceedings of the IEEE/CVF conference on computer vision and pattern recognition ,pages 11523–11532, 2022. Jiacheng Li, Yujie Wang, and Julian McAuley. Time interval aware self-attention for sequential recommendation. In 
+
+Proceedings of the 13th international conference on web search and data mining , pages 322–330, 2020. Lichi Li, Zain ul Abi Din, Zhen Tan, Sam London, Tianlong Chen, and Ajay H. Daptardar. MerRec: A large-scale multipurpose mercari dataset for consumer-to-consumer recommendation systems. In Yizhou Sun, Flavio Chierichetti, Hady W. Lauw, Claudia Perlich, Wee Hyong Tok, and Andrew Tomkins, editors, Proceedings of the 31st ACM SIGKDD Conference on Knowledge Discovery and Data Mining, V.1, KDD 2025, Toronto, ON, Canada, August 3-7, 2025 , pages 2371–2382. ACM, 2025. doi: 10.1145/3690624.3709394. https://doi.org/10. 1145/3690624.3709394 .Haohao Qu, Wenqi Fan, Zihuai Zhao, and Qing Li. Tokenrec: Learning to tokenize id for llm-based generative recommendations. IEEE Transactions on Knowledge and Data Engineering , 2025. Shashank Rajput, Nikhil Mehta, Anima Singh, Raghunandan Hulikal Keshavan, Trung Vu, Lukasz Heldt, Lichan Hong, Yi Tay, Vinh Tran, Jonah Samost, et al. Recommender systems with generative retrieval. Advances in Neural Information Processing Systems , 36:10299–10315, 2023. Aaron Van Den Oord, Oriol Vinyals, et al. Neural discrete representation learning. Advances in neural information processing systems , 30, 2017. 
+
+11 Ashish Vaswani, Noam Shazeer, Niki Parmar, Jakob Uszkoreit, Llion Jones, Aidan N Gomez, Łukasz Kaiser, and Illia Polosukhin. Attention is all you need. Advances in neural information processing systems , 30, 2017. Dongjing Wang, Xin Zhang, Yao Wan, Dongjin Yu, Guandong Xu, and Shuiguang Deng. Modeling sequential listening behaviors with attentive temporal point process for next and next new music recommendation. IEEE Transactions on Multimedia , 24:4170–4182, 2021. Wenjie Wang, Honghui Bao, Xinyu Lin, Jizhi Zhang, Yongqi Li, Fuli Feng, See-Kiong Ng, and Tat-Seng Chua. Learn-able item tokenization for generative recommendation. In Proceedings of the 33rd ACM International Conference on Information and Knowledge Management , pages 2400–2409, 2024. Da Xu, Chuanwei Ruan, Evren Korpeoglu, Sushant Kumar, and Kannan Achan. Self-attention with functional time representation learning. Advances in neural information processing systems , 32, 2019. Siqiao Xue, Yan Wang, Zhixuan Chu, Xiaoming Shi, Caigao Jiang, Hongyan Hao, Gangwei Jiang, Xiaoyun Feng, James Zhang, and Jun Zhou. Prompt-augmented temporal point process for streaming event sequence. Advances in Neural Information Processing Systems , 36:18885–18905, 2023. Wencai Ye, Mingjie Sun, Shaoyun Shi, Peng Wang, Wenjin Wu, and Peng Jiang. Das: Dual-aligned semantic ids empowered industrial recommender system. In Proceedings of the 34th ACM International Conference on Information and Knowledge Management , pages 6217–6224, 2025. Hyunsik Yoo, Ruizhong Qiu, Charlie Xu, Fei Wang, and Hanghang Tong. Generalizable recommender system dur-ing temporal popularity distribution shifts. In Proceedings of the 31st ACM SIGKDD Conference on Knowledge Discovery and Data Mining , 2025. Jiaqi Zhai, Lucy Liao, Xing Liu, Yueming Wang, Rui Li, Xuan Cao, Leon Gao, Zhaojie Gong, Fangda Gu, Michael He, et al. Actions speak louder than words: Trillion-parameter sequential transducers for generative recommendations. 
+
+arXiv preprint arXiv:2402.17152 , 2024. Yanzhao Zhang, Mingxin Li, Dingkun Long, Xin Zhang, Huan Lin, Baosong Yang, Pengjun Xie, An Yang, Dayiheng Liu, Junyang Lin, Fei Huang, and Jingren Zhou. Qwen3 embedding: Advancing text embedding and reranking through foundation models. arXiv preprint arXiv:2506.05176 , 2025. 
+
+12 Appendix 
+
+# A Example of Absolute Time and Relative Time 
+
+In table 3, we present an illustrative comparison between absolute time and relative time.  
+
+> Table 3
+
+An illustrative example of absolute timestamp ( tu,i ) and relative time ( ∆tu,i ) for a sequence of three user interactions made by an user u. Absolute time is the same as the UNIX timestamp tu,i , while relative time consider the time span between two consecutive interactions by the user u.
+
+i UNIX Timestamp ( tu,i ) Absolute Time ( tu,i ) Relative Time ( ∆tu,i )1 100 100 100 2 115 115 15 3 120 120 5
+
+# B Details of Time-Aware Generative Recommendation Datasets 
+
+B.1 Raw Data and Feature Extraction 
+
+We extend the Amazon Review Datasets (Hou et al., 2024): Industrial and Office (Kong et al., 2025), which comprise user interaction logs and item metadata. For each item, we extract its textual description (e.g., title and categories) and its associated interaction timestamp. • Textual Features: We employ a pre-trained LLM (e.g., Qwen3-Embedding-4B (Zhang et al., 2025)) to extract a 2560 -dimensional dense embedding etext for each item. • Temporal Features: Following the method in Section 3.1, timestamps are mapped into a 768 -dimensional vector etime using sinusoidal encoding. 
+
+B.2 Codebook Training: Data Formulation 
+
+In the pre-training phase, the objective is to learn a discrete codebook that captures the joint distribution of item semantics and temporal dynamics. 
+
+Data Construction. Following our temporal isolation protocol, we filter the item library to include only those interacted with prior to 2018 ( Ipast ). As shown in table 5, this refinement yields 39,636 and 436,775 items for the Industrial and Office datasets, respectively. 
+
+Input Representation. The final input to the quantizer (RQ-VAE or MQ) is a concatenated feature matrix 
+
+X ∈ R|I past |× 3328 , where each row i corresponds to an item ID and is defined as: 
+
+xi = [ e(i) 
+
+> text
+
+∥ e(i)
+
+> time
+
+] (6) where ∥ denotes the concatenation operator. This 3328 -dimensional vector serves as the “ground truth” semantic manifold that the codebooks must reconstruct. 
+
+B.3 Supervised Fine-tuning (SFT): Data Construction 
+
+The SFT stage aligns the LLM’s generative capacity with the learned Semantic IDs (SIDs). 
+
+Data Filtering. We implement a global temporal cutoff (e.g., Jan 1, 2018) to strictly partition interactions across all stages. We strictly use interactions that occurred before the cutoff for codebook training. For supervised fine-tuning (SFT) training, we use training instance (historical sequence, target item), in which the interaction timestamp of target item is strictly before the cutoff. In SFT testing, all target items to be 13 User ID History Titles Target Title History SIDs Target SID 
+
+A5216 [Motors 12905, Jumper Wires, ...] yueton DPDT Tog-gle Switch [<a_208><b_177><c_113> , …] <a_18><b_52><c_43>  
+
+> Table 4 Example of a Supervised Fine-tuning (SFT) data instance. The model takes a sequence of historical Semantic IDs (SIDs) as input to predict the target SID.
+
+predicted are guaranteed to occur on or after the fixed cutoff. This rigorous protocol eliminates look-ahead bias and ensures that item representations are learned without future information leakage. 
+
+Sample Structure. The SFT data is formatted as a structured dataset containing user interaction chains and their corresponding SIDs. A typical instance includes the user identity, historical titles, target title, and the discretized Semantic IDs generated by our frozen quantizer. 
+
+B.4 Data Instances 
+
+To provide a concrete understanding of our benchmark, we present the formatted samples for both stages. 
+
+Quantization Input. An instance in the pre-training set is a high-dimensional tensor: 
+
+Item_1620: [Vector(2560), Vector(768)] → Dim: 3328 
+
+SFT Sample Instance. In table 4, we illustrate a typical SFT record from the Industrial dataset CSV. The model learns to map the history of Semantic IDs to the target’s Semantic ID in an autoregressive manner. 
+
+B.5 Dataset Statistics 
+
+We provide the detailed statistics of the datasets used in our experiments, comparing the original benchmark configuration with our proposed Time-aware split. As summarized in table 5, the 2018 temporal cutoff results in a more focused and challenging setup for both pre-training and supervised fine-tuning.                           
+
+> Dataset Split Codebook-training Items SFT Samples Train Valid Test Industrial Original 43,102 29,446 3,682 3,683
+> Time-Aware (Ours) 39,636 19,368 2,422 2,421
+> Office Original 472,091 328,422 41,054 41,054
+> Time-Aware (Ours) 436,775 229,920 28,740 28,740
+> Table 5 Dataset statistics for the Original Benchmark vs. our proposed Time-aware Benchmark. The Time-aware split uses a 2018 cutoff for the Industrial dataset, significantly reducing the number of SFT samples to ensure temporal isolation and test generalization to future interactions.
+
+B.6 Future Potential 
+
+Beyond serving as a stronger static evaluation protocol, our time-aware benchmark opens several promising research directions for generative recommendation with Semantic IDs. 
+
+Continual Semantic ID Evolution. Since the quantizer is trained exclusively on historical data, the bench-mark naturally supports the study of continual semantic learning. Future work can investigate how Semantic IDs should evolve when new items, modalities, or user behaviors emerge, without re-training the entire code-book from scratch. This setting enables principled comparisons between frozen, partially adaptive, and fully dynamic quantization strategies. 14 Cold-start and Emerging Item Evaluation. By design, all future items are unseen during the quantization phase. This makes our benchmark particularly suitable for studying cold-start and emerging item recom-mendation, a long-standing challenge in real-world systems. Models must infer meaningful Semantic IDs for novel items based solely on learned historical structures, closely reflecting production-level constraints. 
+
+# C Extra Experimental Analysis 
+
+C.1 Origin of Performance Gains: ID Capacity vs. Temporal Semantics 
+
+A natural question we aim to answer is whether the performance gain of ChronoID stems from simply expanding the ID representation space (thus reducing ID collisions) or the temporal information itself. To investigate this question, we compare a 3-digit text-only SID with a 4-digit text-only SID on the Industrial dataset. Ideally, the 4-digit SID significantly increases the unique representation capacity. However, as shown in ta-ble 6, simply increasing the ID capacity without introducing temporal semantics leads to a performance degradation (e.g., HR@3 drops from 8.64 to 8.02). This result demonstrates that simply increasing the length of digits (i.e., reducing ID collisions) in a semantics-free manner is insufficient for improving recom-mendations. In contrast, compared with ChronoID, the 3-digit with time achieves substantial improvements by meaningfully integrating temporal signals, confirming that the gain is driven by the enriched temporal-textual semantics rather than mere capacity expansion.       
+
+> Configuration HR@3 NDCG@3 HR@5 NDCG@5 HR@10 NDCG@10
+
+3-digit SID (Text only) 8.64 7.77 9.79 8.24 11.47 8.78 4-digit SID (Text only) 8.02 7.17 9.20 7.58 10.66 8.25 ChronoID (3-digit, Parallel-Rel) 12.60 11.15 13.75 11.62 16.22 12.41  
+
+> Table 6 Impact of ID capacity and temporal semantics on the Industrial dataset. Increasing codebook capacity (from 3 to 4 digits) without temporal information fails to improve performance.
+
+C.2 Necessity of Temporal Signals: Impact of Removing and Zero-Padding 
+
+To further justify the design of ChronoID, we conduct an experiment by comparing it with two common baselines on the Industrial dataset: (1) Remove , which entirely omits the temporal SID digit (the standard generative recommendation approach); and (2) Replace , which substitutes the temporal embedding with a constant zero vector while maintaining the architecture. As observed, the Remove variant leads to a performance drop (e.g., HR@3 decreases from 10.43 to 9.47), confirming the importance of temporal context. Interestingly, the Replace (zero-padding) strategy yields the worst performance (HR@3 of 9.04). This suggests that all-zero signals may act as out-of-distribution noise that confuses the LLM’s semantic space more than the absence of signals. These results, coupled with the fact that ChronoID significantly outperforms the random-time baseline, further confirm that our performance gains are derived from the meaningful integration of temporal semantics rather than architectural artifacts. 
+
+Variant HR@3 NDCG@3 HR@5 NDCG@5 HR@10 NDCG@10 
+
+ChronoID (Standard) 10.43 9.28 11.68 9.79 13.20 10.29 
+
+Remove (Standard Practice) 9.47 8.70 10.70 9.15 12.58 9.76 Replace (Zero-Padding) 9.04 7.72 11.13 8.58 12.85 9.47  
+
+> Table 7 Sanity check on the necessity of temporal signals (Industrial dataset, relative time). We compare our standard model against variants that remove or zero-out temporal information.
+
+15 C.3 Effectiveness of Explicit High-Level Semantics 
+
+We further investigate whether explicitly incorporating high-level calendar-based features (e.g., weekends, seasons, and holidays) can yield additional gains. We construct a 7-digit binary indicator vector capturing: (i) weekends, (ii) the four seasons, and (iii) major holidays (e.g., Halloween, Christmas). This vector is concatenated with the original time embedding before the quantization stage. As shown in table 8, the performance gains from explicit high-level tags are marginal or inconsistent across different configurations. This can be attributed to the fact that high-level semantics are deterministic func-tions of raw Unix timestamps. Our quantization pipeline already learns to internalize these patterns from the atomic signals, and manually adding these features may introduce redundancy, occasionally leading to slight performance degradation. We also observe slight improvements in specific metrics within the relative timing setting. A plausible explanation is that the discrete boundaries of temporal semantics (e.g., the start of a season) can be faded in relative representations, where adding explicit indicators may provide some compensation. However, the overall improvement remains marginal because absolute time can theoretically be recovered from relative timestamps in our SFT data (by summing the first interaction’s absolute time with subsequent relative deltas). Once the absolute time is recovered, the high-level semantics are again deterministic. This confirms that our fine-grained temporal encodings are sufficient for the model to internalize high-level patterns through its underlying reasoning process.                                                                                        
+
+> Quantization Fusion / Time Type Features HR@3 NDCG@3 HR@5 NDCG@5 HR@10 NDCG@10
+> Residual Early, Absolute ChronoID (Ours) 7.44 6.72 8.91 7.32 11.33 8.08 + High-level Tags 7.56 7.08 8.40 7.50 10.45 7.77 Early, Relative ChronoID (Ours) 10.62 9.56 11.95 10.11 14.29 10.86 + High-level Tags 10.57 9.78 11.25 10.06 11.93 10.28 Residual Late, Absolute ChronoID (Ours) 10.10 8.93 11.52 9.52 13.06 10.03 + High-level Tags 10.42 9.48 11.42 10.25 12.98 10.17 Late, Relative ChronoID (Ours) 10.43 9.28 11.68 9.79 13.20 10.29 + High-level Tags 10.57 9.99 11.49 10.25 12.70 10.45 Parallel N/A, Absolute ChronoID (Ours) 11.22 9.84 12.74 10.48 14.77 11.13 + High-level Tags 10.54 10.14 11.17 10.33 12.01 10.66 N/A, Relative ChronoID (Ours) 12.60 11.15 13.75 11.62 16.22 12.41 + High-level Tags 12.96 11.03 14.26 11.73 16.33 11.68
+> Table 8 Ablation study on explicit high-level temporal features (Industrial dataset). ”+ Tags” denotes the inclusion of explicit binary indicators for weekends, seasons, and holidays.
+
+# D Experimental Configurations and Hyperparameter Analysis 
+
+The detailed configurations are summarized in table 9 below. Here, we conduct hyperparameter analysis on two key hyperparameters in ChronoID: the dimension of time embeddings and the number of codebooks.  
+
+> Time embedding dimension.
+
+We investigate the sensitivity of our framework to the dimensionality of the time embeddings. This experiment is conducted on the Industrial dataset using the early fusion and relative time with 3 codebooks. As shown in table 10, we find that, among the tested dimensions, a dimension of 768 offers the best results. We hypothesize that a dimension of 512 lacks the necessary representational capacity to accurately encode fine-grained temporal information. While for the 1280 -dimensional time embedding, since the dimension of item embedding is 2560 , it is likely that an excessively large dimension for time embedding causes the model to over-focus on temporal signals while neglecting the fundamental textual semantics, which hinders the model to learn a high-quality representation that embeds both textual semantics and temporal information simultaneously. 16 Stage Hyperparameter Value 
+
+Codebook Training Text Embedding Dimension 2560 Temporal Encoding Dimension 768 Number of Codebooks ( M ) 3Codes per Codebook ( K) 256 Code Dimension ( d) 42 Training Epochs 10,000 SFT Learning Rate 3 × 10 −4
+
+Batch Size (per GPU) 1024 Micro Batch Size 8Optimizer AdamW Total Training Epochs 10  
+
+> Table 9
+
+Configurations for codebook training and SFT in ChronoID.       
+
+> Dimension HR@3 NDCG@3 HR@5 NDCG@5 HR@10 NDCG@10
+
+512 10.08 9.16 11.60 9.78 14.15 10.48       
+
+> 768 10.62 9.56 11.95 10.11 14.29 10.86
+
+1280 8.99 8.12 10.54 8.77 12.66 9.45  
+
+> Table 10
+
+Performance sensitivity w.r.t. time embedding dimension (Dimension) on the Industrial dataset.  
+
+> Number of codebooks.
+
+We also investigate the sensitivity of ChronoID to the number of codebooks, which determines the length of the generated semantic IDs. We run our analysis on the Industrial dataset using early fusion and relative time with a 768 -dimensional time embeddings. From table 11, we find that the optimal performance is achieved with 3 codebooks, while fewer codebooks or more codebooks all exhibit worse performance. Such a non-monotonic performance trend suggests a trade-off between representational capacity and signal-to-noise ratio in the space of semantic IDs. When there is fewer dimensions for semantic ID, the discrete encoding is insufficient to capture of complexity of the fused embeddings. The limited capacity of a 2-digit semantic ID causes significant semantic collisons, preventing the model from disinguishing between distinct user-item pairs across different times. Conversely, as the number of codebooks increases beyond the optimal point, the marginal utility of additional codebooks diminishes. For residual quantization (RQ-VAE), each subsequent layer attempts to model the remaining error from the previous layers. Thus, as we have more layers, it is more likely that the codebooks will encode noise. We empirically checked the average ℓ1 norm of the residual vectors in each layer and found that the norm decreases significantly as the number of codebooks increases. When the number of codebooks is C = 5 , we found that the average ℓ1 norm of the residual vector in the 3rd layer is 0.36 , but the norm quickly decreases to 0.09 in the 4th layer and further reduces to 0.03 in the last layer. This empirical analysis indicates that the final quantization layer, when we have more digits for the semantic IDs, is essentially attempting to discretize noise rather than meaningful semantic inforamtion, which causes a semantic saturation. Such a saturation would introduce irrelevant tokens into the semantic ID, which further degrades the overall recommendation performance. 
+
+C HR@3 NDCG@3 HR@5 NDCG@5 HR@10 NDCG@10 
+
+2 8.72 7.93 9.61 8.30 10.92 8.72       
+
+> 310.62 9.56 11.95 10.11 14.29 10.86
+
+4 10.54 9.19 11.67 9.86 14.15 10.50 5 9.04 8.39 10.56 9.01 12.38 9.60  
+
+> Table 11
+
+Performance sensitivity w.r.t. number of codebooks ( C) on the Industrial Dataset. 
+
+17

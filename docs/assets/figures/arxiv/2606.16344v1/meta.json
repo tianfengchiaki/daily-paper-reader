@@ -1,0 +1,142 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2606.16344v1/fig-001.webp",
+      "caption": "Figure 5: Persona-contingent signal weights for price, eco-certification, and chain affiliation.",
+      "page": 21,
+      "index": 1,
+      "width": 652,
+      "height": 403
+    },
+    {
+      "url": "assets/figures/arxiv/2606.16344v1/fig-002.webp",
+      "caption": "Figure 6: Position bias: AMCE of each list position relative to the first-listed hotel.",
+      "page": 21,
+      "index": 2,
+      "width": 559,
+      "height": 369
+    },
+    {
+      "url": "assets/figures/arxiv/2606.16344v1/fig-003.webp",
+      "caption": "Table 9: Price-equivalent trade-offs ($/night) with Krinsky–Robb 95% CIs.",
+      "page": 22,
+      "index": 3,
+      "width": 931,
+      "height": 256
+    },
+    {
+      "url": "assets/figures/arxiv/2606.16344v1/fig-004.webp",
+      "caption": "Figure 1: LLM-mediated hotel discovery and the audited stage. The assistant’s pipeline is decomposed into retrieval, candidate-set assembly, and selection; this study audits the selection stage by presenting randomized candidate sets under experimental control.",
+      "page": 10,
+      "index": 4,
+      "width": 771,
+      "height": 640
+    },
+    {
+      "url": "assets/figures/arxiv/2606.16344v1/fig-005.webp",
+      "caption": "Table 1: Manipulated hotel attributes, levels, and card operationalization.",
+      "page": 10,
+      "index": 5,
+      "width": 771,
+      "height": 416
+    },
+    {
+      "url": "assets/figures/arxiv/2606.16344v1/fig-006.webp",
+      "caption": "Table 2: Experimental arms. All arms share common stimuli within each arm across the model panel; every secondary arm is a disjoint, stratified subset of the main design re-presenting identical choice sets under one changed condition.",
+      "page": 14,
+      "index": 6,
+      "width": 675,
+      "height": 443
+    },
+    {
+      "url": "assets/figures/arxiv/2606.16344v1/fig-007.webp",
+      "caption": "Table 5: Average marginal component effects on P(recommended), pooled across the model panel (percentage points).",
+      "page": 18,
+      "index": 7,
+      "width": 949,
+      "height": 725
+    },
+    {
+      "url": "assets/figures/arxiv/2606.16344v1/fig-008.webp",
+      "caption": "Figure 3: Average marginal component effects of reputation signals on the probability of being recommended, pooled and by model.",
+      "page": 18,
+      "index": 8,
+      "width": 843,
+      "height": 546
+    },
+    {
+      "url": "assets/figures/arxiv/2606.16344v1/fig-009.webp",
+      "caption": "Figure 8: Robustness of signal weights across temperature, prompt format, and field order.",
+      "page": 23,
+      "index": 9,
+      "width": 890,
+      "height": 354
+    },
+    {
+      "url": "assets/figures/arxiv/2606.16344v1/fig-010.webp",
+      "caption": "Figure 7: Stated (reason-mention share) versus revealed (AMCE importance share) attribute importance, by model.",
+      "page": 23,
+      "index": 10,
+      "width": 594,
+      "height": 573
+    },
+    {
+      "url": "assets/figures/arxiv/2606.16344v1/fig-011.webp",
+      "caption": "Figure 2: Experiment architecture. The hashed master design is rendered into stimuli, fielded across experimental arms and the model panel by a checkpointed runner, and analyzed under the pre-specified statistical analysis plan.",
+      "page": 13,
+      "index": 11,
+      "width": 802,
+      "height": 666
+    },
+    {
+      "url": "assets/figures/arxiv/2606.16344v1/fig-012.webp",
+      "caption": "Table 7: Attribute importance: range of AMCEs and normalized share.",
+      "page": 19,
+      "index": 12,
+      "width": 467,
+      "height": 282
+    },
+    {
+      "url": "assets/figures/arxiv/2606.16344v1/fig-013.webp",
+      "caption": "Table 6: Confirmatory hypothesis tests (joint Wald tests, Holm-corrected).",
+      "page": 19,
+      "index": 13,
+      "width": 786,
+      "height": 417
+    },
+    {
+      "url": "assets/figures/arxiv/2606.16344v1/fig-014.webp",
+      "caption": "Table 4: Response parse-failure rates.",
+      "page": 17,
+      "index": 14,
+      "width": 933,
+      "height": 322
+    },
+    {
+      "url": "assets/figures/arxiv/2606.16344v1/fig-015.webp",
+      "caption": "Table 10: Test–retest consistency of recommendations.",
+      "page": 24,
+      "index": 15,
+      "width": 507,
+      "height": 393
+    },
+    {
+      "url": "assets/figures/arxiv/2606.16344v1/fig-016.webp",
+      "caption": "Figure 4: Signal diagnosticity: the rating effect on P(recommended) at each level of review volume.",
+      "page": 20,
+      "index": 16,
+      "width": 558,
+      "height": 406
+    },
+    {
+      "url": "assets/figures/arxiv/2606.16344v1/fig-017.webp",
+      "caption": "Table 3: Monte-Carlo minimum detectable effects (MDE) at 80% power for the main arm, by effect, in percentage points of choice probability. Values are reproduced from results/tables/power_mde.csv.",
+      "page": 16,
+      "index": 17,
+      "width": 536,
+      "height": 381
+    }
+  ]
+}

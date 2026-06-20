@@ -1,0 +1,158 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2606.15641v1/fig-001.webp",
+      "caption": "Table 4: Representative positive examples from the Call Playbook Dataset. Relevant spans are bolded.",
+      "page": 15,
+      "index": 1,
+      "width": 945,
+      "height": 989
+    },
+    {
+      "url": "assets/figures/arxiv/2606.15641v1/fig-002.webp",
+      "caption": "Table 7: Linguistic characteristics of generated classification criteria.",
+      "page": 21,
+      "index": 2,
+      "width": 458,
+      "height": 282
+    },
+    {
+      "url": "assets/figures/arxiv/2606.15641v1/fig-003.webp",
+      "caption": "Figure 14: Trade-off between abstraction and coverage in task descriptions. Point size indicates the number of examples used. Higher abstraction scores reflect more abstract descriptions, while higher coverage indicates a better representation of examples.",
+      "page": 21,
+      "index": 3,
+      "width": 450,
+      "height": 384
+    },
+    {
+      "url": "assets/figures/arxiv/2606.15641v1/fig-004.webp",
+      "caption": "Figure 3: Top: Macro-average F1 performance for each model, averaged over all concepts. Bottom: Macro-average F1 performance for each concept, averaged over all models.",
+      "page": 7,
+      "index": 4,
+      "width": 936,
+      "height": 475
+    },
+    {
+      "url": "assets/figures/arxiv/2606.15641v1/fig-005.webp",
+      "caption": "Figure 15: Average processing test time (in seconds) by method across different numbers of few-shot examples.",
+      "page": 22,
+      "index": 5,
+      "width": 449,
+      "height": 334
+    },
+    {
+      "url": "assets/figures/arxiv/2606.15641v1/fig-006.webp",
+      "caption": "Figure 7: Base classification prompt template.",
+      "page": 14,
+      "index": 6,
+      "width": 458,
+      "height": 600
+    },
+    {
+      "url": "assets/figures/arxiv/2606.15641v1/fig-007.webp",
+      "caption": "Table 1: Call Playbook statistics. Pos: positive examples; Neg: negative examples; Total: sample count; Calls: number of unique calls; Avg Words: average words per sample; Prospect %: percentage of prospect-side dialogue per sample.",
+      "page": 3,
+      "index": 7,
+      "width": 950,
+      "height": 190
+    },
+    {
+      "url": "assets/figures/arxiv/2606.15641v1/fig-008.webp",
+      "caption": "Figure 13: Description generation prompt template.",
+      "page": 18,
+      "index": 8,
+      "width": 461,
+      "height": 681
+    },
+    {
+      "url": "assets/figures/arxiv/2606.15641v1/fig-009.webp",
+      "caption": "Table 8: Comparison of original model-generated criteria and human modifications for Pain Points classification. Bold text highlights key differences from the original version.",
+      "page": 23,
+      "index": 9,
+      "width": 965,
+      "height": 557
+    },
+    {
+      "url": "assets/figures/arxiv/2606.15641v1/fig-010.webp",
+      "caption": "Figure 6: Prompt template used for transcript simplification.",
+      "page": 13,
+      "index": 10,
+      "width": 458,
+      "height": 1050
+    },
+    {
+      "url": "assets/figures/arxiv/2606.15641v1/fig-011.webp",
+      "caption": "Figure 2: Classification framework overview. The process begins by sampling labeled examples (a), which are either used directly in the knowledge section (traditional few-shot learning) or transformed through knowledge extraction into criteria lists (b) or a task description (c). This extracted knowledge replaces raw examples in the classification prompt, producing structured predictions with explicit rationales for enhanced classification performance.",
+      "page": 4,
+      "index": 11,
+      "width": 919,
+      "height": 339
+    },
+    {
+      "url": "assets/figures/arxiv/2606.15641v1/fig-012.webp",
+      "caption": "Table 5: Comparative Analysis of Criteria-Based Instructions: Highlighted quotes illustrate how positive examples (blue/teal) inform the positive criteria and negative examples (red/brown) inform the negative criteria. The table demonstrates how structured criteria from both the Criteria-Ex and Criteria-De approaches capture different aspects of the Business Goals concept.",
+      "page": 19,
+      "index": 12,
+      "width": 952,
+      "height": 1218
+    },
+    {
+      "url": "assets/figures/arxiv/2606.15641v1/fig-013.webp",
+      "caption": "Figure 12: Criteria generation prompt template.",
+      "page": 17,
+      "index": 13,
+      "width": 458,
+      "height": 1069
+    },
+    {
+      "url": "assets/figures/arxiv/2606.15641v1/fig-014.webp",
+      "caption": "Figure 16: Macro-average F1 performance for all concepts and models.",
+      "page": 24,
+      "index": 14,
+      "width": 934,
+      "height": 838
+    },
+    {
+      "url": "assets/figures/arxiv/2606.15641v1/fig-015.webp",
+      "caption": "Figure 17: Macro-average F1 performance comparison with token-level compression methods, averaged over all models.",
+      "page": 24,
+      "index": 15,
+      "width": 936,
+      "height": 233
+    },
+    {
+      "url": "assets/figures/arxiv/2606.15641v1/fig-016.webp",
+      "caption": "Table 6: Comparative Analysis of Description-Based Instructions: Highlighted quotes illustrate how positive examples (blue/teal) inform the positive guidance and negative examples (red/brown) inform the exclusion guidance. The table demonstrates how contextual descriptions from both Description-Ex and Description-Cr approaches provide holistic frameworks for the Business Goals concept.",
+      "page": 20,
+      "index": 16,
+      "width": 927,
+      "height": 1097
+    },
+    {
+      "url": "assets/figures/arxiv/2606.15641v1/fig-017.webp",
+      "caption": "Figure 8: Example-based knowledge guidance format that uses a direct few-shot approach with labeled examples from the dataset.",
+      "page": 16,
+      "index": 17,
+      "width": 461,
+      "height": 315
+    },
+    {
+      "url": "assets/figures/arxiv/2606.15641v1/fig-018.webp",
+      "caption": "Figure 11: Summary generation prompt template.",
+      "page": 16,
+      "index": 18,
+      "width": 458,
+      "height": 663
+    },
+    {
+      "url": "assets/figures/arxiv/2606.15641v1/fig-019.webp",
+      "caption": "Figure 9: Criteria-based knowledge guidance format where an LLM distills labeled examples into explicit classification criteria.",
+      "page": 16,
+      "index": 19,
+      "width": 461,
+      "height": 314
+    }
+  ]
+}

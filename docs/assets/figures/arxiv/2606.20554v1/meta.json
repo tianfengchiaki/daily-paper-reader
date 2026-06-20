@@ -1,0 +1,14 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2606.20554v1/fig-001.webp",
+      "caption": "Table 2 Comparison with baseline methods on public datasets (best marked in bold). Our proposed G2Rec consistently outperforms all baseline methods on all four datasets.",
+      "page": 7,
+      "index": 1,
+      "width": 979,
+      "height": 560
+    }
+  ]
+}

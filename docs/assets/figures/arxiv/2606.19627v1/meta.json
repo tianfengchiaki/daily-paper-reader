@@ -1,0 +1,46 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2606.19627v1/fig-001.webp",
+      "caption": "Figure 4: Time series of Percent Lift for Video Progress @ 50%. The VCG model consistently outperforms the baseline throughout the testing period.",
+      "page": 7,
+      "index": 1,
+      "width": 968,
+      "height": 225
+    },
+    {
+      "url": "assets/figures/arxiv/2606.19627v1/fig-002.webp",
+      "caption": "Figure 3: Comparison of VCG with recency-based baseline using LVLM-as-a-judge scores. VCG consistently shifts the distribution towards higher relevance ratings.",
+      "page": 7,
+      "index": 2,
+      "width": 452,
+      "height": 336
+    },
+    {
+      "url": "assets/figures/arxiv/2606.19627v1/fig-003.webp",
+      "caption": "Figure 5: The VCG Demonstration Interface. Left: Scenario 1 (Product → Video) retrieving content for a selected sneaker. Center: Scenario 2 (Video → Product) retrieving matching denim SKUs for a selected video. Right: Scenario 3 (Text → Video) showing zero-shot semantic retrieval for the query “Terracotta”.",
+      "page": 8,
+      "index": 3,
+      "width": 979,
+      "height": 204
+    },
+    {
+      "url": "assets/figures/arxiv/2606.19627v1/fig-004.webp",
+      "caption": "Figure 1: VCG v2 Architecture: Video embeddings are pre-computed via frame aggregation (right), while User embeddings are computed dynamically from interaction history (left).",
+      "page": 4,
+      "index": 4,
+      "width": 786,
+      "height": 673
+    },
+    {
+      "url": "assets/figures/arxiv/2606.19627v1/fig-005.webp",
+      "caption": "Figure 2: The instruction prompt provided to the Qwen-VL judge for evaluating visual coherence.",
+      "page": 5,
+      "index": 5,
+      "width": 977,
+      "height": 408
+    }
+  ]
+}

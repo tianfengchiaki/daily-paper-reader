@@ -1,0 +1,38 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2606.16067v1/fig-001.webp",
+      "caption": "Figure 1: One-shot scoring (top) versus stepwise sequential selection (bottom). Each row shows the retained tokens and the caption that the LLM produces from the resulting visual prefix.",
+      "page": 2,
+      "index": 1,
+      "width": 979,
+      "height": 532
+    },
+    {
+      "url": "assets/figures/arxiv/2606.16067v1/fig-002.webp",
+      "caption": "Table 1: Results on LLaVA-v1.5-7B at three retention budgets, with the full-prefix vanilla model as upper bound. “Avg.” is the mean ratio of each benchmark score to the upper bound. For Avg., the best is in red and the second best in blue; Our method is highlighted in color.",
+      "page": 7,
+      "index": 2,
+      "width": 980,
+      "height": 650
+    },
+    {
+      "url": "assets/figures/arxiv/2606.16067v1/fig-003.webp",
+      "caption": "Table 2: Results on Qwen2.5-VL-7B. Block labels, “Avg.” definition, and color coding follow Table 1.",
+      "page": 8,
+      "index": 3,
+      "width": 736,
+      "height": 487
+    },
+    {
+      "url": "assets/figures/arxiv/2606.16067v1/fig-004.webp",
+      "caption": "Figure 2: Architecture of StepPrune. (Left) Module placement in a LLaVA-style pipeline. (Right) Internal mechanism: image patch tokens (blue) and projected text embeddings (yellow) are jointly encoded into the decoder memory M under bidirectional self-attention, after which a causally-masked pointer decoder queries M across selection iterations to emit pointer distributions over the N+1 candidates. The two attention patterns reflect the asymmetry of the task: encoding sees the full image at once, while selection is autoregressive over its own history.",
+      "page": 4,
+      "index": 4,
+      "width": 979,
+      "height": 252
+    }
+  ]
+}

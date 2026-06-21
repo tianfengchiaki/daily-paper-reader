@@ -1,0 +1,142 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2606.15320v1/fig-001.webp",
+      "caption": "Table 4: Configuration profiles selected by the Planner Agent in Step 1, applied to event- and actionlevel graph construction in Step 2 and to graph traversal in Step 3.",
+      "page": 26,
+      "index": 1,
+      "width": 590,
+      "height": 306
+    },
+    {
+      "url": "assets/figures/arxiv/2606.15320v1/fig-002.webp",
+      "caption": "Figure 7: CoMET-Bench data access request form. Researchers must provide institutional credentials and explicitly agree to non-commercial academic use before being granted access to the dataset.",
+      "page": 15,
+      "index": 2,
+      "width": 622,
+      "height": 360
+    },
+    {
+      "url": "assets/figures/arxiv/2606.15320v1/fig-003.webp",
+      "caption": "Figure 1: Conditional Multi-Event Temporal Grounding compared with prior video tasks. (a) Temporal Grounding pairs a query with a single moment. (b) Counting returns a single integer without temporal evidence. (c) Video Understanding selects an answer from predefined choices under a temporal condition. (d) Our task requires the model to (i) parse a compositional query that may include temporal and spatial conditions, (ii) ground every qualifying event with precise timestamps, and (iii) return timestamps with an exact count, while allowing an empty set for negative queries.",
+      "page": 2,
+      "index": 3,
+      "width": 826,
+      "height": 236
+    },
+    {
+      "url": "assets/figures/arxiv/2606.15320v1/fig-004.webp",
+      "caption": "Figure 4: Overview of the proposed CoMET-Agent framework. Given a long-form video and a natural-language query, a single MLLM orchestrates four specialized agents (Planner, Filter, Verifier, and Aggregator) across four sequential steps to address conditional multi-event temporal grounding. Snowflake icons denote frozen (training-free) components.",
+      "page": 7,
+      "index": 4,
+      "width": 820,
+      "height": 295
+    },
+    {
+      "url": "assets/figures/arxiv/2606.15320v1/fig-005.webp",
+      "caption": "Table 7: Inference cost analysis of CoMET-Agent under the Qwen2.5-VL-7B backbone. Left: per-query inference time compared with the agent baseline Vgent. Right: step-by-step profiling of CoMET-Agent, grouped by the four pipeline stages.",
+      "page": 29,
+      "index": 5,
+      "width": 771,
+      "height": 214
+    },
+    {
+      "url": "assets/figures/arxiv/2606.15320v1/fig-006.webp",
+      "caption": "Table 6: Ablation study of CoMET-Agent on CoMET-Bench (Qwen3-VL 8B backbone). We disable one component at a time and report Pearson correlation, grounding F1@0.5, and Rejection-F1.",
+      "page": 29,
+      "index": 6,
+      "width": 594,
+      "height": 208
+    },
+    {
+      "url": "assets/figures/arxiv/2606.15320v1/fig-007.webp",
+      "caption": "Table 1: Comparison with various video benchmarks. Answer Type: multiple-choice questions (MC), numeric answers (NA), timestamps (TS) or open-ended answers (OE). Three key dimensions differentiate our work: Multi-Event: whether queries require grounding multi-event when answering; Temp. Cond.: whether queries attach temporal conditions that restrict the grounding scope; Neg. Query: whether the benchmark includes queries with zero matching instances.",
+      "page": 3,
+      "index": 7,
+      "width": 781,
+      "height": 416
+    },
+    {
+      "url": "assets/figures/arxiv/2606.15320v1/fig-008.webp",
+      "caption": "Figure 9: Query verification interface of the CoMET-Bench annotation tool. For each candidate query produced by the MLLM, verifiers can assign one or more attribute tags from a dropdown (Identity, Static, Dynamic, Causal, Sequential, Synchronous, Bounded, and Negative), edit the query text, mark it as Verified, or discard it. Each query also displays its current verification and annotation status (Verified/Unverified, Annotated/Unannotated), allowing annotators to track progress at a glance.",
+      "page": 18,
+      "index": 8,
+      "width": 786,
+      "height": 231
+    },
+    {
+      "url": "assets/figures/arxiv/2606.15320v1/fig-009.webp",
+      "caption": "Table 5: Comparison with representative video grounding methods on Charades-STA and ActivityNet-Captions. We report R@0.5 and mIoU under each benchmark’s official protocol. Sup: supervision regime, with FS = fully supervised, ZS = zero-shot.",
+      "page": 28,
+      "index": 9,
+      "width": 682,
+      "height": 321
+    },
+    {
+      "url": "assets/figures/arxiv/2606.15320v1/fig-010.webp",
+      "caption": "Figure 11: Two failure modes on negative queries. Each point is a method on Tab. 2; colors denote method category. Hallucinators (bottom-right) predict intervals on nearly every negative query, while over-rejectors (bottom-left) reject nearly every query, including positives. Only methods in the top-left region achieve both low hallucination and high positive coverage.",
+      "page": 28,
+      "index": 10,
+      "width": 570,
+      "height": 382
+    },
+    {
+      "url": "assets/figures/arxiv/2606.15320v1/fig-011.webp",
+      "caption": "Table 2: Main results on CoMET-Bench across three evaluation aspects. Counting: MAE (↓, mean absolute error), OBO (↑, off-by-one accuracy), Pearson (↑, Pearson correlation). Grounding: mIoU (↑), R@0.5 (↑, Recall at tIoU 0.5), F1@0.5 (↑). Negative: Rej.-F1 (↑, harmonic mean of negativerejection rate and positive-coverage rate), FPR (↓, fraction of negative queries with non-empty prediction). Bold marks the best score per metric; underline marks the second best.",
+      "page": 8,
+      "index": 11,
+      "width": 829,
+      "height": 536
+    },
+    {
+      "url": "assets/figures/arxiv/2606.15320v1/fig-012.webp",
+      "caption": "Figure 2: Example queries from CoMET-Bench across the five video domains. Each panel shows a representative query, its compositional attribute combination drawn from four temporal conditions (Causal, Sequential, Synchronous, Bounded) and three spatial conditions (Static, Dynamic, Identity), the source video duration, and all ground-truth grounded intervals on the timeline. The benchmark spans Sports, TV & Movie, Life Record, Knowledge, and Surveillance (highlighted). The surveillance example is a Negative query whose temporal condition yields zero matching instances, evaluating the model’s ability to resist hallucinating nonexistent events.",
+      "page": 4,
+      "index": 12,
+      "width": 818,
+      "height": 350
+    },
+    {
+      "url": "assets/figures/arxiv/2606.15320v1/fig-013.webp",
+      "caption": "Figure 10: Annotation verification interface of the CoMET-Bench annotation tool. Given a verified query and its source video (left), annotators inspect every MLLM-generated candidate interval shown in the central panel. Each interval can be edited (boundary correction in HH:MM:SS format), deleted (when spurious), or supplemented with new intervals to capture instances missed by the MLLM. A Query Annotated flag is set once the annotator confirms the interval set is exhaustive and correct. The right panel provides a video-level navigator across all assigned topics for tracking annotation progress.",
+      "page": 19,
+      "index": 13,
+      "width": 802,
+      "height": 336
+    },
+    {
+      "url": "assets/figures/arxiv/2606.15320v1/fig-014.webp",
+      "caption": "Figure 5: Where CoMET-Agent’s gains come from. (a) Attribute-level R@0.5 and Rej.-F1. (b) mIoU heatmap with respect to (w.r.t.) video duration and ground-truth moment position.",
+      "page": 9,
+      "index": 14,
+      "width": 834,
+      "height": 244
+    },
+    {
+      "url": "assets/figures/arxiv/2606.15320v1/fig-015.webp",
+      "caption": "Table 3: Annotation quality statistics for CoMET-Bench. Query Verification Stage human intervention on MLLM-generated queries; Annotation Refinement reports interval-level edits on MLLM-proposed annotations; Double Verification reports adjudication outcomes when two independent annotators disagreed on a query.",
+      "page": 20,
+      "index": 15,
+      "width": 614,
+      "height": 360
+    },
+    {
+      "url": "assets/figures/arxiv/2606.15320v1/fig-016.webp",
+      "caption": "Figure 3: Dataset statistics of CoMET-Bench. (a) Video distribution across five real-world domains. (b) Distribution of query type occurrence: the inner ring splits positive and negative queries; the outer ring breaks positives into four temporal conditions (Causal, Sequential, Synchronous, Bounded) and three spatial conditions (Static, Dynamic, Identity). (c) Video-duration distribution, ranging from under 10 minutes to over 90 minutes. (d) Distribution of the number of grounded events per query, covering zero-instance negatives to dense multi-event cases.",
+      "page": 5,
+      "index": 16,
+      "width": 830,
+      "height": 212
+    },
+    {
+      "url": "assets/figures/arxiv/2606.15320v1/fig-017.webp",
+      "caption": "Figure 8: Data construction pipeline of CoMET-Bench.",
+      "page": 16,
+      "index": 17,
+      "width": 829,
+      "height": 929
+    }
+  ]
+}

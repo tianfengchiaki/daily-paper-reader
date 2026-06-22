@@ -1,0 +1,62 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2606.15716v1/fig-001.webp",
+      "caption": "Figure 2: Winner map for pruning scoring criteria under different calibration sets and models. Each cell reports the scoring criterion with the highest benchmark score among Frequency, SEER, EAN, REAP, and MoNE for OLMoE-7B at a 25% pruning ratio and ERNIE-4.5-21B at a 50% pruning ratio. Columns group results by calibration set: C4 (General), EvolCodeAlpaca-v1 (Coding), and Tulu-3-SFT-PersonasMath (Math). No single scoring criterion is universally optimal across these settings.",
+      "page": 2,
+      "index": 1,
+      "width": 436,
+      "height": 390
+    },
+    {
+      "url": "assets/figures/arxiv/2606.15716v1/fig-002.webp",
+      "caption": "Table 1: Task-agnostic pruning with C4 calibration. We report results at a 25% pruning ratio for four representative MoE models, comparing published baseline scoring criteria with the proposed mean-activation criteria MAN and MSAN (blue). Benchmarks are grouped by capability; Avg and Avg Rank summarize balanced performance across the displayed benchmark columns. Bold and underline indicate the best and second-best results within each block.",
+      "page": 7,
+      "index": 2,
+      "width": 950,
+      "height": 752
+    },
+    {
+      "url": "assets/figures/arxiv/2606.15716v1/fig-003.webp",
+      "caption": "Table 5: Task-agnostic pruning comparison on C4 with individual benchmark results. OLMoE and DeepSeek are reported at a 25% pruning ratio; ERNIE and Qwen3 are reported at 25% and 50% pruning ratios. HumanEval and HumanEval+ are abbreviated as HEVAL and HEVAL+, OpenBookQA as OBQA, and WinoGrande as WinoG. HEVAL, HEVAL+, MBPP, and MBPP+ are the Eval+ sub-benchmarks.",
+      "page": 14,
+      "index": 3,
+      "width": 950,
+      "height": 716
+    },
+    {
+      "url": "assets/figures/arxiv/2606.15716v1/fig-004.webp",
+      "caption": "Figure 5: Model-wise overlap of bottom-ranked experts across calibration distributions. Each cell reports the overlap among bottom-ranked experts selected by a score variant Sj(b, α, β) when rankings are computed from C4, Evol-CodeAlpaca-v1, and Tulu-3-SFT-Personas-Math. Results are shown separately for each model at 25% and 50% pruning ratios. N/A denotes the degenerate case (1, 0, 0). The averaged summary is shown in Figure 4.",
+      "page": 13,
+      "index": 4,
+      "width": 776,
+      "height": 803
+    },
+    {
+      "url": "assets/figures/arxiv/2606.15716v1/fig-005.webp",
+      "caption": "Table 2: Task-specific pruning with capability-aligned calibration. For coding, expert-importance scores are computed on Evol-CodeAlpaca-v1; for math, scores are computed on Tulu-3-SFT-Personas-Math. We compare published baseline scoring criteria and MAN/MSAN with routing-frequency-retaining and gate-weighted criteria from our unified scoring formulation, which are in principle suited to task-specific pruning (blue).",
+      "page": 8,
+      "index": 5,
+      "width": 950,
+      "height": 561
+    },
+    {
+      "url": "assets/figures/arxiv/2606.15716v1/fig-006.webp",
+      "caption": "Figure 3: Expert overlap between the single-expert proxy and exact damage under 25% and 50% pruning ratios. We use ∼0.5M tokens from C4, and then rank the experts within each layer by the proxy damage score D̂j and the exact damage score D̂∆ j . Across four distinct and representative models, the overlap is mostly close to or larger than 0.95, and even the lowest case, Qwen3 at 25%, remains approximately above 0.85.",
+      "page": 4,
+      "index": 6,
+      "width": 457,
+      "height": 371
+    },
+    {
+      "url": "assets/figures/arxiv/2606.15716v1/fig-007.webp",
+      "caption": "Figure 4: Overlap of bottom-ranked experts across calibration distributions for different score variants. Panel (a): Individual component effects. Panel (b): Score-variant trends. For each score variant Sj(b, α, β), we compute expert rankings using ∼ 0.5M training tokens from each of three calibration sets: C4, Evol-CodeAlpaca-v1, and Tulu-3-SFT-Personas-Math. For each model, we then measure the overlap among the bottom-ranked experts selected for pruning under the three calibration sets at 25% and 50% pruning ratios. N/A denotes the degenerate case (1, 0, 0), which yields a constant score. Results are averaged over the four models: OLMoE-1B-7B-0125-Instruct, DeepSeek-V2-Lite-Chat, ERNIE-4.5-21B-A3B-PT, and Qwen3-30B-A3B-Instruct-2507.",
+      "page": 5,
+      "index": 7,
+      "width": 923,
+      "height": 508
+    }
+  ]
+}

@@ -1,0 +1,38 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2606.18897v1/fig-001.webp",
+      "caption": "Figure 2: The overall pipeline of the novel Sparse Autoencoder for intent-based recommendation (SAERec). The proposed pipeline includes three stages: the fine-grained interpretable intent set construction, dual-level intent retrieval, and intent-based sequence learning. The intent set within reviews are automatically identified with SAE and LLMs, and then two types of relevant intents for each user are retrieved from the set. Finally, the intents are integrated with sequence learning to generate recommendation results.",
+      "page": 3,
+      "index": 1,
+      "width": 1026,
+      "height": 357
+    },
+    {
+      "url": "assets/figures/arxiv/2606.18897v1/fig-002.webp",
+      "caption": "Table 4: Samples of learned intent priors with top keywords and semantic themes.",
+      "page": 8,
+      "index": 2,
+      "width": 1056,
+      "height": 308
+    },
+    {
+      "url": "assets/figures/arxiv/2606.18897v1/fig-003.webp",
+      "caption": "Figure 4: Efficiency analysis.",
+      "page": 9,
+      "index": 3,
+      "width": 498,
+      "height": 288
+    },
+    {
+      "url": "assets/figures/arxiv/2606.18897v1/fig-004.webp",
+      "caption": "Figure 5: Effect of different retrieval numbers S.",
+      "page": 9,
+      "index": 4,
+      "width": 498,
+      "height": 267
+    }
+  ]
+}

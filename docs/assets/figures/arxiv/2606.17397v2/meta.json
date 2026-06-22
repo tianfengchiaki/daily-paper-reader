@@ -1,0 +1,110 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2606.17397v2/fig-001.webp",
+      "caption": "Figure 2: Template Recommendation Flow in the Timee App",
+      "page": 11,
+      "index": 1,
+      "width": 943,
+      "height": 1041
+    },
+    {
+      "url": "assets/figures/arxiv/2606.17397v2/fig-002.webp",
+      "caption": "Figure 5: Per-Round Job-Finding Rates across Market Sizes and Worker-to-Template Ratios",
+      "page": 26,
+      "index": 2,
+      "width": 850,
+      "height": 534
+    },
+    {
+      "url": "assets/figures/arxiv/2606.17397v2/fig-003.webp",
+      "caption": "Table 2: Balance of Worker and Offering Characteristics",
+      "page": 30,
+      "index": 3,
+      "width": 808,
+      "height": 494
+    },
+    {
+      "url": "assets/figures/arxiv/2606.17397v2/fig-004.webp",
+      "caption": "Figure 6: Distribution-Regression DID Treatment Effects",
+      "page": 39,
+      "index": 4,
+      "width": 663,
+      "height": 765
+    },
+    {
+      "url": "assets/figures/arxiv/2606.17397v2/fig-005.webp",
+      "caption": "Table 1: Per-Round Job-Finding Rate and Fill Rate",
+      "page": 22,
+      "index": 5,
+      "width": 684,
+      "height": 181
+    },
+    {
+      "url": "assets/figures/arxiv/2606.17397v2/fig-006.webp",
+      "caption": "Table 3: Difference-in-Differences Estimates",
+      "page": 34,
+      "index": 6,
+      "width": 883,
+      "height": 667
+    },
+    {
+      "url": "assets/figures/arxiv/2606.17397v2/fig-007.webp",
+      "caption": "Figure 1: Templates, Offerings, and the Path from Recommendations to Matches",
+      "page": 10,
+      "index": 7,
+      "width": 943,
+      "height": 422
+    },
+    {
+      "url": "assets/figures/arxiv/2606.17397v2/fig-008.webp",
+      "caption": "Figure 3: Template-Level Exposure and Subscriber Distributions in the Baseline Simulation",
+      "page": 23,
+      "index": 8,
+      "width": 756,
+      "height": 925
+    },
+    {
+      "url": "assets/figures/arxiv/2606.17397v2/fig-009.webp",
+      "caption": "Figure 9: Observed vs. Counterfactual CDFs of Template-Day-Level Outcomes Note: Solid lines plot the observed CDF F̂Y1|G,T (y|1, 1) of treated templates in the post-period. Dashed lines plot the counterfactual CDF F̂Y0|G,T (y|1, 1) recovered from the distribution-regression DID. CDFs are monotonized following Algorithm 1 of Fernández-Val et al. (2024).",
+      "page": 50,
+      "index": 9,
+      "width": 756,
+      "height": 859
+    },
+    {
+      "url": "assets/figures/arxiv/2606.17397v2/fig-010.webp",
+      "caption": "Figure 8: Estimated Recommendation-Position Fixed Effects on Favoriting Probability",
+      "page": 49,
+      "index": 10,
+      "width": 804,
+      "height": 469
+    },
+    {
+      "url": "assets/figures/arxiv/2606.17397v2/fig-011.webp",
+      "caption": "Figure 7: Transition from Greedy to TEC in the Simulation",
+      "page": 41,
+      "index": 11,
+      "width": 943,
+      "height": 608
+    },
+    {
+      "url": "assets/figures/arxiv/2606.17397v2/fig-012.webp",
+      "caption": "Figure 4: Exposure Allocation and Per-Round Fill Rates by Template Activity",
+      "page": 24,
+      "index": 12,
+      "width": 617,
+      "height": 911
+    },
+    {
+      "url": "assets/figures/arxiv/2606.17397v2/fig-013.webp",
+      "caption": "Table 4: Impression-Level Analysis",
+      "page": 37,
+      "index": 13,
+      "width": 869,
+      "height": 644
+    }
+  ]
+}

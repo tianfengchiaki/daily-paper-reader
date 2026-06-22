@@ -1,0 +1,38 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2606.19684v1/fig-001.webp",
+      "caption": "Fig. 4. Illustrative negative examples of our method’s performance. The captions for the queries are as follows: (a) “has no sleeves and only pink color and is more pink and sleeveless”, (b) “it has a floral print and long sleeves and has longer sleeves and is leopard print”, (c) “is gray with figures on it and is more vogue”, and (d) “is more tighter and is more fitted and black”.",
+      "page": 7,
+      "index": 1,
+      "width": 725,
+      "height": 319
+    },
+    {
+      "url": "assets/figures/arxiv/2606.19684v1/fig-002.webp",
+      "caption": "Fig. 3. Illustrative positive examples of our method’s performance. The captions for the queries are as follows: (a) “has a v neck and has a flower pattern”, (b) “it has a floral print and long sleeves and has longer sleeves and is leopard print”, (c) “has a more fun graphic and has more arrows on it”, and (d) “is red in color and is red with different facial drawings”.",
+      "page": 7,
+      "index": 2,
+      "width": 725,
+      "height": 321
+    },
+    {
+      "url": "assets/figures/arxiv/2606.19684v1/fig-003.webp",
+      "caption": "Fig. 2. Overview of our two-stage fashion retrieval training Pipeline.",
+      "page": 5,
+      "index": 3,
+      "width": 725,
+      "height": 379
+    },
+    {
+      "url": "assets/figures/arxiv/2606.19684v1/fig-004.webp",
+      "caption": "Fig. 1. Our proposed framework (Right), compared with the standard CIR [3] (Left).",
+      "page": 3,
+      "index": 4,
+      "width": 725,
+      "height": 227
+    }
+  ]
+}

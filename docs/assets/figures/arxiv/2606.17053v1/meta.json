@@ -1,0 +1,110 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2606.17053v1/fig-001.webp",
+      "caption": "Table 1: Main results on 5 long-horizon benchmarks. CONTEXTRL consistently outperforms RL baseline across all the tasks for both base models. Notably, CONTEXTRL demonstrates robust generalization to long-context OOD tasks where standard outcome-based RL struggles or regresses. spanning diverse forms of context utilization: LiveCodeBench v6 [19] for competitive-programming (solve rate %), LongBench v2 [7] for long-context QA (accuracy %), and Needle-in-a-Haystack (NIAH) [20] for targeted retrieval. For NIAH, we report the mean recall (%) averaged across all needle depths and context lengths.",
+      "page": 6,
+      "index": 1,
+      "width": 833,
+      "height": 423
+    },
+    {
+      "url": "assets/figures/arxiv/2606.17053v1/fig-002.webp",
+      "caption": "Table 7: Key training hyperparameters for the agentic coding setting.",
+      "page": 26,
+      "index": 2,
+      "width": 677,
+      "height": 339
+    },
+    {
+      "url": "assets/figures/arxiv/2606.17053v1/fig-003.webp",
+      "caption": "Table 8: Key training hyperparameters for the multimodal setting.",
+      "page": 26,
+      "index": 3,
+      "width": 622,
+      "height": 342
+    },
+    {
+      "url": "assets/figures/arxiv/2606.17053v1/fig-004.webp",
+      "caption": "Figure 1: Context unawareness manifests across both agentic and multimodal systems. Left: In an agentic code-editing setting, the model has access to the relevant source file but fails to maintain consistency with the surrounding context across edits. As a result, it removes the definition of variable i that is subsequently referenced, causing a runtime error. Right: In a multimodal reasoning setting, the model fails to correctly ground its answer in the visual evidence. Although the relevant information is present in the figure, it misreads the y value of g(x) as 2 rather than 3 as x → −1, leading to an incorrect prediction.",
+      "page": 2,
+      "index": 4,
+      "width": 826,
+      "height": 315
+    },
+    {
+      "url": "assets/figures/arxiv/2606.17053v1/fig-005.webp",
+      "caption": "Table 2: Main results on 12 diverse multimodal benchmarks. CONTEXTRL achieves the best performance across all sub-categories, surpassing both the RL baseline and strong reference methods like PAPO. The broad improvements indicate that CONTEXTRL successfully translates enhanced visual grounding into stronger end-to-end reasoning capabilities.",
+      "page": 7,
+      "index": 5,
+      "width": 827,
+      "height": 502
+    },
+    {
+      "url": "assets/figures/arxiv/2606.17053v1/fig-006.webp",
+      "caption": "Figure 9: Effect of the contrastive loss coefficient λ on benchmark performance. Both models are stable across small λ values but degrade on the majority of benchmarks once λ is increased to 0.01.",
+      "page": 29,
+      "index": 6,
+      "width": 816,
+      "height": 327
+    },
+    {
+      "url": "assets/figures/arxiv/2606.17053v1/fig-007.webp",
+      "caption": "Figure 3: Overview of CONTEXTRL. We augment GRPO with a context-awareness loss built from contrastive context pairs. For each query-answer pair (Q,A), an anchor context Context A supports the answer, while a confounder Context B is superficially similar but inconsistent. Given the answer, the auxiliary objective trains the policy to select the supporting context over the confounder, improving context-aware reasoning in both coding and multimodal settings.",
+      "page": 3,
+      "index": 7,
+      "width": 664,
+      "height": 329
+    },
+    {
+      "url": "assets/figures/arxiv/2606.17053v1/fig-008.webp",
+      "caption": "Figure 8: Effect of maximum response length on Qwen3-VL-8B performance. Max length 4096 offers the best average performance across all benchmarks.",
+      "page": 28,
+      "index": 8,
+      "width": 816,
+      "height": 307
+    },
+    {
+      "url": "assets/figures/arxiv/2606.17053v1/fig-009.webp",
+      "caption": "Figure 7: Effect of contrastive data proportion on Qwen2.5-VL-7B performance. The x-axis is data proportion and the y-axis is accuracy (%). The 15% setting achieves the best overall balance.",
+      "page": 28,
+      "index": 9,
+      "width": 816,
+      "height": 311
+    },
+    {
+      "url": "assets/figures/arxiv/2606.17053v1/fig-010.webp",
+      "caption": "Table 6: Source-level composition of the 45,000-example multimodal training set.",
+      "page": 19,
+      "index": 10,
+      "width": 534,
+      "height": 585
+    },
+    {
+      "url": "assets/figures/arxiv/2606.17053v1/fig-011.webp",
+      "caption": "Table 4: Comparison with standard data augmentation in the multimodal setting. DA-SFT and DA-RL yield negligible improvements over the RL baseline. In contrast, CONTEXTRL effectively extracts the learning signal to boost performance across all 12 benchmarks.",
+      "page": 9,
+      "index": 11,
+      "width": 827,
+      "height": 357
+    },
+    {
+      "url": "assets/figures/arxiv/2606.17053v1/fig-012.webp",
+      "caption": "Figure 6: Subgroup composition of the multimodal training set (45,000 examples). Per-source counts within each subgroup are listed in Table 6.",
+      "page": 20,
+      "index": 12,
+      "width": 705,
+      "height": 408
+    },
+    {
+      "url": "assets/figures/arxiv/2606.17053v1/fig-013.webp",
+      "caption": "Figure 4: Contrastive context pairs construction pipeline. Left: Step-by-step filtering to mine contrastive trajectory pairs for the agentic setting. Right: Generative editing and similarity-based retrieval to mine contrastive image pairs for the multimodal setting. A concrete (C+, C−) example is shown alongside each method. Details can be found in Section 2.1 and 2.2.",
+      "page": 5,
+      "index": 13,
+      "width": 829,
+      "height": 355
+    }
+  ]
+}

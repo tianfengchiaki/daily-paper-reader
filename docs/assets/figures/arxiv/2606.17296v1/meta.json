@@ -1,0 +1,70 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2606.17296v1/fig-001.webp",
+      "caption": "Table 1. Main quantitative results on CoMM Task 1 (image-to-text) and Task 2 (text-to-image). Pareto LoRA consistently improves perceptual quality and image coherence over vanilla LoRA. Relative gains (%) are reported w.r.t. vanilla LoRA. Best results within each task are highlighted in bold and second best results are highlighted underlined.",
+      "page": 6,
+      "index": 1,
+      "width": 794,
+      "height": 260
+    },
+    {
+      "url": "assets/figures/arxiv/2606.17296v1/fig-002.webp",
+      "caption": "Table 2. Results on CoMM Task 3 (interleaved multimodal content generation). Pareto LoRA improves both image quality and overall helpfulness compared to vanilla LoRA. Best results are highlighted in bold and second best results are highlighted underlined.",
+      "page": 6,
+      "index": 2,
+      "width": 1081,
+      "height": 225
+    },
+    {
+      "url": "assets/figures/arxiv/2606.17296v1/fig-003.webp",
+      "caption": "Figure 3. Relative gradient magnitude ratio between text and image objectives during multimodal instruction tuning. Curves correspond to Task 1 (image-to-text generation), Task 2 (text-to-image generation), Task 3 (interleaved image–text generation), and Task 4 (question-based interleaved image–text generation). Three out of four tasks exhibit strong text-dominant gradients, revealing severe modality imbalance in LoRA-based instruction tuning.",
+      "page": 2,
+      "index": 3,
+      "width": 475,
+      "height": 289
+    },
+    {
+      "url": "assets/figures/arxiv/2606.17296v1/fig-004.webp",
+      "caption": "Figure 8. Qualitative comparison of interleaved text–image generation on CoMM. Vanilla LoRA often produces images that are weakly grounded or visually distorted despite fluent text, whereas Pareto LoRA improves perceptual quality and text–image coherence, yielding more consistent multimodal narratives.",
+      "page": 7,
+      "index": 4,
+      "width": 496,
+      "height": 277
+    },
+    {
+      "url": "assets/figures/arxiv/2606.17296v1/fig-005.webp",
+      "caption": "Figure 7. Qualitative comparison of text generation. Vanilla LoRA exhibits degeneration with duplicated content copied from the user query, whereas Pareto LoRA produces more concise and coherent responses.",
+      "page": 7,
+      "index": 5,
+      "width": 491,
+      "height": 275
+    },
+    {
+      "url": "assets/figures/arxiv/2606.17296v1/fig-006.webp",
+      "caption": "Table 5. Ablation on Pareto LoRA modulation components across the four CoMM tasks. Handling both gradient conflict (Pareto-only) and magnitude imbalance (Rescale-only) is necessary for consistent multimodal improvements, with the full method performing best overall. Best results within each task are highlighted in bold and second best results are highlighted underlined.",
+      "page": 8,
+      "index": 6,
+      "width": 1026,
+      "height": 201
+    },
+    {
+      "url": "assets/figures/arxiv/2606.17296v1/fig-007.webp",
+      "caption": "Table 6. Ablation on τ values. Best results within each task are highlighted in bold and second best results are highlighted underlined.",
+      "page": 8,
+      "index": 7,
+      "width": 1022,
+      "height": 207
+    },
+    {
+      "url": "assets/figures/arxiv/2606.17296v1/fig-008.webp",
+      "caption": "Figure 4. Modality gradient magnitude ratio (∥gtxt∥2/∥gimg∥2) of each layer during training. The y–axis measures how much stronger text gradients are than image gradients at that layer. Text gradients dominate most LLM layers, while projection layers exhibit different imbalance behavior, motivating selective gradient modulation.",
+      "page": 4,
+      "index": 8,
+      "width": 482,
+      "height": 295
+    }
+  ]
+}

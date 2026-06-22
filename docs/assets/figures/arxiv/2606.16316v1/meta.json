@@ -1,0 +1,102 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2606.16316v1/fig-001.webp",
+      "caption": "Table 2: Comparison of retrieval performance (nDCG@10) using document augmentation with rationales from existing offline indexing baselines and our proposed Agentic Indexer. SPIKE∗/SPIKE denote our reproduced/originally reported versions of the baseline. RLIndex consistently achieves the best performance (bolded) across all three retriever settings.",
+      "page": 6,
+      "index": 1,
+      "width": 834,
+      "height": 269
+    },
+    {
+      "url": "assets/figures/arxiv/2606.16316v1/fig-002.webp",
+      "caption": "Table 9: Online retrieval latency and effectiveness between TongSearch (TS) and RL-Index (RL) using retriever BGE. Embedding time is the computation of query representations, whereas retrieval time captures similarity matching and candidate selection.",
+      "page": 15,
+      "index": 2,
+      "width": 826,
+      "height": 261
+    },
+    {
+      "url": "assets/figures/arxiv/2606.16316v1/fig-003.webp",
+      "caption": "Table 10: Online retrieval latency and effectiveness between TongSearch (TS) and RL-Index (RL) using retriever SBERT. Embedding time is the computation of query representations, whereas retrieval time captures similarity matching and candidate selection.",
+      "page": 15,
+      "index": 3,
+      "width": 826,
+      "height": 260
+    },
+    {
+      "url": "assets/figures/arxiv/2606.16316v1/fig-004.webp",
+      "caption": "Figure 1: (a) Online Retrieval Reasoning by Query Rewriting (e.g., TongSearch (TS) (Qin et al., 2025)) and Offline Indexing Reasoning by Document Augmenting (RL-Index (Ours)). (b)-(c) TongSearch performs online reasoning via query rewriting, while RL-Index conducts offline reasoning through document augmentation. Both improve retrieval (nDCG@10) and QA performance, and their gains are further compounded when combined together.",
+      "page": 2,
+      "index": 4,
+      "width": 826,
+      "height": 183
+    },
+    {
+      "url": "assets/figures/arxiv/2606.16316v1/fig-005.webp",
+      "caption": "Table 4: Comparison of RL-Index trained with different LLM-based rationale augmentors. Results show that the RL-Index pipeline remains effective across different LLM-based agents, demonstrating its robustness to the choice of underlying augmentor. Gray and darker gray cells denote Qwen and LLaMA augmentations, respectively.",
+      "page": 7,
+      "index": 5,
+      "width": 826,
+      "height": 221
+    },
+    {
+      "url": "assets/figures/arxiv/2606.16316v1/fig-006.webp",
+      "caption": "Table 3: Transferability of RL-Index across retrievers. Each block corresponds to the deployment (inference-time) retriever, while sub-rows indicate the retriever used to train the RL augmentor. Shaded rows denote matched training–deployment settings. RL-Index consistently improves performance under cross-retriever transfer, with the strongest results achieved when training and deployment retrievers are aligned.",
+      "page": 7,
+      "index": 6,
+      "width": 829,
+      "height": 288
+    },
+    {
+      "url": "assets/figures/arxiv/2606.16316v1/fig-007.webp",
+      "caption": "Figure 4: Retrieval and QA case study in the natural language domain.",
+      "page": 18,
+      "index": 7,
+      "width": 742,
+      "height": 492
+    },
+    {
+      "url": "assets/figures/arxiv/2606.16316v1/fig-008.webp",
+      "caption": "Figure 2: Overview of RL-Index framework. (a) In offline indexing, an RL-trained agent augments documents D into D̃. (b) In online retrieval, augmented corpus D̃ is used for improved evidence matching. (c) RL indexer is trained via GRPO, with rewards as incremental relevance gain of augmented over original documents to the query.",
+      "page": 4,
+      "index": 8,
+      "width": 827,
+      "height": 293
+    },
+    {
+      "url": "assets/figures/arxiv/2606.16316v1/fig-009.webp",
+      "caption": "Figure 5: Retrieval and QA case study in the code domain.",
+      "page": 19,
+      "index": 9,
+      "width": 744,
+      "height": 524
+    },
+    {
+      "url": "assets/figures/arxiv/2606.16316v1/fig-010.webp",
+      "caption": "Table 14: Ablation study of RL optimization using the same LLM model (i.e., Llama-3.2-3BInstruct) and the same prompt across various evaluation retrievers.",
+      "page": 17,
+      "index": 10,
+      "width": 829,
+      "height": 365
+    },
+    {
+      "url": "assets/figures/arxiv/2606.16316v1/fig-011.webp",
+      "caption": "Table 7: QA performance when using retrieval contexts enhanced with reasoning-augmented documents and queries.",
+      "page": 9,
+      "index": 11,
+      "width": 422,
+      "height": 304
+    },
+    {
+      "url": "assets/figures/arxiv/2606.16316v1/fig-012.webp",
+      "caption": "Figure 3: Case study where the reasoned document helps the retrieval to succeed.",
+      "page": 9,
+      "index": 12,
+      "width": 827,
+      "height": 277
+    }
+  ]
+}

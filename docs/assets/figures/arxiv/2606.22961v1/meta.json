@@ -1,0 +1,78 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2606.22961v1/fig-001.webp",
+      "caption": "Figure 3: Scatter plot between proxy evaluation and unbiased evaluation. Diagonal line 𝒚 = 𝒙 represents absolute absence of discrepancy between two evaluation types. Linear regression statistics (𝒌 denotes slope, 𝝈 represents standard deviation, and 𝒅 indicates MAE) of normal testing and LLM Judge are plotted to illustrate the accuracy trend.",
+      "page": 6,
+      "index": 1,
+      "width": 1046,
+      "height": 469
+    },
+    {
+      "url": "assets/figures/arxiv/2606.22961v1/fig-002.webp",
+      "caption": "Table 5: Field-level textual inputs used by the LLM Judge for each dataset. Only human-readable fields are used, and all fields are provided in full without truncation.",
+      "page": 11,
+      "index": 2,
+      "width": 1032,
+      "height": 286
+    },
+    {
+      "url": "assets/figures/arxiv/2606.22961v1/fig-003.webp",
+      "caption": "Table 6: Hyper-parameter settings for training the recommendation models.",
+      "page": 11,
+      "index": 3,
+      "width": 1036,
+      "height": 284
+    },
+    {
+      "url": "assets/figures/arxiv/2606.22961v1/fig-004.webp",
+      "caption": "Table 3: Reason examples selected from the cluster centers.",
+      "page": 7,
+      "index": 4,
+      "width": 498,
+      "height": 473
+    },
+    {
+      "url": "assets/figures/arxiv/2606.22961v1/fig-005.webp",
+      "caption": "Figure 1: Overview of traditional offline evaluation vs. LLM-as-a-Judge evaluation in Top-K recommendation.",
+      "page": 3,
+      "index": 5,
+      "width": 1050,
+      "height": 536
+    },
+    {
+      "url": "assets/figures/arxiv/2606.22961v1/fig-006.webp",
+      "caption": "Figure 5: Evaluation performance on Recall@5 and NDCG@5 of the Coat dataset. Dashed baseline represents the benchmark of normal testing.",
+      "page": 8,
+      "index": 6,
+      "width": 1010,
+      "height": 574
+    },
+    {
+      "url": "assets/figures/arxiv/2606.22961v1/fig-007.webp",
+      "caption": "Table 4: Ablation study of the Judge input configuration on the Coat dataset.",
+      "page": 8,
+      "index": 7,
+      "width": 500,
+      "height": 248
+    },
+    {
+      "url": "assets/figures/arxiv/2606.22961v1/fig-008.webp",
+      "caption": "Figure 2: Evaluation Prompt applied in our LLM Judge. Basic principles and output format highlighted in boldface are fixed regions, while the input fields shaded in gray can be customized for different tasks.",
+      "page": 4,
+      "index": 8,
+      "width": 506,
+      "height": 661
+    },
+    {
+      "url": "assets/figures/arxiv/2606.22961v1/fig-009.webp",
+      "caption": "Table 1: Consistency performance of normal testing and LLM Judge evaluation. The best consistency results are highlighted in boldface. Gain denotes the performance improvement over normal testing. Superscript * indicates the statistically significant consistency with the ground truth (i.e., two-sided t-test with p < 0.05).",
+      "page": 5,
+      "index": 9,
+      "width": 1048,
+      "height": 396
+    }
+  ]
+}

@@ -1,0 +1,70 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2606.23057v1/fig-001.webp",
+      "caption": "Table 4 Representative competitive vacuums (CVI > 0.50). These queries lack a dominant brand, representing potential strategic opportunities.",
+      "page": 11,
+      "index": 1,
+      "width": 804,
+      "height": 231
+    },
+    {
+      "url": "assets/figures/arxiv/2606.23057v1/fig-002.webp",
+      "caption": "Fig. 1 Displacement networks by industry: consulting, e-commerce, fintech (top); healthcare technology and SaaS (bottom). Nodes are brands; a directed edge marks asymmetric substitution (Displacement Score > 0.10), where the source brand tends to appear when the target is absent. Consulting is dominated by co-recommendation rather than displacement.",
+      "page": 10,
+      "index": 2,
+      "width": 777,
+      "height": 429
+    },
+    {
+      "url": "assets/figures/arxiv/2606.23057v1/fig-003.webp",
+      "caption": "Fig. 2 Distribution of Competitive Vacuum Index (CVI) across 250 queries in five industries. Dashed red line indicates the vacuum threshold (CVI > 0.50); dashed green line indicates the monopoly threshold (CVI < 0.20). Most queries cluster near zero (strong brand dominance).",
+      "page": 10,
+      "index": 3,
+      "width": 660,
+      "height": 325
+    },
+    {
+      "url": "assets/figures/arxiv/2606.23057v1/fig-004.webp",
+      "caption": "Fig. 4 Mean Category Ownership Index (Recommendation Share) for the leading brands in each industry, pooled across the three models. Most categories show moderate concentration rather than winner-takes-all.",
+      "page": 14,
+      "index": 4,
+      "width": 737,
+      "height": 254
+    },
+    {
+      "url": "assets/figures/arxiv/2606.23057v1/fig-005.webp",
+      "caption": "Fig. 3 Category Ownership Index (COI) heatmaps by industry: consulting and e-commerce (top), fintech and healthcare technology (middle), SaaS (bottom). Rows are brands, columns are category queries; cell shading is each brand’s share of mentions within a category (COI), from low (light) to high (dark).",
+      "page": 14,
+      "index": 5,
+      "width": 777,
+      "height": 513
+    },
+    {
+      "url": "assets/figures/arxiv/2606.23057v1/fig-006.webp",
+      "caption": "Table 6 Top brands by mean Category Ownership Index (Recommendation Share) per industry. Dominant = number of queries with COI ≥ 0.80; Absent = number of queries with COI = 0.",
+      "page": 13,
+      "index": 6,
+      "width": 746,
+      "height": 679
+    },
+    {
+      "url": "assets/figures/arxiv/2606.23057v1/fig-007.webp",
+      "caption": "Table 3 Displacement analysis summary by industry. Displacement pairs: DS > 0.10 (brand A appears more when B is absent). Co-recommendation pairs: DS < −0.10 (A and B tend to co-occur).",
+      "page": 9,
+      "index": 7,
+      "width": 816,
+      "height": 213
+    },
+    {
+      "url": "assets/figures/arxiv/2606.23057v1/fig-008.webp",
+      "caption": "Table 1 Brand sample by industry (50 brands across 5 industries). Listed = publicly traded.",
+      "page": 5,
+      "index": 8,
+      "width": 960,
+      "height": 342
+    }
+  ]
+}

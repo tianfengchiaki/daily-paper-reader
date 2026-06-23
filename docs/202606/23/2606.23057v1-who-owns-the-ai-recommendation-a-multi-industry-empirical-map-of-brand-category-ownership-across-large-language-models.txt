@@ -1,0 +1,267 @@
+Title: Who Owns the AI Recommendation? A Multi-Industry Empirical Map of Brand Category Ownership Across Large Language Models
+
+URL Source: https://arxiv.org/pdf/2606.23057v1
+
+Published Time: Tue, 23 Jun 2026 03:31:15 GMT
+
+Number of Pages: 21
+
+Markdown Content:
+# Who Owns the AI Recommendation? A Multi-Industry Empirical Map of Brand Category Ownership Across Large Language Models 
+
+## Dmitrij ˙Zatuchin 1,2* 
+
+1* Department of Information Technologies, Estonian Entrepreneurship University of Applied Sciences (EUAS), Tallinn, Estonia. 
+
+2Rankfor.AI, Tallinn, Estonia. Corresponding author(s). E-mail(s): dmitrij.zatuchin@eek.ee; 
+
+Abstract 
+
+Large language models now mediate how buyers discover products and ser-vices, which makes the competitive structure of AI-generated recommendations a strategic concern for brands competing in digital categories. Large-scale empir-ical answers to a basic question remain scarce: in a given category, which brand does a model recommend, and how concentrated is that ownership? This study provides one such map across five industries and three models. Across 3,750 responses spanning 50 brands, five industries, and 250 brand-free category queries on three models (GPT-5.2, Google Gemini 3 Flash, and Perplexity sonar-pro), each query repeated five times under a dice-roll stability protocol, we propose three exploratory metrics: the Category Ownership Index (COI), summarising a brand’s share of mentions within a category; the Competitive Vacuum Index (CVI), flagging categories where no single brand leads; and the Displacement Score (DS), quantifying asymmetric substitution between brand pairs. In this sample, recommendation concentration was moderate: the mean Gini coefficient was 0.28 (95% CI [0 .16 , 0.41] ), below the 0.60 power-law threshold we set. Com-petitive vacuums were rare, appearing in 8.0% of the 250 queries, so the three models named at least one sampled brand in most queries. Cross-model agree-ment on the top-recommended brand was 41.6%, so within these three models a top position on one did not reliably coincide with a top position on another. Displacement was industry-dependent: consulting rewarded co-recommendation (0.4:1), while the other four industries showed one-directional substitution from 2.0:1 to 4.3:1; the unweighted mean across all five was 2.4:1. A BERTopic check placed only 4.2% of discovered topic clusters outside the original categories. 
+
+1 
+
+> arXiv:2606.23057v1 [cs.IR] 22 Jun 2026 Within the scope studied, these results sit in tension with a strong winner-takes-all narrative around AI recommendation, and the three metrics offer a candidate, reproducible procedure for competitive-intelligence analysis that future work can validate.
+> Keywords: Large language models, Brand recommendations, Competitive intelligence, Category ownership, AI-mediated markets, Digital marketing, Recommendation concentration
+
+# 1 Introduction 
+
+The rise of large language models (LLMs) as conversational search interfaces has reshaped how consumers and professionals discover products and services [1, 2]. When a procurement officer asks an AI assistant “What is the best CRM for small busi-nesses?” or a consumer queries “Best payment processor for online stores?”, the resulting brand recommendations are shaped by parametric knowledge encoded in model weights and, where available, by retrieved sources the model is instructed to cite [3]. This shift from traditional search-based discovery to AI-mediated recommen-dation may carry competitive implications: brands that are consistently recommended may gain an advantage in this channel, while those absent from AI outputs may face reduced visibility in what is becoming a more important discovery channel. The competitive dynamics of AI recommendations have begun to attract scholarly attention. Recent work has documented gender bias in LLM brand recommendations [4] and the sensitivity of recommendation outputs to prompt framing and seasonal context. Industry reports suggest that brand visibility in AI-generated responses can vary substantially depending on the model queried; recent research found that some brands hold nearly 24% “Share of Model” on one platform but less than 1% on another [5]. Each of these investigations examines one dimension of AI recommen-dation behaviour: bias, sourcing, or consistency. The competitive structure of the recommendations themselves stays unmapped, which brands dominate which query categories, whether dominance follows predictable concentration patterns, and how competitive dynamics differ across AI platforms. This paper addresses five research questions through a large-scale empirical mapping of AI recommendation ownership across five industries: 
+
+RQ1 (Concentration): Does AI recommendation share follow a power-law distribu-tion, with a small number of brands capturing the majority of category mentions? 
+
+RQ2 (Displacement): When one brand gains recommendation share within a category, does a specific competitor lose it? Is displacement asymmetric? 
+
+RQ3 (Vacuums): What proportion of category queries produce no consistently dom-inant brand, representing competitive vacuums? 
+
+RQ4 (Emergent categories): Does AI generate recommendation sub-categories beyond those explicitly queried, creating competitive territory that no brand has claimed? 2RQ5 (Cross-model ownership): Do different LLMs assign the same top brand for a given category query, or is category ownership platform-dependent? This study makes four contributions. First, it introduces and operationalises three candidate metrics for AI competitive intelligence (COI, CVI, DS) and reports them in enough detail to be reproduced; their construct validity remains to be established by further work. Second, to our knowledge it provides one of the first multi-industry empirical maps of AI recommendation ownership, spanning 50 brands across SaaS, consulting, fintech, e-commerce, and healthcare technology. Third, it uses BERTopic clustering to surface emergent recommendation categories that AI creates and no brand explicitly targets. Fourth, across the three models studied it finds that the top-ranked brand was platform-dependent in most categories, with full cross-model agreement on the top brand at 41.6%. The remainder of the paper is structured as follows. Section 2 reviews related work on AI recommendation systems, market concentration theory, and LLM competitive dynamics. Section 3 describes the study design, data collection, and analytic approach. Section 4 presents hypothesis tests and findings. Section 5 interprets results and discusses implications, and Section 6 summarises contributions and future directions. 
+
+# 2 Related Work 
+
+## 2.1 AI as Information Intermediary 
+
+The role of AI systems as information intermediaries has been theorised through mul-tiple lenses. Agenda-setting theory, originally developed for mass media [6], posits that intermediaries influence public salience by selecting which topics and entities receive attention. In the corporate context, Fombrun and Shanley [7] established that reputations are socially constructed from the signals stakeholders observe, and the sources through which those signals flow are constitutive rather than merely reflective. Applied to LLMs, this framework suggests that models function as algorithmic gate-keepers, determining which brands are surfaced in response to consumer queries and thereby shaping consideration sets [8]. Unlike traditional search engines that present ranked lists of source documents, LLMs synthesise information into coherent narra-tives, removing the user’s ability to evaluate source credibility independently. Petroni et al. [9] demonstrated that language models store factual knowledge in their parame-ters, functioning as implicit knowledge bases; however, Mallen et al. [10] showed that this parametric memory is unreliable for less popular entities, generating fluent but inaccurate outputs for brands with sparse training data coverage. Gender bias in AI systems has been documented across domains from word embed-dings [11] to recommendation system fairness [12]. ˙Zatuchin [4] documented systematic gender bias in LLM brand recommendations, with female-targeted prompts producing 28–61% fewer brand mentions than male-targeted equivalents, demonstrating that AI gatekeeping is not neutral with respect to demographic context. 32.2 Market Concentration and Competitive Dynamics 
+
+Market concentration has long been studied through metrics such as the Herfindahl-Hirschman Index (HHI) and the Gini coefficient [13]. In traditional markets, con-centration follows well-documented patterns: power-law distributions characterise winner-takes-most dynamics in network economies [14, 15], while more competitive markets exhibit log-normal or exponential distributions. The “superstar firm” hypoth-esis suggests that digital platforms amplify concentration by reducing search costs and creating network effects that benefit dominant players [16]. Whether AI recommendation markets exhibit similar concentration dynamics is an open empirical question. On one hand, LLMs are trained on corpora that dispropor-tionately represent large, well-documented brands [17, 18], suggesting that parametric knowledge may replicate or amplify real-world market concentration. The long-tail phenomenon documented in traditional recommender systems [19] may be exacerbated in LLM contexts where model training data frequency directly determines entity recall accuracy. On the other hand, LLMs are designed to provide comprehensive, balanced responses, which could lead to more distributed recommendations than traditional search results. 
+
+## 2.3 Competitive Intelligence in Digital Markets 
+
+Competitive intelligence (CI) in digital markets has traditionally relied on search engine optimisation (SEO) metrics, share-of-voice analysis, and digital footprint mon-itoring [20]. Generative engine optimisation (GEO) has emerged as brands begin to optimise for AI recommendation inclusion alongside search-result ranking [21]. Indus-try data show that AI search visits have surged, with platforms such as Perplexity experiencing 71% month-over-month growth in referrals [22]. However, GEO prac-tice currently lacks a rigorous empirical foundation: no standardised metrics exist for measuring brand visibility in AI recommendations, and no systematic competitive mapping has been conducted across industries and AI platforms. This study takes a step toward that gap by proposing metrics designed for AI competitive intelligence and reporting their behaviour on one sample. The Category Ownership Index (COI) extends the concept of share-of-voice to the AI recom-mendation context, while the Competitive Vacuum Index (CVI) identifies strategic opportunities in categories where no brand has established AI dominance. 
+
+## 2.4 LLM Response Variability and the Dice Roll Method 
+
+The stochastic nature of LLM outputs presents methodological challenges for compet-itive analysis. Even at low temperature settings, identical prompts produce varying responses across repetitions [23]. This variability necessitates repeated-measures designs: single-shot queries cannot reliably characterise a brand’s AI recommendation presence. The “dice roll” methodology, used in this study and in prior work [4], addresses this challenge by querying each prompt multiple times and computing aggregate metrics over the iteration set. This approach provides a more robust estimate of a brand’s true recommendation probability than any single observation. 4Table 1 Brand sample by industry (50 brands across 5 industries). Listed = publicly traded. 
+
+Industry Brands HQ Countries Listed 
+
+SaaS Salesforce, HubSpot, Monday.com, Asana, US, IL, SG, 5/10 Pipedrive, Semrush, Ahrefs, Notion, ClickUp, Miro ET Consulting McKinsey, Deloitte, Accenture, BCG, Bain, US, UK, IE, 1/10 PwC, EY, KPMG, Roland Berger, Implement Consulting NL, DE, DK FinTech Stripe, PayPal, Wise, Revolut, Block, US, UK, NL, 4/10 Adyen, Klarna, Montonio, N26, Plaid SE, DE, ET E-commerce Amazon, Shopify, Zalando, H&M, ASOS, US, CA, DE, SE, 7/10 Vinted, Allegro, Temu, Bolt Market, Verkkokauppa.com UK, LT, PL, CN, ET, FI HealthTech Veeva Systems, CompuGroup Medical, Epic Systems, US, DE, FR, 6/10 Oracle Health, MEDITECH, Teladoc, Doctolib, SE, NL Kry, GE HealthCare, Philips Healthcare 
+
+# 3 Methodology 
+
+## 3.1 Study Design 
+
+A multi-factor observational study with repeated measures was conducted. The design crossed five factors: industry (5 levels), brand (10 per industry, 50 total), category query (50 per industry, 250 total), model (3 levels), and iteration (5 levels). The total number of API calls was 3,750 (250 queries × 3 models × 5 iterations), all of which yielded usable responses after error filtering. 
+
+## 3.2 Industry and Brand Selection 
+
+Five industries were selected to maximise diversity across B2B and B2C contexts, geographic headquarters, and market maturity: (1) SaaS/B2B Software, (2) Con-sulting/Professional Services, (3) FinTech/Payments, (4) E-commerce/Retail, and (5) Healthcare Technology. Ten brands were selected per industry (50 total), balancing market leaders with challengers and including both publicly listed and privately held companies. Table 1 summarises the brand sample. An alias dictionary was constructed for each brand to capture common variations (e.g., “BCG” and “Boston Consulting Group”; “Block”, “Square”, and “Cash App”). The dictionary contained 77 aliases across the 50 brands. 
+
+## 3.3 Category Query Design 
+
+Fifty queries per industry (250 total) were designed across five query types, reflecting the diversity of real-world AI interactions: 1. Direct recommendation (15 per industry): “What is the best [category] for [use case]?” 52. Comparison (10 per industry): “[Brand A] vs [Brand B] for [use case]” 3. Category exploration (10 per industry): “What options exist for [category] in [market]?” 4. Problem-solution (10 per industry): “I need to [solve problem]. What should I use?” 5. Trust/authority (5 per industry): “Which [category] company is most trusted?” Queries were designed to cover the full range of brand segments within each industry. For example, SaaS queries spanned CRM, project management, SEO, mar-keting automation, and collaboration tools. The full query set is available in the supplementary materials. 
+
+## 3.4 Data Collection 
+
+Three LLMs were queried: OpenAI GPT-5.2, Google Gemini 3 Flash, and Perplexity sonar-pro (a retrieval-augmented model). This selection spans a parametric-knowledge model (GPT-5.2), a multimodal model with web-grounding capabilities (Gemini 3 Flash), and a retrieval-augmented generation model that cites live web sources (Per-plexity). Each of the 250 queries was submitted to each model five times (the dice roll protocol), with the following configuration: 
+
+• Temperature: 0.3 (consistent with prior studies [4]) 
+
+• Max tokens: 1,024 
+
+• System prompt: “You are a helpful assistant with broad knowledge of businesses and technology.” 
+
+• Rate limiting: 3-second delay between API calls 
+
+• Checkpointing: State saved every 25 calls with automatic resume capability Data collection took place on 23–24 February 2026. The total dataset comprises 3,750 responses (250 queries × 3 models × 5 iterations), all usable after error filtering. 
+
+## 3.5 Brand Mention Extraction 
+
+Brand mentions were extracted using case-insensitive alias matching against the 77-entry brand alias dictionary. For each response, all mentioned brands and their ordinal position of first occurrence were recorded. This regex-based approach was chosen for its transparency and reproducibility; the tradeoff is that short aliases (notably “EY” for Ernst & Young) may produce false-positive matches when the character sequence appears as a substring in unrelated words. This known limitation is addressed in Section 5.5. 
+
+## 3.6 Metrics 
+
+Four metrics were computed from the brand mention data:      
+
+> Definition 1 (Category Ownership Index (COI)) For a given brand band category query q:COI( b, q ) = mention count( b, q )total iterations( q)(1)
+
+6where mention count( b, q ) is the number of responses to query q in which brand b is men-tioned, and total iterations( q) = M × I with M models and I iterations per model. Note that because a brand may be mentioned multiple times within a single response, COI values can exceed 1.0 when computed from raw mention counts rather than binary presence indicators. In this study, mention counts rather than binary indicators were used, meaning COI reflects mention intensity rather than simple presence probability. COI thresholds were defined as: dominant ( ≥ 0.80), strong (0 .50–0 .79), contested (0 .20–0 .49), peripheral (0 .01–0 .19), and absent (0 .00). 
+
+Definition 2 (Recommendation Share (RS)) For a given brand b in industry k:RS( b, k ) = 1
+
+|Qk|
+
+X
+
+> q∈Qk
+
+COI( b, q ) (2) where Qk is the set of category queries for industry k.
+
+Definition 3 (Competitive Vacuum Index (CVI)) For a given category query q:CVI( q) = 1 − max  
+
+> b∈B
+
+COI( b, q ) (3) where B is the set of all brands in the relevant industry. CVI > 0.50 indicates a competitive vacuum (no brand dominates); CVI < 0.20 indicates a category monopoly. 
+
+Definition 4 (Displacement Score (DS)) For brands A and B within a category query: DS( A, B, q ) = P (A | ¬ B) − P (A | B) (4) where P (A | B) is the probability that brand A is mentioned in a response given that brand B
+
+is also mentioned, and P (A | ¬ B) is the probability given that B is absent. DS > 0 indicates displacement (A appears more when B is absent); DS < 0 indicates co-recommendation (A and B tend to appear together). 
+
+## 3.7 BERTopic Emergent Category Discovery 
+
+To identify recommendation categories that AI generates beyond the explicitly queried set, BERTopic [24] was applied to the full set of 3,750 response texts. Responses were embedded using BGE-M3 [25] (1,024 dimensions), dimensionality-reduced via UMAP [26] (15 neighbours, 10 components, cosine metric), and clustered using HDBSCAN [27] (minimum cluster size 20, minimum samples 5). The original 250 queries were also embedded, and each BERTopic cluster was matched to its nearest original query via cosine similarity. Clusters with best-match similarity below 0.60 were classified as 
+
+emergent categories : topics that AI discusses in its recommendations but that do not correspond to any query in the study design. 
+
+## 3.8 Hypotheses 
+
+Based on the research questions and prior literature, five hypotheses were formulated: 
+
+• H1 (Power law): Category ownership follows a power-law distribution, with a mean Gini coefficient exceeding 0.60 across industries. 7Table 2 Recommendation concentration by industry. Gini coefficients and top-3 brand share computed from RS distributions across 10 brands per industry.                     
+
+> Industry Gini Top-3 Share (%) Top 3 Brands
+> Consulting 0.23 42.3 EY, Deloitte, McKinsey E-commerce 0.53 62.1 Amazon, Shopify, Temu FinTech 0.39 42.1 Stripe, PayPal, Adyen HealthTech 0.26 54.1 Epic Systems, Oracle Health, MEDITECH SaaS 0.18 42.4 HubSpot, Salesforce, Monday.com
+> Mean 0.28 48.6
+
+• H2 (Asymmetric displacement): Displacement is asymmetric, with market leaders displacing challengers at a ratio exceeding 3:1. 
+
+• H3 (Competitive vacuums): At least 20% of category queries produce no dominant brand (CVI > 0.50). 
+
+• H4 (Emergent categories): BERTopic discovers at least 15% more topic clusters than the query set, representing emergent categories. 
+
+• H5 (Cross-model disagreement): Cross-model agreement on the top-recommended brand is below 50%. 
+
+# 4 Results 
+
+## 4.1 Dataset Overview 
+
+The final dataset comprises 3,750 analysable responses across 50 brands, 5 indus-tries, 250 category queries, and 3 LLMs (GPT-5.2, Gemini 3 Flash, and Perplexity sonar-pro), with 5 dice roll iterations per query-model combination. Brand mention extraction identified mentions across all responses, with a total of 77 unique aliases resolved to 50 canonical brand names. 
+
+## 4.2 H1: Recommendation Concentration 
+
+The Gini coefficient was computed for each industry based on the distribution of Recommendation Share (RS) values across the 10 brands. Table 2 presents the results. The mean Gini coefficient across industries is 0.28 (95% CI: [0.16, 0.41]), well below the hypothesised threshold of 0.60. Concentration varies substantially across indus-tries: e-commerce exhibits the highest concentration (Gini = 0 .53), driven by Amazon’s dominance (mean COI = 0 .53), while SaaS shows the most distributed recommenda-tions (Gini = 0 .18). H1 is not supported. In this sample, recommendation share was moderately concentrated and did not reach the hypothesised power-law threshold (mean Gini 0.28 vs. the 0.60 cutoff); we did not formally fit and reject a power law. 8Table 3 Displacement analysis summary by industry. Displacement pairs: DS > 0.10 (brand A appears more when B is absent). Co-recommendation pairs: DS < −0.10 (A and B tend to co-occur).                                
+
+> Industry Displacement Co-recommendation Ratio Net Pattern pairs pairs
+> Consulting 737 2,105 0.4:1 Co-recommendation E-commerce 870 201 4.3:1 Strong displacement FinTech 1,173 579 2.0:1 Displacement HealthTech 893 408 2.2:1 Displacement SaaS 972 316 3.1:1 Strong displacement
+> Pooled 4,645 3,609 1.3:1 Mixed Mean (per industry) 2.4:1 Displacement
+
+## 4.3 H2: Asymmetric Displacement 
+
+Displacement Scores (DS) were computed for all within-industry brand pairs across all queries. Pairs with |DS | > 0.10 were classified as displacement (DS > 0.10) or co-recommendation (DS < −0.10). Table 3 summarises the displacement analysis. The results reveal a pronounced industry-level split. The pooled ratio across all pair-query combinations is 1.3:1, pulled below the 3:1 threshold by consulting, where co-recommendation dominates (0.4:1). This consulting anomaly reflects the “Big 4” and “MBB” framing common in LLM responses: models tend to enumerate the well-known firms together rather than recommend one over another. Excluding con-sulting, the remaining four industries show consistent displacement dominance, with an unweighted mean of 2.9:1 (e-commerce 4.3:1, SaaS 3.1:1, HealthTech 2.2:1, Fin-Tech 2.0:1). The unweighted mean across all five industries is 2.4:1. H2 is partially supported. The hypothesised 3:1 asymmetric displacement ratio is approached but not reached at the aggregate level; however, four of five industries exhibit clear dis-placement dominance, and two (e-commerce and SaaS) exceed the 3:1 threshold individually. Network analysis using PageRank on the displacement graphs (Figure 1) reveals that the brands with highest displacement power (out-degree centrality) tend to be niche or challenger brands: Semrush and Ahrefs in SaaS, Bolt Market and Verkkokauppa.com in e-commerce, Montonio in fintech. These smaller brands co-occur less often with competitors when they appear (high out-degree on the displacement graph) but also tend to be absent when market leaders appear (high in-degree); we describe these as association patterns in mention co-occurrence, not a causal displacing action. In consulting, Roland Berger shows the highest PageRank vulnera-bility, while McKinsey and Deloitte show near-zero vulnerability, consistent with the co-recommendation pattern in that industry. 
+
+## 4.4 H3: Competitive Vacuums 
+
+The Competitive Vacuum Index (CVI) was computed for all 250 queries. Figure 2 shows the distribution. 9Fig. 1 Displacement networks by industry: consulting, e-commerce, fintech (top); healthcare tech-nology and SaaS (bottom). Nodes are brands; a directed edge marks asymmetric substitution (Displacement Score > 0.10), where the source brand tends to appear when the target is absent. Consulting is dominated by co-recommendation rather than displacement. 
+
+Competitive vacuums (CVI > 0.50) were identified in 20 of 250 queries (8.0%). A binomial test against the hypothesised 20% threshold confirms that the observed vacuum rate is significantly below expectation ( p < 0.001). In contrast, category monopolies (CVI < 0.20) account for the vast majority of queries. Table 4 shows the top competitive vacuums by industry. Healthcare technology exhibits the most vacuums (10 of 50 queries, 20%), partic-ularly for niche segments such as small-practice EHR, remote patient monitoring, and 
+
+Fig. 2 Distribution of Competitive Vacuum Index (CVI) across 250 queries in five industries. Dashed red line indicates the vacuum threshold (CVI > 0.50); dashed green line indicates the monopoly threshold (CVI < 0.20). Most queries cluster near zero (strong brand dominance). 
+
+10 Table 4 Representative competitive vacuums (CVI > 0.50). These queries lack a dominant brand, representing potential strategic opportunities.                            
+
+> Industry Query CVI Top Brand (COI)
+> HealthTech Best EHR for small medical practices 0.93 Epic Systems (0.07) HealthTech Launch digital health in Nordics 0.93 Kry (0.07) E-commerce Buy luxury fashion online 0.87 Amazon (0.13) HealthTech Radiology AI software 0.80 Epic Systems (0.20) HealthTech Health tech for pharmaceuticals 0.80 Veeva Systems (0.20) HealthTech Monitor patients remotely 0.80 CompuGroup Medical (0.20) E-commerce Best fashion retailer reputation 0.80 H&M (0.20) E-commerce Electronics in Nordics 0.73 Amazon (0.27)
+
+radiology AI. E-commerce vacuums tend to occur in niche categories (luxury fashion, sustainable shopping, Nordic electronics). H3 is not supported. Competitive vacu-ums exist but are substantially rarer than predicted, occurring in only 8.0% of queries overall. 
+
+## 4.5 H4: Emergent Categories 
+
+BERTopic clustering identified 71 topic clusters (excluding the outlier cluster −1). Three clusters met the emergent category threshold (cosine similarity < 0.60 to any original query), representing 4.2% of discovered clusters. All three emergent clusters contained empty keyword sets and mapped most closely to the grocery delivery query, suggesting they represent noise or cross-domain response patterns rather than genuine novel categories. H4 is not supported. The proportion of emergent categories (4.2%) is well below the 15% threshold. 
+
+## 4.6 H5: Cross-Model Agreement 
+
+For each of the 250 queries, the top-recommended brand was identified for each model (the brand with the highest mention count across five iterations). Full agreement was computed as the proportion of queries for which all three models identified the same top brand. Mean pairwise agreement was computed across the three model pairs (GPT-5.2 vs Gemini, GPT-5.2 vs Perplexity, Gemini vs Perplexity). Full agreement (all three models selecting the same top brand) occurred in 104 of 250 queries (41.6%). Table 5 presents the agreement rates by industry. 
+
+H5 is supported. Full three-model agreement is 41.6%, below the 50% thresh-old, confirming that brand ownership of recommendation categories is substantially platform-dependent. Mean pairwise agreement is higher at 64.4% (Gemini–Perplexity: 70.0%, Gemini–GPT-5.2: 62.8%, GPT-5.2–Perplexity: 60.3%), and majority agree-ment (at least two of three models concur) reaches 91.6%, suggesting that while platforms broadly agree on leading brands, the specific top recommendation diverges 11 Table 5 Cross-model agreement on top-recommended brand by industry. Full agreement = all three models select the same top brand.              
+
+> Industry Full Agreement (%) Notable Disagreements
+> Consulting 22.0 McKinsey vs BCG vs Bain for strategy queries E-commerce 73.8 Amazon vs Shopify for platform queries FinTech 47.8 Stripe vs PayPal vs Wise for payment queries HealthTech 59.4 Epic vs Oracle Health vs Teladoc SaaS 62.2 HubSpot vs Salesforce vs Monday.com
+> Overall 41.6
+
+frequently. Consulting shows the lowest full agreement (22.0%), reflecting the compet-itive density of major firms (McKinsey, BCG, Bain, Deloitte), while e-commerce shows the highest (73.8%), driven by Amazon’s dominant position across all three models. 
+
+## 4.7 Industry-Level Recommendation Share 
+
+Table 6 presents the top brands by Recommendation Share across all five industries. Several patterns emerge across the per-industry COI heatmaps (Figure 3) and the pooled recommendation-share chart (Figure 4). In consulting, recommendation share is high and broadly distributed, with all 10 brands achieving dominant status in at least one category. EY achieves the highest mean COI (0.955), appearing as dominant in 47 of 50 queries; however, this anomalous result is likely attributable to a measure-ment artefact discussed in Section 5.5. In e-commerce, Amazon dominates with a mean COI of 0.533, followed distantly by Shopify (0.316), reflecting the platform’s ubiquity in AI recommendations. FinTech shows a clear leader in Stripe (0.528), with PayPal as the primary challenger (0.424). Healthcare technology is the most fragmented indus-try, with the top brand (Epic Systems) achieving only 0.373 mean COI. SaaS shows moderate concentration with HubSpot leading (0.381) followed by Salesforce (0.320). 
+
+## 4.8 Hypothesis Summary 
+
+Table 7 summarises all hypothesis tests. 
+
+# 5 Discussion 
+
+## 5.1 Moderate Concentration Challenges the “Winner-Takes-All” Narrative 
+
+A notable finding is that, in this sample, recommendation share did not reach the power-law concentration threshold we set (mean Gini 0.28 against a 0.60 cutoff). The mean Gini coefficient of 0.28 is closer to what one would expect in a moderately competitive market than in a winner-takes-all digital platform economy. This sits in tension with the industry narrative that a few dominant brands will capture the majority of AI-generated recommendations [5], at least for the industries, models, and window studied here. One possible interpretation is that instruction-tuning toward 12 Table 6 Top brands by mean Category Ownership Index (Recommendation Share) per industry. Dominant = number of queries with COI ≥ 0.80; Absent = number of queries with COI = 0. 
+
+Industry Brand Mean COI Max COI Dominant Absent 
+
+Consulting EY ∗ 0.955 1.00 47 0Deloitte 0.741 1.00 31 4McKinsey 0.725 1.00 32 7BCG 0.700 1.00 32 8Bain 0.649 1.00 26 8E-commerce Amazon 0.533 1.00 18 6Shopify 0.316 1.00 15 28 Temu 0.156 1.00 2 33 ASOS 0.144 1.00 6 38 Vinted 0.127 1.00 3 34 FinTech Stripe 0.528 1.00 19 15 PayPal 0.424 1.00 12 14 Adyen 0.316 1.00 8 23 Block 0.313 1.00 9 14 Revolut 0.281 1.00 6 22 HealthTech Epic Systems 0.373 1.00 9 16 Oracle Health 0.327 1.00 7 18 MEDITECH 0.183 1.00 5 33 GE HealthCare 0.172 0.93 4 30 Teladoc 0.168 1.00 6 34 SaaS HubSpot 0.381 1.00 16 25 Salesforce 0.320 1.00 10 19 Monday.com 0.231 1.00 6 27 Notion 0.216 1.00 4 30 Asana 0.209 1.00 8 32 
+
+> ∗EY values are likely inflated due to alias matching artefact; see Section 5.5.
+
+comprehensive, balanced responses [23] contributes to this pattern, though our design cannot test that mechanism directly. The exception is e-commerce (Gini = 0 .53), where Amazon’s high recommendation share coincides with its prominence in the public web; we did not inspect training data, so we cannot attribute the effect to training-data position. Within these five industries, the one with a clearly dominant global player (e-commerce) showed higher concentration, while industries with more distributed market structures (SaaS and consulting) showed more distributed recommendation patterns; whether this pattern holds beyond the sampled industries is untested. 13 Fig. 3 Category Ownership Index (COI) heatmaps by industry: consulting and e-commerce (top), fintech and healthcare technology (middle), SaaS (bottom). Rows are brands, columns are category queries; cell shading is each brand’s share of mentions within a category (COI), from low (light) to high (dark). 
+
+Fig. 4 Mean Category Ownership Index (Recommendation Share) for the leading brands in each industry, pooled across the three models. Most categories show moderate concentration rather than winner-takes-all. 
+
+## 5.2 Displacement Dynamics are Industry-Dependent 
+
+The displacement analysis reveals two distinct competitive regimes in AI recommen-dations. In consulting, co-recommendation dominates (0.4:1 ratio): LLMs consistently enumerate the “Big 4” and “MBB” firms together, reflecting the established taxon-omy of consulting tiers embedded in training corpora. In this regime, brands “win” 14 Table 7 Summary of hypothesis test results.                                      
+
+> HPrediction Threshold Observed Result
+> H1 Power-law concentration Gini >0.60 Gini = 0 .28 Not supported H2 Asymmetric displacement Ratio >3:1 Pooled 1 .3:1; mean 2 .4:1 Partially supported H3 Vacuums >20% >20% queries 8.0% Not supported H4 Emergent categories >15% >15% novel clusters 4.2% Not supported H5 Agreement <50% <50% agreement 41 .6% Supported
+
+simultaneously, and the strategic challenge is ensuring inclusion in the multi-brand response set. In the remaining four industries, displacement prevails (mean 2.9:1). E-commerce (4.3:1) and SaaS (3.1:1) show particularly strong displacement dynamics, where one brand’s appearance in a response correlates with another’s absence. These industries feature clear functional substitutes (Amazon vs Shopify for online selling; Semrush vs Ahrefs for SEO), and LLMs tend to recommend one over the other rather than list-ing both. In the four industries with direct functional substitutes, the models tended to name one substitute rather than both at the query level, a co-occurrence pattern consistent with query-level winner-take-most dynamics, even though aggregate con-centration remained moderate (H1). Because the metric is correlational, we describe an association rather than a created dynamic. 
+
+## 5.3 Why So Few Vacuums? 
+
+The low vacuum rate (8.0%) was unexpected. The prediction of 20%+ vacuums was based on the assumption that many niche or emerging categories would lack brand coverage in AI knowledge bases. Instead, in this sample the three models surfaced at least one studied brand for the large majority of queries, including relatively niche ones. This may reflect the breadth of brand coverage in LLM training data or the tendency of LLMs to “reach” for relevant brands even when the fit is imperfect. The vacuums that do exist are concentrated in healthcare technology (20% of queries in that industry) and in niche e-commerce categories. Healthcare vacuums likely reflect the specialised nature of the industry: queries about small-practice EHR or radiology AI require knowledge of niche vendors that may be underrepresented in general-purpose LLM training data. 
+
+## 5.4 Cross-Model Disagreement and Platform Strategy 
+
+The finding that all three models agreed on the top brand in only 41.6% of queries has practical implications for the platforms studied: a top position on one of these three models did not guarantee the same on the others, so single-platform monitoring may miss cross-platform differences. This platform dependence is plausibly related to differ-ences in training-data composition, retrieval-augmentation strategies (Perplexity uses real-time web retrieval, Gemini combines parametric knowledge with web grounding, 15 and GPT-5.2 relies primarily on parametric knowledge), and fine-tuning objectives, but our design does not isolate which of these factors is responsible. Mean pairwise agreement (64.4%) and high majority agreement (91.6%) indicate that models con-verge on a shared set of leading brands but frequently disagree on which specific brand ranks first. Consulting shows the lowest full agreement (22.0%), contrary to what might be expected for an industry with well-known global leaders. The low agreement reflects the competitive density at the top: McKinsey, BCG, Bain, and Deloitte all command strong parametric presence, and models differ on which firm to rank first for similar queries. E-commerce showed the highest agreement (73.8%), coinciding with Ama-zon’s consistent top ranking across all three models; we did not measure training-data footprint and so cannot identify it as the driver. 
+
+## 5.5 The EY Anomaly 
+
+EY’s anomalous dominance (mean COI = 0 .955 across all consulting queries, and frequent appearances in non-consulting industries) represents a measurement arte-fact rather than genuine recommendation dominance. The two-character alias “EY” matches as a substring in many common English words and phrases (e.g., “th ey ”, “mon ey ”, “k ey ”, “journ ey ”), leading to false-positive detections across the corpus. BERTopic analysis confirms this: EY appears as a top brand in clusters spanning all five industries, including e-commerce and healthcare technology topics where a consulting firm would not be expected. This limitation underscores the importance of alias dictionary design in brand mention extraction. Future studies should implement word-boundary-aware matching (e.g., \bEY \b) or embedding-based entity resolution to avoid substring contamination. All EY-related results should be interpreted with caution. 
+
+## 5.6 COI Scale Interpretation 
+
+The COI metric as implemented counts total mentions rather than binary brand pres-ence. Because a brand can be mentioned multiple times within a single response, COI values can exceed the theoretical maximum of 1.0 for individual query-brand pairs. While the RS (mean COI across queries) remains interpretable as a relative mea-sure of recommendation intensity, future applications of the metric should explicitly define whether mention counting is binary (capped at 1 per response) or frequency-based (allowing multiple counts per response), as this choice affects both the scale and interpretation of results. 
+
+## 5.7 Practical Implications 
+
+The metrics introduced in this study (COI, CVI, DS) provide a practical framework for brand competitive intelligence in AI-mediated markets. The Category Ownership Index enables brands to benchmark their recommendation presence against competi-tors on a per-query basis. The Competitive Vacuum Index identifies uncontested 16 categories where strategic content investment may yield high returns. The Displace-ment Score reveals which competitors are most likely to appear alongside or instead of a given brand, informing both defensive and offensive content strategies. These metrics have been implemented in the Rankfor.AI competitive-intelligence platform, which applies them to monitor AI recommendation outputs across industries and models. (Note: this is a deployment statement; readers should weigh it alongside the competing-interests disclosure.) 
+
+## 5.8 Limitations 
+
+Beyond the EY alias issue and COI scale considerations discussed above, several lim-itations should be noted. First, three models provide limited cross-platform coverage; the cross-model findings should be read as specific to GPT-5.2, Gemini 3 Flash, and Perplexity sonar-pro, and including additional models (Claude, Grok, Llama) would be needed to assess generalisability. Second, the study was conducted at a single point in time; longitudinal tracking would reveal how recommendation patterns evolve as models are updated. Third, the brand sample of 10 per industry necessarily excludes many relevant brands; the metrics should not be interpreted as representing total mar-ket coverage. Fourth, the query set was designed by the research team and may not fully represent the distribution of real-world user queries. 
+
+# 6 Conclusion 
+
+This study presents, to our knowledge, one of the first multi-industry empirical maps of brand category ownership in AI recommendations. Across 3,750 responses covering 50 brands, 5 industries, 250 queries, and 3 LLMs, the analysis yields several key findings that challenge prevailing assumptions about AI recommendation dynamics. In this sample, recommendation concentration was moderate. The mean Gini coef-ficient of 0.28 fell well below our hypothesised 0.60 power-law threshold, so the data do not support a winner-takes-all pattern for the industries and models studied. Instead, the three models studied distributed recommendations across multiple brands within most categories, with concentration varying substantially across the five industries sampled. Competitive vacuums were rare in this sample. Only 8.0% of the 250 queries lacked a dominant brand, suggesting that the three models studied maintained broad coverage of the sampled brands even for niche categories. The exception is health-care technology, where 20% of queries represent vacuums, particularly in specialised segments. Displacement dynamics are industry-dependent. Consulting exhibits strong co-recommendation (0.4:1 ratio), where LLMs enumerate well-known firms together. In contrast, e-commerce (4.3:1), SaaS (3.1:1), healthcare technology (2.2:1), and fin-tech (2.0:1) show clear displacement dominance, where one brand’s recommendation correlates with another’s absence. The unweighted mean across industries is 2.4:1, approaching the hypothesised 3:1 threshold. Cross-model agreement was low. The three models agreed on the top brand for only 41.6% of queries, indicating that, among these platforms, top-brand visibility 17 was platform-dependent and that monitoring more than one platform is advisable for competitive intelligence. The three metrics introduced (COI, CVI, DS) offer a reproducible measurement procedure for competitive intelligence in AI-mediated markets; their validity and sta-bility across models and time still need to be established, and the COI scale issue noted above should be resolved before reuse. Future work should extend the analy-sis to additional models and languages, implement longitudinal tracking, and, using designs that can support causal inference, investigate whether and how brand con-tent influences AI recommendation patterns. (The present study is correlational and cannot establish such mechanisms.) 
+
+## Competing interests 
+
+D. ˙Zatuchin is affiliated with Rankfor.AI, which develops AI brand intelligence tools. The research was conducted independently; the company had no influence on study design, methodology, analysis, or conclusions. 
+
+## Data availability 
+
+The dataset and analysis code are openly available on Zenodo at https://doi.org/10. 5281/zenodo.20788142 under a CC BY 4.0 license. The deposit includes the 3,750 raw model responses, the full query set, the brand alias dictionary, the computed met-rics (COI matrix, recommendation share, competitive vacuums, displacement scores), the response embeddings, and the analysis notebook that reproduces the results and figures. 
+
+# References 
+
+[1] Bender, E.M., Gebru, T., McMillan-Major, A., Shmitchell, S.: On the dangers of stochastic parrots: Can language models be too big? In: Proceedings of the 2021 ACM Conference on Fairness, Accountability, and Transparency (FAccT ’21), pp. 610–623. ACM, ??? (2021). https://doi.org/10.1145/3442188.3445922 [2] Davenport, T., Guha, A., Grewal, D., Bressgott, T.: How artificial intelligence will change the future of marketing. Journal of the Academy of Marketing Science 
+
+48 (1), 24–42 (2020) https://doi.org/10.1007/s11747-019-00696-0 [3] Brown, T., Mann, B., Ryder, N., Subbiah, M., Kaplan, J.D., Dhariwal, P., Nee-lakantan, A., Shyam, P., Sastry, G., Askell, A., et al. : Language models are few-shot learners. In: Advances in Neural Information Processing Systems, vol. 33, pp. 1877–1901 (2020) [4] ˙Zatuchin, D.: Gender Bias in Large Language Model Brand Recommendations: A Three-Study Analysis of Prompt-Induced Disparities Across Seasonal and Recip-ient Contexts. PREPRINT (Version 1) available at Research Square (2026). https://doi.org/10.21203/rs.3.rs-8883056/v1 18 [5] Dubois, D., Dawson, J., Jaiswal, A.: Forget what you know about search. optimize your brand for LLMs. Harvard Business Review (2025). https://hbr.org/2025/06/ forget-what-you-know-about-seo-heres-how-to-optimize-your-brand-for-llms [6] McCombs, M.E., Shaw, D.L.: The agenda-setting function of mass media. Public Opinion Quarterly 36 (2), 176–187 (1972) https://doi.org/10.1086/267990 [7] Fombrun, C., Shanley, M.: What’s in a name? reputation building and corporate strategy. Academy of Management Journal 33 (2), 233–258 (1990) https://doi. org/10.2307/256324 [8] Lopez-Lopez, D., Bara Iniesta, M.: The impact of conversational AI on con-sumer decision-making: A systematic review and cluster analysis. International Journal of Engineering Business Management 17 (2025) https://doi.org/10.1177/ 18479790251351889 [9] Petroni, F., Rockt¨ aschel, T., Riedel, S., Lewis, P., Bakhtin, A., Wu, Y., Miller, A.: Language models as knowledge bases? In: Proceedings of the 2019 Conference on Empirical Methods in Natural Language Processing and the 9th International Joint Conference on Natural Language Processing (EMNLP-IJCNLP), pp. 2463– 2473 (2019). https://doi.org/10.18653/v1/D19-1250 [10] Mallen, A., Asai, A., Zhong, V., Das, R., Hajishirzi, H., Khashabi, D.: When not to trust language models: Investigating effectiveness of parametric and non-parametric memories. In: Proceedings of the 61st Annual Meeting of the Association for Computational Linguistics (ACL), pp. 9802–9822 (2023). https: //doi.org/10.18653/v1/2023.acl-long.546 [11] Bolukbasi, T., Chang, K.-W., Zou, J.Y., Saligrama, V., Kalai, A.T.: Man is to computer programmer as woman is to homemaker? debiasing word embeddings. In: Advances in Neural Information Processing Systems, vol. 29, pp. 4349–4357 (2016) [12] Ekstrand, M.D., Burke, R., Diaz, F.: Fairness and discrimination in recommenda-tion and retrieval. In: Proceedings of the 13th ACM Conference on Recommender Systems (RecSys ’19), pp. 576–577. ACM, ??? (2019). https://doi.org/10.1145/ 3298689.3346964 [13] Rhoades, S.A.: The Herfindahl-Hirschman index. Federal Reserve Bulletin 79 (3), 188–189 (1993) [14] Clauset, A., Shalizi, C.R., Newman, M.E.J.: Power-law distributions in empirical data. SIAM Review 51 (4), 661–703 (2009) https://doi.org/10.1137/070710111 [15] Newman, M.E.J.: Power laws, Pareto distributions and Zipf’s law. Contemporary Physics 46 (5), 323–351 (2005) https://doi.org/10.1080/00107510500052444 19 [16] Autor, D., Dorn, D., Katz, L.F., Patterson, C., Van Reenen, J.: The fall of the labor share and the rise of superstar firms. Quarterly Journal of Economics 
+
+135 (2), 645–709 (2020) https://doi.org/10.1093/qje/qjz025 [17] Dodge, J., Sap, M., Marasovi´ c, A., Agnew, W., Ilharco, G., Groeneveld, D., Mitchell, M., Gardner, M.: Documenting large webtext corpora: A case study on the Colossal Clean Crawled Corpus. In: Proceedings of the 2021 Conference on Empirical Methods in Natural Language Processing (EMNLP), pp. 1286–1305 (2021). https://doi.org/10.18653/v1/2021.emnlp-main.98 [18] Kandpal, N., Deng, H., Roberts, A., Wallace, E., Raffel, C.: Large language mod-els struggle to learn long-tail knowledge. In: Proceedings of the 40th International Conference on Machine Learning (ICML), pp. 15696–15707. PMLR, ??? (2023) [19] Celma, `O.: Music Recommendation and Discovery: The Long Tail, Long Fail, and Long Play in the Digital Music Space. Springer, Berlin, Heidelberg (2010). https://doi.org/10.1007/978-3-642-13287-2 [20] Fleisher, C.S., Bensoussan, B.E.: Strategic and Competitive Analysis: Meth-ods and Techniques for Analyzing Business Competition. Pearson Prentice Hall, Upper Saddle River, NJ (2007) [21] Aggarwal, P., Murahari, V., Rajpurohit, T., Kalyan, A., Narasimhan, K., Deshpande, A.: GEO: Generative Engine Optimization (2023) [22] BrightEdge: AI search visits surging in 2025: But organic search remains the cornerstone of digital growth. Technical report, BrightEdge (2025). https://www. brightedge.com/resources/research-reports/ai-search-visits-in-surging-2025 [23] Ouyang, L., Wu, J., Jiang, X., Almeida, D., Wainwright, C., Mishkin, P., Zhang, C., Agarwal, S., Slama, K., Ray, A., et al. : Training language models to follow instructions with human feedback. In: Advances in Neural Information Processing Systems, vol. 35, pp. 27730–27744 (2022) [24] Grootendorst, M.: BERTopic: Neural Topic Modeling with a Class-Based TF-IDF Procedure (2022) [25] Chen, J., Xiao, S., Zhang, P., Luo, K., Lian, D., Liu, Z.: BGE M3-Embedding: Multi-Lingual, Multi-Functionality, Multi-Granularity Text Embed-dings Through Self-Knowledge Distillation (2024) [26] McInnes, L., Healy, J., Melville, J.: UMAP: Uniform Manifold Approximation and Projection for Dimension Reduction (2018) [27] Campello, R.J.G.B., Moulavi, D., Sander, J.: Density-based clustering based on hierarchical density estimates. In: Advances in Knowledge Discovery and Data Mining (PAKDD 2013). LNCS, vol. 7819, pp. 160–172. Springer, ??? (2013). 20 https://doi.org/10.1007/978-3-642-37456-2 14 21

@@ -1,0 +1,78 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2606.17698v1/fig-001.webp",
+      "caption": "Table 3: Main results on the 662 valid EComAgentBench samples.",
+      "page": 6,
+      "index": 1,
+      "width": 583,
+      "height": 236
+    },
+    {
+      "url": "assets/figures/arxiv/2606.17698v1/fig-002.webp",
+      "caption": "Table 9: Per-intent accuracy (%) for all seven models on the 662 valid samples. Sample counts: product search 83, knowledge reasoning 106, rating quality 80, feature combination 104, negative constraint 57, use-case scenario 104, coupon budget 33, review-driven 95.",
+      "page": 11,
+      "index": 2,
+      "width": 717,
+      "height": 194
+    },
+    {
+      "url": "assets/figures/arxiv/2606.17698v1/fig-003.webp",
+      "caption": "Table 8: Interaction behavior mined from trajectories: mean calls to key tools, the relative position of the first ask_user (0=start, 1=end), and the finish rate. Two styles emerge—deep-search/late-ask (Opus, Kimi, MiniMax) versus shallow-search/early-ask (GPT family).",
+      "page": 10,
+      "index": 3,
+      "width": 944,
+      "height": 425
+    },
+    {
+      "url": "assets/figures/arxiv/2606.17698v1/fig-004.webp",
+      "caption": "Table 6: Core statistics of the current EComAgentBench benchmark, computed from the current benchmark release.",
+      "page": 10,
+      "index": 4,
+      "width": 462,
+      "height": 340
+    },
+    {
+      "url": "assets/figures/arxiv/2606.17698v1/fig-005.webp",
+      "caption": "Table 1: EComAgentBench versus recent e-commerce shopping benchmarks, grouped by its three goals: explaining failures (RQ1), realistic hidden intent (RQ2), and a reliable, automated build (RQ3). EComAgentBench is the only one that meets all three; each prior benchmark already misses at least one capability in the reliability group (ShoppingBench has no task validation, ShopSimulator is hand-annotated, DeepPlanning uses synthetic products).",
+      "page": 3,
+      "index": 5,
+      "width": 790,
+      "height": 408
+    },
+    {
+      "url": "assets/figures/arxiv/2606.17698v1/fig-006.webp",
+      "caption": "Table 10: Abridged correct trajectory for a representative review-driven sample under gpt-5.4.",
+      "page": 13,
+      "index": 6,
+      "width": 950,
+      "height": 786
+    },
+    {
+      "url": "assets/figures/arxiv/2606.17698v1/fig-007.webp",
+      "caption": "Figure 1: EComAgentBench on one task (wireless charger). Top: (a) the full requirement is split across three sources: a visible query with implicit cues, a hidden persona behind get_user_profile, and hidden clarification behind ask_user; (b) the agent interacts with the shopper and a sandboxed shop to recover them; (c) the recommended product is graded against typed rubrics tagged by source (a case is correct on exact product match or full rubric satisfaction). Bottom: an abridged trajectory of the recovery. Source colors (query in blue, persona in orange, clarification in green) carry across panels.",
+      "page": 4,
+      "index": 7,
+      "width": 950,
+      "height": 527
+    },
+    {
+      "url": "assets/figures/arxiv/2606.17698v1/fig-008.webp",
+      "caption": "Figure 4: Interaction style versus accuracy. Early-ask models (GPT family) cluster on the left; late-ask, deepsearch models (Opus, Kimi, MiniMax) on the right. Marker size encodes search depth. No single style dominates—the best accuracy (Opus) pairs deep search with late clarification.",
+      "page": 9,
+      "index": 8,
+      "width": 432,
+      "height": 318
+    },
+    {
+      "url": "assets/figures/arxiv/2606.17698v1/fig-009.webp",
+      "caption": "Figure 3: (a) Hidden sources (persona, clarification) stay harder than query-visible constraints. (b) The number of implicitly stated query requirements is a stronger difficulty driver than raw rubric count.",
+      "page": 9,
+      "index": 9,
+      "width": 451,
+      "height": 634
+    }
+  ]
+}

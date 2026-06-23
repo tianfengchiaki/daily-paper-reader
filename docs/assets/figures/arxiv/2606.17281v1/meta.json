@@ -1,0 +1,46 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2606.17281v1/fig-001.webp",
+      "caption": "Table 3 | Code-switching (with English) Results. LAVR (%) and WER (CER for Korean, % in parenthesis) by language, model, and language hint type.",
+      "page": 7,
+      "index": 1,
+      "width": 495,
+      "height": 342
+    },
+    {
+      "url": "assets/figures/arxiv/2606.17281v1/fig-002.webp",
+      "caption": "Table 2 | Monolingual Results. LAVR (%) and WER (CER for Korean, % in parenthesis) by language, model, and language hint type.",
+      "page": 7,
+      "index": 2,
+      "width": 495,
+      "height": 420
+    },
+    {
+      "url": "assets/figures/arxiv/2606.17281v1/fig-003.webp",
+      "caption": "Table 11 | Code-switching (with English) Results. LAVR (%) and WER (CER for Japanese, % in parenthesis) by language, model, and language hint type.",
+      "page": 12,
+      "index": 3,
+      "width": 495,
+      "height": 429
+    },
+    {
+      "url": "assets/figures/arxiv/2606.17281v1/fig-004.webp",
+      "caption": "Table 10 | Monolingual Results. LAVR (%) and WER (CER for Japanese, % in parenthesis) by language, model, and language hint type.",
+      "page": 12,
+      "index": 4,
+      "width": 491,
+      "height": 417
+    },
+    {
+      "url": "assets/figures/arxiv/2606.17281v1/fig-005.webp",
+      "caption": "Table 4 | Statistics and representative samples for the multilingual evaluation dataset. Hindi transcripts are transliterated to English from the original Hindi script in the dataset.",
+      "page": 11,
+      "index": 5,
+      "width": 1010,
+      "height": 913
+    }
+  ]
+}

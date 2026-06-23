@@ -1,0 +1,876 @@
+Title: Denoising Implicit Feedback for Cold-start Recommendation
+
+URL Source: https://arxiv.org/pdf/2606.19658v1
+
+Published Time: Fri, 19 Jun 2026 00:18:26 GMT
+
+Number of Pages: 11
+
+Markdown Content:
+# Denoising Implicit Feedback for Cold-start Recommendation 
+
+# Gaode Chen ∗
+
+Kuaishou Technology Beijing, China chengaode19@gmail.com 
+
+# Shicheng Wang ∗
+
+Kuaishou Technology Beijing, China wangshicheng@kuaishou.com 
+
+# Shikun Li †
+
+Hong Kong Baptist University Hong Kong, China shikunli.ml@gmail.com 
+
+# Rui Huang 
+
+Kuaishou Technology Beijing, China huangrui06@kuaishou.com 
+
+# Xinghua Zhang 
+
+Independent Researcher Beijing, China zxh.zhangxinghua@gmail.com 
+
+# Yunze Luo 
+
+Peking University Beijing, China lyztangent@pku.edu.cn 
+
+# Shipeng Li 
+
+Nanjing University Suzhou, China shipengli.nju@gmail.com 
+
+# Shiming Ge 
+
+Institute of Information Engineering, Chinese Academy of Sciences Beijing, China geshiming@iie.ac.cn 
+
+# Ruina Sun 
+
+Kuaishou Technology Beijing, China sunruina@kuaishou.com 
+
+# Yinjie Jiang 
+
+Kuaishou Technology Beijing, China jiangyinjie@kuaishou.com 
+
+# Jun Zhang 
+
+Kuaishou Technology Beijing, China zhangjun08@kuaishou.com 
+
+## Abstract 
+
+Implicit feedback is widely used in recommender systems due to its accessibility and generality, yet it usually presents noisy samples (e.g., clickbait, position bias). Meanwhile, recommenders inevitably face the item cold-start problem due to the continuous influx of new items. We identify that cold items are more prone to noisy samples due to the aforementioned factors, and researchers often overlook the significance of denoising implicit feedback for cold items. Pre-vious denoising studies usually identify noisy samples based on heuristic patterns, such as higher loss values, and mitigate noise through sample selection or re-weighting. However, these methods have limited adaptability and are ineffective in cold-start scenarios. To achieve denoising implicit feedback for cold-start recommen-dation, we propose a model-agnostic denoising method called DIF. First, user preferences for content remain stable, which allows us to infer pseudo-labels indicating whether a user is interested in a cold item through content-similar warm items. We also elaborate on how to deploy industrial services to retrieve content-similar warm items for the cold item and obtain their collaborative representations for pseudo-labeling. Furthermore, to improve pseudo-label accuracy, we model the confidence of pseudo-labels based on the content similarity between the cold item and warm items, and then aggre-gate multiple pseudo-labels for each sample. Finally, we explicitly  
+
+> ∗Equal contributions.
+> †Corresponding author.
+> This work is licensed under a Creative Commons Attribution 4.0 International License.
+> KDD ’26, Jeju Island, Republic of Korea
+> ©2026 Copyright held by the owner/author(s). ACM ISBN 979-8-4007-2259-2/2026/08 https://doi.org/10.1145/3770855.3818367
+
+estimate the uncertainty of the noisy sample label by considering its relative entropy and the cold-start status of the item, which adaptively guides the role of pseudo-labels to correct the noisy labels at the sample level. DIF’s superiority is supported by both theoretical justification and extensive experiments on real-world datasets. The method has been deployed on a billion-user scale short video application Kuaishou and has significantly improved various commercial metrics within cold-start scenarios. 
+
+## CCS Concepts 
+
+• Information systems → Recommender systems. 
+
+## Keywords 
+
+Recommender System, Noisy Implicit Feedback, Cold-start 
+
+ACM Reference Format: 
+
+Gaode Chen, Shicheng Wang, Shikun Li, Rui Huang, Xinghua Zhang, Yunze Luo, Shipeng Li, Shiming Ge, Ruina Sun, Yinjie Jiang, and Jun Zhang. 2026. Denoising Implicit Feedback for Cold-start Recommendation. In Proceedings of the 32nd ACM SIGKDD Conference on Knowledge Discovery and Data Mining V.2 (KDD ’26), August 09–13, 2026, Jeju Island, Republic of Korea. ACM, New York, NY, USA, 11 pages. https://doi.org/10.1145/3770855.3818367 
+
+## 1 Introduction 
+
+In the era of information explosion, recommender systems have been playing a critical role for mitigating information overload in various online applications such as short video [ 4 , 18 ] and E-commerce [ 33 , 54 ]. As the most successful technique for personal-ized recommender systems, collaborative filtering aims to predict items of interest to a specific user based on observed user–item interactions [ 9 , 49 ]. While explicit user feedback (e.g., ratings) is the best fuel for recommender systems, its acquisition is often impeded by the need for active user participation. Hence, implicit feedback  
+
+> arXiv:2606.19658v1 [cs.AI] 17 Jun 2026 KDD ’26, August 09–13, 2026, Jeju Island, Republic of Korea Gaode Chen et al.
+
+(e.g., view and click) generated during user browsing is exploited as a viable substitute due to its large volume and availability. However, the item cold-start problem [ 6, 55 ] may occur when the recommendation model faces a large volume of new items published daily. For example, tens of millions of new videos are up-loaded every day on Kuaishou, one of the most popular short-video streaming platforms in China with hundreds of millions of active users. A small portion of popular items tend to obtain more accurate recommendations and more impressions, which creates a strong feedback loop and the Matthew effect, namely “rich gets richer” [ 39 ]. Concretely, for a large amount of new emerging items with limited interactions, their embeddings are insufficiently trained, resulting in new items that may miss the opportunity to be recommended or be recommended to inappropriate users. Thus, the cold-start problem has become a crucial obstacle for online recommendation. As is well known, industrial recommendation systems inevitably contain noisy implicit feedback [ 16 , 53 ]. However, in this work, we highlight an overlooked fact that cold-start items are more prone to having noisy implicit feedback. We demonstrate various factors that generate noisy feedback on the Kuaishou platform to support our claim. On the one hand, users may be influenced by the clickbait issue, where curiosity about the cover or title of a short video leads to clicks or views, resulting in false positive samples . Benefiting from the increasingly mature multi-modal content understanding in the industry, we find that cold-start videos in the top 10% scoring range of clickbait metrics exceed those in the bottom 10% scoring range by 37.7%. On the other hand, users might overlook certain items due to position bias or scroll too fast during browsing fatigue, resulting in a lack of exposure to items and leading to false negative samples . We analyze 1 million user sessions and observe that the proportion of cold-start videos placed in the tail three positions is 28.3% higher than their proportion in the top three positions. Hence, the implicit feedback on these short videos may not always indicate the actual satisfaction of users. In other words, cold-start videos are more likely to exhibit label noise due to these factors. However, most existing work fails to recognize the importance of denoising implicit feedback for cold-start items. Industrial recom-mendation systems primarily focus on target user exploration for items in the cold-start phase, as these items lack well-trained repre-sentations. This often results in fewer positive feedback samples and more negative feedback samples. Positive feedback serves as a critical signal for optimizing the representation of cold-start items in recommendation models. It guides these models to subsequently recommend these cold-start items to more suitable users, helping them accumulate more positive feedback and exposure. Regardless of whether the false positive or false negative samples, it misleads recommendation models and wastes trial-and-error costs, as expo-sure opportunities are both limited and valuable. Such scenarios risk creating a feedback loop of inaccurate learning, which exacer-bates the misrepresentation of cold-start items. This not only leads to a decline in user experience but also undermines the motivation of producers, potentially causing a missed opportunity for an item to become a breakout success. As such, denoising implicit feedback for cold-start recommendation becomes an imperative task. Considering the widespread use of implicit feedback and its sig-nificant impact on recommendation models, recent studies have noticed the importance of denoising implicit feedback. Existing ef-forts on tackling this problem can be roughly divided into two cate-gories: sample selection methods and sample re-weighting methods. Sample selection methods [ 16 , 40 ] focus on improving model perfor-mance by selecting clean samples and discarding noisy ones during training. In contrast, sample re-weighting methods [ 23 , 40 ] aim to assign lower weights to interactions identified as noisy, thereby reducing their influence on the model’s learning process. The suc-cess of these denoising techniques largely depends on the accuracy of distinguishing between clean and noisy samples. Consequently, various data patterns have been explored as noisy signals. For ex-ample, loss value is one of the most commonly used signals, as noisy interactions tend to exhibit higher loss values compared to clean ones [ 22 , 40 ]. Additionally, other metrics, such as predicted scores [ 41 ] and gradients [ 42 ] have also been investigated for identi-fying noisy samples. However, cold-start items typically inherently exhibit larger loss values, smaller predicted scores, and higher gra-dients in the recommendation model, making these denoising meth-ods ineffective in cold-start scenarios. Moreover, these denoising methods face challenges in integrating effectively with industrial recommendation models and applying them to online streaming training scenarios. As a result, existing denoising methods cannot be directly applied to industrial cold-start recommendation tasks. To achieve the Denoising Implicit Feedback for the cold-start recommendation, we propose a model-agnostic method DIF . De-signing such a method still faces many unknowns: (i) How to design a reasonable pseudo-labeling strategy for cold-start items? User in-terests in the content are generally stable. Thus, whether a user interacts with a cold-start item can be reasonably inferred through the warm items that are content-similar to the cold item. The inter-est representation of user and the collaborative representations of warm items are well-trained and can provide meaningful pseudo-labels. Moreover, we theoretically prove that even if content sim-ilarity between items cannot be fully guaranteed, pseudo-labels can still approximate the true label as long as the number of warm items is sufficient. (ii) How to generate pseudo-labels for cold-start items in online streaming training? Retrieving content-similar warm items and their collaborative representations in industrial systems remains challenging due to the need for comprehensive candidate sets and real-time updates. We detail our practice experiences in applying our denoising method to online recommendation models. (iii) How to further improve the accuracy of pseudo-labels? We not only consider the top-𝑘 warm items most similar to the cold-start item to generate multiple pseudo-labels for aggregation, but also ex-plicitly model the confidence of each pseudo-label based on content similarity during the pseudo-label aggregation process. (iv) How to correct the noisy sample label based on the final pseudo-label? We model the uncertainty of the sample label via relative entropy and cold-start status to adaptively guide the role of the pseudo-label during the label correction process. To summarize, the key contributions are as follows: 
+
+• We highlight that cold-start items are especially vulnerable to noisy implicit feedback, underscoring the need for denoising. 
+
+• We propose a theoretically grounded method using multi-modal semantic similarity to generate pseudo-labels for cold items, along with practical deployment insights. Denoising Implicit Feedback for Cold-start Recommendation KDD ’26, August 09–13, 2026, Jeju Island, Republic of Korea 
+
+• We incorporate confidence modeling in the pseudo-label aggre-gation process for higher accuracy, and explicitly measure label uncertainty during correction to adaptively control sample-level pseudo-label impact. 
+
+• Extensive offline experiments on three real-world datasets vali-date the effectiveness of DIF and its generalizability across dif-ferent tasks. DIF has been deployed on a billion-user scale short video application Kuaishou, yielding significant improvement on a series of commercial metrics in cold-start scenarios. 
+
+## 2 Methodology 2.1 Preliminary 
+
+We give a formal description of the denoising implicit feedback for the cold-start recommendation task. Let 𝑢 ∈ U and 𝑖 ∈ I 
+
+denote users and items, with the observed implicit feedback matrix 
+
+˜Y ∈ R| U | × | I | . And ˜𝑦 𝑢𝑖 = 1 means that the user interacted with the item, and ˜𝑦 𝑢𝑖 = 0 means no interaction. In previous work, the default assumption is that whenever ˜𝑦 𝑢𝑖 = 1, it means that the user is interested in the item. However, user implicit feedback may contain noise due to various factors (i.e., clickbait or position bias), resulting in noisy sample labels ( false positive or false negative ). Thus, our goal is to learn the noise-free representations of users and items from ˜Y, specifically for cold-start items. In our application, a new or cold-start item is defined as a short video released in less than 24 hours (inclusive) and viewed less than 50,000 times. Industrial recommenders usually follow a multi-stage cascade architecture [ 18 , 51 ] (such as retrieval [45 ], pre-ranking and rank-ing [ 54 ]) to trade off accuracy and efficiency. In theory, our method works for all the stages and is model-agnostic. In practice, we imple-ment and deploy it based on the dual-tower model in the retrieval stage. Dual-tower is the mainstream structure used by the industrial recommendation system in the retrieval stage. Retrieval methods use a user tower and an item tower to transform user-side and item-side features into embeddings e𝑢 , e𝑖 respectively. The similarity between the user embedding e𝑢 and the item embedding e𝑖 is used to capture the relevance of user 𝑢 to item 𝑖 denoted by ˆ𝑦 𝑢𝑖 . During prediction, item embeddings {e𝑖 }𝑖 ∈ I are calculated beforehand in an offline or near-line system and indexed by the approximate near-est neighbor (ANN) search system, such as FAISS [ 27 ]. Thus, only the user tower needs to be forwarded in real-time and the ANN system can efficiently retrieve the nearest items in sub-linear time. 
+
+## 2.2 Overview 
+
+In Figure 1, we present an overview of the proposed DIF integrated with a base recommendation model. First, existing denoising meth-ods in general cases typically perform pseudo-labeling based on the predictions from model [ 1 , 37 ]. However, due to representation issues, the predictions for cold-start items are often inaccurate. In contrast, the collaborative representations of some warm items are well-trained. Thus, we propose a novel denoising strategy for cold-start recommendation: generating pseudo-labels for the cold item based on the collaborative representations of content-similar warm items and user interest representation. This involves estab-lishing services for retrieving content-similar warm items for the cold item and obtaining real-time collaborative representations of warm items. We also provide detailed practical experience. Second, User Features 
+
+User 
+
+Encoder 
+
+> Item Features
+
+Item 
+
+Encoder 
+
+!𝑦 !" 
+
+#𝑦 !" 𝑦 !" 
+
+> #
+
+𝑦 !" 
+
+> $
+
+… 
+
+> Uncertainty
+> Confidence
+> Pseudo -labeling Sample Label
+> Pseudo Label
+> Corrected Label
+> Predicted Value
+> 𝑦 !"
+> #
+> &𝑦 !"
+> 𝑦 !"
+> $
+> '𝑦 !" Model Optimization
+
+Figure 1: The overview of our proposed DIF integrated with a dual-tower model. 
+
+by retrieving the top-𝑘 content-similar warm items for a cold item, we obtain 𝑘 pseudo-labels. We further model the confidence of pseudo-labels based on the content similarity, and then aggregate multiple pseudo-labels for each sample to improve accuracy. Fi-nally, we estimate sample label uncertainty via relative entropy and cold-start status to adaptively perform sample-level label correction based on the final pseudo-label. 
+
+## 2.3 Pseudo-labeling 
+
+2.3.1 Practical Experience. As shown in Figure 2, We address two key practical questions in our industrial environment: how to re-trieve content-similar warm items for the cold item in sample stream and how to obtain collaborative representations of these warm items for subsequent pseudo-labeling. First, for each newly uploaded item 𝑖 (short video), we can obtain its multi-modal content representation through the Multi-modal Inference Service and send it to the message queue. We have an Embedding Service that reads the content representation of new items from the message queue at all times and stores it. For each item in the data stream, we can request the Embedding Service to query the content representation of the item ( step 1 ○). Moreover, we build an item-to-item ANN service, where left items 
+
+are our queries and right items are the warm items bucket we have constructed as candidates for retrieval. To ensure sufficient coverage of warm item candidates, we utilize a Real-time Runner Service to continuously retrieve eligible warm items (e.g., videos with more than 50,000 views) from the Index, and request the Embedding Service in the previous step to obtain content representations of warm items, which are sent together to the message queue for continuous updating of ANN service candidates. For the item 𝑖 and its content representations in the data stream, we feed them as input to request the ANN service ( step 2○), which quickly retrieves the top-𝑘 IDs of warm items with content similar to item 𝑖 , along with their similarity scores (i.e., 𝑆 𝑖 = 𝑠 1 
+
+> 𝑖
+
+, 𝑠 2 
+
+> 𝑖
+
+, ..., 𝑠 𝑘 𝑖 
+
+) relative to it. Furthermore, the online recommendation model actively sends the collaborative representations of users and items to a message KDD ’26, August 09–13, 2026, Jeju Island, Republic of Korea Gaode Chen et al. Sample Stream (Online training)    
+
+> New Item
+> Kafka
+> Multi -modal Infer Service
+> message queue
+> Embedding
+> Server
+> Index
+> Real -time
+> Runner Service
+> message queue
+> ANN Service Embedding
+> Server
+> message queue
+> Online
+> Recommendation
+> Model
+> Item IDs
+> Item Multi -modal
+> Embeddings
+> Similar warm -
+> item IDs
+> Item IDs
+> Similar warm -
+> item Embeddings
+> Item IDs
+
+① ① ② ② ② ③ ③ ④ ④
+
+> request
+> response
+> feed
+
+①
+
+②
+
+③
+
+④
+
+> first step
+> second step
+> third step
+> fourth step
+
+Figure 2: The industrial practice for pseudo-labeling in online streaming training. 
+
+queue. We establish an Embedding Service to store the collaborative representations of all items. Since an item (rather than a sample) may appear multiple times in the sample stream, the online recom-mendation model continuously updates its representation and sends it to the message queue to update the embedding storage in real time. We feed the warm items IDs to query this Embedding Service, obtaining their collaborative representations E𝑖 = e1 
+
+> 𝑖
+
+, e2 
+
+> 𝑖
+
+, ..., e𝑘 𝑖 
+
+ for subsequent pseudo-label generation ( step 3 ○). At this point, we obtain the collaborative representations E𝑖 of the top-𝑘 warm items with content similar to each item 𝑖 in the data stream, which can be used for pseudo-labeling in the online recommendation model ( step 4 ○). 
+
+2.3.2 Generation of Pseudo Labels. The user interest and the col-laborative representations of warm items can be considered well-trained. Therefore, predicting interactions between the user and warm items provides valuable reference for predicting whether the user will interact with the content-similar cold-start item. For a sample (𝑢, 𝑖, ˜𝑦 𝑢𝑖 ), a dual-tower model typically predicts the interac-tion probability between user 𝑢 and item 𝑖 by computing the inner product between e𝑢 and e𝑖 . Thus, to ensure homogeneity between pseudo-labels and the sample label, we also take the inner prod-uct to generate pseudo-labels. For 𝑘 warm items that have similar content to item 𝑖 in a sample, we obtain 𝑘 pseudo-labels as follows: 
+
+h
+
+𝑦 𝑝 𝑢𝑖, 1, 𝑦 𝑝 𝑢𝑖, 2, ..., 𝑦 𝑝 𝑢𝑖,𝑘 
+
+i
+
+= e𝑢 · e1 
+
+> 𝑖
+
+, e2 
+
+> 𝑖
+
+, ..., e𝑘 𝑖 
+
+ , (1) where · denotes inner product. 
+
+## 2.4 Confidence Modeling 
+
+Although we later theoretically show that our method can approxi-mate the true labels without strong similarity assumptions between cold and warm items, different similarity levels should still reflect different degrees of guidance strength. Thus, it is intuitive to model the confidence of each pseudo-label based on the similarity between the target item and warm items. As shown below, after obtaining normalized confidence scores 𝑐 𝑖 , we compute a weighted sum to derive a more accurate pseudo-label 𝑦 𝑝 𝑢𝑖 :
+
+𝑐 𝑗 𝑖 =
+
+exp 
+
+
+
+𝑠 𝑗 𝑖 /𝜏 
+
+Í𝑘 𝑧 =1 exp  𝑠 𝑧 𝑖 /𝜏  , 𝑗 = 1, 2, ..., 𝑘 , (2) 
+
+𝑦 𝑝 𝑢𝑖 =
+
+> 𝑘
+
+∑︁ 
+
+> 𝑗 =1
+
+𝑐 𝑗 𝑖 𝑦 𝑝 𝑢𝑖,𝑗 . (3) Here, 𝜏 is a temperature coefficient. Benefiting from the existing advanced multi-modal content understanding capabilities, online observations indicate that similarity scores are generally above 0.9, and 𝜏 serves to enhance differentiation. 
+
+## 2.5 Uncertainty Estimation 
+
+To effectively perform label correction, we estimate the uncertainty of the noisy sample label ˜𝑦 𝑢𝑖 from two perspectives to adaptively guide the role of pseudo-labels 𝑦 𝑝 𝑢𝑖 at the sample level. First, we consider the relative entropy [ 12 ] of the sample label with the predicted value (e.g., ˆ𝑦 𝑢𝑖 = [e𝑢 ]⊤ · e𝑖 ) as a crucial indicator of the uncertainty, termed as 𝑟 𝑢𝑖 . The higher the relative entropy, the more likely the sample is mislabeled. Its calculation is as below: 
+
+𝑟 𝑢𝑖 = − ˜𝑦 𝑢𝑖 log ˆ 𝑦 𝑢𝑖 − ( 1 − ˜𝑦 𝑢𝑖 ) log (1 − ˆ𝑦 𝑢𝑖 ) . (4) Second, as previously mentioned, cold-start items are more prone to generating label noise due to various factors. Thus, we explicitly model the cold-start state 𝛾 𝑖 of an item 𝑖 as another indicator for the uncertainty estimation: 
+
+𝛾 𝑖 = 𝑒 −𝛼𝑔 𝑖 , (5) where 𝑒 denotes the natural constant, 𝑔 𝑖 represents the interaction count of the item 𝑖 , and 𝛼 controls the threshold for defining the Denoising Implicit Feedback for Cold-start Recommendation KDD ’26, August 09–13, 2026, Jeju Island, Republic of Korea 
+
+cold-start state. A higher interaction count drives 𝛾 𝑖 closer to 0, while fewer interactions push it closer to 1. This design effectively prevents any adverse impact on the training of warm items. Then, by integrating relative entropy 𝑟 𝑢𝑖 and cold-start status 𝛾 𝑖 ,we assign higher uncertainty to cold-start items with significant prediction discrepancies. The final uncertainty estimation 𝑡 𝑢𝑖 is formulated as shown below and constrained to be less than 1. 
+
+𝑡 𝑢𝑖 = 𝑟 𝑢𝑖 𝛾 𝑖 . (6) 
+
+## 2.6 Model Optimization 
+
+To alleviate the impact of label noise, we adaptively correct the sample label based on its uncertainty at the sample level. Specifically, taking the weight of the original sample label as 1, we normalize the uncertainty by scaling it within the range by Eq. (7), and then we obtain the corrected soft label 𝑦 𝑐 𝑢𝑖 for each sample by Eq. (8). 
+
+𝑤 = 𝑡 𝑢𝑖 
+
+𝑡 𝑢𝑖 + 1 , (7) 
+
+𝑦 𝑐 𝑢𝑖 = 𝑤𝑦 𝑝 𝑢𝑖 + ( 1 − 𝑤 ) ˜𝑦 𝑢𝑖 . (8) Finally, we utilize the widely-used cross-entropy loss for training: 
+
+L = −∑︁  
+
+> (𝑢,𝑖 ) ∈ D train
+
+ 𝑦 𝑐 𝑢𝑖 log ˆ 𝑦 𝑢𝑖 +  1 − 𝑦 𝑐 𝑢𝑖 
+
+ log (1 − ˆ𝑦 𝑢𝑖 ) . (9) 
+
+## 2.7 Deployment 
+
+Our proposed DIF is trained on a large-scale distributed nearline learning system of Kuaishou. Every day, hundreds of millions of users visit Kuaishou, watch and interact with short videos, and yield tens of billions watch and interaction logs per day. On the one hand, each log is collected in real-time, preprocessed by the Kafka stream processing platform, and produces the sample stream. In Section 2.3, we provide a detailed practice experience of how to obtain the collaborative representations of content-similar warm items for each item in the sample stream. As training data, including the aforementioned features, is received by the downstream rec-ommendation model through the pipeline, this near-line training system incrementally updates the model parameters using the lat-est knowledge from user-video interactions. In streaming training, our approach effectively minimizes the impact on the training of warm items by leveraging uncertainty estimation while focusing on assisting cold-start items in correcting noisy labels during the early stages, thereby enabling higher growth potential. 
+
+## 2.8 Theoretical Justification 
+
+In this section, we present the theoretical analyses to justify the validity of our denoising approach. Let 𝑒 𝑖 ∈ E ⊂ R𝑑 be the normalized multi-modal embedding of a cold-start item 𝑖 . Let N𝑘 (𝑖 ) be the set of 𝑘 nearest warm items retrieved based on context similarity. Let 𝜂 ∗ 
+
+> 𝑢𝑖
+
+= 𝜂 ∗ 
+
+> 𝑢
+
+(e𝑖 ) be the ground-truth interaction probability between user 𝑢 and item 𝑖 . Let 𝑦 𝑝 𝑢𝑖,𝑗 be the pseudo label between user 𝑢 and warm neighbor item 𝑗 ∈ N 𝑘 (𝑖 ).Let 𝑦 𝑝 𝑢𝑖 be the confidence-weighed pseudo label between user 𝑢 and cold-start item 𝑖 .
+
+Assumption 2.1. The observed cold-start item label ˜𝑦 𝑢𝑖 is a biased estimator of its true interaction probability 𝜂 ∗ 
+
+> 𝑢𝑖
+
+, i.e., ˜𝑦 𝑢𝑖 = 𝜂 ∗ 
+
+> 𝑢𝑖
+
++ 𝜖 𝑢𝑖 ,where E[𝜖 𝑢𝑖 ] = 𝑏 𝑢𝑖 and Var [𝜖 𝑢𝑖 ] = 𝜎 2 
+
+> 𝑢𝑖
+
+.
+
+Remark 1. Assumption 2.1 means that due to various factors, such as clickbait issues and position bias, the observed cold-start item label has undeniable systematic bias noise 𝑏 𝑢𝑖 and relatively large noise variance 𝜎 2 
+
+> 𝑢𝑖
+
+.
+
+Assumption 2.2. The pseudo warm item label 𝑦 𝑝 𝑢𝑖,𝑗 is an unbiased estimator of its true interaction probability 𝜂 ∗ 
+
+> 𝑢 𝑗
+
+, i.e., 𝑦 𝑝 𝑢𝑖,𝑗 = 𝜂 ∗ 
+
+> 𝑢 𝑗
+
++ 𝜖 ′ 
+
+> 𝑢𝑖,𝑗
+
+,where E[𝜖 ′ 
+
+> 𝑢𝑖,𝑗
+
+] = 0 and Var [𝜖 ′ 
+
+> 𝑢𝑖,𝑗
+
+] = 𝜎 ′2 
+
+> 𝑢
+
+.
+
+Remark 2. Since the user interest representation and collab-orative representations of warm items can be considered well-trained with a sufficiently large sample, Assumption 2.2 posits that the pseudo warm item label has negligible approximation error (E[𝜖 ′ 
+
+> 𝑢𝑖,𝑗
+
+]) and small variance 𝜎 ′2 
+
+> 𝑢
+
+.
+
+Assumption 2.3. The context representation space E is a compact subset of R𝑑 , and the probability density function 𝑝 (e) is bounded away from zero on E, i.e., there exists a constant 𝑝 inf > 0 such that 
+
+𝑝 (e) ≥ 𝑝 inf for all e ∈ E .
+
+Assumption 2.4. The true interaction probability function 𝜂 ∗ 
+
+> 𝑢
+
+(e)
+
+is 𝛼 -Hölder continuous on the content representations space, i.e., there exists 0 < 𝛼 < 1 and 𝐿 > 0 such that |𝜂 ∗ 
+
+> 𝑢
+
+(e𝑖 ) − 𝜂 ∗ 
+
+> 𝑢
+
+(e𝑗 )| ≤ 𝐿 ∥e𝑖 − e𝑗 ∥𝛼 ,for any e𝑖 , e𝑗 ∈ E .
+
+Remark 3. Assumption 2.3 ensures valid nearest neighbors exist within a small radius around any item when having a sufficiently large sample, and Assumption 2.4 makes a smoothness assumption on 𝜂 ∗ 
+
+> 𝑢
+
+(e). Both of them are standard conditions for the analysis under k-NN classification [2, 15, 19]. 
+
+Theorem 2.1. Suppose Assumptions 2.2, 2.3, and 2.4 hold. For any cold-start item 𝑖 ∈ I , user 𝑢 ∈ U , 𝛿 ∈ ( 0, 1), we have 
+
+|𝑦 𝑝 𝑢𝑖 − 𝜂 ∗ 
+
+> 𝑢𝑖
+
+| ≤ O 𝐿 
+
+ 𝑘 𝑁 𝑤𝑎𝑟𝑚 
+
+ 𝛼 𝑑 
+
+!
+
++ O 
+
+ 𝜎 ′
+
+> 𝑢
+
+√𝑘 
+
+
+
+,
+
+where 𝑘 is the number of context-similar neighbors, 𝑁 𝑤𝑎𝑟𝑚 is the number of warm items, 𝑑 is the dimension of the context space E.
+
+Proof. Under Assumption 2.2, we first decompose the error as follows: 
+
+|𝑦 𝑝 𝑢𝑖 − 𝜂 ∗ 
+
+> 𝑢𝑖
+
+| =∑︁    
+
+> 𝑗 ∈ N 𝑘 (𝑖 )
+
+𝑐 𝑗 𝑖 ˜𝑦 𝑢𝑖,𝑗 − 𝜂 ∗ 
+
+> 𝑢𝑖
+
+=∑︁    
+
+> 𝑗 ∈ N 𝑘 (𝑖 )
+
+𝑐 𝑗 𝑖 ( ˜𝑦 𝑢𝑖,𝑗 − 𝜂 ∗ 
+
+> 𝑢𝑖
+
+)
+
+=∑︁    
+
+> 𝑗 ∈ N 𝑘 (𝑖 )
+
+𝑐 𝑗 𝑖 (𝜂 ∗ 
+
+> 𝑢 𝑗
+
++ 𝜖 ′ 
+
+> 𝑢𝑖,𝑗
+
+− 𝜂 ∗ 
+
+> 𝑢𝑖
+
+)
+
+≤∑︁    
+
+> 𝑗 ∈ N 𝑘 (𝑖 )
+
+𝑐 𝑗 𝑖 (𝜂 ∗ 
+
+> 𝑢 𝑗
+
+− 𝜂 ∗ 
+
+> 𝑢𝑖
+
+) +∑︁    
+
+> 𝑗 ∈ N 𝑘 (𝑖 )
+
+𝑐 𝑗 𝑖 𝜖 ′ 
+
+> 𝑢𝑖,𝑗
+
+.
+
+(10) For the first term Í𝑗 ∈ N 𝑘 (𝑖 ) 𝑐 𝑗 𝑖 (𝜂 ∗ 
+
+> 𝑢 𝑗
+
+− 𝜂 ∗ 
+
+> 𝑢𝑖
+
+) , it can be further de-composed under Assumption 2.4: ∑︁    
+
+> 𝑗 ∈ N 𝑘 (𝑖 )
+
+𝑐 𝑗 𝑖 (𝜂 ∗ 
+
+> 𝑢 𝑗
+
+− 𝜂 ∗ 
+
+> 𝑢𝑖
+
+) ≤∑︁    
+
+> 𝑗 ∈ N 𝑘 (𝑖 )
+
+𝑐 𝑗 𝑖 𝐿 ∥e𝑗 −e𝑖 ∥𝛼 ≤ 𝐿 · max     
+
+> 𝑗 ∈ N 𝑘 (𝑖 )
+
+∥e𝑗 −e𝑖 ∥𝛼 .
+
+(11) KDD ’26, August 09–13, 2026, Jeju Island, Republic of Korea Gaode Chen et al. 
+
+According to non-parametric regression theory (See Theorem 6.2 in [ 19 ]), in a 𝑑 -dimensional space with 𝑁 𝑤𝑎𝑟𝑚 samples and a prob-ability density function bounded away from zero (Assumption 2.3), the distance between a target point and its 𝑘 -th nearest neighbor 
+
+max 𝑗 ∈ N 𝑘 (𝑖 ) ∥e𝑗 − e𝑖 ∥ is bounded by O(( 𝑘 /𝑁 𝑤𝑎𝑟𝑚 )1/𝑑 ). Substituting this into the above inequality, we obtain: ∑︁    
+
+> 𝑗 ∈ N 𝑘 (𝑖 )
+
+𝑐 𝑗 𝑖 (𝜂 ∗ 
+
+> 𝑢 𝑗
+
+− 𝜂 ∗ 
+
+> 𝑢𝑖
+
+) ≤ O 𝐿 
+
+ 𝑘 𝑁 𝑤𝑎𝑟𝑚 
+
+ 𝛼 𝑑 
+
+!
+
+. (12) For the second term Í𝑗 ∈ N 𝑘 (𝑖 ) 𝑐 𝑗 𝑖 𝜖 ′ 
+
+> 𝑢𝑖,𝑗
+
+, by assuming 𝜖 ′ 
+
+> 𝑢𝑖,𝑗
+
+repre-sents bounded independent zero-mean random noise with variance (Assumption 2.2), by applying Hoeffding’s Inequality [ 3 ], we have: ∑︁    
+
+> 𝑗 ∈ N 𝑘 (𝑖 )
+
+𝑐 𝑗 𝑖 𝜖 ′ 
+
+> 𝑢𝑖,𝑗
+
+≤ O 𝜎 ′
+
+> 𝑢
+
+√︁ 
+
+𝑘 𝑒 𝑓 𝑓 
+
+!
+
+≈ O 
+
+ 𝜎 ′
+
+> 𝑢
+
+√𝑘 
+
+
+
+, (13) where 𝑘 𝑒 𝑓 𝑓 = 1/
+
+Í 
+
+𝑐 𝑗 𝑖 
+
+2 
+
+, and in the high-dimensional spaces with dense sampling, 𝑘 𝑒 𝑓 𝑓 ≈ 𝑘 due to the concentration of measure. Finally, substituting Eq. (12) and Eq. (13) into Eq. (10), we can obtain: 
+
+𝑦 𝑝 𝑢𝑖 − 𝜂 ∗ 
+
+> 𝑢𝑖
+
+≤ O 𝐿 
+
+ 𝑘 𝑁 𝑤𝑎𝑟𝑚 
+
+ 𝛼 𝑑 
+
+!
+
++ O 
+
+ 𝜎 ′
+
+> 𝑢
+
+√𝑘 
+
+
+
+(14) 
+
+□
+
+Remark 4. Theorem 2.1 clearly shows that, when the number of warm items 𝑁 𝑤𝑎𝑟𝑚 is sufficiently large, by choosing a suitable 
+
+𝑘 , the error bound between 𝑦 𝑝 𝑢𝑖 and 𝜂 ∗ 
+
+> 𝑢𝑖
+
+will become small, which clearly justifies the cleanness of the pseudo labels 𝑦 𝑝 𝑢𝑖 .
+
+Theorem 2.2. Suppose Assumptions 2.1 and 2.2 hold. Assume the observation noise 𝜖 𝑢𝑖 and the pseudo-label noise 𝜖 ′ 
+
+> 𝑢𝑖,𝑗
+
+are uncorrelated. There exists an optimal weight 𝑤 ∗ ∈ [ 0, 1] that minimizes the MSE risk 𝑅 (𝑦 𝑐 𝑢𝑖 ) = E[( 𝑦 𝑐 𝑢𝑖 − 𝜂 ∗ 
+
+> 𝑢𝑖
+
+)2]. Furthermore, the optimal weight is 
+
+𝑤 ∗ = 𝜆 𝑢𝑖 
+
+𝜆 𝑢𝑖 + 1 , and 𝜆 𝑢𝑖 = 𝑅 ( ˜𝑦 𝑢𝑖 )
+
+𝑅 (𝑦 𝑝 𝑢𝑖 ) ,
+
+where 𝜆 𝑢𝑖 represents the noise ratio of ˜𝑦 𝑢𝑖 to 𝑦 𝑝 𝑢𝑖 .
+
+Proof. To minimize the Mean Squared Error (MSE) of the cor-rected label 𝑦 𝑐 𝑢𝑖 with respect to the true probability 𝜂 ∗ 
+
+> 𝑢𝑖
+
+:
+
+𝑅 (𝑦 𝑐 𝑢𝑖 ) = E
+
+h 𝑤𝑦 𝑝 𝑢𝑖 + ( 1 − 𝑤 ) ˜𝑦 𝑢𝑖 − 𝜂 ∗
+
+> 𝑢𝑖
+
+2 i
+
+= 𝑤 2E[( 𝑦 𝑝 𝑢𝑖 − 𝜂 ∗ 
+
+> 𝑢𝑖
+
+)2] + ( 1 − 𝑤 )2E[( ˜𝑦 𝑢𝑖 − 𝜂 ∗ 
+
+> 𝑢𝑖
+
+)2]+ 2𝑤 (1 − 𝑤 )E[( 𝑦 𝑝 𝑢𝑖 − 𝜂 ∗ 
+
+> 𝑢𝑖
+
+)( ˜𝑦 𝑢𝑖 − 𝜂 ∗ 
+
+> 𝑢𝑖
+
+)] 
+
+= 𝑤 2𝑅 (𝑦 𝑝 𝑢𝑖 ) + ( 1 − 𝑤 )2𝑅 ( ˜𝑦 𝑢𝑖 ),
+
+(15) where the last equation holds because we assume the observation noise and the pseudo-label noise are uncorrelated. Taking the de-rivative with respect to 𝑤 and setting it to zero: 
+
+2𝑤𝑅 (𝑦 𝑝 𝑢𝑖 ) − 2(1 − 𝑤 )𝑅 ( ˜𝑦 𝑢𝑖 ) = 0.
+
+Solving for the optimal weight: 
+
+𝑤 ∗ = 𝑅 ( ˜𝑦 𝑢𝑖 )
+
+𝑅 ( ˜𝑦 𝑢𝑖 ) + 𝑅 (𝑦 𝑝 𝑢𝑖 ) = 𝜆 𝑢𝑖 
+
+𝜆 𝑢𝑖 + 1 .
+
+□
+
+Table 1: Statistics of experimented datasets with multi-modal item Visual(V), Acoustic(A), Textual(T) contents. 
+
+Dataset Amazon Tiktok Sports Baby Modality V T V T V A TEmbed Dim 4096 1024 4096 1024 128 128 768 User 35,598 19,445 9,319 Item 18,357 7,050 6,710 Interactions 256,308 139,110 59,541 Sparsity 99.961% 99.899% 99.904% Remark 5. Theorem 2.2 derives an optimal weight 𝑤 ∗ = 𝜆 𝑢𝑖   
+
+> 𝜆 𝑢𝑖 +1
+
+,which mathematically aligns with the weighting scheme proposed in Eq. (7). Since 𝑅 ( ˜𝑦 𝑢𝑖 ) and 𝑅 (𝑦 𝑝 𝑢𝑖 ) are unknown, we utilize the uncertainty term 𝑡 𝑢𝑖 to measure the observation noise level by the relative entropy 𝑟 𝑢𝑖 and cold-start status 𝛾 𝑖 . It can be regarded as an effective estimator of the noise ratio for denoising. 
+
+## 3 Experiments 3.1 Experimental Settings 
+
+3.1.1 Dataset. Following [ 7], we conduct offline experiments on three real-world multi-modal recommendation datasets 1, i.e., Amazon-Sports, Amazon-Baby, Tiktok. Data statistics with multi-modal fea-ture embedding dimensionality are reported in Table 1. 
+
+• Amazon. We adopt two benchmark datasets from Amazon with two item categories Baby and Sports. In those datasets, textual feature embeddings are generated via Sentence-Bert [ 35 ] based on the extracted text from the product title, description, brand, and categorical information. The product images are used to generate 4096-𝑑 visual feature embeddings of items. 
+
+• TikTok. This data is collected from TikTok platform to log the viewed short-videos of users. The multi-modal features are vi-sual, acoustic, and title textual features of videos. The textual embeddings are also encoded with Sentence-Bert. 
+
+3.1.2 Evaluation Protocols. For each dataset, we used the ratio 8:1:1 to randomly split the historical interactions of each user and con-stituted the training set, validation set, and testing set. Moreover, following the widely-used evaluation metrics [ 9, 44 ], we adopted Precision@N, Recall@N, and NDCG@N to evaluate the perfor-mance of methods. By default, we set N = 20 and reported the average values of the three metrics for all users in the testing set. 
+
+3.1.3 Baseline Methods. To demonstrate the efficacy of our pro-posed DIF in denoising implicit feedback for cold-start recommen-dation, we compare DIF with the state-of-the-art model-agnostic de-noising and cold-start methods. In particular, 1) DECL [ 34 ] captures the uncertainty caused by noise and separates clean and noisy data, employing them differently for learning with noisy correspondence. 2) RINCE [ 11 ] introduces a new contrastive learning objective de-signed to be robust to noisy data views. 3) MWUF [ 56 ] proposes meta-scaling and shifting networks to generate initial embedding  
+
+> 1All datasets are publicly available at https://github.com/HKUDS/MMSSL/tree/main. Denoising Implicit Feedback for Cold-start Recommendation KDD ’26, August 09–13, 2026, Jeju Island, Republic of Korea
+
+Table 2: Performance comparison of baselines on different datasets in terms of Recall@20 and NDCG@20. The best performance is highlighted in bold and the second to best is highlighted by underlines. 
+
+Base Model Method Amazon-Sports Amazon-Baby Tiktok Recall@20 NDCG@20 Recall@20 NDCG@20 Recall@20 NDCG@20 Cold NeuMF Normal 0.00244 0.00228 0.00142 0.00157 0.00104 0.00010 RINCE 0.00271 0.00222 0.00197 0.00172 0.00674 0.00298 
+
+DECL 0.00266 0.00191 0.00186 0.00149 0.00622 0.00234 MWUF 0.00302 0.00250 0.00166 0.00158 0.00052 0.00013 Ours 0.00461 0.00259 0.00385 0.00188 0.00881 0.00227 LightGCN Normal 0.00191 0.00192 0.00143 0.00122 0.00106 0.00026 RINCE 0.00266 0.00294 0.00258 0.00248 0.00415 0.00125 
+
+DECL 0.00277 0.00306 0.00179 0.00168 0.00231 0.00065 MWUF 0.00253 0.00222 0.00186 0.00161 0.00155 0.00050 Ours 0.00325 0.00341 0.00303 0.00261 0.00518 0.00117 SimGCL Normal 0.00218 0.00210 0.00180 0.00184 0.00155 0.00040 RINCE 0.00293 0.00312 0.00285 0.00289 0.00466 0.00101 DECL 0.00317 0.00361 0.00219 0.00184 0.00259 0.00072 MWUF 0.00319 0.00270 0.00236 0.00227 0.00207 0.00060 Ours 0.00347 0.00379 0.00350 0.00356 0.00570 0.00154 
+
+Warm NeuMF Normal 0.04535 0.02134 0.05534 0.02456 0.10095 0.04033 RINCE 0.06619 0.02755 0.05435 0.02220 0.09690 0.03936 DECL 0.06073 0.02595 0.05487 0.02236 0.08667 0.03324 MWUF 0.04594 0.02058 0.05768 0.02489 0.11119 0.04685 
+
+Ours 0.06281 0.02848 0.05980 0.02832 0.11095 0.04440 LightGCN Normal 0.06381 0.02769 0.05882 0.02438 0.09429 0.04429 RINCE 0.09695 0.04314 0.08852 0.03838 0.12119 0.05403 
+
+DECL 0.09937 0.04436 0.06250 0.02632 0.11500 0.04423 MWUF 0.06953 0.03029 0.06316 0.02696 0.11024 0.04769 Ours 0.10862 0.04869 0.09494 0.04257 0.12667 0.05134 SimGCL Normal 0.06550 0.02972 0.05934 0.02546 0.09571 0.04785 RINCE 0.09815 0.04444 0.09316 0.04132 0.12167 0.05183 DECL 0.10749 0.04943 0.06177 0.02609 0.09833 0.04649 MWUF 0.07235 0.03227 0.06189 0.02614 0.12524 0.05732 Ours 0.11410 0.05312 0.10098 0.04427 0.12881 0.05758 
+
+Overall NeuMF Normal 0.02932 0.01375 0.04261 0.01891 0.06949 0.02763 RINCE 0.04270 0.01776 0.04191 0.01710 0.06852 0.02791 DECL 0.03922 0.01674 0.04231 0.01723 0.06134 0.02351 MWUF 0.02987 0.01335 0.04442 0.01917 0.07635 0.03214 
+
+Ours 0.04114 0.01829 0.04674 0.02182 0.07879 0.03113 LightGCN Normal 0.04073 0.01768 0.04524 0.01875 0.06493 0.03043 RINCE 0.06189 0.02754 0.06809 0.02952 0.08434 0.03741 
+
+DECL 0.06344 0.02832 0.04807 0.02024 0.07912 0.03039 MWUF 0.04445 0.01935 0.04858 0.02073 0.07602 0.03283 Ours 0.06934 0.03109 0.07303 0.03275 0.08842 0.03555 SimGCL Normal 0.04207 0.01904 0.04564 0.01958 0.06607 0.03291 RINCE 0.06266 0.02837 0.07165 0.03178 0.08483 0.03583 DECL 0.06862 0.03156 0.04751 0.02007 0.06819 0.03208 MWUF 0.04641 0.02066 0.04760 0.02011 0.08646 0.03946 Ours 0.07287 0.03392 0.07767 0.03405 0.09005 0.03993 KDD ’26, August 09–13, 2026, Jeju Island, Republic of Korea Gaode Chen et al. 
+
+representations for cold-start items within the warm feature space, demonstrating greater stability from noisy samples. We implement DIF and the aforementioned model-agnostic baselines to three rep-resentative backend models. 1) NeuMF [21 ] models the relationship between users and items by combining GMF and a MLP. 2) Light-GCN [ 20 ] leverages high-order neighbors information to enhance the user and item representations. 3) SimGCL [46 ] simplifies the contrastive loss and optimizes uniformity representations. 
+
+3.1.4 Implementation Details. We set the embedding dimension 𝑑 
+
+fixed to 64 for all models. We optimize all models with the Adam [ 28 ]optimizer, where the batch size is fixed at 1024. We set the learning rate to 0.001, the number of similar warm items 𝑘 to 5, and the tem-perature coefficient 𝜏 to 0.3. We use the Xavier initializer[ 17 ], and distinguish warm items and cold items based on the 20th percentile of interaction counts for each dataset and determine the specific values of 𝛼 and 𝛾 in uncertainty estimation. 
+
+## 3.2 Performance Comparison 
+
+We conduct comprehensive experiments in natural noise setting to compare DIF’s performance with other referenced baselines. The results, including on cold, warm, and overall items, are illustrated in Table 2, yields several key observations: 
+
+• All the denoising methods show better results compared with normal training, especially in the improvement of performance on cold items, which indicates the necessity of denoising implicit feedback for cold-start recommendations. 
+
+• Jointly analyzing the performance of different backbones in rec-ommender systems, we observe that NeuMF demonstrates more significant performance on cold items compared to graph-based methods such as LightGCN and SimGCL. This advantage arises because graph-based methods rely heavily on the propagation of collaborative signals along edges, making them more effective in data-rich scenarios. Nevertheless, our method is model-agnostic and achieves the best results across various backbones on cold items, which demonstrates the superior scalability of DIF. 
+
+• DECL and RINCE, as general denoising methods directly trans-ferred to recommendation tasks, improve performance on both cold and warm items, though the gains are not substantial. MWUF performs reasonably well on cold items but shows limited im-provement on warm items and overall performance. In contrast, our method focuses on denoising implicit feedback for cold items without causing unacceptable impacts on warm items or overall performance, even achieving performance enhancements. 
+
+• Our DIF does not achieve the optimal NDCG on cold items for Tiktok. This is partly due to the small and sparser nature of the TikTok. Moreover, our primary focus is on retrieve optimization rather than ranking, which remains one of future directions. 
+
+• The proposed DIF effectively enhances the performance of all base models and outperforms most denoising methods across three datasets. We attribute these improvements to DIF’s content-based denoising approach using warm items for cold items: (1) By modeling the confidence of multiple pseudo-labels, DIF further improves the accuracy of aggregated pseudo-labels based on content similarity scores. (2) Benefiting from our uncertainty estimation, DIF accurately utilizes pseudo-labels and guides the sample label correction process. 
+
+Table 3: Ablation study on key components of DIF. 
+
+Datasets Method Cold Warm Overall Tiktok 
+
+w/o CM 0.00311 0.10857 0.07537 
+
+w/o RE 0.00152 0.12214 0.08385 
+
+w/o CS 0.00104 0.10619 0.07308 DIF 0.00518 0.12667 0.08842 
+
+Sports 
+
+w/o CM 0.00293 0.09804 0.06259 
+
+w/o RE 0.00278 0.09685 0.06182 
+
+w/o CS 0.00264 0.09318 0.05954 DIF 0.00325 0.10862 0.06934 
+
+## 3.3 Ablation Study 
+
+To evaluate the effectiveness of each component in our method, we perform ablation studies on Tiktok and Amazon Sports using LightGCN as the backbone. We present the results of Recall@20 in Table 3. We can see that: 
+
+• Without the Confidence Modeling ( w/o CM), we aggregate multi-ple pseudo-labels for each sample using average pooling, without considering content similarity distinctions. This variant has min-imal impact on the performance of cold items, suggesting that current multi-modal representations are already highly reliable, with well-guaranteed similarity among the retrieved warm items. 
+
+• We ablate the relative entropy component from the uncertainty estimation with the variant w/o RE, which significantly affects cold items but has a limited impact on warm items. High relative entropy indicates a greater likelihood of label noise. However, since the collaborative representations of warm items are already well-trained, situations with high relative entropy are rare. 
+
+• We make another comparison between DIF and the variant ( w/o
+
+CS) without consideration of cold-start status, which demon-strates the most significant impact for cold items. This can be attributed to two factors: First, the failure to account for the vary-ing probabilities of label noise across different cold-start states. Second, the potential disruption to representation learning for warm items, which may subsequently affect user modeling and ultimately influence recommendations for cold items. 
+
+## 3.4 Noise Robustness 
+
+We conduct random noisy training on Amazon datasets using the backbones of NeuMF and LightGCN to evaluate the noise resistance capability of DIF, comparing it with the three competitive model-agnostic methods, DECL, RINCE and MWUF. The proportion of noise in our training settings spanned from 20% to 80%. We report the results on cold items in Figure 3. Similar results are seen with Tiktok and other backbones, but figures are omitted for brevity. The results show that: 1) As the noise ratio increases, the perfor-mance of DECL, RINCE, MWUF, and DIF generally declines. This decline is attributed to the intensifying corruption of data due to the escalating noise level, making the representation learning for cold-start items and the modeling of user preferences increasingly challenging. 2) DIF consistently outperforms all other denoising methods across different noise ratio settings. This highlights the remarkable noise robustness of DIF in cold-start scenarios, which Denoising Implicit Feedback for Cold-start Recommendation KDD ’26, August 09–13, 2026, Jeju Island, Republic of Korea 20% 40% 60% 80%          
+
+> Noise Ratio
+> 0.0010
+> 0.0015
+> 0.0020
+> 0.0025
+> 0.0030
+> 0.0035
+> 0.0040
+> Recall@20
+> (a) Amazon Baby (NeuMF)
+> DECL
+> RINCE
+> MWUF
+> Ours
+> 10 20 30 40
+> Noise Ratio
+> 0.0010
+> 0.0015
+> 0.0020
+> 0.0025
+> 0.0030
+> 0.0035
+> 0.0040
+> Recall@20
+> (b) Amazon Baby (LightGCN)
+> DECL
+> RINCE
+> MWUF
+> Ours
+> 10 20 30 40
+> Noise Ratio
+> 0.0005
+> 0.0011
+> 0.0017
+> 0.0023
+> 0.0029
+> 0.0035
+> 0.0041
+> Recall@20
+> (c) Amazon Sports (NeuMF)
+> DECL
+> RINCE
+> MWUF
+> Ours
+> 10 20 30 40
+> Noise Ratio
+> 0.0005
+> 0.0010
+> 0.0015
+> 0.0020
+> 0.0025
+> 0.0030
+> 0.0035
+> Recall@20
+> (d) Amazon Sports (LightGCN)
+> DECL
+> RINCE
+> MWUF
+> Ours
+
+Figure 3: Performance comparison of denoise training with random noises in Amazon datasets. Table 4: The results of A/B testing in online scenario. 
+
+Effective View Watch Time Long View Short View +2.327% +2.921% +2.688% -2.030% Like Comment Follow Share +2.921% +2.435% +2.790% +0.876% can be attributed to the effectiveness of its strategy of generating pseudo-labels through content-similar warm items. 
+
+## 3.5 Online A/B Testing 
+
+We carried out rigorous online A/B testing in our short-video streaming scenario from Jan. 12, 2025, to Jan. 16, 2025, with hun-dreds of millions of users per day. The results of the online A/B test for cold-start recommendation are shown in Table 4, we focus on several commercial metrics, which can be divided into view-related and action-related. For view-related metrics, we introduce metrics such as effective view , watch time , long view , and short view . We de-fine an “effective view” label as user watches a video longer than a threshold (e.g., 5 seconds), and videos in different duration intervals have different thresholds. Meanwhile, the “long view” label follows stricter criterias compared to “effective view”. For action-related metrics, include like , comment , follow , and share . For example, a “like” is defined as the user likes current video by clicking the like button or double tapping/long pressing screen. For company privacy, we cannot report the real metrics of the original online models. Instead, we report the performance gain ratio improved by our approach DIF. It is worth noting that one percent improvement ratio usually indicates a large improvement of the recommendation capacity in real-world application scenario, when tested on a large population of users. By effectively denoising cold-start item samples using our method, both view-related and action-related metrics show signifi-cant improvement, contributing to a substantial enhancement in the recommendation efficiency for cold-start items. 
+
+## 4 Related Works 
+
+Cold-start Recommendation. Cold-start is one of the main chal-lenges in recommender systems. Specifically, we focus on the more challenging scenario where cold-start items are newly uploaded and lack any user feedback. The common solution to this issue can be categorized into two types, namely content-based and transfer learning based methods. The first type of methods [ 7, 25 , 31 , 38 , 44 ]aims to exploit side information, especially content features of items to compensate the absence of collaborative signals. The core idea is to approximate the well-trained collaborative embeddings via content information by modeling their correlation. Another way to alleviate the cold-start problem is to transfer knowledge from other domains, such as cross-domain recommendation [ 5 , 8, 48 ], trans-fer learning methods [ 36 , 50 , 52 ], meta-learning methods [ 14 , 56 ], and prompt learning [ 26 , 29 ]. However, few existing studies on cold-start recommendation recognize the importance of implicit feedback denoising and design practical deployment solutions. 
+
+Denoising Recommendation. Existing recommender systems are typically trained with implicit feedback. Recently, some stud-ies [ 40 , 42 , 43 , 53 ] have noticed that implicit feedback could be easily corrupted by different factors (e.g., popularity bias [ 10 ] and user unconscious behaviors [ 24 ]), and the inevitable noise would dramatically degrade the recommendation performance. As a re-sult, some efforts have been dedicated to solving the noisy implicit feedback problem, which can be categorized into sample selection methods [ 13 , 30 , 32 , 47 ] and sample re-weighting methods [ 23 , 41 ]. The sample selection methods aim to select clean and informa-tive samples, which exhibit high performance variation since they heavily depend on the sampling distribution. Sample re-weighting methods focus on assigning lower weights to inaccurate interac-tions by the learning process signals of models (e.g., loss values and predictions). However, these methods heavily rely on prede-fined heuristic assumptions, resulting in poor generalization for cold-start models. 
+
+## 5 Conclusion 
+
+To address the implicit feedback denoising in cold-start recom-mendation, this paper introduces a model-agnostic approach called DIF, which can be flexibly applied to various online models. In-spired by the item collaborative filtering, we assign pseudo-labels to cold-start items through the user and warm items with similar content, and we present a detailed industrial implement solution. We further model the confidence of each pseudo-label based on content similarity to improve the accuracy of the final generated pseudo label. Furthermore, we estimate the uncertainty of the noisy sample label to guide the participation of the pseudo-label during the label correction process, thereby avoiding overcorrection. We share the successful experience of deploying DIF on Kuaishou. Ex-tensive offline experiments and online A/B testing further verify its effectiveness in cold-start recommendation tasks. KDD ’26, August 09–13, 2026, Jeju Island, Republic of Korea Gaode Chen et al. 
+
+## References 
+
+[1] Eric Arazo, Diego Ortego, Paul Albert, Noel O’Connor, and Kevin McGuinness. 2019. Unsupervised label noise modeling and loss correction. In International conference on machine learning . 312–321. [2] Dara Bahri, Heinrich Jiang, and Maya Gupta. 2020. Deep k-nn for noisy labels. In International Conference on Machine Learning . PMLR, 540–550. [3] Stéphane Boucheron, Gábor Lugosi, and Pascal Massart. 2013. Concentration Inequalities - A Nonasymptotic Theory of Independence . OUP Oxford. [4] Qingpeng Cai, Zhenghai Xue, Chi Zhang, Wanqi Xue, Shuchang Liu, Ruohan Zhan, Xueliang Wang, Tianyou Zuo, Wentao Xie, Dong Zheng, et al . 2023. Two-stage constrained actor-critic for short video recommendation. In Proceedings of the ACM Web Conference 2023 . 865–875. [5] Jiangxia Cao, Jiawei Sheng, Xin Cong, Tingwen Liu, and Bin Wang. 2022. Cross-domain recommendation to cold-start users via variational information bottle-neck. In 2022 IEEE 38th International Conference on Data Engineering (ICDE) . IEEE, 2209–2223. [6] Yi Cao, Sihao Hu, Yu Gong, Zhao Li, Yazheng Yang, Qingwen Liu, and Shouling Ji. 2022. Gift: Graph-guided feature transfer for cold-start video click-through rate prediction. In Proceedings of the 31st ACM International Conference on Information & Knowledge Management . 2964–2973. [7] Gaode Chen, Ruina Sun, Yuezihan Jiang, Jiangxia Cao, Qi Zhang, Jingjian Lin, Han Li, Kun Gai, and Xinghua Zhang. 2024. A Multi-modal Modeling Framework for Cold-start Short-video Recommendation. In Proceedings of the 18th ACM Conference on Recommender Systems . 391–400. [8] Gaode Chen, Xinghua Zhang, Yijun Su, Yantong Lai, Ji Xiang, Junbo Zhang, and Yu Zheng. 2023. Win-win: a privacy-preserving federated framework for dual-target cross-domain recommendation. In Proceedings of the AAAI Conference on Artificial Intelligence , Vol. 37. 4149–4156. [9] Gaode Chen, Xinghua Zhang, Yanyan Zhao, Cong Xue, and Ji Xiang. 2021. Ex-ploring Periodicity and Interactivity in Multi-Interest Framework for Sequential Recommendation. In Proceedings of the Thirtieth International Joint Conference on Artificial Intelligence . 1426–1433. [10] Jiawei Chen, Hande Dong, Xiang Wang, Fuli Feng, Meng Wang, and Xiangnan He. 2023. Bias and debias in recommender system: A survey and future directions. 
+
+ACM Transactions on Information Systems 41, 3 (2023), 1–39. [11] Ching-Yao Chuang, R Devon Hjelm, Xin Wang, Vibhav Vineet, Neel Joshi, Anto-nio Torralba, Stefanie Jegelka, and Yale Song. 2022. Robust contrastive learning against noisy views. In Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition . 16670–16681. [12] Thomas M Cover, Joy A Thomas, et al . 1991. Entropy, relative entropy and mutual information. Elements of information theory 2, 1 (1991), 12–13. [13] Jingtao Ding, Guanghui Yu, Xiangnan He, Fuli Feng, Yong Li, and Depeng Jin. 2019. Sampler design for bayesian personalized ranking by leveraging view data. 
+
+IEEE transactions on knowledge and data engineering 33, 2 (2019), 667–681. [14] Manqing Dong, Feng Yuan, Lina Yao, Xiwei Xu, and Liming Zhu. 2020. Mamo: Memory-augmented meta-optimization for cold-start recommendation. In Pro-ceedings of the 26th ACM SIGKDD international conference on knowledge discovery & data mining . 688–697. [15] Wei Gao, Xin-Yi Niu, and Zhi-Hua Zhou. 2018. On the consistency of exact and approximate nearest neighbor with noisy data. Arxiv, abs/1607.07526 (2018). [16] Yunjun Gao, Yuntao Du, Yujia Hu, Lu Chen, Xinjun Zhu, Ziquan Fang, and Baihua Zheng. 2022. Self-guided learning to denoise for robust recommendation. In Proceedings of the 45th International ACM SIGIR Conference on Research and Development in Information Retrieval . 1412–1422. [17] Xavier Glorot and Yoshua Bengio. 2010. Understanding the difficulty of training deep feedforward neural networks. In Proceedings of the thirteenth international conference on artificial intelligence and statistics . 249–256. [18] Xudong Gong, Qinlin Feng, Yuan Zhang, Jiangling Qin, Weijie Ding, Biao Li, Peng Jiang, and Kun Gai. 2022. Real-time short video recommendation on mobile devices. In Proceedings of the 31st ACM international conference on information & knowledge management . 3103–3112. [19] László Györfi, Michael Kohler, Adam Krzyżak, and Harro Walk. 2002. Adistribution-free theory of nonparametric regression . Springer. [20] Xiangnan He, Kuan Deng, Xiang Wang, Yan Li, Yongdong Zhang, and Meng Wang. 2020. Lightgcn: Simplifying and powering graph convolution network for recommendation. In Proceedings of the 43rd International ACM SIGIR conference on research and development in Information Retrieval . 639–648. [21] Xiangnan He, Lizi Liao, Hanwang Zhang, Liqiang Nie, Xia Hu, and Tat-Seng Chua. 2017. Neural collaborative filtering. In Proceedings of the 26th international conference on world wide web . 173–182. [22] Zhuangzhuang He, Yifan Wang, Yonghui Yang, Peijie Sun, Le Wu, Haoyue Bai, Jinqi Gong, Richang Hong, and Min Zhang. 2024. Double correction frame-work for denoising recommendation. In Proceedings of the 30th ACM SIGKDD Conference on Knowledge Discovery and Data Mining . 1062–1072. [23] Kaixi Hu, Lin Li, Qing Xie, Jianquan Liu, and Xiaohui Tao. 2021. What is next when sequential prediction meets implicitly hard interaction?. In Proceedings of the 30th ACM International Conference on Information & Knowledge Management .710–719. [24] Yifan Hu, Yehuda Koren, and Chris Volinsky. 2008. Collaborative filtering for implicit feedback datasets. In 2008 Eighth IEEE international conference on data mining . Ieee, 263–272. [25] Hyunsik Jeon, Jong-eun Lee, Jeongin Yun, and U Kang. 2024. Cold-start bundle recommendation via popularity-based coalescence and curriculum heating. In 
+
+Proceedings of the ACM Web Conference 2024 . 3277–3286. [26] Yuezihan Jiang, Gaode Chen, Wenhan Zhang, Jingchi Wang, Yinjie Jiang, Qi Zhang, Jingjian Lin, Peng Jiang, and Kaigui Bian. 2024. Prompt Tuning for Item Cold-start Recommendation. In Proceedings of the 18th ACM Conference on Recommender Systems . 411–421. [27] Jeff Johnson, Matthijs Douze, and Hervé Jégou. 2019. Billion-scale similarity search with gpus. IEEE Transactions on Big Data 7, 3 (2019), 535–547. [28] Diederik P Kingma and Jimmy Ba. 2014. Adam: A method for stochastic opti-mization. arXiv preprint arXiv:1412.6980 (2014). [29] Genki Kusano. 2024. Data Augmentation using Reverse Prompt for Cost-Efficient Cold-Start Recommendation. In Proceedings of the 18th ACM Conference on Rec-ommender Systems . 861–865. [30] Shipeng Li, Zhiqin Yang, Shikun Li, Xiaobo Xia, Hengyu Liu, Xinghua Zhang, Gaode Chen, Dong Fang, Ying Tai, and Zhe Peng. 2026. LearnAlign: Data selection for LLM reinforcement learning with improved gradient alignment. In Findings of the Association for Computational Linguistics: ACL 2026 .[31] Ruochen Liu, Hao Chen, Yuanchen Bei, Qijie Shen, Fangwei Zhong, Senzhang Wang, and Jianxin Wang. 2024. Fine Tuning Out-of-Vocabulary Item Recom-mendation with User Sequence Imagination. Advances in Neural Information Processing Systems 37 (2024), 8930–8955. [32] Dae Hoon Park and Yi Chang. 2019. Adversarial sampling and training for semi-supervised information retrieval. In The World Wide Web Conference . 1443–1453. [33] Qi Pi, Guorui Zhou, Yujing Zhang, Zhe Wang, Lejian Ren, Ying Fan, Xiaoqiang Zhu, and Kun Gai. 2020. Search-based user interest modeling with lifelong sequential behavior data for click-through rate prediction. In Proceedings of the 29th ACM International Conference on Information & Knowledge Management .2685–2692. [34] Yang Qin, Dezhong Peng, Xi Peng, Xu Wang, and Peng Hu. 2022. Deep evidential learning with noisy correspondence for cross-modal retrieval. In Proceedings of the 30th ACM International Conference on Multimedia . 4948–4956. [35] Nils Reimers and Iryna Gurevych. 2019. Sentence-BERT: Sentence Embeddings using Siamese BERT-Networks. In Proceedings of the 2019 Conference on Empirical Methods in Natural Language Processing and the 9th International Joint Conference on Natural Language Processing (EMNLP-IJCNLP) . 3982–3992. [36] Xiang-Rong Sheng, Liqin Zhao, Guorui Zhou, Xinyao Ding, Binding Dai, Qiang Luo, Siran Yang, Jingshan Lv, Chi Zhang, Hongbo Deng, et al . 2021. One model to serve all: Star topology adaptive recommender for multi-domain ctr prediction. In 
+
+Proceedings of the 30th ACM International Conference on Information & Knowledge Management . 4104–4113. [37] Daiki Tanaka, Daiki Ikami, Toshihiko Yamasaki, and Kiyoharu Aizawa. 2018. Joint optimization framework for learning with noisy labels. In Proceedings of the IEEE conference on computer vision and pattern recognition . 5552–5560. [38] Jianling Wang, Haokai Lu, James Caverlee, Ed H Chi, and Minmin Chen. 2024. Large language models as data augmenters for cold-start item recommendation. In Companion Proceedings of the ACM Web Conference 2024 . 726–729. [39] Jianling Wang, Haokai Lu, Sai Zhang, Bart Locanthi, Haoting Wang, Dylan Greaves, Benjamin Lipshitz, Sriraj Badam, Ed H Chi, Cristos J Goodrow, et al .2023. Fresh Content Needs More Attention: Multi-funnel Fresh Content Recom-mendation. In Proceedings of the 29th ACM SIGKDD Conference on Knowledge Discovery and Data Mining . 5082–5091. [40] Wenjie Wang, Fuli Feng, Xiangnan He, Liqiang Nie, and Tat-Seng Chua. 2021. Denoising implicit feedback for recommendation. In Proceedings of the 14th ACM international conference on web search and data mining . 373–381. [41] Yu Wang, Xin Xin, Zaiqiao Meng, Joemon M Jose, Fuli Feng, and Xiangnan He. 2022. Learning robust recommenders through cross-model agreement. In 
+
+Proceedings of the ACM Web Conference 2022 . 2015–2025. [42] Zongwei Wang, Min Gao, Wentao Li, Junliang Yu, Linxin Guo, and Hongzhi Yin. 2023. Efficient bi-level optimization for recommendation denoising. In Proceedings of the 29th ACM SIGKDD Conference on Knowledge Discovery and Data Mining .2502–2511. [43] Zitai Wang, Qianqian Xu, Zhiyong Yang, Xiaochun Cao, and Qingming Huang. 2021. Implicit feedbacks are not always favorable: Iterative relabeled one-class collaborative filtering against noisy interactions. In Proceedings of the 29th ACM International Conference on Multimedia . 3070–3078. [44] Wei Wei, Chao Huang, Lianghao Xia, and Chuxu Zhang. 2023. Multi-modal self-supervised learning for recommendation. In Proceedings of the ACM Web Conference 2023 . 790–800. [45] Ji Yang, Xinyang Yi, Derek Zhiyuan Cheng, Lichan Hong, Yang Li, Simon Xiaom-ing Wang, Taibai Xu, and Ed H Chi. 2020. Mixed negative sampling for learning two-tower neural networks in recommendations. In Companion proceedings of the web conference 2020 . 441–447. Denoising Implicit Feedback for Cold-start Recommendation KDD ’26, August 09–13, 2026, Jeju Island, Republic of Korea 
+
+[46] Junliang Yu, Hongzhi Yin, Xin Xia, Tong Chen, Lizhen Cui, and Quoc Viet Hung Nguyen. 2022. Are graph augmentations necessary? simple graph contrastive learning for recommendation. In Proceedings of the 45th international ACM SIGIR conference on research and development in information retrieval . 1294–1303. [47] Wenhui Yu and Zheng Qin. 2020. Sampler design for implicit feedback data by noisy-label robust learning. In Proceedings of the 43rd international ACM SIGIR conference on research and development in information retrieval . 861–870. [48] Tianzi Zang, Yanmin Zhu, Haobing Liu, Ruohan Zhang, and Jiadi Yu. 2022. A survey on cross-domain recommendation: taxonomies, methods, and future directions. ACM Transactions on Information Systems 41, 2 (2022), 1–39. [49] Shuai Zhang, Lina Yao, Aixin Sun, and Yi Tay. 2019. Deep learning based recom-mender system: A survey and new perspectives. ACM computing surveys (CSUR) 
+
+52, 1 (2019), 1–38. [50] Yin Zhang, Derek Zhiyuan Cheng, Tiansheng Yao, Xinyang Yi, Lichan Hong, and Ed H Chi. 2021. A model of two tales: Dual transfer learning framework for improved long-tail item recommendation. In Proceedings of the web conference 2021 . 2220–2231. [51] Yuan Zhang, Xue Dong, Weijie Ding, Biao Li, Peng Jiang, and Kun Gai. 2023. Di-vide and Conquer: Towards Better Embedding-based Retrieval for Recommender Systems from a Multi-task Perspective. In Companion Proceedings of the ACM Web Conference 2023 . 366–370. [52] Yin Zhang, Ruoxi Wang, Derek Zhiyuan Cheng, Tiansheng Yao, Xinyang Yi, Lichan Hong, James Caverlee, and Ed H Chi. 2023. Empowering Long-tail Item Recommendation through Cross Decoupling Network (CDN). In Proceedings of the 29th ACM SIGKDD Conference on Knowledge Discovery and Data Mining .5608–5617. [53] Jujia Zhao, Wang Wenjie, Yiyan Xu, Teng Sun, Fuli Feng, and Tat-Seng Chua. 2024. Denoising diffusion recommender model. In Proceedings of the 47th International ACM SIGIR Conference on Research and Development in Information Retrieval .1370–1379. [54] Guorui Zhou, Xiaoqiang Zhu, Chenru Song, Ying Fan, Han Zhu, Xiao Ma, Yanghui Yan, Junqi Jin, Han Li, and Kun Gai. 2018. Deep interest network for click-through rate prediction. In Proceedings of the 24th ACM SIGKDD international conference on knowledge discovery & data mining . 1059–1068. [55] Zhihui Zhou, Lilin Zhang, and Ning Yang. 2023. Contrastive Collaborative Filtering for Cold-Start Item Recommendation. In Proceedings of the ACM Web Conference 2023 . 928–937. [56] Yongchun Zhu, Ruobing Xie, Fuzhen Zhuang, Kaikai Ge, Ying Sun, Xu Zhang, Leyu Lin, and Juan Cao. 2021. Learning to warm up cold item embeddings for cold-start recommendation with meta scaling and shifting networks. In Proceedings of the 44th International ACM SIGIR Conference on Research and Development in Information Retrieval . 1167–1176.

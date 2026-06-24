@@ -1,0 +1,38 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2606.17821v1/fig-001.webp",
+      "caption": "Table 1: Comprehensive comparison of Text-to-SQL frameworks on BIRD and Spider benchmarks, categorized by learning approach. “Model Avail.” indicates whether model weights are publicly available.",
+      "page": 7,
+      "index": 1,
+      "width": 950,
+      "height": 342
+    },
+    {
+      "url": "assets/figures/arxiv/2606.17821v1/fig-002.webp",
+      "caption": "Figure 3: Cumulative Execution Accuracy vs. Cumulative Token Usage (log scale) on BIRD (a) and Spider (b). DecoSearch reaches its final accuracy with fewer tokens than all compared methods on both benchmarks, demonstrating superior token efficiency.",
+      "page": 7,
+      "index": 2,
+      "width": 939,
+      "height": 361
+    },
+    {
+      "url": "assets/figures/arxiv/2606.17821v1/fig-003.webp",
+      "caption": "Figure 4: Execution Accuracy on BIRD when pairing DecoSearch with fine-tuned (a) and open-source (b) backbone models, compared against their DirectSQL baseline. DecoSearch consistently improves over the direct generation baseline regardless of the backbone, demonstrating its model-agnostic nature.",
+      "page": 8,
+      "index": 3,
+      "width": 939,
+      "height": 402
+    },
+    {
+      "url": "assets/figures/arxiv/2606.17821v1/fig-004.webp",
+      "caption": "Figure 1: The pipeline begins with Pre-Processing via evidence-aware schema pruning. A Judger determines if the question is manageable; if so, the Direct Path generates and executes a single SQL query and exits if successful. Otherwise, the Decomposer produces a DAG of atomic sub-questions linked by @[n] dependency placeholders. At the Sub-Question Solving stage, each node is executed in topological order; upstream results are resolved as inline value lists for small result sets or materialized as temporary tables for large ones before the downstream SQL is generated. Persistent execution failures trigger the Topology Refiner to rewrite the DAG and retry.",
+      "page": 3,
+      "index": 4,
+      "width": 888,
+      "height": 361
+    }
+  ]
+}

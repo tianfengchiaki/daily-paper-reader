@@ -1,0 +1,14 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2606.21120v1/fig-001.webp",
+      "caption": "Table A.1. Extreme points and corresponding values of the objective function",
+      "page": 27,
+      "index": 1,
+      "width": 660,
+      "height": 283
+    }
+  ]
+}

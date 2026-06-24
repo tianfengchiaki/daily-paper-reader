@@ -1,0 +1,30 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2606.21144v1/fig-001.webp",
+      "caption": "Figure 2: Analysis of retrieval dynamics and policy convergence over a 10-week horizon. (a) Recall@5 (left) and Mean Reciprocal Rank (MRR, right) for DeepSeek-V4-Flash under explicit feedback. (b) Semantic alignment of the learned policies with ground-truth preferences.",
+      "page": 5,
+      "index": 1,
+      "width": 950,
+      "height": 271
+    },
+    {
+      "url": "assets/figures/arxiv/2606.21144v1/fig-002.webp",
+      "caption": "Table 2: Main results on AdaMem-Bench, grouped by feedback mode (Explicit / Implicit), reporting QA accuracy, Extraction F1, MER, and memory volume (Vol.). Reference bounds (Full Context, Ideal Memory) are extractorindependent (QA by deepseek-v4-flash); Mem0 and AdaMem are reported under each extraction model. Gains in parentheses are relative to the corresponding Mem0. Full Context stores no memory, so its F1/MER are undefined.",
+      "page": 6,
+      "index": 2,
+      "width": 743,
+      "height": 325
+    },
+    {
+      "url": "assets/figures/arxiv/2606.21144v1/fig-003.webp",
+      "caption": "Figure 1: Motivating results on AdaMem-Bench (DeepSeek-V4-Flash, Explicit feedback). Accuracy over 10 weeks (smoothed with window w = 3). Ideal Memory and AdaMem maintain high performance, while the uniform Mem0 baseline degrades over time.",
+      "page": 1,
+      "index": 3,
+      "width": 458,
+      "height": 306
+    }
+  ]
+}

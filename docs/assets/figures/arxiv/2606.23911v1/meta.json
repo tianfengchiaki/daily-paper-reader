@@ -1,0 +1,38 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2606.23911v1/fig-001.webp",
+      "caption": "Figure 2: NDCG@10 by query segment. Tail queries show the largest relative improvement (+6.8%), consistent with the hypothesis that LLM-annotated supervision addresses the data-sparsity challenge inherent to clickbased training.",
+      "page": 11,
+      "index": 1,
+      "width": 916,
+      "height": 305
+    },
+    {
+      "url": "assets/figures/arxiv/2606.23911v1/fig-002.webp",
+      "caption": "Table 2 Overall offline evaluation results (30,303 human-labeled evaluation queries). The pre-trained base model is the same encoder that V2 and V3 are initialized from, evaluated without fine-tuning. Values in brackets are paired bootstrap 95% CIs on the absolute Δ (V3 vs. V2). All V3-vs-V2 differences are significant at 𝑝 < 10−4 (paired bootstrap, 10K resamples).",
+      "page": 10,
+      "index": 2,
+      "width": 752,
+      "height": 202
+    },
+    {
+      "url": "assets/figures/arxiv/2606.23911v1/fig-003.webp",
+      "caption": "Table 7 Ablation study (30,303 human-labeled evaluation queries). Each row removes or modifies one component from the full V3 system (NDCG@10 = 0.923).",
+      "page": 12,
+      "index": 3,
+      "width": 713,
+      "height": 559
+    },
+    {
+      "url": "assets/figures/arxiv/2606.23911v1/fig-004.webp",
+      "caption": "Figure 1: Overview of the training-data pipeline. Top row: Stage 1 collects retrieval results with rank positions from three heterogeneous channels; Stage 2 annotates all pairs via a calibrated model cascade (89.1% agreement with human annotators). Bottom row: Stage 3 classifies pairs into five difficulty levels using channel agreement, rank thresholds, and catalog mining; Stage 4 trains a two-tower BERT model through three curriculum stages of increasing difficulty (BCE → MNR → Triplet), with each stage matched to specific sample types. Arrows between training stages indicate checkpoint transfer.",
+      "page": 5,
+      "index": 4,
+      "width": 921,
+      "height": 425
+    }
+  ]
+}

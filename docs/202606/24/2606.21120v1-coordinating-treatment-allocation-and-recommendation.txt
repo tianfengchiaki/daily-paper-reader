@@ -1,0 +1,1389 @@
+Title: Coordinating Treatment Allocation and Recommendation
+
+URL Source: https://arxiv.org/pdf/2606.21120v1
+
+Published Time: Tue, 23 Jun 2026 00:39:20 GMT
+
+Number of Pages: 35
+
+Markdown Content:
+# Coordinating Treatment Allocation and Recommendation ∗
+
+# Li Guo † Penghuan Yan ‡
+
+# June 23, 2026 
+
+Abstract 
+
+We study a model in which a sender allocates limited treatment to agents with heteroge-neous quality and later recommends selected agents to a receiver, seeking to maximize the number of agents accepted by the receiver. All agents value treatment, which improves agents’ quality, but treatment must be allocated before the sender observes agents’ initial quality; recommendation occurs only after quality is learned. A natural benchmark is to design the two instruments separately: allocate treatment randomly first, and then recommend agents from the top down afterward. Our main result shows that the sender can do strictly better by coordinating treatment allocation with recom-mendations. In the optimal joint mechanism, treatment is non-monotone in quality: an intermediate group has a lower treatment probability than both higher- and lower-quality agents, but is compensated with a guaranteed recommendation when treatment is realized. We provide an implementation through contracts that induce self-selection and discuss applications to education, industrial policy, and startup incubation. The takeaway is simple: coordinate treatment allocation and recommendation. 
+
+> ∗
+
+We thank Cuimin Ba, Aislinn Bohren, Kevin He, Navin Kartik, Xiao Lin, George Mailath, Margaret Meyer, Stephen Morris, Alessandro Pavan, Andrew Postlewaite, Daniel Rappoport, Doron Ravid, Collin Raymond, Juuso Toikka, Maren Vairo, and Rakesh Vohra, as well as participants at the Penn Micro Theory Lunch, the Midwest Trade & Theory Conference, the Pennsylvania Economics Theory Conference (PETCO), the ACM Conference on Economics and Computation (EC’26), the 37th Stony Brook International Confer-ence on Game Theory and the North American Summer Meeting of the Econometric Society for valuable comments and suggestions. Generative AI tools were used solely to assist with language organization, phrasing, and editorial refinement of this manuscript. All substantive ideas, economic arguments, interpretations, insights, and mathematical derivations were developed by the author. The author reviewed and revised all AI-assisted text and takes full responsibility for the content, accuracy, and originality of the paper. 
+
+> †
+
+University of Pennsylvania. gary16@sas.upenn.edu 
+
+> ‡
+
+University of Pennsylvania. yanph@sas.upenn.edu 
+
+> arXiv:2606.21120v1 [econ.TH] 19 Jun 2026
+
+# 1 Introduction 
+
+Many institutions both expend resources to improve agents’ quality and recommend selected agents to outside evaluators. Schools provide students with educational resources and later recommend them to employers for hiring. Incubators support startups and later recommend selected startups to investors who decide whether to invest in them. We refer to such an institution as the sender. In these settings, the sender must make two choices: how to initially allocate limited treatment that improves the treated agents’ quality, and how to later recommend agents to an outside receiver. Treatment is limited and must be allocated before the sender knows agents’ private types. All agents value treatment, but the sender cannot yet tell who should receive it. A school may allocate educational resources before knowing which students will become strong candidates. An incubator may allocate support before knowing which startups have real potential. Only after treatment is allocated does the sender learn more: schools observe course performance, and incubators observe demand data. The sender can then recommend selected agents to the outside receiver. In this paper, we focus on how a sender should allocate limited treatment and design recommendations to maximize the number of agents accepted by the receiver. To answer this question, we study a joint mechanism and information design problem that involves a sender, a receiver, and a continuum of agents with heterogeneous quality. The sender wants to maximize the mass of agents accepted by the receiver. The sender commits ex ante to how treatment and recommendation depend on agents’ reports and subsequent information. First, before observing agents’ true types, treatment is allocated to a limited mass of agents. Treatment improves treated agents’ quality. Second, after treatment is realized and agents’ types are observed, the committed rule determines which agents are recommended. The receiver observes only the sender’s recommendation and accepts recommended agents only if their expected quality is sufficiently high. Agents value both treatment and acceptance, but value acceptance more. A natural benchmark is to design the two instruments separately. The sender first al-locates treatment, and later, after observing agents’ quality, decides whom to recommend. Since the sender cannot yet identify quality and all agents want treatment, treatment is assigned at random and each agent receives treatment with the same probability. After treatment is realized and quality is observed, the sender recommends agents in descending order of post-treatment quality. The recommendation cutoff is chosen so that the average quality of recommended agents is just high enough for the receiver to accept them. Our main result shows that the sender can do strictly better by coordinating treatment 1allocation with the subsequent post-treatment recommendations. The optimal joint mecha-nism targets a group of intermediate-quality agents. These agents receive a lower probability of treatment than others, but are compensated with a recommendation as long as they are treated. In this way, the sender reduces the amount of treatment spent on this group while preserving their incentives to report truthfully. As a result, high-quality agents, who are more likely to be recommended, receive treatment with higher probability, thereby improving the overall quality of recommended agents. The treatment allocation in the optimal joint mechanism is non-monotone. Treatment is useful to the sender only when it reaches agents who are eventually recommended. The sender therefore wants to reserve treatment for high-quality agents, who are more likely to enter the recommended pool. The mechanism instead offers a special arrangement to an intermediate group: these agents receive a lower treatment probability and are compensated with treatment-contingent recommendation. This saves capacity and redirects treatment toward higher-quality agents. At the same time, the sender does not want the lowest-quality agents to choose this arrangement, because recommending them would lower the average quality of the recommended pool too much. To separate them from the intermediate group, the mechanism gives the lowest-quality agents a higher treatment probability than the intermediate group, while giving them no chance of recommendation. In standard information design, a recommendation is mainly a signal sent to the receiver. Here, recommendation also serves as an incentive device for agents because the sender can commit to the recommendation rule before treatment is allocated. The same instrument therefore performs two tasks: it persuades the receiver after quality is learned, and it screens agents before treatment is assigned. We provide a simple implementation of the optimal joint mechanism using a menu with two contracts that induces self-selection. Accepting the non-default contract means receiving a lower probability of treatment, but facing a more lenient standard for recommendation when treated. In equilibrium, only the targeted group accepts the non-default contract; all other agents choose the default option and face the regular treatment and recommendation rule. A natural application is education. A school may offer a regular track and an honors track. 1 The honors track may provide better access to scarce educational resources, such as advanced courses or research opportunities, but it may also impose more demanding standards. We also discuss applications to industrial policy and startup incubation. 
+
+> 1For example, some economics master’s programs offer a research-intensive track that gives students greater access to PhD-level coursework, while also imposing higher requirements.
+
+2Related Literature 
+
+Our paper builds on Bayesian persuasion and information design. In this literature, a sender designs signals to influence a receiver’s beliefs and actions (Rayo and Segal, 2010; Kamenica and Gentzkow, 2011; Bergemann and Morris, 2016; Kolotilin, 2018; Bergemann and Morris, 2019; Kamenica, 2019). Our paper has the same persuasion motive: the sender uses infor-mation to induce acceptance by a receiver. The difference is that the payoff-relevant state is endogenous: the quality distribution entering the recommendation problem depends on the sender’s treatment-allocation rule. The treatment-allocation part of the model relates to mechanism design and screening. In this literature, a designer allocates goods or contracts among privately informed agents subject to incentive constraints (Mussa and Rosen, 1978; Myerson, 1981; Baron and Myerson, 1982; Maskin and Riley, 1984; Laffont and Martimort, 2002). Our model is especially related to mechanism design without monetary transfers (Martimort and Semenov, 2006; Schummer and Vohra, 2007; Miralles, 2012; Ben-Porath, Dekel and Lipman, 2014). In our model, the only instrument through which the sender can transfer utility to agents is the later recommendation. At the same time, the sender’s objective is to use this recommendation to induce receiver acceptance. This dual role of recommendation is the key difference: the same recommendation rule must provide incentives to agents before treatment is allocated and remain credible to the receiver afterward. The closest strand of literature studies the joint design of information and mechanisms (Bergemann and Pesendorfer, 2007; Kolotilin, Mylovanov, Zapechelnyuk and Li, 2017; Berge-mann, Heumann and Morris, 2026). These papers share with ours the idea that information and mechanisms should be designed jointly. In much of this literature, information design and mechanism design are directed at the same side of the market. Our environment is three-sided. The sender designs a treatment-allocation mechanism for agents, but designs information for a separate receiver. The recommendation connects the two sides: it is the sender’s only instrument for transferring utility to agents, and it is also the information device used to induce receiver acceptance. Two closely related papers are Chopra and Ely (2025) and Dworczak (2020). Chopra and Ely (2025) study a three-sided setting in which a profit-seeking intermediary designs and sells information products, such as experiments, tests, or certificates, to screen privately informed senders and persuade receivers. Dwor-czak (2020) studies a setting in which a designer first runs a payoff-relevant mechanism and then chooses whether and how to disclose information elicited by that mechanism to a third party. The key difference is the role of the mechanism-design stage. In these papers, the mechanism-design stage either generates revenue from selling information or directly determines a payoff-relevant allocation. In our model, treatment allocation is not itself the 3sender’s payoff-relevant objective. Instead, the mechanism allocates scarce treatment to target agents, allowing the sender to recommend more agents to the receiver. Our paper is also related to work on certification, ratings, grading, testing, and informa-tion as an incentive device. Classic work on certification and quality disclosure studies how intermediaries or firms disclose quality information to markets (Lizzeri, 1999; Dranove and Jin, 2010). More recent work studies how certification, ratings, grades, or tests can induce agents to take costly actions that improve quality, such as effort, investment, or input choices (Zubrickas, 2015; Boleslavsky and Kim, 2018; Zapechelnyuk, 2020; Xiao, 2024; Camboni and Carnehl, 2025; Saeedi and Shourideh, 2026). In these papers, the analogue of treatment is typically costly for agents: it lowers their utility but raises the quality later revealed or rewarded by certification, ratings, grades, or tests. We study a complementary case in which treatment also raises quality but is valued by agents. The sender therefore does not use recommendation to induce agents to take a costly action; it uses recommendation to screen agents and improve the allocation of a scarce treatment. The rest of the paper is organized as follows. Section 2 sets up the model. Section 3 characterizes the optimal joint mechanism, develops the main intuition, and provides an implementation of the mechanism via contracts that induce self-selection. Section 4 discusses three applications: education, industrial policy, and startup incubation. Section 5 concludes. 
+
+# 2 Model 
+
+2.1 Environment 
+
+There is a sender, a receiver, and a unit mass of agents. The sender has two instruments, both specified ex ante by a committed mechanism: an allocation rule that distributes scarce treatment, which improves treated agents’ quality, and a recommendation rule that generates signals to the receiver. The sender’s objective is to maximize the mass of agents accepted by the receiver. Each agent has a type θ ∈ Θ = [0 , 1], drawn from a distribution F with positive density 
+
+f . The type θ represents the agent’s initial quality. Agents privately observe their types before treatment is assigned. The sender does not observe agents’ types at the treatment-allocation stage, but observes them before recommendation signals are sent to the receiver. The receiver observes neither agents’ types nor their treatment statuses. Treatment is binary. Let d ∈ { 0, 1} denote an agent’s treatment status. If a type-θ agent is treated, his quality becomes θ + v; otherwise, his quality remains θ. The constant v > 0is the treatment effect. Equivalently, final quality is θ + vd . Treatment capacity is limited: the sender can treat at most a mass κ ∈ (0 , 1) of agents. 4The sender commits ex ante to a treatment-allocation and recommendation mechanism. Let M denote the message space from agents to the mechanism, and let S denote the recommendation-signal space from the sender to the receiver. Given M and S, a mechanism is denoted by π = ( p, q ). The first component is a treatment-allocation rule 
+
+p : M → ∆{0, 1},
+
+where p(m) is the probability that an agent receives treatment d after sending message 
+
+m ∈ M . The second component is a recommendation rule 
+
+q : M × Θ × { 0, 1} → ∆( S),
+
+where q(s | m, θ, d ) is the probability that recommendation signal s ∈ S is sent to the receiver after the agent has sent message m, the sender has observed the agent’s type θ, and treatment status d has been realized. The receiver observes only the sender’s recommendation signal and decides whether to accept the agent. A signal can induce acceptance only if the posterior expected final quality conditional on that signal is sufficiently high. That is, after observing signal s, the receiver accepts only if 
+
+Eπ[θ + vd | s] ≥ τ, 
+
+where the expectation is taken under the distribution induced by the mechanism and agents’ messages. The sender’s payoff is the mass of agents accepted by the receiver. Agents value both treatment and acceptance. The payoff from being accepted is normal-ized to 1. Each agent obtains utility u from receiving treatment, where 0 < u < 1. Thus, acceptance is more valuable than treatment, but all agents strictly prefer treatment to no treatment. The timing is as follows. First, the sender commits to a mechanism π = ( p, q ). Second, each agent observes his type and sends a message m ∈ M . Third, treatment is assigned according to the treatment-allocation rule p, and treatment status is realized. Fourth, the agent’s true type and treatment status are observed by the sender, and a recommendation signal is sent to the receiver according to the recommendation rule q(· | m, θ, d ). Finally, the receiver observes the recommendation signal and decides whether to accept the agent. 52.2 Direct Mechanisms 
+
+By the revelation principle, we restrict attention to direct mechanisms. In a direct mecha-nism, the agent-message space is M = Θ. Each agent reports a type ˆθ ∈ Θ, and truth-telling requires ˆθ = θ on the equilibrium path. A direct mechanism is denoted by π = ( p, q ). The first component, p, is a treatment-allocation rule, 
+
+p : Θ → [0 , 1] ,
+
+where p(ˆθ) is the probability that an agent receives treatment after reporting ˆθ.The second component, q, is a recommendation rule, 
+
+q : Θ × Θ × { 0, 1} → ∆( S),
+
+where q(s | ˆθ, θ, d ) is the probability that recommendation signal s ∈ S is sent to the receiver after the agent has reported ˆθ, the sender has observed the agent’s true type θ, and treatment status d has been realized. Since the receiver’s action is binary, we restrict attention without loss to a binary recommendation-signal space, S = {0, 1}. We interpret s = 1 as a recommendation and 
+
+s = 0 as no recommendation. With binary recommendation signals, we write 
+
+q(ˆθ, θ, d ) := q(1 | ˆθ, θ, d )for the probability of recommendation. A recommendation is intended to induce acceptance by the receiver, subject to the obedience constraint below. 
+
+2.3 Receiver Obedience and Agent Incentives 
+
+Under truth-telling ˆθ = θ, the posterior mean quality of a recommended agent is 
+
+μπ := Eπ[θ + vd | s = 1] = 
+
+Z
+
+> Θ
+
+[
+
+> treated quality
+
+z }| {
+
+p(θ)q(θ, θ, 1)  θ + v +
+
+> untreated quality
+
+z }| { 1 − p(θ)q(θ, θ, 0) θ]d F (θ)
+
+Z
+
+> Θ
+
+p(θ)q(θ, θ, 1) +  1 − p(θ)q(θ, θ, 0)  dF (θ)
+
+| {z }
+
+> mass of recommended agents
+
+,
+
+whenever the denominator is positive. This expression integrates out treatment status: the receiver does not observe whether a recommended agent was treated, but infers the composition of the recommended pool from the sender’s committed rules. 6Receiver obedience requires 
+
+μπ ≥ τ. 
+
+Given the agents’ preferences, if a type-θ agent reports ˆθ, his expected payoff is 
+
+Uπ(θ, ˆθ) = p(ˆθ)
+
+h
+
+u + q(ˆθ, θ, 1) 
+
+i| {z }
+
+> payoff when treated
+
++  1 − p(ˆθ)q(ˆθ, θ, 0) 
+
+| {z }
+
+> payoff when untreated
+
+.
+
+With probability p(ˆθ), the agent receives treatment and obtains treatment utility u; con-ditional on being treated, he is recommended with probability q(ˆθ, θ, 1). With probability 1 − p(ˆθ), the agent is untreated and obtains only the acceptance payoff, which occurs with probability q(ˆθ, θ, 0). Truthful reporting requires 
+
+Uπ(θ, θ ) ≥ Uπ(θ, ˆθ), ∀θ, ˆθ ∈ Θ.
+
+2.4 Sender’s problem 
+
+The sender chooses a feasible direct mechanism to maximize the mass of recommended agents. Under truth-telling, the sender solves max 
+
+> p,q
+
+Z
+
+> Θ
+
+p(θ)q(θ, θ, 1) +  1 − p(θ)q(θ, θ, 0)  dF (θ),
+
+s.t. 
+
+Z
+
+> Θ
+
+p(θ) d F (θ) ≤ κ, (Capacity) 
+
+μπ ≥ τ, (Obedience) 
+
+Uπ(θ, θ ) ≥ Uπ(θ, ˆθ), ∀θ, ˆθ ∈ Θ. (IC) (2.1) The model combines a mechanism-design problem on the agent side with an information-design problem on the receiver side. Treatment is allocated before the sender observes agents’ types, so the allocation rule must respect agents’ reporting incentives. Recommendation determines the receiver’s posterior belief, so the recommendation rule must satisfy receiver obedience. 73 Optimal Direct Mechanism 
+
+In this section, we characterize the optimal direct mechanism. We focus on the nondegenerate interior case in which the receiver obedience constraint binds, i.e. 
+
+τ > 
+
+Z
+
+> Θ
+
+θ dF (θ) + vκ. 
+
+Our main result is that the optimal direct mechanism takes a four-segment form. 
+
+Theorem 1. In the nondegenerate interior case, an optimal direct mechanism either satisfies 
+
+q(ˆθ, θ, d ) = 0 almost everywhere (recommends no one), or takes the following form: 
+
+ p(θ), q (θ, θ, 1) , q (θ, θ, 0)  =
+
+
+
+(P, 1, 1) , θ ∈ (θ3, 1] ,
+
+(P, 1, 0) , θ ∈ (θ2, θ 3],
+
+ u
+
+1 + uP, 1, 0
+
+
+
+, θ ∈ (θ1, θ 2],
+
+(P, 0, 0) , θ ∈ [0 , θ 1],
+
+where κ < P ≤ 1 and 0 ≤ θ1 < θ 2 ≤ θ3 ≤ 1 are cutoffs, and 
+
+q(ˆθ, θ, d ) = 0 , for all ˆθ̸ = θ and d ∈ { 0, 1}.
+
+The mechanism divides agents into four groups. The top group receives the high treat-ment probability P and is recommended regardless of treatment status. The upper-middle group also receives the high treatment probability P and is recommended only if treated. The lower-middle group is the target group: these agents receive a lower treatment proba-bility, u 
+
+> 1+ u
+
+P , and are recommended conditional on being treated. The bottom group receives the high treatment probability P but is never recommended. To understand the intuition behind Theorem 1, it is useful to compare the optimal mechanism with a separated-design benchmark. 
+
+3.1 Separated-Design Benchmark 
+
+In this benchmark, treatment allocation and recommendation are designed separately. At the treatment-allocation stage, the sender only chooses which agents receive treatment. After treatment is realized and types are observed, the sender publicly commits to a recommen-dation rule. The solution to this recommendation problem is characterized by a cutoff θS ,8and the benchmark mechanism is 
+
+ pS (θ), q S (θ, θ, 1) , q S (θ, θ, 0)  =
+
+ P S , 1, 1, θ ∈ (θS , 1] ,
+
+ P S , 1, 0, θ ∈ (θS − v, θ S ],
+
+ P S , 0, 0, θ ∈ [0 , θ S − v],P S = κ. (S) The cutoff θS is chosen so that the receiver’s obedience constraint binds. The cutoff form has a simple interpretation. Since treatment allocation is designed sep-arately from recommendation and all agents value treatment, before types are observed, the sender has no way to direct treatment toward particular types. Treatment is therefore allocated uniformly: P S = κ.Once treatment is realized and types are observed, the sender faces a standard recom-mendation problem. Since treatment raises quality by v, a treated agent of type θ has quality 
+
+θ + v, while an untreated agent has quality θ. The sender therefore recommends agents from the top down in realized quality. Untreated agents are recommended only if θ > θ S , while treated agents are recommended if θ + v > θ S , or equivalently θ > θ S − v. Thus high types are recommended regardless of treatment status, intermediate types are recommended only if treated, and low types are never recommended. The limitation of the separated benchmark is that treatment cannot be targeted. Treat-ment helps the sender only when it is assigned to agents who are eventually recommended. If a treated agent is not recommended, the treatment uses capacity but does not improve the quality of the recommended pool. However, in the separated benchmark, treatment is forced to be assigned randomly, so some treatment is spent on agents who are too low-quality to be recommended even after treatment. The sender would instead like treatment to reach agents with high initial quality, since these agents are more likely to enter the recommended pool. Treating such agents raises the quality of the recommended pool and relaxes the receiver’s obedience constraint, which allows the sender to recommend more agents. The problem is that, at the treatment-allocation stage, the sender cannot distinguish these agents from lower-quality agents. The optimal joint mechanism in Theorem 1 improves on the separated benchmark by using the future recommendation rule to create incentives that help direct treatment toward the relevant types. 93.2 Intuition for Theorem 1 
+
+The optimal joint mechanism differs from the separated benchmark by introducing a target group. In the separated benchmark, low-type agents are never recommended, regardless of treatment status, but they still receive the same treatment probability as all other agents. The optimal joint mechanism instead selects some relatively low types and gives them a lower treatment probability, while compensating them with a recommendation when treatment is realized. This is the lower-middle group, 
+
+θ ∈ (θ1, θ 2],  p(θ), q (θ, θ, 1) , q (θ, θ, 0)  =
+
+ u
+
+1 + uP, 1, 0
+
+
+
+.
+
+These agents receive a lower treatment probability than the other groups. They are not recommended when untreated, and recommended when treated. The purpose of this design is to save treatment capacity. The target group consists of relatively low types, so the sender would rather reserve treatment for higher types. However, if the target group simply received a lower treatment probability, these agents would prefer to mimic types who receive treatment with probability P .The mechanism prevents this deviation by attaching recommendation to treatment. Con-ditional on receiving treatment, a target agent obtains both the treatment payoff u and the acceptance payoff 1. Hence his truthful payoff is 
+
+u
+
+1 + uP (1 + u) = P u, 
+
+which is exactly the payoff from mimicking a type who receives treatment with probability 
+
+P but is not recommended. Thus the target group is willing to report truthfully, while the sender reduces the treatment probability spent on them from P to u 
+
+> 1+ u
+
+P .This compensation is not free. Recommending lower-quality agents lowers the average quality of the recommended pool and tightens the receiver’s obedience constraint. Hence the sender faces a trade-off. Reducing treatment probability saves scarce capacity, but compensating agents through recommendation makes the obedience constraint harder to satisfy. This explains the non-monotone structure of the mechanism. The target group is neither the highest group nor the lowest group. It is not optimal to reduce treatment probability for the highest types because the sender wants these agents to receive treatment: they are most valuable for the receiver’s obedience constraint. It is also not optimal to target the lowest types because compensating them through recommendation is too costly. Their quality is too low, so recommending them would sharply reduce the posterior mean quality of 10 recommended agents. For the lowest types, the mechanism instead gives the high treatment probability P but no recommendation. The target group is therefore an intermediate group. The preceding discussion shows why treatment allocation and recommendation must be designed jointly. The key limitation of the separated design is that it uses the sender’s commitment power only toward the receiver, not toward agents. Joint design also uses the sender’s commitment power toward agents. By committing ex-ante to treatment-contingent recommendation rules, the sender can use future recommendation to screen agents before treatment is allocated. This allows the sender to redirect treatment capacity toward more valuable types. Corollary 1.1 shows that this joint design strictly improves on the separated-design benchmark. 
+
+Corollary 1.1. In the nondegenerate interior case, the optimal joint mechanism character-ized in Theorem 1 achieves a strictly larger mass of accepted agents than the separated-design benchmark in (S). Corollary 1.1 follows directly from that in Theorem 1 P is restricted to be strictly greater than κ, and that the separated-design benchmark corresponds to the same mechanism form as in Theorem 1, with P = κ. See Proposition A2 in Appendix A for a detailed proof. 
+
+3.3 Implementation 
+
+The optimal direct mechanism asks agents to report their types. In practice, such direct reports may be unrealistic. We now describe an indirect mechanism that weakly implements the same allocation. Agents do not report their types directly. Instead, they choose between two contracts offered by the sender: a default contract and a non-default contract. The mechanism is described below. 
+
+Indirect implementation 
+
+The sender publicly commits to the following mechanism. The sender offers each agent a menu with two contracts: a default contract and a non-default contract. Under the non-default contract, the agent receives treatment with fixed probability u 
+
+> 1+ u
+
+P . The recommendation rule for agents who choose the non-default contract is 
+
+ qN (θ, 1) , q N (θ, 0)  =
+
+
+
+(1 , 1) , θ ∈ (θ3, 1] ,
+
+(1 , 0) , θ ∈ (θ1, θ 3],
+
+(0 , 0) , θ ∈ [0 , θ 1].
+
+11 Thus, for agents who choose the non-default contract, the recommendation threshold is 
+
+θ1 when treated and θ3 when untreated. Under the default contract, the agent receives treatment with fixed probability P . Agents who choose the default contract face the regular recommendation rule: 
+
+ qD(θ, 1) , q D(θ, 0)  =
+
+
+
+(1 , 1) , θ ∈ (θ3, 1] ,
+
+(1 , 0) , θ ∈ (θ2, θ 3],
+
+(0 , 0) , θ ∈ [0 , θ 2].
+
+Thus, agents who choose the default contract face a higher recommendation threshold when treated: θ2 > θ 1. The threshold when untreated remains θ3.
+
+We show that this menu implements the optimal direct mechanism under tie-breaking in favor of the non-default contract. In the candidate equilibrium, agents in the target group, θ ∈ (θ1, θ 2], choose the non-default contract, while all other agents choose the default contract. We verify that no type has a profitable deviation: Top-group agents, θ ∈ (θ3, 1], choose the default contract. Under the default contract, they receive treatment with probability P and are recommended regardless of treatment status. Under the non-default contract, they are still recommended regardless of treatment status, but receive treatment with the lower probability u 
+
+> 1+ u
+
+P . Hence they strictly prefer the default contract. Upper-middle agents, θ ∈ (θ2, θ 3], also choose the default contract. Under the default contract, they receive treatment with probability P and are recommended whenever treated. Under the non-default contract, they are also recommended whenever treated, but receive treatment with the lower probability u 
+
+> 1+ u
+
+P . Hence they strictly prefer the default contract. Bottom agents, θ ∈ [0 , θ 1], choose the default contract as well. They are never recom-mended under either contract. Choosing the non-default contract only lowers their treatment probability, so they strictly prefer the default contract. Finally, consider target agents, θ ∈ (θ1, θ 2]. If a target agent chooses the default contract, he receives treatment with probability P but is never recommended, so his payoff is P u . If he chooses the non-default contract, he receives treatment with probability u 
+
+> 1+ u
+
+P , and treatment is bundled with recommendation. His payoff is 
+
+u
+
+1 + uP (1 + u) = P u. 
+
+Thus target agents are indifferent between the two contracts. With tie-breaking in favor of 12 the non-default contract, all target agents choose it. The induced allocation coincides with the optimal direct mechanism. Target agents choose the non-default contract, receive treatment with probability u 
+
+> 1+ u
+
+P , and are recom-mended when treated. All other agents choose the default contract, receive treatment with probability P , and face the regular recommendation rule. Hence top agents are recom-mended regardless of treatment status, upper-middle agents are recommended only when treated, and bottom agents are never recommended. This menu induces self-selection. Choosing the non-default contract means giving up treatment probability in exchange for a lower recommendation threshold when treated. Only the target group finds this trade-off weakly attractive, so the sender identifies them through their contract choice. 
+
+3.4 A Proof Sketch of Theorem 1 
+
+In this subsection, we present a proof sketch for our main result, Theorem 1. A complete proof is provided in Appendix A. The proof starts with the following two observations. First, the probability of recom-mendation is the only instrument that the sender can use to punish agents who are found to have misreported their types. Since the sender has full commitment power, it is optimal to commit to the harshest punishment for misreports by never recommending agents whose reported type is inconsistent with their true type, i.e., q(ˆθ, θ, d ) = 0 for all ˆθ̸ = θ, d ∈ { 0, 1}.As a result, the only potential benefit for an agent from deviating from truthful reporting is a higher probability of treatment. The treatment allocation rule p depends only on the reported type. Therefore, if an agent is to deviate, it is optimal for him to report a type that receives the highest probability of treatment. We denote this highest probability by P ,where P = sup θ∈Θ p(θ). The second observation is that, apart from treatment, agents care only about the ex-ante probability of being recommended. That is, conditional on this probability, it does not matter whether recommendation occurs when they are treated or untreated. We denote the ex-ante recommendation rule by Q, where Q(θ) is the ex-ante probability of a type-θ agent being recommended given truthful reporting, i.e., Q(θ) = p(θ)q(θ, θ, 1) + [1 − p(θ)] q(θ, θ, 0). It is sufficient for the sender to design ( p, Q ) as the incentive scheme for the agents. More-over, the same agent has higher quality when treated than when untreated. Therefore, for any fixed ex-ante recommendation probability Q(θ), the sender prefers to assign recommen-dation probability to the treated state first. Only after the agent is recommended with probability one when treated does the sender assign positive recommendation probability to the untreated state. 13 With these two observations, it can be shown that the sender’s problem (2.1) is equivalent to the following problem: max 
+
+> p,Q,P
+
+Z
+
+> Θ
+
+Q(θ)d F (θ),
+
+s.t. 
+
+Z
+
+> Θ
+
+p(θ) d F (θ) ≤ κ, (Capacity) 
+
+Z
+
+> Θ
+
+[( θ − θ)Q(θ) + v min {p(θ), Q (θ)}]d F (θ) ≥ 0, (Obedience) 
+
+Q(θ) + p(θ)u ≥ P u, ∀θ ∈ Θ, (IC 1)
+
+p(θ) ≤ P, ∀θ ∈ Θ, (IC 2)The optimal recommendation rule q can be recovered from p and Q.To solve this problem, we first fix the value of P and optimize over p and Q. When 
+
+P is fixed, the problem is a convex optimization problem satisfying Slater’s condition. We therefore proceed with Lagrangian methods and show that given P , the solution takes either of the following two forms: (p(θ), Q (θ)) = 
+
+
+
+(P, 1) , θ3 < θ ≤ 1(P, P ), θ2 < θ ≤ θ3
+
+  u 
+
+> 1+ u
+
+P, u 
+
+> 1+ u
+
+P  , θ1 < θ ≤ θ2
+
+(P, 0) , 0 ≤ θ ≤ θ1
+
+or 
+
+
+
+(0 , 1) , θ3 < θ ≤ 1(0 , uP ), ˜θ2 < θ ≤ θ3
+
+  u 
+
+> 1+ u
+
+P, u 
+
+> 1+ u
+
+P  , θ1 < θ ≤ ˜θ2
+
+(P, 0) , 0 ≤ θ ≤ θ1
+
+,
+
+where θ1, θ2, ˜θ2, and θ3 are cutoffs, whose values are pinned down by the Lagrangian multi-pliers. We then optimize over P ∈ [κ, 1]. We assume that at the optimum, the sender can recommend a strictly positive measure of agents, otherwise the sender’s maximal payoff is zero. It can be shown that for a given P , if the solution takes the second form, it is strictly dominated by the solution when P = κ. Furthermore, it can be shown that P = κ is also not optimal. Therefore, the optimal direct mechanism takes the first form with P > κ , which represents a mechanism that takes exactly the four-segment form presented in Theorem 1. 
+
+# 4 Applications 
+
+The model has a rich set of applications. This section discusses three examples: education and placement, industrial policy, and startup incubation. 14 4.1 Education and Placement 
+
+A natural application is education. The sender is a school or program; the agents are stu-dents; and the receiver is the labor market, employers, or another institution that evaluates students after they leave the school. The treatment is a scarce educational resource, such as access to strong instructors, small honors sections, research positions, mentoring, internships, or placement support. When these resources are allocated, the school does not yet know students’ true ability. Admission files may not reveal which students will become strong candidates later, while stu-dents may have private information about their preparation, motivation, or fit. All students value scarce educational resources and successful placement. After students take courses, complete projects, and interact with faculty, the school learns much more about their ability. It can then recommend students through grades, honors, or recommendation letters. Employers do not observe all of the school’s internal information, so they decide whether to hire recommended students based on the expected quality of the recommended pool. This maps directly into the model. The school wants to maximize the number of students accepted by employers. It has a limited treatment that improves student quality, but must allocate it before fully learning students’ ability. Later, once ability is better observed, the school can recommend students to employers. The receiver’s obedience constraint captures the credibility of these recommendations: if the school recommends too many weak students, employers discount the signal. The model suggests that educational resources and placement support should be de-signed jointly. A school can implement this logic through honors programs or academic tracks. These tracks may differ both in access to scarce educational resources and in the probability of later recommendation. Students in a less resource-intensive track may receive fewer educational inputs, but may also face stronger placement support or a lower threshold for endorsement if they perform well. Such tracks induce self-selection. Students choose based not only on current resources, but also on the future recommendation attached to each track. The school can therefore use track choice to identify a target group before it fully observes students’ ability, implementing the same logic as the optimal joint mechanism. 
+
+4.2 Industrial Policy and Firm Certification 
+
+A second application is local industrial policy. The sender is a local government; the agents are firms; and the receiver is an upper-level government. The treatment is limited policy sup-15 port, such as access to an industrial park, subsidized land, tax relief, talent-policy support, loan guarantees, infrastructure support, or procurement opportunities. The local government wants to cultivate firms that can later receive recognition from an upper-level government as promising firms in strategically important sectors. Such recogni-tion may serve as evidence of local policy success. 2 When local support is allocated, how-ever, the government cannot perfectly distinguish high-potential firms from low-potential firms mainly seeking subsidies. Firms know more about their own productivity, technology, commitment, and growth prospects. All firms value policy support and recognition by the upper-level government. Over time, the local government learns much more about firm quality. It observes pro-duction, employment, tax payments, project completion, orders, financing, patents, exports, and other performance measures. It can then recommend firms to the upper-level govern-ment. The upper-level government does not observe all local information, so it relies on the local government’s recommendation. The recommendation must remain credible: if too many weak firms are recommended, the upper-level government will discount the signal. This setting captures a central difficulty in industrial policy. Early policy support is valuable, but it may attract weak firms mainly interested in obtaining subsidies. The local government would like scarce support to reach firms that can later become credible candidates for upper-level recognition, but these firms are difficult to identify at the initial allocation stage. The model highlights that industrial policy is not only about allocating subsidies. It is also about designing later certification. A local government may use future recommendation to induce firms to reveal information before scarce support is allocated. Some firms may accept less policy support in exchange for a better chance of later certification if they meet performance standards. This allows the government to save scarce resources while still identifying firms that can become valuable candidates for upper-level recognition.    
+
+> 2For example, China’s “specialized and innovative” SME policies emphasize local support for firm devel-opment while also linking local implementation to upper-level recognition. A 2021 Ministry of Finance and Ministry of Industry and Information Technology notice asks local governments to improve support policies and public-service systems, with the goal of helping about 10,000 SMEs grow into national-level “Little Gi-ant” firms. A 2024 notice further emphasizes central-local coordination, local cultivation services, provincial recommendation of candidate firms, and performance evaluation. See Ministry of Finance and Ministry of Industry and Information Technology, “Notice on Supporting the High-Quality Development of Special-ized and Innovative SMEs,” 2021, https://www.beijing.gov.cn/zhengce/zhengcefagui/qtwj/202204/ t20220413_2675299.html ; and “Notice on Further Supporting the High-Quality Development of Specialized and Innovative SMEs,” 2024, https://jjs.mof.gov.cn/zhengcefagui/202406/t20240618_3937446.htm .
+
+16 4.3 Incubators and Accelerators 
+
+A third application is startup incubation. The sender is an incubator, accelerator, university entrepreneurship center, or local startup platform; the agents are startups; and the receiver is a group of later-stage investors, strategic partners, acquirers, or other outside evaluators. The treatment is a scarce developmental input, such as seed funding, office space, technical assistance, mentorship, legal support, cloud credits, network access, or investor introductions. Early in the process, the incubator does not know which startups are truly high quality. Many startups are still at the idea or prototype stage, and the available information may consist mainly of founders’ claims, pitch decks, and limited early traction. Founders may know more about their own technology, effort, or market fit than the incubator does. All startups value support from the incubator, and all startups value being recommended to investors or partners later. After the incubation period, the incubator learns much more. It observes whether the team builds the product, whether customers respond, whether founders execute, and whether the business model improves. At that point, the incubator can recommend startups through demo days, curated introductions, endorsement letters, or access to a preferred investor network. Investors do not observe all of the incubator’s private information, but they may trust the recommendation if the recommended pool is sufficiently strong. This application captures the joint role of early support and later certification. If early support is allocated without using the later recommendation rule, some resources may go to startups that never become investor-ready. The incubator would instead like support to reach startups that are more likely to become credible candidates for later financing, but these startups are difficult to identify at the beginning. The model suggests that incubators should design early support and later investor access jointly. Some startups may accept less early support in exchange for a better chance of later investor introduction if they reach certain milestones. This contract is attractive only to startups that expect to benefit from the later recommendation. The incubator can therefore use the promise of future certification to identify a target group and reserve more intensive resources for startups that are more valuable to the later recommendation pool. 
+
+# 5 Conclusion 
+
+This paper studies a joint mechanism and information design problem. A sender wants to maximize the mass of agents accepted by a receiver. The sender has two instruments: ascarce treatment that can improve agents’ quality, and a later recommendation that affects 17 the receiver’s belief. The key friction is informational timing. Treatment must be allocated before the sender fully observes agents’ types, while recommendation occurs later, after more information is revealed. The main result is that treatment allocation and recommendation should be designed jointly. The optimal joint mechanism targets an intermediate group: the sender reduces treatment probability not for the lowest or highest types, but for agents in the middle. These agents receive a lower probability of treatment, but are compensated by a recommendation when treatment is realized. This non-monotone treatment allocation allows the sender to save treatment capacity and redirect it toward higher types, whose treated quality is more valuable for satisfying the receiver’s acceptance constraint. The mechanism therefore uses recommendation in two ways. It communicates information to the receiver, and it also helps elicit information from agents before treatment is allocated. The model applies to settings such as education, local industrial policy, and startup in-cubation, where an institution allocates scarce resources before fully learning agents’ quality and later recommends selected agents to an outside evaluator. Across these applications, the central takeaway is the same: later recommendation should not be treated only as an information device, but also as an incentive device that improves the early allocation of scarce resources. The model also speaks to empirical evaluations of programs. Lack of direct type ob-servability is sometimes used as part of the argument for random or quasi-random program assignment. Our model suggests caution with this interpretation. A program designer who seeks to maximize program success may instead use a non-random treatment-allocation rule based on agents’ messages, applications, or self-selection decisions. In this case, treatment assignment can be systematically related to agents’ private information even though the designer does not observe types directly. Lack of direct type observability is therefore not sufficient for random assignment. 18 References 
+
+Baron, David P. and Roger B. Myerson , “Regulating a Monopolist with Unknown Costs,” Econometrica , 1982, 50 (4), 911–930. 
+
+Ben-Porath, Elchanan, Eddie Dekel, and Barton L Lipman , “Optimal allocation with costly verification,” American Economic Review , 2014, 104 (12), 3779–3813. 
+
+Bergemann, Dirk and Martin Pesendorfer , “Information Structures in Optimal Auc-tions,” Journal of Economic Theory , 2007, 137 (1), 580–609. 
+
+and Stephen Morris , “Information Design, Bayesian Persuasion, and Bayes Correlated Equilibrium,” American Economic Review , 2016, 106 (5), 586–591. 
+
+and , “Information Design: A Unified Perspective,” Journal of Economic Literature ,2019, 57 (1), 44–95. 
+
+, Tibor Heumann, and Stephen Morris , “Screening with Persuasion,” Journal of Political Economy , 2026. Forthcoming. 
+
+Boleslavsky, Raphael and Kyungmin Kim , “Bayesian Persuasion and Moral Hazard,” 2018. SSRN working paper. 
+
+Camboni, Matteo and Christoph Carnehl , “Inputs or Outputs: What to Test and How to Test,” in “Proceedings of the 26th ACM Conference on Economics and Computation” 2025, p. 577. 
+
+Chopra, Hershdeep and Jeffrey Ely , “Incentive-Compatible Information Design,” 2025. 
+
+Dranove, David and Ginger Zhe Jin , “Quality Disclosure and Certification: Theory and Practice,” Journal of Economic Literature , 2010, 48 (4), 935–963. 
+
+Dworczak, Piotr , “Mechanism Design with Aftermarkets: Cutoff Mechanisms,” Econo-metrica , 2020, 88 (6), 2629–2661. 
+
+Kamenica, Emir , “Bayesian Persuasion and Information Design,” Annual Review of Eco-nomics , 2019, 11 , 249–272. 
+
+and Matthew Gentzkow , “Bayesian Persuasion,” American Economic Review , 2011, 
+
+101 (6), 2590–2615. 
+
+Kolotilin, Anton , “Optimal Information Disclosure: A Linear Programming Approach,” 
+
+Theoretical Economics , 2018, 13 (2), 607–635. 
+
+, Tymofiy Mylovanov, Andriy Zapechelnyuk, and Ming Li , “Persuasion of a pri-vately informed receiver,” Econometrica , 2017, 85 (6), 1949–1964. 
+
+Laffont, Jean-Jacques and David Martimort , The Theory of Incentives: The Principal-Agent Model , Princeton, NJ: Princeton University Press, 2002. 19 Lizzeri, Alessandro , “Information Revelation and Certification Intermediaries,” The RAND Journal of Economics , 1999, 30 (2), 214–231. 
+
+Martimort, David and Aggey Semenov , “Continuity in Mechanism Design without Transfers,” Economics Letters , 2006, 93 (2), 182–189. 
+
+Maskin, Eric and John Riley , “Monopoly with Incomplete Information,” The RAND Journal of Economics , 1984, 15 (2), 171–196. 
+
+Miralles, Antonio , “Cardinal Bayesian Allocation Mechanisms without Transfers,” Journal of Economic Theory , 2012, 147 (1), 179–206. 
+
+Mussa, Michael and Sherwin Rosen , “Monopoly and Product Quality,” Journal of Economic Theory , 1978, 18 (2), 301–317. 
+
+Myerson, Roger B. , “Optimal Auction Design,” Mathematics of Operations Research ,1981, 6 (1), 58–73. 
+
+Rayo, Luis and Ilya Segal , “Optimal Information Disclosure,” Journal of Political Econ-omy , 2010, 118 (5), 949–987. 
+
+Saeedi, Maryam and Ali Shourideh , “Optimal Rating Design under Moral Hazard,” 2026. Working paper, arXiv:2008.09529. 
+
+Schummer, James and Rakesh V. Vohra , “Mechanism Design without Money,” in Noam Nisan, Tim Roughgarden, ´Eva Tardos, and Vijay V. Vazirani, eds., Algorithmic Game Theory , Cambridge: Cambridge University Press, 2007, chapter 10, pp. 243–265. 
+
+Xiao, Peiran , “Incentivizing Agents through Ratings,” 2024. Working paper, arXiv:2407.10525. 
+
+Zapechelnyuk, Andriy , “Optimal Quality Certification,” American Economic Review: Insights , 2020, 2 (2), 161–176. 
+
+Zubrickas, Robertas , “Optimal grading,” International Economic Review , 2015, 56 (3), 751–776. 20 Appendix A Proof of Theorem 1 
+
+In this section, we provide a characterization for the solution to problem (2.1), which is restated below. max 
+
+> p,q
+
+Z
+
+> Θ
+
+[p(θ)q(θ, θ, 1) + (1 − p(θ)) q(θ, θ, 0)] d F (θ),
+
+s.t. 
+
+Z
+
+> Θ
+
+p(θ) d F (θ) ≤ κ, (Capacity) 
+
+μπ ≥ τ, (Obedience) 
+
+Uπ(θ, θ ) ≥ Uπ(θ, ˆθ), ∀θ, ˆθ ∈ Θ, (IC) (2.1) .
+
+Lemma A1. There exists an optimal mechanism ( p, q ) that satisfies q(ˆθ, θ, d ) = 0 for all ˆθ̸ = θ and d ∈ { 0, 1}.
+
+Proof. In problem (2.1), when ˆθ̸ = θ, q(ˆθ, θ, d ) shows up only in the IC constraint, which expands to 
+
+p(θ)[ u + q(θ, θ, 1)] + (1 − p(θ)) q(θ, θ, 0) ≥ p(ˆθ)[ u + q(ˆθ, θ, 1)] + (1 − p(ˆθ)) q(ˆθ, θ, 0) .
+
+Clearly, the right-hand side is increasing in q(ˆθ, θ, 0) and q(ˆθ, θ, 1). Therefore, it is optimal to set them such that the IC constraint is as slack as possible, i.e., q(ˆθ, θ, 0) = q(ˆθ, θ, 1) = 0 whenever ˆθ̸ = θ. This is essentially assigning the harshest punishment available whenever a lie is detected. Lemma A1 implies that we can restrict our attention to the mechanisms that impose the harshest punishment to agents that misreport. We define the “‘ex-ante recommendation rule” Q : [0 , 1] → [0 , 1] as 
+
+Q(θ) := p(θ)q(θ, θ, 1) + [1 − p(θ)] q(θ, θ, 0) .
+
+“Ex-ante” here means before assigning the treatment. 21 With Lemma A1, problem (2.1) can be rewritten using the definition of Q as max 
+
+> p,q
+
+Z
+
+> Θ
+
+Q(θ)d F (θ),
+
+s.t. 
+
+Z
+
+> Θ
+
+p(θ) d F (θ) ≤ κ, (Capacity) 
+
+Z
+
+> Θ
+
+[( θ − θ)Q(θ) + vp (θ)q(θ, θ, 1)]d F (θ) ≥ 0, (Obedience) 
+
+Q(θ) + p(θ)u ≥ p(ˆθ)u, ∀θ, ˆθ ∈ Θ. (IC) (A.1) The obedience constraint is expanded and simplified according to the definition of μπ. The IC constraint can be further rewritten as 
+
+Q(θ) + p(θ)u ≥ sup 
+
+> ˆθ∈Θ
+
+p(ˆθ)u, ∀θ ∈ Θ.
+
+Lemma A2. The optimal mechanism ( p, q ) satisfies 
+
+q(θ, θ, 1) = min 
+
+
+
+1, Q(θ)
+
+p(θ)
+
+
+
+,q(θ, θ, 0) = max 
+
+Q(θ) − p(θ)1 − p(θ) , 0
+
+
+
+.
+
+When p(θ) ∈ { 0, 1}, the value of q(θ, θ, 1 − p(θ)) is irrelevant. 
+
+Proof. Given fixed p(θ) and Q(θ), the obedience constraint becomes slacker when q(θ, θ, 1) increases. Therefore, it is optimal to set q(θ, θ, 1) to be its maximal feasible value. The only two constraints on the upper bound of q(θ, θ, 1) are q(θ, θ, 1) ≤ 1, and 
+
+p(θ)q(θ, θ, 1) + [1 − p(θ)] q(θ, θ, 0) = Q(θ) ≤ 1 = ⇒ q(θ, θ, 1) ≤ Q(θ)
+
+p(θ) ,
+
+because p(θ), q(θ, θ, 0) and 1 − p(θ) are non-negative. Hence, the optimal q(θ, θ, 1) is min {1, Q(θ) 
+
+> p(θ)
+
+}, and the corresponding optimal q(θ, θ, 0) takes the value such that p(θ)q(θ, θ, 1)+ [1 − p(θ)] q(θ, θ, 0) = Q(θ). Lemma A2 implies that it is sufficient for the sender to design p and ex-ante recom-mendation rule Q as the mechanism. The optimal treatment-specific recommendation rule 
+
+q(θ, θ, 0) and q(θ, θ, 1) can be recovered from the optimal p and Q. This further simplifies 22 the sender’s problem into max 
+
+> p,Q
+
+Z
+
+> Θ
+
+Q(θ)d F (θ),
+
+s.t. 
+
+Z
+
+> Θ
+
+p(θ) d F (θ) ≤ κ, (Capacity) 
+
+Z
+
+> Θ
+
+[( θ − θ)Q(θ) + v min {p(θ), Q (θ)}]d F (θ) ≥ 0, (Obedience) 
+
+Q(θ) + p(θ)u ≥ sup 
+
+> ˆθ∈Θ
+
+p(ˆθ)u, ∀θ ∈ Θ. (IC) (A.2) We hereby refer to ( p, Q ) also as a mechanism. 
+
+Lemma A3. There exists an optimal solution to problem (A.2) such that the capacity constraint binds. 
+
+Proof. Suppose ( p, Q ) is an optimal solution to (A.2) such that 
+
+k := 
+
+Z
+
+> Θ
+
+p(θ)d F (θ) < κ. 
+
+We define ˜p(θ) := p(θ) + κ − k
+
+1 − k (1 − p(θ)) .
+
+It is easy to verify that ˜ p : [0 , 1] → [0 , 1], 
+
+Z
+
+> Θ
+
+p(θ)d F (θ) = κ, 
+
+and obedience and IC constraints still hold for (˜ p, Q ). Therefore, (˜ p, Q ) is an optimal solution to (A.2) such that the capacity constraint binds. Lemma A3 implies that sup ˆθ∈Θ p(ˆθ) ≥ κ at the optimum. Define P = sup ˆθ∈Θ p(ˆθ). By Lemma A3, we restrict our attention to the case where P ∈ [κ, 1]. To solve (A.2), we follow a two-step procedure to linearize the constraints. We first characterize the optimal ( p, Q )23 for a given P by solving max 
+
+> p,Q
+
+Z
+
+> Θ
+
+Q(θ)d F (θ),
+
+s.t. 
+
+Z
+
+> Θ
+
+p(θ) d F (θ) ≤ κ, (Capacity) 
+
+Z
+
+> Θ
+
+[( θ − θ)Q(θ) + v min {p(θ), Q (θ)}]d F (θ) ≥ 0, (Obedience) 
+
+Q(θ) + p(θ)u ≥ P u, ∀θ ∈ Θ, (IC 1)
+
+p(θ) ≤ P, ∀θ ∈ Θ, (IC 2)(A.3) We then substitute the resulting solution ( pP , Q P ) into the objective and choose P to solve max  
+
+> P∈[κ, 1]
+
+Z
+
+> Θ
+
+QP (θ)d F (θ), s.t. (pP , Q P ) solves (A.3) .
+
+To solve problem (A.3), we introduce Lagrangian multipliers for the capacity and obedi-ence constraints: max 
+
+> p,Q
+
+Z
+
+> Θ
+
+Q(θ) − λp (θ) + η(( θ − θ)Q(θ) + v min {p(θ), Q (θ)})dF (θ) + λκ, 
+
+s.t. (IC 1) Q(θ) + p(θ)u ≥ P u, ∀θ ∈ Θ,
+
+(IC 2) p(θ) ≤ P, ∀θ ∈ Θ.
+
+(A.4) 
+
+Lemma A4. For a fixed P ∈ [κ, 1], if the constraint set of (A.3) is non-empty, ( p∗, Q ∗) is the solution to problem (A.3) if and only if there exists λ, η ≥ 0 satisfying the KKT conditions such that ( p∗, Q ∗) is also a solution to problem (A.4). 
+
+Proof. In problem (A.3), the objective function is linear in ( p, Q ). All constraints except the obedience constraint are affine in ( p, Q ). It is easy to verify that min {p(θ), Q (θ)} is a concave function in ( p(θ), Q (θ)), and therefore the left-hand side of the obedience constraint is concave in ( p, Q ). Hence, the constraint set is a convex set, and therefore problem (A.3) is a convex optimization problem. We can linearize the constraint set by replacing min {p(θ), Q (θ)} with m(θ) and intro-ducing constraint p(θ), Q (θ) ≥ m(θ) ≥ 0. The new constraint set is affine in ( p, Q, m ). For an affine constraint set, the Slater’s condition only requires that a feasible point exists. As long as the original constraint set is non-empty, ( p, Q, min {p, Q }) is feasible in the linearized constraint set. Therefore, the Slater’s condition is satisfied, which finishes the proof. Lemma A4 implies that to solve problem (A.3), we can first solve problem (A.4) for any given pair of multipliers, and then find a specific combination of multipliers such that its 24 corresponding solution to (A.4) also satisfies the capacity and obedience constraints. Notice that the objective function of (A.3) is increasing in Q, and that the IC constraint becomes slacker when Q increases. Since the obedience constraint is continuous in Q, as long as it is slack, the objective can be improved by increasing Q slightly without violating the constraints. Therefore, at optimum, the obedience constraint binds, and hence η > 0. Given λ and η, problem (A.4) is a pointwise maximization problem with linear con-straints. Let ( pλ,η , Q λ,η ) be the solution to problem (A.4) given the multipliers λ and η. We further define Λ = λη , H = τ − 1
+
+η .
+
+Proposition A1. Given λ, η ≥ 0, the solution to problem (A.4) is given by (pλ,η (θ), Q λ,η (θ)) = 
+
+
+
+(P, 1) , H ≤ θ, Λ ≤ v, 
+
+(0 , 1) , H ≤ θ, Λ ≥ v, 
+
+(P, P ), H ≥ θ, Λ + H ≤ θ + v, 
+
+(P, 0) , H ≥ θ, H − Λ
+
+u ≥ θ + v, 
+
+(0 , uP ), H ≥ θ, H − Λ
+
+u ≤ θ − vu,
+
+ u
+
+1 + uP, u
+
+1 + uP
+
+
+
+, otherwise .
+
+(A.5) 
+
+Proof. Problem (A.4) is a pointwise optimization problem. For a given θ, we introduce 
+
+m = min {p(θ), Q (θ)} to linearize the problem. Equivalently, we can rewrite the problem into the following linear programming problem with Λ and H: max  
+
+> p(θ),Q (θ),m
+
+− Λ · p(θ) + ( θ − H) · Q(θ) + v · m
+
+s.t. Q(θ) + p(θ)u ≥ P u, p(θ) ≤ P, 
+
+0 ≤ m ≤ p(θ), Q (θ) ≤ 1.
+
+Here, we scaled the objective function by η−1. We know that Λ ≥ 0. The objective function is optimized at at least one of the extreme points of the constraint set. All extreme points such that at least one of m = p(θ) and m = Q(θ) holds and the corresponding values of the objective function are listed in Table A.1. For convenience, we label the values V1–V6. The solution to the problem is the extreme point with the highest 25 corresponding objective function value. Extreme point ( p(θ), Q (θ), m ) Value of objective (P, 1, P ) (v − Λ) P + θ − H =: V1
+
+(0 , 1, 0) θ − H =: V2
+
+(P, P, P ) (v − Λ + θ − H) P =: V3
+
+(P, 0, 0) −ΛP =: V4
+
+(0 , uP, 0) (θ − H) uP =: V5
+
+  u 
+
+> 1+ u
+
+P, u 
+
+> 1+ u
+
+P, u 
+
+> 1+ u
+
+P  (v − Λ + θ − H) u 
+
+> 1+ u
+
+P =: V6
+
+Table A.1. Extreme points and corresponding values of the objective function 
+
+Case 1: H ≤ θ, Λ ≤ v.
+
+In this case, v − Λ, θ − H ≥ 0. For any a ∈ [0 , P ], b ∈ [0 , 1], ( v − Λ) a + ( θ − H) b ≤
+
+(v − Λ) P + θ − H = V1. Therefore, V1 ≥ V2, V 3, V 5, V 6 ≥ 0 ≥ V4, and the solution is (p(θ), Q (θ)) = ( P, 1). 
+
+Case 2: H ≤ θ, Λ ≥ v.
+
+In this case, v − Λ ≤ 0, θ − H ≥ 0. For any a ∈ [0 , P ], b ∈ [0 , 1], ( v − Λ) a + ( θ − H) b ≤
+
+θ − H = V2. Therefore, V2 ≥ V1, V 3, V 5, V 6. Also, V2 ≥ 0 ≥ V4, and hence the solution is (p(θ), Q (θ)) = (0 , 1). 
+
+Case 3: H ≥ θ, Λ + H ≤ θ + v.
+
+In this case, it is easy to verify that v − Λ ≥ 0, θ − H ≤ 0, and v − Λ + θ − H ≥ 0. Therefore, V2, V 4, V 5 ≤ 0 ≤ V3. Furthermore, 
+
+V1 = ( v − Λ) P + θ − H ≤ (v − Λ) P + ( θ − H) P = V3,
+
+and 
+
+V6 = ( v − Λ + θ − H) u
+
+1 + uP ≤ (v − Λ + θ − H) P = V3.
+
+Hence, V3 is the largest, and the solution is ( p(θ), Q (θ)) = ( P, P ). 
+
+Case 4: H ≥ θ, H − Λ 
+
+> u
+
+≥ θ + v.
+
+In this case, it is easy to verify that θ − H ≤ 0 and v − Λ + θ − H ≤ 0. Therefore, 
+
+V1 ≤ V3 ≤ V6 ≤ 0, V2 ≤ V5 ≤ 0. 26 Since H − Λ 
+
+> u
+
+≥ θ + v, we know that H − Λ 
+
+> u
+
+− θ ≥ v, and that 
+
+V4 − V5 =
+
+
+
+H − θ − Λ
+
+u
+
+
+
+uP ≥ vuP ≥ 0 = ⇒ V4 ≥ V5.
+
+Furthermore, H − Λ 
+
+> u
+
+− θ − v ≥ 0, and 
+
+V4 − V6 =
+
+
+
+−1 + uu Λ − v + Λ − θ + H 
+
+ u
+
+1 + uP
+
+=
+
+
+
+H − Λ
+
+u − θ − v
+
+ u
+
+1 + uP
+
+≥ 0 = ⇒ V4 ≥ V6.
+
+Hence, V4 is the largest, and the solution is ( p(θ), Q (θ)) = ( P, 0). 
+
+Case 5: H ≥ θ, H − Λ 
+
+> u
+
+≤ θ − vu .
+
+In this case, it is easy to verify that v − Λ ≤ 0 and θ − H ≤ 0. Therefore, V3 ≤ V6 ≤ 0, 
+
+V1 ≤ V2 ≤ V5 ≤ 0. Since H − Λ 
+
+> u
+
+≤ θ − vu and therefore θ − H + Λ 
+
+> u
+
+≥ vu , we have 
+
+V5 − V4 =
+
+
+
+θ − H + Λ
+
+u
+
+
+
+uP ≥ vuuP ≥ 0 = ⇒ V5 ≥ V4,
+
+and 
+
+V5 − V6 = [(1 + u)( θ − H) − (v − Λ + θ − H)] u
+
+1 + uP
+
+=
+
+
+
+θ − H + Λ
+
+u − vu
+
+ u2
+
+1 + uP
+
+≥
+
+ vu − vu
+
+ u2
+
+1 + uP
+
+= 0 = ⇒ V5 ≥ V6.
+
+Hence, V5 is the largest, and the solution is ( p(θ), Q (θ)) = (0 , uP ). 
+
+Case 6: H ≥ θ, Λ + H ≥ θ + v, θ − vu ≤ H − Λ 
+
+> u
+
+≤ θ + v.
+
+In this case, it is easy to verify that θ − H ≤ 0 and v − Λ + θ − H ≤ 0. Therefore, 
+
+V1 ≤ V3 ≤ V6 ≤ 0, V2 ≤ V5 ≤ 0. 27 θ − vu ≤ H − Λ 
+
+> u
+
+≤ θ + v implies θ − H + v + Λ 
+
+> u
+
+≥ 0 and vu − Λ 
+
+> u
+
+− θ + H ≥ 0. Therefore, 
+
+V6 − V4 =
+
+
+
+v − Λ + θ − H + 1 + uu Λ
+
+ u
+
+1 + uP
+
+=
+
+
+
+θ − H + v + Λ
+
+u
+
+ u
+
+1 + uP
+
+≥ 0 = ⇒ V6 ≥ V4,
+
+and 
+
+V6 − V5 = [ v − Λ + θ − H − (1 + u)( θ − H)] u
+
+1 + uP
+
+=
+
+ vu − Λ
+
+u − θ + H 
+
+ u2
+
+1 + uP
+
+≥ 0 = ⇒ V6 ≥ V5.
+
+Hence, V6 is the largest, and the solution is ( p(θ), Q (θ)) = ( u 
+
+> 1+ u
+
+P, u 
+
+> 1+ u
+
+P ). In summary, the solution to problem (A.4) is as listed in (A.5).    
+
+> Λ
+> H
+> slope = −1
+> slope =  u−1
+> slope =  u−1
+> θ
+> θ+v
+> v0
+
+(P, 1) (0 , 1) 
+
+(P, P )
+
+(P, 0) 
+
+(0 , uP )
+
+  u
+
+> 1+ u
+
+P, u
+
+> 1+ u
+
+P 
+
+(a) ΛH + 1 − θ 
+
+> 11 + v
+> v0
+
+(P, 1) (0 , 1) 
+
+(P, P )
+
+(P, 0) 
+
+(0 , uP )
+
+  u
+
+> 1+ u
+
+P, u
+
+> 1+ u
+
+P   
+
+> (Λ ,H) (Λ ,H + 1)
+> θ
+
+(b) 
+
+Figure A.1. Illustration of direct mechanisms. Figure A.1a provides an illustration for the results in Proposition A1 in (Λ , H) space. The second step, finding a combination of λ and η such that ( pλ,η , Q λ,η ) satisfies the capacity and obedience constraint, is not useful for characterizing the optimal mechanism. By Proposition A1, there are two classes of mechanisms that are potentially optimal, illustrated by the two line segments in Figure A.1b. When Λ ≤ v, the solution to problem 28 (A.4) is a four-segment mechanism that takes the following form: (p(θ), Q (θ)) = 
+
+
+
+(P, 1) , θ3 < θ ≤ 1,
+
+(P, P ), θ2 < θ ≤ θ3,
+
+ u
+
+1 + uP, u
+
+1 + uP
+
+
+
+, θ1 < θ ≤ θ2,
+
+(P, 0) , 0 ≤ θ ≤ θ1,
+
+(A.6) where P ∈ [κ, 1], and 
+
+θ1 = H − v − Λ
+
+u ,θ2 = H − v + Λ ,θ3 = H .
+
+Each segment could be empty. This is the class of mechanisms that the optimal direct mechanism described in Theorem 1 falls into. When Λ > v , the solution to problem (A.4) is a mechanism that takes another four-segment form: (p(θ), Q (θ)) = 
+
+
+
+(0 , 1) , θ3 < θ ≤ 1,
+
+(0 , uP ), ˜θ2 < θ ≤ θ3,
+
+ u
+
+1 + uP, u
+
+1 + uP
+
+
+
+, θ1 < θ ≤ ˜θ2,
+
+(P, 0) , 0 ≤ θ ≤ θ1,
+
+where P ∈ [κ, 1], and ˜θ2 = H + vu − Λ
+
+u .
+
+Each segment could be empty. Lemma A5 shows that it is sufficient to consider the first class of mechanisms. 
+
+Lemma A5. Let ( p, Q ) represent the optimal direct mechanism that solves the sender’s problem (A.2). There exists λ, η satisfying Λ = λ/η ≤ v such that ( p, Q ) solves problem (A.4) given P = sup ˆθ∈Θ p(ˆθ). 
+
+Proof. To prove this, it is sufficient to prove the following claim. 
+
+Claim. For a given P , let π = ( p, Q ) be the mechanism that solves problem (A.3). If all corresponding pairs of multipliers ( λ, η ) satisfy Λ := λ/η > v (i.e., ( p, Q ) falls only into the 29 second class), then there exists another feasible mechanism ( p′, Q ′) that strictly dominates (p, Q ) and has corresponding Lagrangian multipliers λ′, η ′ such that Λ ′ := λ′/η ′ ≤ v.We move on to prove this claim. When Λ > v , by Proposition A1, ( p, Q ) must take the following form: (p(θ), Q (θ)) = 
+
+
+
+(0 , 1) , θ3 < θ ≤ 1,
+
+(0 , uP ), ˜θ2 < θ ≤ θ3,
+
+ u
+
+1 + uP, u
+
+1 + uP
+
+
+
+, θ1 < θ ≤ ˜θ2,
+
+(P, 0) , 0 ≤ θ ≤ θ1,
+
+We assume 0 < θ 1 < ˜θ2 < 1, i.e., the fourth segment and one of the first two segments is of strictly positive measure. This is without loss of generality because when the first two segments are measure zero, the mechanism also falls into the first class, and when the fourth segment is measure zero, ess sup θ∈Θ p(θ) = u 
+
+> 1+ u
+
+P < P , and is thus weakly dominated by the optimal mechanism of (A.3) when P is replaced by u 
+
+> 1+ u
+
+P . Since F has positive density almost everywhere, this assumption implies F (θ1) > 0, F (˜θ2) < 1, and R 
+
+> Θ
+
+Q(θ)d F (θ) > 0. Now, consider the following mechanism ˜ π′ = (˜ p′, ˜Q′): ˜p′(θ) ≡ κ, ˜Q′(θ) = Q(θ), ∀θ ∈ Θ.
+
+It is easy to verify that (˜ p′, ˜Q′) also satisfies capacity and IC constraints in problem (A.2), with sup θ∈Θ p(θ) = κ, and yields exactly the same amount of recommendation as ( p, Q ). Consider the obedience constraint. When κ > u 
+
+> 1+ u
+
+P , it is easy to verify that min {˜p′(θ), ˜Q′(θ)} ≥ 
+
+min {p(θ), Q (θ)} for all θ ∈ Θ, and the inequality is strict when θ ∈ (θ1, ˜θ2] which is of strictly positive measure. Therefore, we have 
+
+Z
+
+> Θ
+
+min {˜p′(θ), ˜Q′(θ)}dF (θ) >
+
+Z
+
+> Θ
+
+min {p(θ), Q (θ)}dF (θ).
+
+When κ ≤ u 
+
+> 1+ u
+
+P , the capacity constraint gives 
+
+Z
+
+> Θ
+
+p(θ)d F (θ) ≤ κ =⇒ P F (θ1) + u
+
+1 + uP (F (˜θ2) − F (θ1)) ≤ κ. 
+
+This implies 
+
+Z
+
+> Θ
+
+min {˜p′(θ), ˜Q′(θ)}dF (θ) −
+
+Z
+
+> Θ
+
+min {p(θ), Q (θ)}dF (θ)= κ(1 − F (θ1)) − u
+
+1 + uP (F (˜θ2) − F (θ1)) 30 ≥
+
+
+
+P F (θ1) + u
+
+1 + uP (F (˜θ2) − F (θ1)) 
+
+
+
+(1 − F (θ1)) − u
+
+1 + uP (F (˜θ2) − F (θ1)) = P F (θ1)
+
+
+
+1 − u
+
+1 + uF (˜θ2) − 11 + uF (θ1)
+
+
+
+≥ P F (θ1)(1 − F (˜θ2)) 
+
+> 0.
+
+Hence, 
+
+Z
+
+> Θ
+
+min {˜p′(θ), ˜Q′(θ)}dF (θ) >
+
+Z
+
+> Θ
+
+min {p(θ), Q (θ)}dF (θ)holds for both κ > u 
+
+> 1+ u
+
+P and κ ≤ u 
+
+> 1+ u
+
+P . Since ˜Q′ = Q, this further indicates that 
+
+μ˜π′ =
+
+Z
+
+> Θ
+
+θ ˜Q′(θ)d F (θ) + v
+
+Z
+
+> Θ
+
+min {˜p′(θ), ˜Q′(θ)}dF (θ)
+
+Z
+
+> Θ
+
+˜Q′(θ)d F (θ)
+
+> μ π =
+
+Z
+
+> Θ
+
+θQ (θ)d F (θ) + v
+
+Z
+
+> Θ
+
+min {p(θ), Q (θ)}dF (θ)
+
+Z
+
+> Θ
+
+Q(θ)d F (θ)
+
+≥ τ, 
+
+i.e., the obedience constraint of (˜ p′, ˜Q′) is strictly slack. Therefore, it is feasible and must be strictly dominated by the optimal solution to (A.3) given P = κ, which we denote by (p′, Q ′). Now, sup θ∈Θ p′(θ) = κ implies that its corresponding multipliers ( λ′, η ′) satisfy Λ ′ =
+
+λ′/η ′ = 0 < v . Also, ( p′, Q ′) strictly dominates (˜ p′, ˜Q′) and therefore ( p, Q ) since ˜Q′ = Q.This proves the claim and hence the lemma. A remark here is that for a given P , the direct mechanism that solves problem (A.3) may still correspond to a Λ > v . This is a sign that the supremum of p(θ), P , is chosen to be too large. Lemma A5 implies that the optimal direct mechanism must take the form of (A.6). Applying the result of Lemma A2 to recover the recommendation rule q from the ex-ante probability of recommendation Q in (A.6) yields the exact four-segment form of the optimal direct mechanism as presented in Theorem 1. The last step is to exclude the case where sup θ∈Θ p(θ) = κ.31 Proposition A2. If an optimal mechanism to (A.2), ( p∗, Q ∗), satisfies R 
+
+> Θ
+
+Q∗(θ)d F (θ) > 0, then sup θ∈Θ p∗(θ) > κ .
+
+Proof. When p(θ) ≡ κ, sup θ∈Θ p(θ) = κ, and when P = κ, the optimal p in problem (A.3) is 
+
+p(θ) ≡ κ. We go on to prove that any mechanism with p(θ) ≡ κ is always improvable. According to Proposition A1, the solution to problem (A.3) given P = κ takes the following form: 
+
+p(θ) ≡ κ, Q (θ) = 
+
+
+
+1, H < θ ≤ 1,κ, H − v < θ ≤ H,
+
+0, 0 ≤ θ ≤ H − v, 
+
+where H = τ − η−1 and ( λ, η ) are the corresponding multipliers satisfying Λ = λ/η = 0. Denote by ( p∗, Q ∗) the optimal solution to the sender’s problem (A.2). The condition 
+
+R 
+
+> Θ
+
+Q∗(θ)d F (θ) > 0 implies that at least someone is recommended in the best case. If Q(θ) = 0 almost everywhere, it is clearly strictly dominated by ( p∗, Q ∗) which must correspond to 
+
+P > κ .When R 
+
+> Θ
+
+Q(θ)d F (θ) > 0, given that the obedience constraint binds, Q cannot be equal to 1 almost everywhere, and hence the second segment where Q(θ) = κ must be of strictly positive measure. Problem (A.4) at Λ = 0 becomes max 
+
+> p,Q
+
+Z
+
+> Θ
+
+[( θ − H) Q(θ) + v min {p(θ), Q (θ)}]d F (θ),
+
+s.t. (IC 1) Q(θ) + p(θ)u ≥ κu, ∀θ ∈ Θ,
+
+(IC 2) p(θ) ≤ κ, ∀θ ∈ Θ.
+
+Here, we scaled the objective function by η−1. We introduce Lagrangian multipliers, ν(θ), ϕ (θ) ≥
+
+0, for constraint (IC 1) and (IC 2) respectively. For a given θ, the pointwise optimization problem is max 
+
+> p(θ),Q (θ)
+
+(θ − H) Q(θ) + v min {p(θ), Q (θ)},
+
+s.t. (IC 1) Q(θ) + p(θ)u ≥ κu, 
+
+(IC 2) p(θ) ≤ κ. 
+
+We dropped the constraints p(θ), Q (θ) ≥ 0 because it is never optimal to decrease p(θ), and 
+
+Q(θ) ≥ 0 is implied by the two IC constraints. When θ ∈ (H , 1], the optimal ( p(θ), Q (θ)) = ( κ, 1) suggests that (IC 1) is slack, i.e. 32 ν(θ) = 0, and min {p(θ), Q (θ)} = p(θ). The Lagrangian problem is thus max 
+
+> p(θ),Q (θ)
+
+(θ − H) Q(θ) + vp (θ) − ϕ(θ)( p(θ) − κ).
+
+First order condition gives ϕ(θ) = v > 0. When θ ∈ (H − v, H], the optimal ( p(θ), Q (θ)) = ( κ, κ ) suggests that (IC 1) is slack, i.e. 
+
+ν(θ) = 0. We write the problem equivalently as max  
+
+> p(θ),Q (θ),m
+
+(θ − H) Q(θ) + v · m, 
+
+s.t. p(θ) ≤ κ, p(θ) ≥ m, Q(θ) ≥ m. 
+
+Let α, β ≥ 0 be the Lagrangian multipliers of p(θ) ≥ m and Q(θ) ≥ m respectively. The corresponding Lagrangian problem is max 
+
+> p(θ),Q (θ)
+
+(θ − H) Q(θ) + v · m − ϕ(θ)( p(θ) − κ) − α(m − p(θ)) − β(m − Q(θ)) .
+
+First order conditions give 
+
+θ − H + β = 0 , (FOC-Q(θ)) 
+
+−ϕ(θ) + α = 0 , (FOC-p(θ)) 
+
+v − α − β = 0 . (FOC-m)These conditions yield 
+
+ϕ(θ) = α = θ − H + v > 0, β = H − θ ≥ 0.
+
+When θ ∈ [0 , H−v], we know from the optimal ( p(θ), Q (θ)) = ( κ, 0) that min {p(θ), Q (θ)} =
+
+Q(θ). The corresponding Lagrangian problem is thus max 
+
+> p(θ),Q (θ)
+
+(θ − H + v)Q(θ) − ν(θ)( κu − Q(θ) − p(θ)u) − ϕ(θ)( p(θ) − κ).
+
+First order condition of p(θ) gives 
+
+ν(θ)u − ϕ(θ) = 0 .
+
+33 In summary, at P = κ, the Lagrangian multipliers for incentive compatibility constraints in problem (A.4) and therefore in problem (A.3) satisfy ν(θ) = 0, ϕ(θ) > 0 for all θ ∈
+
+(H − v, 1] ̸ = ∅, and ν(θ)u − ϕ(θ) = 0 for all θ ∈ [0 , H − v]. Denote the optimal value of problem (A.3) be V . By envelope theorem, 
+
+∂V ∂P P =κ
+
+=
+
+Z
+
+> Θ
+
+[−ν(θ)u + ϕ(θ)]d F (θ)=
+
+Z
+
+> θ∈(H −v, 1]
+
+[−ν(θ)u + ϕ(θ)]d F (θ) + 
+
+Z
+
+> θ∈[0 ,H−v]
+
+[−ν(θ)u + ϕ(θ)]d F (θ)=
+
+Z
+
+> θ∈(H −v, 1]
+
+ϕ(θ)d F (θ) + 0 
+
+> 0.
+
+Hence, when P = κ, the sender will be strictly better off by increasing P , and thus p(θ) ≡ κ
+
+cannot be supported in any optimal direct mechanism. Proposition A2 restricts the range of P in (A.6) to ( κ, 1] whenever the sender can rec-ommend a strictly positive measure of agents in the best situation, which finishes the proof of Theorem 1. Corollary 1.1 follows directly from Proposition A2. 34

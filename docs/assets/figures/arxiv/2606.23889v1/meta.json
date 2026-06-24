@@ -1,0 +1,86 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2606.23889v1/fig-001.webp",
+      "caption": "Table 2: Error analysis using log data: Examples of low-performing queries with extracted intent signals. Each query is associated with an average relevance rating across the top 25 retrieved items, where ratings lie on an ordinal scale from 0 (Embarrassing), 1 (Bad), 2 (Okay), 3 (Good), to 4 (Excellent). Many queries contain explicit and implicit intents, yet retrieval performance remains poor, highlighting the gap between intent presence and utilization.",
+      "page": 6,
+      "index": 1,
+      "width": 933,
+      "height": 831
+    },
+    {
+      "url": "assets/figures/arxiv/2606.23889v1/fig-002.webp",
+      "caption": "Figure 3: End-to-end serving architecture for intent-aware retrieval. The offline system generates item intents and caches query intents for frequent queries, while the online system performs real-time query intent inference and retrieves candidates from an intent-augmented index to produce final ranked results.",
+      "page": 15,
+      "index": 2,
+      "width": 943,
+      "height": 420
+    },
+    {
+      "url": "assets/figures/arxiv/2606.23889v1/fig-003.webp",
+      "caption": "Figure 1: Overview of INSPIRE, an intent-aware retrieval framework for sponsored search. The system identifies failure cases in production query–item pairs, generates structured intents using an ensemble of teacher LLMs with cross-model consensus, and distills them into efficient student models via LoRA-based supervised finetuning. These intents are incorporated into query and item representations to train an intent-augmented dense retrieval model, enabling improved alignment between user queries and products.",
+      "page": 2,
+      "index": 3,
+      "width": 943,
+      "height": 320
+    },
+    {
+      "url": "assets/figures/arxiv/2606.23889v1/fig-004.webp",
+      "caption": "Table 3 Structured attribute extraction focusing on key user-relevant intents such as brand, dietary preferences, flavor, subtype, and size.",
+      "page": 7,
+      "index": 4,
+      "width": 1091,
+      "height": 279
+    },
+    {
+      "url": "assets/figures/arxiv/2606.23889v1/fig-005.webp",
+      "caption": "Table 5: Intent-aware data augmentation. Adding structured intent attributes to both queries and products enables explicit alignment of user constraints with product characteristics, improving discrimination between relevant and lexically similar but unsuitable items. For example, for the query gluten free bread, it is not immediately clear which product is a better match just based on the title: Schär Artisan Baker bread or Pepperidge bread. However, once we augment the intent key values, it becomes more obvious - the relevant item shares the attribute dietary preference: gluten free, whereas the irrelevant item contains gluten despite similar surface form. This differentiaion enables higher lexical and semantic match between query and relevant item, enabling us to improve relevance of retrieved items",
+      "page": 10,
+      "index": 5,
+      "width": 1077,
+      "height": 452
+    },
+    {
+      "url": "assets/figures/arxiv/2606.23889v1/fig-006.webp",
+      "caption": "Figure 2: Offline pipelines for generating structured intents for items and queries. Item intents are extracted from catalog metadata and stored in the index. Query Intents come from an upstream intent prediction model(not shown here).",
+      "page": 14,
+      "index": 6,
+      "width": 943,
+      "height": 337
+    },
+    {
+      "url": "assets/figures/arxiv/2606.23889v1/fig-007.webp",
+      "caption": "Table 1: Implicit intent in grocery search is often not captured by lexical or semantic similarity alone. For example, paella specifically requires Bomba rice due to its cooking properties, while Arborio is suited for risotto. Similarly, brand-level (Schär, Nutpods, Lily’s) and ingredient-level (chickpea) knowledge encode dietary constraints such as gluten-free, dairy-free, and sugar-free. This makes it challenging to match the correct product to a query based on product names alone. Many items may appear semantically similar (red), but fail to satisfy the underlying intent, while fewer items truly align with the user’s needs (green). For instance, both Bomba rice and Arborio rice may match the query “paella rice” at a surface level, but only Bomba rice correctly satisfies the intent (green), whereas Arborio represents a misleading but similar alternative (red). Modeling these latent intent signals enables systems to distinguish between such cases and correctly rank intent-aligned products higher, while ignoring them results in items that are similar in wording but practically unusable.",
+      "page": 3,
+      "index": 7,
+      "width": 929,
+      "height": 596
+    },
+    {
+      "url": "assets/figures/arxiv/2606.23889v1/fig-008.webp",
+      "caption": "Table 7 Impact of intent augmentation on retrieval scoring. Each query is shown under two settings: without intent (top) and with intent (bottom). In the absence of intent signals, the model relies primarily on lexical and semantic similarity, often assigning higher scores to semantically similar but constraintviolating items and lower score to relevant items(red). After augmenting item representations with structured intent attributes (e.g., dietary_preference), the model prioritizes items that satisfy both explicit and implicit user constraints by scoring them higher than the irrelevant one. Relevant items that were previously under-ranked receive higher scores after intent augmentation (green), demonstrating improved alignment between user intent and retrieved products.",
+      "page": 13,
+      "index": 8,
+      "width": 944,
+      "height": 765
+    },
+    {
+      "url": "assets/figures/arxiv/2606.23889v1/fig-009.webp",
+      "caption": "Table 4: Canonical normalization of surface forms. We map diverse lexical variations—including dietary descriptors (e.g., unsweetened → sugar free) and unit expressions (e.g., grams, gms → g)—to standardized representations. This reduces sparsity and enables consistent intent extraction across queries and product descriptions.",
+      "page": 8,
+      "index": 9,
+      "width": 585,
+      "height": 572
+    },
+    {
+      "url": "assets/figures/arxiv/2606.23889v1/fig-010.webp",
+      "caption": "Table 6 Offline retrieval performance comparison between baseline (Non-Intent) and intent-aware retrieval. Intent-aware modeling improves ranking quality across all metrics, with the largest gains at top ranks and a clear shift toward higher-quality results.",
+      "page": 12,
+      "index": 10,
+      "width": 637,
+      "height": 617
+    }
+  ]
+}

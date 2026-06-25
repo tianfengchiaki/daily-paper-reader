@@ -1,0 +1,102 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2606.19847v1/fig-001.webp",
+      "caption": "Figure 1: Architecture comparison. AtomMem overcomes the bloated storage and isolated matching of previous methods by organizing atomic facts into associative graphs for precise hierarchical retrieval.",
+      "page": 2,
+      "index": 1,
+      "width": 950,
+      "height": 467
+    },
+    {
+      "url": "assets/figures/arxiv/2606.19847v1/fig-002.webp",
+      "caption": "Table 1: Performance comparison of various memory methods on the LoCoMo benchmark. The best and second best results are bolded and underlined.",
+      "page": 7,
+      "index": 2,
+      "width": 941,
+      "height": 232
+    },
+    {
+      "url": "assets/figures/arxiv/2606.19847v1/fig-003.webp",
+      "caption": "Table 3: End-to-end latency breakdown of the AtomMem system across different processing stages.",
+      "page": 14,
+      "index": 3,
+      "width": 817,
+      "height": 233
+    },
+    {
+      "url": "assets/figures/arxiv/2606.19847v1/fig-004.webp",
+      "caption": "Figure A.4: System Prompt for Response Generation - Open Domain",
+      "page": 18,
+      "index": 4,
+      "width": 926,
+      "height": 608
+    },
+    {
+      "url": "assets/figures/arxiv/2606.19847v1/fig-005.webp",
+      "caption": "Figure A.3: System Prompt for Response Generation - Single-Hop / Multi-Hop / Temporal Reasoning",
+      "page": 18,
+      "index": 5,
+      "width": 921,
+      "height": 566
+    },
+    {
+      "url": "assets/figures/arxiv/2606.19847v1/fig-006.webp",
+      "caption": "Figure A.2: Training Sample from Dataset D",
+      "page": 13,
+      "index": 6,
+      "width": 926,
+      "height": 337
+    },
+    {
+      "url": "assets/figures/arxiv/2606.19847v1/fig-007.webp",
+      "caption": "Figure 3: Performance sensitivity analysis under varying the memory retrieval parameter k.",
+      "page": 8,
+      "index": 7,
+      "width": 458,
+      "height": 356
+    },
+    {
+      "url": "assets/figures/arxiv/2606.19847v1/fig-008.webp",
+      "caption": "Figure 2: The overall architecture of AtomMem. It is designed to support high-density memory storage, stable user-state evolution, and efficient retrieval for long-term personalized agents.",
+      "page": 4,
+      "index": 8,
+      "width": 902,
+      "height": 431
+    },
+    {
+      "url": "assets/figures/arxiv/2606.19847v1/fig-009.webp",
+      "caption": "Figure A.5: System Prompt for Answer Judgment",
+      "page": 19,
+      "index": 9,
+      "width": 926,
+      "height": 669
+    },
+    {
+      "url": "assets/figures/arxiv/2606.19847v1/fig-010.webp",
+      "caption": "Table 5: Comprehensive empirical hyperparameter configurations optimized for the AtomMem retrieval pipeline.",
+      "page": 17,
+      "index": 10,
+      "width": 950,
+      "height": 915
+    },
+    {
+      "url": "assets/figures/arxiv/2606.19847v1/fig-011.webp",
+      "caption": "Figure A.1: System Prompt for Atomic Fact Extraction",
+      "page": 12,
+      "index": 11,
+      "width": 926,
+      "height": 670
+    },
+    {
+      "url": "assets/figures/arxiv/2606.19847v1/fig-012.webp",
+      "caption": "Figure 7: Hyperparameter analysis of the compensatory fusion weight we. The performance curves indicate that we = 0.7 achieves the optimal balance between global event relevance and local fact precision.",
+      "page": 16,
+      "index": 12,
+      "width": 389,
+      "height": 338
+    }
+  ]
+}

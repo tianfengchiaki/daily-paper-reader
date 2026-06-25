@@ -1,0 +1,102 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2606.25415v1/fig-001.webp",
+      "caption": "Figure 2: Overview of our proposed framework. A frozen Soft-TPP model produces binary boundary flags from the raw interaction sequence. The Sequential Inference Encoder uses a boundary-aware causal Transformer with MS-RoPE to produce the user embedding ufor next-item scoring. The Hierarchical Interest Encoder builds segment-level multi-interest representations and provides a contrastive regularization signal.",
+      "page": 6,
+      "index": 1,
+      "width": 881,
+      "height": 433
+    },
+    {
+      "url": "assets/figures/arxiv/2606.25415v1/fig-002.webp",
+      "caption": "Figure 6: Item deletion analysis for S2-CAR across all three datasets (∆Recall@10). Half the items in the last segment (short-term proxy, black) or middle segment (long-term proxy, orange) are randomly removed; bars below zero indicate performance degradation relative to the original sequence.",
+      "page": 26,
+      "index": 2,
+      "width": 929,
+      "height": 325
+    },
+    {
+      "url": "assets/figures/arxiv/2606.25415v1/fig-003.webp",
+      "caption": "Table 5: Plug-and-Play comparison across three datasets. Integrating our TPP segmentation module into existing sequential backbones yields consistent improvements.",
+      "page": 21,
+      "index": 3,
+      "width": 756,
+      "height": 333
+    },
+    {
+      "url": "assets/figures/arxiv/2606.25415v1/fig-004.webp",
+      "caption": "Table 6: Ablation study results.",
+      "page": 22,
+      "index": 4,
+      "width": 775,
+      "height": 402
+    },
+    {
+      "url": "assets/figures/arxiv/2606.25415v1/fig-005.webp",
+      "caption": "Table 1: Summary of Notations",
+      "page": 14,
+      "index": 5,
+      "width": 758,
+      "height": 1115
+    },
+    {
+      "url": "assets/figures/arxiv/2606.25415v1/fig-006.webp",
+      "caption": "Figure 1: Limitations of fixed temporal segmentation in sequential recommendation.",
+      "page": 3,
+      "index": 6,
+      "width": 942,
+      "height": 360
+    },
+    {
+      "url": "assets/figures/arxiv/2606.25415v1/fig-007.webp",
+      "caption": "Table 4: Performance comparison on three datasets. We report 95% confidence intervals (5 runs) for second-best and best methods. Best results are bold, and second-best are underlined.",
+      "page": 19,
+      "index": 7,
+      "width": 944,
+      "height": 335
+    },
+    {
+      "url": "assets/figures/arxiv/2606.25415v1/fig-008.webp",
+      "caption": "Table 3: Feature comparison across sequential recommendation models. A checkmark (✓) indicates the model incorporates the corresponding technique, while a cross mark (✗) indicates it does not. Feature labels are assigned according to the definitions in this caption; adaptive intent segmentation denotes learned or data-adaptive boundary inference rather than fixed window or heuristic session partitioning.",
+      "page": 19,
+      "index": 8,
+      "width": 935,
+      "height": 294
+    },
+    {
+      "url": "assets/figures/arxiv/2606.25415v1/fig-009.webp",
+      "caption": "Table 8: Relative performance degradation (%) under boundary noise injection.",
+      "page": 27,
+      "index": 9,
+      "width": 850,
+      "height": 323
+    },
+    {
+      "url": "assets/figures/arxiv/2606.25415v1/fig-010.webp",
+      "caption": "Figure 4: Hyper-parameter sensitivity analysis of ρ on three datasets",
+      "page": 24,
+      "index": 10,
+      "width": 717,
+      "height": 204
+    },
+    {
+      "url": "assets/figures/arxiv/2606.25415v1/fig-011.webp",
+      "caption": "Figure 5: Hyper-parameter sensitivity analysis of τ on three datasets",
+      "page": 24,
+      "index": 11,
+      "width": 717,
+      "height": 204
+    },
+    {
+      "url": "assets/figures/arxiv/2606.25415v1/fig-012.webp",
+      "caption": "Figure 3: Hyper-parameter sensitivity analysis of γ on three datasets",
+      "page": 24,
+      "index": 12,
+      "width": 717,
+      "height": 205
+    }
+  ]
+}

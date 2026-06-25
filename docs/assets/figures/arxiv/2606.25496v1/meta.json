@@ -1,0 +1,38 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2606.25496v1/fig-001.webp",
+      "caption": "Figure 1: Recommendation paradigm shift. (a) DLRMs retrieve videos from a fixed content pool, leading to suboptimal matches when user interests fall outside the pool; (b) Our paradigm generates personalized videos on demand that both align with the user interests predicted by a GRM and are driven by real user feedback in a closed loop, breaking the fixed-pool limit.",
+      "page": 1,
+      "index": 1,
+      "width": 494,
+      "height": 356
+    },
+    {
+      "url": "assets/figures/arxiv/2606.25496v1/fig-002.webp",
+      "caption": "Table 4: Reward ablation with corresponding evaluation metrics. For each reward component, we report its dedicated metric on a corresponding evaluation set, comparing the policy trained with that reward (Ours) against the no-reward base policy (Base).",
+      "page": 7,
+      "index": 2,
+      "width": 492,
+      "height": 279
+    },
+    {
+      "url": "assets/figures/arxiv/2606.25496v1/fig-003.webp",
+      "caption": "Figure 2: Architecture of the Recommendation-as-Generation (RaG) framework. Videos are encoded into Disentangled Semantic IDs (DSIDs) that decouple content and creative semantics, forming a shared latent interface for recommendation and generation. The Generative Recommendation Model (GRM) predicts a user’s interest D-SIDs from user context. The Instruction Model (IM) then translates these predicted D-SIDs, together with optional metadata, into shot-level production instructions, which are executed by the Video Generation Agents (VGAs) through hierarchical planning and refinement. The full pipeline is jointly optimized under Synergistic Cross-Domain Reward Learning (SCRL).",
+      "page": 3,
+      "index": 3,
+      "width": 1052,
+      "height": 485
+    },
+    {
+      "url": "assets/figures/arxiv/2606.25496v1/fig-004.webp",
+      "caption": "Figure 4: Qualitative example of interest-driven personalized video generation in advertising scenarios.",
+      "page": 8,
+      "index": 4,
+      "width": 1056,
+      "height": 319
+    }
+  ]
+}

@@ -1,0 +1,30 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2606.20047v1/fig-001.webp",
+      "caption": "Figure 3: PACMS as the OpenClaw context engine on a real workspace session. The user added Rust to their coding environment notes, then asked the assistant to verify Rust was installed; the tool calls (rustc, rustup) returned command not found; PACMS selected 17 of 168 pooled candidates to assemble the model’s prompt. The right-hand panel visualizes the keep/drop verdict per candidate, the strategy pill (pacms), the token budget, and the kept/dropped split. Transport-level heartbeat messages are omitted from the keep/drop grid for visual clarity; the underlying /select call ran on the full 168-message pool. All visible text in the figure is verbatim from a captured OpenClaw session.",
+      "page": 6,
+      "index": 1,
+      "width": 1070,
+      "height": 755
+    },
+    {
+      "url": "assets/figures/arxiv/2606.20047v1/fig-002.webp",
+      "caption": "Table 1: Evidence-round recall (100 questions, template-based redundancy injection). Bold = best; underline = second-best. At 20% budget PACMS trails top-𝑘; at 45–70%, PACMS and lcmmr overtake top-𝑘 as 𝑅 grows. PACMS is consistently first or second.",
+      "page": 3,
+      "index": 2,
+      "width": 483,
+      "height": 514
+    },
+    {
+      "url": "assets/figures/arxiv/2606.20047v1/fig-003.webp",
+      "caption": "Figure 1: PACMS overview. Candidates (memory, turns, tool outputs) form a query-anchored similarity graph. PACMS selects a token-budgeted subset (dark nodes) whose coverage halos account for all query-relevant items; the redundant duplicate (dup, dashed) lies inside a halo and is skipped.",
+      "page": 1,
+      "index": 3,
+      "width": 475,
+      "height": 261
+    }
+  ]
+}

@@ -1,0 +1,3645 @@
+Title: Private Learning with Public Feature Conditioning
+
+URL Source: https://arxiv.org/pdf/2606.18773v1
+
+Published Time: Thu, 18 Jun 2026 00:36:03 GMT
+
+Number of Pages: 26
+
+Markdown Content:
+# Private Learning with Public Feature Conditioning 
+
+Shuli Jiang 1 * Walid Krichene 2 * Nicolas Mayoraz 3
+
+## Abstract 
+
+We study differentially private (DP) regression in settings where each data sample includes pub-lic, non-sensitive features—common in applica-tions like recommendation or advertising systems. While such label DP or DP with semi-sensitive features settings have been primarily explored in the context of classification, effective approaches for regression remain underexplored. We intro-duce Cond-DP , a conditioned variant of DPSGD 
+
+that leverages the structure of public feature ma-trices to improve optimization under privacy con-straints. Motivated by the observation that these public features often exhibit rapidly decaying spectra, Cond-DP incorporates a data-driven con-ditioning matrix to reshape the optimization land-scape and accelerate convergence. We provide convergence guarantees for convex, strongly con-vex and non-convex settings, and recover standard 
+
+DPSGD as a special case when the conditioning matrix is the identity. We show how to construct an effective conditioning matrix for Cond-DP di-rectly from public features, enabling provably faster convergence than DPSGD in private linear regression, without incurring additional privacy cost. Empirically, Cond-DP with this condition-ing matrix consistently outperforms state-of-the-art baselines across a wide range of datasets and model architectures under label DP, demonstrat-ing strong and robust performance in practice. 
+
+## 1. Introduction 
+
+Differential privacy (DP) (Dwork & Roth, 2014) has be-come the leading framework for training machine learning models while providing formal guarantees on the privacy 
+
+* Part of the work was done while at Google Research. 
+
+> 1
+
+AWS Agentic AI 2Microsoft 3Google Research. Correspon-dence to: Shuli Jiang <shulij@amazon.com >, Walid Krich-ene <wkrichene@microsoft.com >, Nicolas Mayoraz <nmay-oraz@google.com >.
+
+Proceedings of the 43 rd International Conference on Machine Learning , Seoul, South Korea. PMLR 306, 2026. Copyright 2026 by the author(s). 
+
+of sensitive training data. However, a fundamental chal-lenge in DP is the inherent privacy-utility trade-off: models trained with privacy guarantees often suffer a drop in utility compared to their non-private counterparts. This loss in performance can be especially critical in utility-sensitive ap-plications such as recommendation and advertising systems, where even a small increase in model’s prediction error can have significant downstream impacts on engagement. An effective approach to improve the privacy-utility trade-off in real-world applications is to leverage public, non-sensitive features that naturally occur in many datasets. For example, in user shopping data, item descriptions are typi-cally public, while individual shopping histories are sensi-tive. Such scenarios are formalized under label differential privacy (label DP), where features are public and labels are sensitive (Ghazi et al., 2023; 2021). More recently, a notion of DP with semi-sensitive features was proposed (Krichene et al., 2023; Chua et al., 2024a), where each sample includes a mix of public and private features, and the labels remain private. The semi-sensitive setting interpolates between la-bel DP (in which all features are public) and the classical DP setting (in which all features are private). While prior work has leveraged public features to improve privacy-utility trade-offs, several limitations remain. In the better-studied label DP setting, most existing approaches fo-cus on classification tasks with discrete labels (Ghazi et al., 2021; 2024; Busa-Fekete et al., 2023; Esfandiari et al., 2021; Malek et al., 2021), and are not readily applicable to regres-sion with continuous labels. To the best of our knowledge, only two works address regression tasks under label DP. The first (Ghazi et al., 2023) provides pure DP guarantees and considers a feature-oblivious setting, where the algorithm is based solely on private labels and is independent of public features. This approach has two main drawbacks: (1) ap-proximate DP is more widely adopted in practice due to its more favorable privacy-utility trade-offs, and this difference is often fundamental; (2) ignoring the structure of public features misses opportunities to further improve model util-ity. The second work (Brahmbhatt et al., 2023) investigates a specific type of aggregation-based algorithm for private linear regression under approximate label DP. However, its goal is to study whether a certain narrow class of aggrega-tion algorithms used in practice can be made to satisfy label DP guarantees, leaving open the question of whether better 1
+
+> arXiv:2606.18773v1 [cs.LG] 17 Jun 2026 Private Learning with Public Feature Conditioning
+
+algorithms exist for this purpose. Few works (Krichene et al., 2023; Chua et al., 2024b) have studied the more recent setting of DP with semi-sensitive features. (Krichene et al., 2023) is only applicable to a spe-cific class of model architectures (consisting of dual-encoder models). (Chua et al., 2024b) is applicable more broadly but performs poorly in high privacy regimes. Their method con-sists of using Randomized Response (RR) (Dwork & Roth, 2014) to privatize labels, using them to train an initial model on public features only, then using this model to warm-start the full model (which is trained using DP-SGD). The poor performance was attributed to the rapid degradation of RR in high-privacy regimes: RR-privatized labels become too noisy, making the warm-start essentially useless. These limitations of existing approaches motivate us to ask: 
+
+Can we better leverage the structure of public fea-tures—without jointly using private labels—in regression tasks under approximate differential privacy, to improve utility in high-privacy regimes? 
+
+In this work, we focus on a general class of models with linear input transformations that are widely used in recom-mendation and advertising systems, as illustrated in Figure 1. The model comprises two main components: a bottom lin-ear embedding layer that learns embedding vectors for input features, and an (optional) top prediction component, con-sisting of potentially nonlinear layers. Common choices for the prediction component include multi-layer perceptrons (MLPs) (Popescu et al., 2009) and Factorization Machines (FM) (Rendle, 2010). This model includes the important case of private linear regression, where the embedding layer is of output dimension one and there is no prediction layer. The bottom linear embedding layer plays a critical role in our setting, as its parameters are directly tied to the input features. By using knowledge about the public features, one can hope to learn the embedding layer more effectively. One natural idea to leverage public features without jointly using the private labels is based on the observation that, in some applications, the public feature matrix (i.e., that matrix formed by stacking the public features of all train-ing samples) lies in a low-dimensional subspace. One can then factorize this matrix and use a compact low-rank rep-resentation to reduce the number of model parameters in the bottom layer. This dimensionality reduction would, in principle, lead to less noise being added by DPSGD (Abadi et al., 2016) during training (where the noise dimension is proportional to the number of model parameters), thereby improving utility under fixed privacy guarantees. The ap-proaches of (Kairouz et al., 2021; Krichene et al., 2023) fall under this category. However, dimensionality reduction does not always lead to utility improvement. Notably, for the class of Generalized Linear Models (GLMs), a special case of the models considered in this work, (Song et al., 2021) shows that when model parameters are bounded, DPSGD 
+
+naturally adapts to the low-rank structure of the input with-out the need for explicit dimension reduction. That is, the excess risk of DPSGD for GLMs naturally scales with the rank of the input features rather than the ambient dimension, rendering explicit dimensionality reduction unnecessary.               
+
+> Figure 1. Model architecture. 0246810
+> 0
+> 2000
+> 4000
+> 6000
+> 8000
+> Dataset: wine 0510 15 20 25
+> 0
+> 20000
+> 40000
+> 60000
+> 80000
+> 100000 Dataset: energy Figure 2. Example fea-ture matrix spectra.
+
+Building on the above ideas, we make a related observation: in many applications, the public feature matrix may not be strictly low-rank; but may exhibit a rapidly decaying spec-trum. See Figure 2 for an example taken from our numerical experiments. Directions corresponding to the larger singular values naturally receive more weight during optimization than those associated with smaller ones. Since DPSGD 
+
+perturbs gradients using isotropic noise, this results in a low signal-to-noise ratio for the low-spectrum directions, resulting in slower convergence. We aim to address this by adapting the geometry of the problem, amplifying contribu-tions from underrepresented directions during optimization. Motivated by this, we propose to use knowledge about the public feature matrix to condition the parameters of the in-put layer, aiming to improve the signal-to-noise ratio along low-spectrum directions, and thus improving model util-ity—without incurring additional privacy loss. We introduce  
+
+> Cond-DP
+
+(Algorithm 1), which uses a conditioning matrix that transforms the parameter space associated with public feature embeddings, then trains the conditioned model using  
+
+> DPSGD
+
+(Abadi et al., 2016). We derive utility or convergence guarantees of Cond-DP 
+
+using private models with linear input transformations un-der convex objectives (see Theorem 4.6), strongly convex objectives (see Theorem 4.8), and non-convex objectives (see Theorem 4.10). In the special case of private linear regression (see Lemma 4.13), we can quantify the extent of utility improvement: we show that a carefully chosen con-ditioning matrix constructed from the public feature matrix provably leads to faster convergence compared to DPSGD 
+
+without additional privacy loss. For more complex models, quantifying the improvement analytically would require access to the optimal solution of 2Private Learning with Public Feature Conditioning 
+
+the underlying optimization problem, which is typically un-available. We therefore complement our theoretical analysis with an empirical evaluation of the same conditioning strat-egy applied to models with linear input transformations and an MLP prediction head, as commonly used in advertising and recommendation systems. Empirically, we observe that when using MLPs, conditioning accelerates convergence in the early stages of training but can hinder progress in later epochs. Motivated by this behavior, we propose Switch-Cond-DP , a hybrid strategy that applies the conditioning matrix during the initial phase of training and then switches to DPSGD in later epochs. Experiments on a diverse set of datasets demonstrate that our approach consistently improves utility under fixed privacy budgets, especially in high privacy regimes. We compare against several baselines, including the state-of-the-art algo-rithm for regression under label DP guarantees (Ghazi et al., 2023), and demonstrate substantial gains in this setting. In summary, we make the following contributions: 1. We propose Cond-DP (Algorithm 1), a framework that introduces a conditioning matrix to rescale the embed-ding space of public features. 2. We provide privacy (Theorem 4.3) and convergence guarantees for Cond-DP in private models with lin-ear input transformations under convex (Theorem 4.6), strongly convex (Theorem 4.8), and non-convex objec-tives (Theorem 4.10). We further propose a concrete conditioning matrix constructed from public features. 3. To effectively extend our approach to more complex, non-linear models, we introduce Switch-Cond-DP .4. We empirically evaluate Cond-DP and Switch-Cond-DP across private linear and non-linear models in re-gression tasks. Experiments on both synthetic and diverse real-world datasets demonstrate consistent util-ity improvements over state-of-the-art baselines in the presence of public features. 
+
+## 2. Related Work 
+
+Label Differential Privacy. Most prior work on label dif-ferential privacy (DP) focuses on classification and does not directly extend to regression. Early work by (Chaudhuri & Hsu, 2011) studies sample complexity under label DP. Subsequent methods leverage Randomized Response (RR) and public information to improve utility in classification tasks, including RR with priors (Ghazi et al., 2021), gradi-ent projection onto low-dimensional subspaces derived from public features (Ghazi et al., 2024), clustering using public features (Esfandiari et al., 2021), modeling correlations be-tween public features and private labels (Busa-Fekete et al., 2023), and PATE-style teacher aggregation (Malek et al., 2021; Papernot et al., 2017; 2018). Label DP for regression has received comparatively less attention. (Wang & Xu, 2019) studies private linear regres-sion under local DP by exploiting sparsity, while (Ghazi et al., 2023) proposes RR-on-Bins Φ 
+
+> ϵ
+
+, an RR-based method that bins private responses using prior label distributions, either known or privately estimated. (Brahmbhatt et al., 2023) explores random aggregation of samples and labels to achieve label DP guarantees in linear regression. 
+
+Differential Privacy with Public Features. Recent work generalizes label DP to settings with both private and non-sensitive public features. (Krichene et al., 2023) proposes sufficient statistics perturbation, which adds noise only to parameters associated with private features, but is restricted to models with dot-product interactions between public and private embeddings. (Chua et al., 2024b) introduces a two-stage approach that first trains a model using privatized labels and public features, then fine-tunes a full model using 
+
+> DPSGD
+
+, requiring a split privacy budget and showing de-graded performance in high-privacy regimes. We note that these approaches are supervised in nature. Our approach differs in that it leverages unsupervised information from public features via conditioning, without incurring addi-tional privacy cost, making it effective even under stringent privacy constraints. A recent work (Mahloujifar et al., 2025) introduces feature DP by transforming the disclosable part of each sample and treating it as public, and adding an auxiliary public loss in a modified DPSGD objective. Our approach is orthogonal, and focuses on leveraging unsupervised information. It can be readily combined with (Mahloujifar et al., 2025) whenever the public component has a linear input layer. 
+
+## 3. Preliminaries 
+
+Problem Formulation. We consider supervised regres-sion tasks where data samples are drawn from an un-known distribution D over X × Y , where X is the fea-ture space and Y are bounded real-valued labels. The fea-ture space is decomposed as X = X pub × X priv , where 
+
+X pub ⊂ Rdpub 
+
+represents non-sensitive public features and 
+
+X priv ⊂ Rdpriv 
+
+represents sensitive private features. The dataset is D = {(xpub  
+
+> i
+
+, xpriv  
+
+> i
+
+, y i)}ni=1 ∼ D , where xpub  
+
+> i
+
+∈X pub and xpriv  
+
+> i
+
+∈ X priv . The private feature dimension dpriv 
+
+may be zero, indicating the absence of private features. 
+
+Models with Linear Input Transformations. Our goal is to learn a general family of predictors g : X → R with the following structure. 1. Linear Embedding Layer. Given an input sam-ple (xpub , xpriv , y i), the model first maps features into embeddings by computing: vpriv = Θpriv xpriv and 
+
+vpub = Θ pub xpub , where Θpub ∈ Rppub ×dpub 
+
+and Θpriv ∈
+
+Rppriv ×dpriv 
+
+are learnable parameters, and ppub , ppriv are 3Private Learning with Public Feature Conditioning 
+
+the embedding dimensions. 2. Prediction Component. A function fω : Rppub 
+
+×
+
+Rppriv 
+
+→ R, parameterized by ω ∈ Rp, maps the embed-dings to a scalar prediction. In practice, this function can consist of several layers, and can be non-linear, e.g., an MLP or a factorization machine (Rendle, 2010), commonly used in recommendation systems. 
+
+Remark 3.1. The main structural assumption we make is that the model starts with a linear layer (a common oc-currence in practice) and that the private and public fea-tures can be separated at the input layer, another mild as-sumption – note that any linear layer Θx can be written as Θpub xpub + Θ priv xpriv (where x is the concatenation of 
+
+xpub , xpriv and Θ is the concatenation of Θpub , Θpriv ). 
+
+Remark 3.2. The model class considered here includes as a special case generalized linear models (GLMs) (Song et al., 2021). In classical GLMs, given an input feature vector 
+
+x, the model outputs fω (⟨θ, x⟩) where θ is the parameter vector, whereas our model class outputs fω (Θ x), where Θ
+
+is a linear transformation parameter. 
+
+We train the model by minimizing the empirical loss, 
+
+L(Θ pub , Θpriv , ω ;D) = 1
+
+n
+
+> n
+
+X
+
+> i=1
+
+Li(Θ pub , Θpriv , ω ) (1) 
+
+= 1
+
+n
+
+> n
+
+X
+
+> i=1
+
+h
+
+l(fω (Θ pub xpub  
+
+> i
+
+, Θpriv xpriv  
+
+> i
+
+), y i)
+
+i
+
+where l(·, ·) is a suitable function, for instance, l(by, y ) = (by − y)2. When ppriv = ppub = 1 and fω (vpub , vpriv ) = 
+
+vpub + vpriv , the problem reduces to linear regression. 
+
+Label DP and DP with Semi-Sensitive Features. Fol-lowing prior work (Chaudhuri & Hsu, 2011; Chua et al., 2024b), we define two datasets D, D ′ as adjacent if they differ in the private features (if present) and the label of a sin-gle sample —specifically, by replacing (xpub , xpriv , y ) with 
+
+(xpub , expriv , ey). When private features are absent, this defi-nition naturally reduces to label differential privacy (Label DP (Chaudhuri & Hsu, 2011)). 
+
+Definition 3.3 (DP (Dwork & Roth, 2014)) . For ϵ, δ ≥ 0,a randomized mechanism M satisfies (ϵ, δ )-DP, if for all pairs of adjacent datasets D, D ′, and for all outcome events 
+
+S, it holds that Pr[ M(D) ∈ S] ≤ eϵ · Pr[ M(D′) ∈ S] + δ.
+
+When δ = 0 (respectively δ > 0), the above guarantee is referred to as pure DP (respectively approximate DP). 
+
+Notation. We use ∥x∥ to denote the Euclidean norm of a vector x and ∥X∥F to denote the Frobenius norm of a matrix X. Let ∥x∥A ≜ √xT Ax. Let Tr (·) denote the matrix trace operator. Id is the identity matrix of size 
+
+d × d. Let d = ppub dpub + ppriv dpriv + p denote the total number of model parameters. Let ((Θ pub )∗, (Θ priv )∗, ω ∗) ∈
+
+Figure 3. Model with conditioning matrix C trained by Cond-DP .
+
+arg min Θpub ,Θpriv ,ω L(Θ pub , Θpriv , ω ; D) be optimal parame-ters and L∗ be the optimal loss. Finally, Nm×n(0 , σ 2) de-notes the distribution of real m × n matrices with each entry sampled from the Gaussian distribution N (0 , σ 2).
+
+## 4. Cond-DP : Conditioning Model Parameters with Public Features 
+
+We propose Cond-DP (Algorithm 1), a variant of DPSGD 
+
+(Abadi et al., 2016) that incorporates a conditioning matrix 
+
+C ∈ Rdpub ×dpub 
+
+to improve the optimization landscape and potentially accelerate convergence when learning public feature embeddings. The matrix C can be thought of as a hyperparameter, fixed throughout training, and does not incur any additional pri-vacy cost, as it will be computed based only on public information. We discuss the choice of C to improve con-vergence later in this section. Specifically, in Cond-DP ,given an input sample (xpub , xpriv , y ), we replace the stan-dard public embedding computation vpub = Θ pub xpub with the conditioned version vpub = Θ pub Cxpub . The model is then trained using DPSGD by minimizing the loss function 
+
+L(Θ pub C, Θpriv , ω ; D). Figure 3 illustrates the model with the conditioning matrix C in Cond-DP .
+
+Algorithm 1 Cond-DP 
+
+Input: dataset D = {(xpub  
+
+> i
+
+, xpriv  
+
+> i
+
+, y i)}ni=1 , conditioning matrix C, initialization Θpub  
+
+> 0
+
+, Θpriv  
+
+> 0
+
+, ω 0, number of itera-tions T learning rate {ηt}Tt=1 , noise variance σ2
+
+for t = 0 , 1, . . . , T − 1 do 
+
+lt,i ← L i(Θ pub  
+
+> t
+
+C, Θpriv  
+
+> t
+
+, y i), ∀i ∈ [n]
+
+Compute gradient: Gpub  
+
+> t
+
+← 1
+
+> n
+
+Pni=1 
+
+> ∂l t,i
+> ∂Θpub
+> t
+
+, Gpriv  
+
+> t
+
+←
+
+> ∂l t,i
+> ∂Θpriv
+> t
+
+, gtop  
+
+> t
+
+← 1
+
+> n
+
+Pni=1 
+
+> ∂l t,i
+> ∂ω t
+
+Sample noise: Bpub  
+
+> t
+
+∼ Nppub ×dpub (0 , σ 2), Bpriv  
+
+> t
+
+∼Nppriv ×dpriv (0 , σ 2), btop  
+
+> t
+
+∼ N (0 , σ 2Ip)
+
+Θpub  
+
+> t+1
+
+← Θpub  
+
+> t
+
+−ηt(Gpub  
+
+> t
+
++Bpub  
+
+> t
+
+), Θpriv  
+
+> t+1
+
+← Θpriv  
+
+> t
+
+−ηt(Gpriv  
+
+> t
+
++
+
+Bpriv  
+
+> t
+
+), ω t+1 ← ωt − ηt(gtop  
+
+> t
+
++ btop  
+
+> t
+
+)
+
+end for 
+
+Return Θpub-out = 1
+
+> T
+
+PTt=1 Θpub  
+
+> t
+
+, Θpriv-out =
+
+> 1
+> T
+
+PTt=1 Θpriv  
+
+> t
+
+, ωout = 1
+
+> T
+
+PTt=1 ωt
+
+4Private Learning with Public Feature Conditioning 
+
+4.1. Privacy and Utility Guarantees 
+
+We first present the privacy guarantee in Theorem 4.3 (full proof in Appendix A), which applies to all types of losses. Then, we present the utility analysis for Cond-DP in terms of convergence in private models with linear input trans-formations as follows under different types of losses: 1) convex loss in Theorem 4.6 (full proof in Appendix B), 2) strongly convex loss in Theorem 4.8 (full proof in Ap-pendix C), and 3) non-convex loss in Theorem 4.10 (full proof in Appendix D). 
+
+Assumption 4.1 (Fine-grained Lipschitz condition 1 ).
+
+There exist constants bG, G, G, R > 0 such that ∥ ∂L 
+
+> ∂vpriv
+
+∥2 ≤
+
+bG2, ∥ ∂L 
+
+> ∂ω
+
+∥2 ≤ G2 and ∥ ∂L 
+
+> ∂vpub
+
+∥2 ≤ G2, for any vpriv , ω
+
+and vpub , and ∥xpriv ∥2 ≤ R2, for any private input features 
+
+xpriv .
+
+Remark 4.2 (On the effect of conditioning on the fine– grained Lipschitz condition) . In Assumption 4.1, although the derivative ∂L/∂ω may appear to depend on C, it is natural to define a Lipschitz bound that is uniform in C. In-deed, define ˜L(Θ pub , Θpriv , ω ) = L(CΘpub , Θpriv , ω ), then   
+
+> ∂˜L
+> ∂ω
+
+(Θ pub , Θpriv , ω ) = ∂L 
+
+> ∂ω
+
+(CΘpub , Θpriv , ω ). The key obser-vation is that if ∥ ∂L 
+
+> ∂ω
+
+(Θ pub , Θpriv , ω )∥ is uniformly bounded over all Θ, then ∥ ∂L 
+
+> ∂ω
+
+(CΘpub , Θpriv , ω )∥ is bounded by the same constant over all Θ since Θ 7 → CΘ maps Rd to 
+
+Rd. We focus on the unconstrained Θ setting for analytical tractability. Nevertheless, the same argument extends to constrained settings (e.g., when Θ is restricted to a con-vex set K), provided the constraint set is transformed ac-cordingly. Specifically, when optimizing the conditioned objective ˜L, the parameter Θ should be constrained to 
+
+KC = {Θ|CΘ ∈ K} , which naturally preserves the geome-try of the original constraint set. Under this modification, any bound on ∥ ∂L 
+
+> ∂ω
+
+∥ for Θ ∈ K directly yields the same bound on ∥ ∂ ˜L 
+
+> ∂ω
+
+∥ for Θ ∈ K C .
+
+Theorem 4.3 (Privacy guarantee) . If the noise variance in Algorithm 1 is set to be σ2 = eO( M 2Tϵ2n2 ), where M 2 ≜
+
+G2 · max i∈[n] ∥Cxpub  
+
+> i
+
+∥2 + bG2 · R2 + G2, then Algorithm 1 is (ϵ, δ )-differentially private. 
+
+Remark 4.4. Since C affects the bound on gradient norms, note that the noise variance σ2, which scales with the gradi-ent norm, also depends on C via M .
+
+Assumption 4.5. The loss Li is convex ∀i ∈ [n].
+
+Theorem 4.6 (Convergence, Convex) . Let C be a condi-tioning matrix of full rank. Under Assumptions 4.1 and 4.5, if Algorithm 1 is run with the learning rate ηt = η ∝    
+
+> 1q
+> T M 2(1+ dT n2ϵ2)
+
+, ∀t, and noise variance σ2 = eO( M 2Tϵ2n2 ) for 
+
+M defined in Theorem 4.3 , then it guarantees 
+
+EL(Θ pub-out C, Θpriv-out , ω out ; D) − L ∗ (2) 
+
+> 1
+
+This assumption is required solely for the privacy analysis (not for convergence) and is common in DP. 
+
+≤ M
+
+r 1
+
+T + dn2ϵ2 ·
+
+
+
+Θpub  
+
+> 0
+
+C − (Θ pub )∗ 2
+
+> F, C
+
++ ∥Θpriv  
+
+> 0
+
+− (Θ priv )∗∥2 
+
+> F
+
++ ∥ω0 − ω∗∥21/2
+
+,
+
+where ∥Θ∥2 
+
+> F, C
+
+:= T r (Θ ⊤(C⊤C)−1Θ) , and the expecta-tion is taken w.r.t. the randomness of the algorithm. 
+
+Assumption 4.7. The loss function Li is μ-strongly convex and β-smooth, ∀i ∈ [n].
+
+Theorem 4.8 (Convergence, Smooth and Strongly Convex) .
+
+Let C be a conditioning matrix of full rank. Under Assump-tions 4.1 and 4.7, if Algorithm 1 is run with learning rate 
+
+ηt ∝ 1 
+
+> μt
+
+, ∀t, and noise variance σ2 = eO( M 2Tϵ2n2 ) for M
+
+defined in Theorem 4.3 , then it guarantees 
+
+E
+
+h
+
+L(Θ pub-out C, Θpriv-out , ω out ; D)
+
+i
+
+− L ∗ ≤ 16 β2
+
+μ2 M 2 (3) 
+
+·
+
+ 1
+
+T + dn2ϵ2
+
+  σmax (C)
+
+σmin (C)
+
+2
+
+max {σ2
+
+> max
+
+(C), σ −2
+
+> min
+
+(C)}
+
+where σmin , σ max denote the minimum and maximum sin-gular value of C, and the expectation is taken w.r.t. the randomness of the algorithm. 
+
+Assumption 4.9 (Smoothness w.r.t. a Semi-norm) . For all 
+
+i ∈ [n], the loss function Li is β0-smooth with respect to the semi-norm induced by (W W ⊤)−1. Specifically, for any 
+
+θ1, θ 2 ∈ Rd,
+
+∥∇L i(θ1) − ∇L i(θ2)∥W W ⊤ ≤ β0 ∥θ1 − θ2∥(W W ⊤)−1
+
+Here, θ1 and θ2 denote the vectorized model parameters, and W is a positive semidefinite matrix determined by the conditioning matrix C (see Appendix B for definition). 
+
+Theorem 4.10 (Convergence, Non-convex) . Let C be a conditioning matrix of full rank. Under Assumptions 4.1 and 4.9, if Algorithm 1 is run with ηt = η = 1√T β 0
+
+, ∀t, and noise variance σ2 = eO( M 2Tϵ2n2 ), then it guarantees 
+
+E[∥∇L (Θ pub-out C, Θpriv-out , ω out ; D)∥2] (4) 
+
+≤ β0
+
+√T
+
+
+
+L(Θ pub  
+
+> 0
+
+C, Θpriv  
+
+> 0
+
+, ω 0; D) − L ∗
+
++ M
+
+ β0
+
+2√T + d
+
+2n2ϵ2√T
+
+
+
+where the expectation is taken w.r.t. randomness of the algorithm. 
+
+Remark 4.11. Setting the conditioning matrix to the iden-tity, i.e., C = Ippub , in Algorithm 1 recovers the standard baseline that applies DPSGD directly to both public and private features, along with private labels. In this case, all bounds in Theorem 4.6, 4.8 and 4.10 reduce to the standard bounds for DPSGD , e.g., see (Song et al., 2021) and (Bassily et al., 2014). 
+
+Remark 4.12 (Full DP and Label DP) . At one extreme, when there are no public features, the setting reduces to the standard full DP scenario, and there is no conditioning. At 
+
+5Private Learning with Public Feature Conditioning 
+
+the other extreme, when there are no private features, the setting reduces to label DP. In this case, C can be effectively leveraged to minimize the bound on excess risk. 
+
+How does the conditioning matrix C affect the bound on excess risk in (2)? There are two factors that depend on C.The first factor 
+
+T1 := M =
+
+r
+
+G2 · max  
+
+> i∈[n]
+
+∥Cxpub  
+
+> i
+
+∥2 + bG2 · R2 + G2
+
+captures a bound on the gradient norm, while the second factor 
+
+T2 := ∥(Θ pub  
+
+> 0
+
+C − (Θ pub )∗)∥2
+
+> F, C
+
+captures a bound on the initial distance to optimum, mea-sured in a scaled Frobenius norm. It is instructive to consider the simpler case of label DP, in which the constants bG, G in 
+
+T1 are both zero, and the terms involving Θpriv  
+
+> 0
+
+, ω 0 in (2) are also 0. In this case, we observe that the scale of C has no effect on the final bound, as scaling C by a constant k scales 
+
+T1 by k and T2 by 1/k . The spectrum of C, however, does affect T1, T 2. In particular, T1 becomes smaller whenever the public feature vectors xpub  
+
+> i
+
+are aligned with the lower singular directions of C, while T2 becomes smaller when-ever the matrix (Θ pub  
+
+> 0
+
+C − (Θ pub )∗)⊤(Θ pub  
+
+> 0
+
+C − (Θ pub )∗) is nearly orthogonal to (C⊤C)−1.In principle, one could treat this as an optimization problem and attempt to choose a C that minimizes the combined bound, though this cannot be done in general without addi-tional assumptions, due to the dependence on the unknown 
+
+(Θ pub )∗. However, for certain classes of problems, it is pos-sible to choose a C that is guaranteed to improve the bound (even though it may not be necessarily optimal). One such class is private linear regression, in which (Θ pub )∗ admits a closed-form solution. Building on this strategy, we show, in the next section how to construct C from the public features in a way that yields a provably better bound than DPSGD .
+
+4.2. Private Linear Regression 
+
+In this setting, the embedding dimension is ppub = ppriv = 1 .We write θpub = (Θ pub )T ∈ Rdpub 
+
+and θpriv = (Θ priv )T ∈
+
+Rdpriv 
+
+, as the parameters associated with public and private features, respectively. The top layer is simply the sum 
+
+fω (Θ pub xpub , Θpriv xpriv ) = ⟨θpub , xpub ⟩ + ⟨θpriv , xpriv ⟩ with-out additional parameters, i.e., ω = ∅. Let the public feature matrix be Xpub = [( xpub  
+
+> 1
+
+)T , . . . , (xpub  
+
+> n
+
+)T ]T , the private fea-ture matrix be Xpriv = [( xpriv  
+
+> 1
+
+)T , . . . , (xpriv  
+
+> n
+
+)T ]T and the label vector be y = [ y1, . . . , y n]T . The objective is then 
+
+min 
+
+> θpub ,θ priv
+
+ Xpub θpub + Xpriv θpriv  − y 2 . (5) Let U ΣV T be the singular value decomposition (SVD) of 
+
+Xpub . We propose to set the conditioning matrix as 
+
+bC := V Σ−1V T ∈ Rdpub ×dpub 
+
+. (6) The following lemma presents the utility bound of Cond-DP 
+
+with the proposed conditioning matrix bC, as well as the 
+
+DPSGD baseline (which corresponds to C = Idpub ). See Appendix E for a full proof. 
+
+Lemma 4.13. Consider the linear regression problem de-fined in (5), and let the singular value decomposition (SVD) of the public feature matrix be Xpub = U ΣV T . Sup-pose Cond-DP (Algorithm 1) is run with ηt, σ 2 as in The-orem 4.6, then its excess risk is bounded as follows. If 
+
+C = bC = V Σ−1V T , then 
+
+EL(CT θpub-out , θ priv-out ; D) − L ∗ ≤
+
+r 1
+
+T + dn2ϵ2 (7) 
+
+· p2∥by∥2 + F 2 · pG2 + E2,
+
+and if C = Idpub (corresponding to DPSGD ), then 
+
+E
+
+h
+
+L(θpub-out , θ priv-out ; D)
+
+i
+
+− L ∗ ≤
+
+r 1
+
+T + dn2ϵ2 (8) 
+
+· p2∥Σ−1 by∥2 + F 2 · pG2σ2
+
+> max
+
+(Xpub ) + E2,
+
+where σmax (Xpub ) is the largest singular value of Xpub ,
+
+F 2 = 2 ∥θpub  
+
+> 0
+
+∥2 + ∥θpriv  
+
+> 0
+
+− (θpriv )∗∥2,E2 = bG2 · R2,
+
+by =
+
+
+
+In + U T Xpriv (Xpriv )T (In − U U T )Xpriv −1
+
+(Xpriv )T U
+
+
+
+U T y
+
+Comparison. We compare the convergence bounds of Cond-DP and the DPSGD baseline in (7) and (8), under the label DP setting with no private features. In this case, F 2 =2∥θpub  
+
+> 0
+
+∥2, E2 = 0 , and by = U T y. Let the diagonal entries of Σ be σmax = σ1 ≥ σ2 ≥ · · · ≥ σdpub = σmin .We first consider the zero-initialization case, i.e. F 2 =
+
+∥θpub  
+
+> 0
+
+∥2 = 0. Besides the common factors G and q 1 
+
+> T
+
++ dn2ϵ2 in both convergence bounds, DPSGD ’s bound scales with 
+
+q
+
+2 Pdpub 
+
+> i=1
+
+(byi σmax  
+
+> σi
+
+)2; while the bound for Cond-DP scales as 
+
+q
+
+2 Pdpub  
+
+> i=1
+
+by2 
+
+> i
+
+. Since σ2
+
+> max
+> σ2
+> i
+
+≥ 1, ∀i ∈ [dpub ],
+
+Cond-DP achieves a provably tighter bound. The improve-ment, vuut dpub 
+
+X
+
+> i=1
+
+(byi
+
+σmax 
+
+σi
+
+)2/
+
+> dpub
+
+X
+
+> i=1
+
+by2 
+
+> i
+
+,
+
+is maximized when y aligns with the singular direction cor-responding to σmin and minimized (equal to 1) when y
+
+aligns with the top singular direction σmax . More gener-ally, larger gains arise when y aligns with lower singular directions of Xpub .We next consider non-zero initialization. Let θDP-SGD  
+
+> 0
+
+and 
+
+θCond-DP  
+
+> 0
+
+denote the initialization of DPSGD and Cond-DP ,6Private Learning with Public Feature Conditioning 
+
+respectively. Up to shared factors, the DPSGD bound scales as vuut2
+
+> dpub
+
+X
+
+> i=1
+
+(byi
+
+σmax 
+
+σi
+
+)2 + ∥θDP-SGD  
+
+> 0
+
+∥2σ2
+
+> max
+
+,
+
+while the Cond-DP bound scales as 
+
+q
+
+2∥by∥2 + ∥θCond-DP  
+
+> 0
+
+∥2.
+
+Since the initialization is an algorithmic choice, select-ing ∥θCond-DP  
+
+> 0
+
+∥ ≤ ∥ θDP-SGD  
+
+> 0
+
+∥σmax is sufficient to ensure that Cond-DP again achieves a strictly tighter convergence bound, with maximal improvement when y aligns with the smallest singular direction. 
+
+4.3. More Complex Models and Switch-Cond-DP 
+
+The analysis of the private linear regression case relied on a relatively tractable dependence of the solution on the public feature matrix Xpub (see Lemma E.2 in Appendix E), en-abling a provable improvement. For more complex models, such characterizations are typically unavailable, making a similar theoretical analysis intractable. We hence turn to empirical evaluation, using the conditioning matrix bC from (6) under more complex settings. A key empirical observation is that while conditioning can substantially accelerate convergence in the early stages of training, it can hinder further loss reduction in later epochs. Motivated by this behavior, we propose Switch-Cond-DP ,a hybrid training strategy that applies Cond-DP during the initial phase of optimization and then switches to DPSGD to facilitate continued progress. The switching epoch is treated as a tunable hyperparameter. 
+
+## 5. Experiments 
+
+We empirically evaluate Cond-DP under label DP across three regression settings: (i) private linear models on syn-thetic and real-world datasets (Sections 5.1 and 5.2); (ii) private models with linear input transformation and MLP-based prediction layers in more general non-linear settings (Section 5.3); and (iii) private linear models, as well as private models with linear input transformation and MLP-based prediction layers on the Criteo Sponsored Search Conversion benchmark (Section 5.4). 
+
+Baselines. We compare Cond-DP and Switch-Cond-DP with the conditioning matrix bC against the following baselines: (i) DPSGD (Abadi et al., 2016), which directly trains on both public and private features using a DP optimizer; and (ii) the state-of-the-art label-DP method for regression, RR-on-Bins Φ 
+
+> ϵ
+
+(Ghazi et al., 2023). See Appendix F for a detailed algorithmic comparison with RR-on-Bins Φ 
+
+> ϵ
+
+. We also evalu-ate Weighted-LLP (Brahmbhatt et al., 2023), but omit its Dataset # train # test dpub Model                                       
+
+> synthetic 4000 1000 100 Linear
+> Boston housing 404 102 12 Linear
+> wine 3918 980 11 Linear
+> energy 15788 3947 25 Linear
+> CA housing 16512 4128 8Linear
+> supercond 17010 4253 81 MLP
+> TomsHardware 22543 5636 96 MLP
+> wave 28834 7209 98 MLP
+> Criteo Sponsored Search Conversion 1386177 346544 4003 Linear / MLP
+> Table 1. A Summary of datasets.
+
+results on real-world datasets from the main text due to lim-ited applicability and consistently inferior performance; full results are reported in Appendix G.4. Detailed descriptions of all baselines are in Appendix G.1. 
+
+Implementation. Similar to standard implementations of DPSGD (Abadi et al., 2016), the boundedness assumption (Assumption 4.1) used in our analysis are enforced in prac-tice through clipping, with clipping thresholds treated as hyperparameters. Quantities such as the noise scale and learning rate are calibrated accordingly. In particular, al-though the gradient sensitivity depends on the bound M in Assumption 4.1, which itself depends on ∥xpub ∥, we do not estimate M directly. Rather, the dependence on xpub is used only in the analysis to motivate the choice of conditioning matrix C and derive utility guarantees. 
+
+Hyperparameters. Across all experiments, we evaluate models under ϵ ∈ { 0.25 , 0.5, 1, 2, 4, ∞} (with ϵ = ∞ de-noting non-private training). We fix δ = 10 −6 on all datasets except Criteo Sponsored Search Conversion 
+
+and used 1/(# train ) on that dataset instead. We exten-sively tune the following key hyperparameters: 1) Learn-ing rate η ∈ [10 −5, 15] . 2) Gradient clipping norm 
+
+c ∈ [0 .05 , 40] which controls the sensitivity of gradients via clipping (Abadi et al., 2016), and 3) Initialization stan-dard deviation σinit ∈ [10 −5, 5] used in Gaussian initializa-tion of each model parameter. For the optimizer, we use 
+
+Opacus (Yousefpour et al., 2021) to implement a noisy ver-sion of Adam (Kingma & Ba, 2015) with default PyTorch 
+
+hyperparameters. 
+
+Datasets and Common Setup. Table 1 summarizes all datasets used, including the number of training and test samples, feature dimensions, and model architectures. For each experiment setting, we report the mean (solid lines) and one standard deviation (shaded areas) over 5 runs. 
+
+5.1. Private Linear Regression on Synthetic Datasets 
+
+We first evaluate all algorithms on synthetic data. The pub-lic feature matrix is generated as Xpub = U ΣV ⊤, where 
+
+U ∈ Rn×dpub 
+
+has orthogonal columns, V ∈ Rdpub ×dpub 
+
+is orthonormal, and Σ is diagonal with Σii = 1 /i p for p ≥ 0.Varying p controls the spectral decay of Xpub , with larger p
+
+corresponding to faster decay. We consider p ∈ { 0, 15 , 12 , 1}
+
+7Private Learning with Public Feature Conditioning 1/4 1/2 1 2 4 inf                    
+
+> 0
+> 0.01
+> 0.02
+> MSE
+> p= 1
+> 1/4 1/2 124inf
+> 0
+> 0.01
+> 0.02
+> p= 0.5
+> 1/4 1/2 124inf
+> 0
+> 0.01
+> 0.02
+> p= 0.2
+> 1/4 1/2 124inf
+> 0
+> 0.01
+> 0.02
+> p= 0
+> DPGD
+> Cond-DP
+> Weighted LLP
+> RRonBins
+
+Figure 4. Validation MSEs of different algorithms on synthetic data with varying spectrum power p.0 25 50 75 100  
+
+> eigen value rank
+> 0.0
+> 0.2
+> 0.4
+> 0.6
+> 0.8
+> eigen value
+> p=0
+> p=0.2
+> p=0.5
+> p=1
+
+Figure 5. Spectra of singu-lar values in synthetic .
+
+and train all models for 1024 epochs using full-batch opti-mization. Figure 5 shows the resulting singular value spec-tra 2, and Figure 4 reports validation losses under varying privacy budgets ϵ.
+
+Discussion. The proposed Cond-DP consistently achieves the lowest validation loss among all algorithms, including the state-of-the-art RR-on-Bins Φ 
+
+> ϵ
+
+, across different privacy budgets ϵ, supporting our theoretical findings. As the power 
+
+p increases and the spectrum decays more rapidly, the per-formance gap between Cond-DP and other baselines widens, indicating that Cond-DP effectively leverages spectral infor-mation and excels in ill-conditioned settings. When p = 0 ,where the singular values are uniform, Cond-DP performs similarly to DPSGD , further validating our intuition. 
+
+5.2. Private Linear Regression on Real-World Datasets 
+
+Moving beyond synthetic data, we train private linear mod-els on four real-world datasets: wine , Boston housing ,
+
+energy , and CA housing . Figure 2 presents the singular value spectra for two of these datasets, with the remaining spectra reported in Appendix G.3. Due to the relatively small dataset sizes, all models are trained for 128 epochs using full-batch optimization. The corresponding results are presented in Figure 6. 
+
+Discussion. On real-world datasets with rapidly decay-ing feature spectra, we observe that Cond-DP consistently outperforms other methods in private linear regression, cor-roborating our theory. 
+
+5.3. Private Two-Layer MLP Regression 
+
+We extend our evaluation beyond private linear regression by using a model with ppub = 16 , and the prediction component 
+
+fω on top of the linear embedding layers is a 2-layer MLP with 16 and 8 hidden units, followed by a scalar output. We evaluate this model trained by different algorithms on three datasets: supercond , TomsHardware and wave .
+
+> 2
+
+For p = 0 , eigenvalues are not exactly 1 because the full dataset ( n = 5000 ) is generated jointly, while the plot reflects the training subset ( n = 4000 ). 0.25 0.5 1 2 4                
+
+> 1.32
+> 1.34
+> 1.36
+> 1.38
+> 1.4
+> 1.42
+> MSE
+> Boston_housing (×10 2) (Linear)
+> 0.25 0.5 124
+> 0.7
+> 0.8
+> wine (Linear)
+> 0.25 0.5 124
+> 7.2
+> 7.4
+> 7.6
+> 7.8
+> 8
+> 8.2
+> 8.4
+> 8.6
+> MSE
+> energy (×10 3) (Linear)
+> 0.25 0.5 124
+> 0.7
+> 0.8
+> 0.9
+> 1
+> CA_housing (Linear)
+> DPSGD Cond-DP RR-on-Bins
+
+Figure 6. Validation MSEs of different algorithms for private linear models on real-world datasets across varying privacy budgets ϵ.
+
+Owing to the larger dataset sizes, training is performed for 1000 epochs using batch size 100. The spectra of the datasets can be found in Appendix G.3. The results are presented in Figure 7. 
+
+Discussion. Across all datasets with decaying spectra, 
+
+Switch-Cond-DP consistently achieves lower MSE than 
+
+DPSGD , and substantially outperforms RR-on-Bins Φ 
+
+> ϵ
+
+in high-privacy regimes. These results indicate that the benefits of 
+
+Cond-DP extend beyond linear regression, where they are theoretically justified, to more complex model architectures. 
+
+5.4. Private Linear and Two-layer MLP Regression on Criteo Sponsored Search Conversion Log Dataset 
+
+Criteo Sponsored Search Conversion 3 is a widely used benchmark for advertising prediction tasks. We evaluate both private linear models and private models with linear input transformations and MLP-based prediction layers on this dataset. 
+
+Data Preprocessing. Following (Ghazi et al., 2023), we remove all examples with no recorded conversion (i.e., SalesAmountInEuro = -1), yielding a dataset of 
+
+> 3
+
+https://ailab.criteo.com/criteo-sponsor ed-search-conversion-log-dataset/ 
+
+8Private Learning with Public Feature Conditioning 0.25 0.5 1 2 4                  
+
+> 0.005
+> 0.01
+> 0.02
+> MSE
+> supercond (MLP)
+> 0.25 0.5 124
+> 0.02
+> 0.05
+> 0.1
+> 0.2
+> 0.5
+> 1
+> 2
+> TomsHardware (MLP)
+> 0.25 0.5 124
+> 0.001
+> 0.002
+> 0.005
+> 0.01
+> 0.02
+> 0.05
+> wave (MLP)
+> 0.25 0.5 124
+> 10 2
+> 0.25 0.5 124
+> 10 1
+> DPSGD Switch-Cond-DP RR-on-Bins
+
+Figure 7. Validation MSEs of different algorithms for private linear models with linear input transformations and a two-layer MLP prediction layer (16, 8 hidden units) on real-world datasets across varying privacy budgets ϵ.
+
+1,732,721 examples, and clip the conversion value at 400 Euro, which corresponds to the 95th percentile of the value distribution. We randomly split the data into 80% for train-ing and 20% for testing. We retain three numerical fea-tures (time delay for conversion, nb clicks 1week, prod-uct price) and process the 17 categorical features by hashing each feature–value pair into one of 4,000 bins, resulting in a total of 4,003 input features. For private linear regression, we directly use these 4,003 features. For private models with an MLP prediction layer, we learn an embedding of dimension 8 for each hashed categorical bin, and concate-nate the resulting categorical embeddings, along with the three numerical features. This yields an embedding of size 
+
+17 × 8 + 3 for each sample. 
+
+Adapting to Categorical Features. Due to the natu-ral sparsity of categorical features, directly conditioning the input vector would destroy sparsity, making embed-ding+concatenation no longer possible. To extend our ap-proach to this sparse setting, we adopt an analogous con-struction to bC, but use it as an optional initialization , rather than a conditioning factor. Specifically, we compute the singular value decomposition of Xpub = U ΣV T , and use 
+
+Σ−1V T 
+
+> :demb
+
+—the top demb right singular vectors scaled by the inverse singular values—to initialize the learnable em-bedding table. The intuition is that with such initializa-tion, the outputs of the embedding layer would be approx-imately spherical, potentially facilitating learning during early phases of training. 
+
+Setup. Following (Ghazi et al., 2023), for non-linear mod-els, we use a two-layer MLP with 128, 64 hidden units in the prediction layer, followed by a scalar output. Both linear and the two-layer MLP models are trained for 50 epochs using a batch size of 8,192. 
+
+Results. RR-on-Bins Φ 
+
+> ϵ
+
+incurs a computational cost of 
+
+O(( npub )2), which scales poorly with dataset size, making it difficult to run on this dataset containing over 1.3 mil-lion training examples, even when using label discretization techniques proposed in (Ghazi et al., 2023). We therefore report the results for RR-on-Bins Φ 
+
+> ϵ
+
+as published in (Ghazi et al., 2023) and compare against these numbers in both the linear and non-linear settings. In non-private settings, it 1/4 1/2 1 2 4 inf      
+
+> 5000
+> 6000
+> 7000
+> 8000
+> 9000
+> 10000
+> MSE
+> Criteo (Linear)
+> DPSGD
+> Cond-DP
+> RR-on-Bins 1/4 1/2 124inf
+> 4000
+> 5000
+> 6000
+> 7000
+> 8000
+> 9000
+> 10000
+> MSE
+> Criteo (MLP)
+> DPSGD
+> Switch-Cond-DP
+> RR-on-Bins
+
+Figure 8. Validation MSEs of different algorithms on Criteo Sponsored Search Conversion across varying privacy budgets ϵ. (left) linear models; (right) models with linear input transformations and a two-layer MLP prediction layer (128, 64 hidden units). 
+
+is well known that nonlinear models, such as models with MLP-based prediction layers, substantially outperform lin-ear models on this dataset (Rendle, 2010), and are therefore the standard choice. Figure 8 reports the validation MSEs for private linear models (left) and private MLP (right). 
+
+Discussion. Interestingly, we observe that linear models can be competitive—and in some regimes superior—in pri-vate settings on this dataset, particularly under high privacy regimes. For linear models, Cond-DP consistently improves upon DPSGD in low-to-moderate privacy regimes, with the largest gains observed for ϵ ∈ (0 .5, 2] , and substantially out-performs RR-on-Bins Φ 
+
+> ϵ
+
+(the previous SOTA on this bench-mark) across most privacy budgets (except ϵ = 4 ). For the more expressive non-linear setting with a two-layer MLP prediction layer, the results indicate that Switch-Cond-DP 
+
+achieves lower MSE than both DPSGD and RR-on-Bins Φ
+
+> ϵ
+
+for small privacy budgets (ϵ < 4) .
+
+## 6. Conclusion 
+
+In this work, we develop new methods for leveraging non-sensitive public features in differentially private learning, focusing on underexplored regression settings. We propose 
+
+Cond-DP , which use conditioning matrices derived from public features to improve privacy–utility trade-offs, and provide convergence guarantees for convex, strongly convex, and non-convex objectives. We show that Cond-DP provably outperforms DPSGD in private linear regression and extend these gains to nonlinear models via Switch-Cond-DP . Exper-iments on diverse synthetic and real-world datasets confirm consistent improvements over state-of-the-art baselines. 9Private Learning with Public Feature Conditioning 
+
+## Acknowledgements 
+
+We thank the reviewers and area chair for the insightful discussion and suggestions. 
+
+## Impact Statement 
+
+This paper presents work whose goal is to advance the field of Machine Learning. There are many potential societal consequences of our work, none which we feel must be specifically highlighted here. 
+
+## References 
+
+Abadi, M., Chu, A., Goodfellow, I., McMahan, H. B., Mironov, I., Talwar, K., and Zhang, L. Deep learning with differential privacy. In Proceedings of the 2016 ACM SIGSAC Conference on Computer and Communi-cations Security , CCS’16. ACM, October 2016. doi: 10.1145/2976749.2978318. URL http://dx.doi.o rg/10.1145/2976749.2978318 .Bassily, R., Smith, A., and Thakurta, A. Private empirical risk minimization: Efficient algorithms and tight error bounds. In 2014 IEEE 55th Annual Symposium on Foun-dations of Computer Science , pp. 464–473, 2014. doi: 10.1109/FOCS.2014.56. Brahmbhatt, A., Saket, R., Havaldar, S., Nasery, A., and Raghuveer, A. Label differential privacy via aggregation, 2023. URL https://arxiv.org/abs/2310.1 0092 .Busa-Fekete, R., Medina, A. M. n., Syed, U., and Vassil-vitskii, S. Label differential privacy and private training data release. In Proceedings of the 40th International Conference on Machine Learning , ICML’23. JMLR.org, 2023. Chaudhuri, K. and Hsu, D. Sample complexity bounds for differentially private learning. In Kakade, S. M. and von Luxburg, U. (eds.), Proceedings of the 24th Annual Conference on Learning Theory , volume 19 of 
+
+Proceedings of Machine Learning Research , pp. 155– 186, Budapest, Hungary, 09–11 Jun 2011. PMLR. URL 
+
+https://proceedings.mlr.press/v19/ch audhuri11a.html .Chua, L., Cui, Q., Ghazi, B., Harrison, C., Kamath, P., Krichene, W., Kumar, R., Manurangsi, P., Mayoraz, N., Narra, K. G., Rendle, S., Sinha, A., Varadarajan, A., and Zhang, C. Training differentially private ad prediction models with semi-sensitive features. In AdKDD@KDD ,2024a. URL https://ceur-ws.org/Vol-383 7/paper_15_ceur_paper.pdf .Chua, L., Cui, Q., Ghazi, B., Harrison, C., Kamath, P., Krichene, W., Kumar, R., Manurangsi, P., Narra, K. G., Sinha, A., Varadarajan, A., and Zhang, C. Training differ-entially private ad prediction models with semi-sensitive features, 2024b. URL https://arxiv.org/abs/ 2401.15246 .Dwork, C. and Roth, A. The algorithmic foundations of differential privacy. Found. Trends Theor. Comput. Sci. ,9(3–4):211–407, August 2014. ISSN 1551-305X. doi: 10.1561/0400000042. URL https://doi.org/10 .1561/0400000042 .Esfandiari, H., Mirrokni, V., Syed, U., and Vassilvitskii, S. Label differential privacy via clustering, 2021. URL 
+
+https://arxiv.org/abs/2110.02159 .Ghazi, B., Golowich, N., Kumar, R., Manurangsi, P., and Zhang, C. Deep learning with label differential privacy. In Beygelzimer, A., Dauphin, Y., Liang, P., and Vaughan, J. W. (eds.), Advances in Neural Information Processing Systems , 2021. URL https://openreview.net /forum?id=RYcgfqmAOHh .Ghazi, B., Kamath, P., Kumar, R., Leeman, E., Manurangsi, P., Varadarajan, A., and Zhang, C. Regression with label differential privacy. In The Eleventh International Confer-ence on Learning Representations , 2023. URL https: //openreview.net/forum?id=h9O0wsmL-cT .Ghazi, B., Huang, Y., Kamath, P., Kumar, R., Manurangsi, P., and Zhang, C. LabelDP-pro: Learning with label differential privacy via projections. In The Twelfth Inter-national Conference on Learning Representations , 2024. URL https://openreview.net/forum?id= JnYaF3vv3G .Kairouz, P., Diaz, M. R., Rush, K., and Thakurta, A. (nearly) dimension independent private erm with adagrad rates via publicly estimated subspaces. In Belkin, M. and Kpotufe, S. (eds.), Proceedings of Thirty Fourth Confer-ence on Learning Theory , volume 134 of Proceedings of Machine Learning Research , pp. 2717–2746. PMLR, 15–19 Aug 2021. Kingma, D. P. and Ba, J. L. Adam: A method for stochas-tic optimization. In 3rd International Conference for Learning Representations, San Diego, 2015 , 2015. URL 
+
+http://arxiv.org/abs/1412.6980 .Krichene, W., Mayoraz, N., Rendle, S., Song, S., Thakurta, A., and Zhang, L. Private learning with public features, 2023. URL https://arxiv.org/abs/2310.1 5454 .Mahloujifar, S., Guo, C., Suh, G. E., and Chaudhuri, K. Machine Learning with Privacy for Protected Attributes 10 Private Learning with Public Feature Conditioning 
+
+. In 2025 IEEE Symposium on Security and Privacy (SP) , pp. 2640–2657, Los Alamitos, CA, USA, May 2025. IEEE Computer Society. doi: 10.1109/SP61157.2025 .00179. URL https://doi.ieeecomputersoci ety.org/10.1109/SP61157.2025.00179 .Malek, M., Mironov, I., Prasad, K., Shilov, I., and Tram `er, F. Antipodes of label differential privacy: Pate and alibi. In Proceedings of the 35th International Conference on Neural Information Processing Systems , NIPS ’21, Red Hook, NY, USA, 2021. Curran Associates Inc. ISBN 9781713845393. Papernot, N., Abadi, M., ´Ulfar Erlingsson, Goodfellow, I., and Talwar, K. Semi-supervised knowledge transfer for deep learning from private training data, 2017. URL 
+
+https://arxiv.org/abs/1610.05755 .Papernot, N., Song, S., Mironov, I., Raghunathan, A., Tal-war, K., and ´Ulfar Erlingsson. Scalable private learning with pate, 2018. URL https://arxiv.org/abs/ 1802.08908 .Popescu, M.-C., Balas, V. E., Perescu-Popescu, L., and Mas-torakis, N. Multilayer perceptron and neural networks. 
+
+WSEAS Trans. Cir. and Sys. , 8(7):579–588, July 2009. ISSN 1109-2734. Rakhlin, A., Shamir, O., and Sridharan, K. Making gradient descent optimal for strongly convex stochastic optimiza-tion. In Proceedings of the 29th International Cofer-ence on International Conference on Machine Learning ,ICML’12, pp. 1571–1578, Madison, WI, USA, 2012. Om-nipress. ISBN 9781450312851. Rendle, S. Factorization machines. In 2010 IEEE Interna-tional Conference on Data Mining , pp. 995–1000, 2010. doi: 10.1109/ICDM.2010.127. Song, S., Steinke, T., Thakkar, O., and Thakurta, A. Evad-ing the curse of dimensionality in unconstrained private glms. In Banerjee, A. and Fukumizu, K. (eds.), Proceed-ings of The 24th International Conference on Artificial Intelligence and Statistics , volume 130 of Proceedings of Machine Learning Research , pp. 2638–2646. PMLR, 13–15 Apr 2021. URL https://proceedings.ml r.press/v130/song21a.html .Wang, D. and Xu, J. On sparse linear regression in the local differential privacy model. In Chaudhuri, K. and Salakhutdinov, R. (eds.), Proceedings of the 36th Inter-national Conference on Machine Learning , volume 97 of 
+
+Proceedings of Machine Learning Research , pp. 6628– 6637. PMLR, 09–15 Jun 2019. URL https://proc eedings.mlr.press/v97/wang19m.html .Yousefpour, A., Shilov, I., Sablayrolles, A., Testuggine, D., Prasad, K., Malek, M., Nguyen, J., Ghosh, S., Bharadwaj, A., Zhao, J., Cormode, G., and Mironov, I. Opacus: User-friendly differential privacy library in PyTorch. arXiv preprint arXiv:2109.12298 , 2021. 11 Private Learning with Public Feature Conditioning 
+
+## A. Privacy Analysis 
+
+Theorem A.1 (Privacy guarantee, Restatement of Theorem 4.3) . If the noise variance in Algorithm 1 is set to be 
+
+σ2 = eO( M 2Tϵ2n2 ), where M 2 ≜ G2 · max i∈[n] ∥Cxpub  
+
+> i
+
+∥2 + bG2 · R2 + G2, then Algorithm 1 is (ϵ, δ )-differentially private. Proof. The privacy analysis follows directly from the Gaussian mechanism. To ensure that the final output satisfies 
+
+(ϵ, δ )-DP, it suffices by standard composition (Dwork & Roth, 2014) that each of the T iterations incurs a privacy loss of (O( ϵ√T ), O( δT )) . By the Gaussian mechanism (Dwork & Roth, 2014), this is achieved by adding noise with variance 
+
+σ2 = eO( S√Tϵ ), where S denotes the ℓ2 sensitivity of the per-sample gradient. The ℓ2 sensitivity of the per-sample gradient can be characterized by M 2 ≜ G2 · max i∈[n] ∥Cxpub  
+
+> i
+
+∥2 + bG2 · R2 + G2. Since S ≤ Mn , it suffices to set 
+
+σ2 = eO( S2Tϵ2 ) = eO( M 2Tn2ϵ2 ).
+
+## B. Convergence of Private Models with Linear Input Transformations Under Convex Losses 
+
+Theorem B.1 (Restatement of Theorem 4.6) . Let C be a conditioning matrix of full rank. Under Assumptions 4.5 and 4.1, if Algorithm 1 is run with 
+
+η = N
+
+q
+
+T M 2(1 + dT n2ϵ2 )
+
+, σ2 = eO( M 2Tn2ϵ2 ) (9) 
+
+where M 2 ≜ G2 · max  
+
+> i∈[n]
+
+∥Cxpub  
+
+> i
+
+∥2 + bG2 · R2 + G2, (10) 
+
+and N 2 ≜ Tr 
+
+
+
+(Θ pub  
+
+> 0
+
+C − (Θ pub )∗)( CT C)−1(Θ pub  
+
+> 0
+
+C − (Θ pub )∗)T 
+
++ ∥Θpriv  
+
+> 0
+
+− (Θ priv )∗∥2 
+
+> F
+
++ ∥ω0 − ω∗∥2
+
+then it guarantees 
+
+E L(Θ pub-out , Θpriv-out , ω out ; D) − L ∗ (11) 
+
+≤
+
+r 1
+
+T + dn2ϵ2 · M|{z} 
+
+> Gradient bound factor
+
+· N|{z} 
+
+> Initialization factor
+
+where the expectation is taken w.r.t. the randomness of the algorithm. Proof. For notational simplicity, we represent all model parameters as vectors. Specifically, let θpub ,j denote the j-th row of 
+
+Θpub ∈ Rppub ×dpub 
+
+for each j ∈ [ppub ], and similarly, let θpriv ,j denote the j-th row of Θpriv ∈ Rppriv ×dpriv 
+
+for each j ∈ [ppriv ].Let the vector of parameters be θt ∈ Rd, ∀t ∈ [T ], and the corresponding vector of parameters with conditioning matrix 
+
+C ∈ Rpub ×pub be W θt ∈ Rd, for W ∈ Rd×d, then 
+
+θt =
+
+
+
+θpub ,1
+
+> t
+
+θpub ,2
+
+> t
+
+. . . θpub ,p pub 
+
+> t
+
+θpriv ,1
+
+> t
+
+. . . θpriv ,p priv 
+
+> t
+
+ωt
+
+
+
+, θ C =
+
+
+
+CT θpub ,1
+
+> t
+
+CT θpub ,2
+
+> t
+
+. . . 
+
+CT θpub ,p pub 
+
+> t
+
+θpriv ,1
+
+> t
+
+. . . θpriv ,p priv 
+
+> t
+
+ωt
+
+
+
+= W θt, where W =
+
+
+
+CT 0 . . . 0 . . . 0 00 CT . . . 0 . . . 0 00 · · · CT 0 . . . 0 00 0 . . . Idpriv . . . 0 0
+
+. . . 
+
+0 0 . . . 0 . . . Idpriv 00 0 . . . 0 . . . 0 Ip
+
+
+
+(12) 12 Private Learning with Public Feature Conditioning 
+
+and the inverse map is W −1 such that 
+
+W −1 =
+
+
+
+(CT )−1 0 . . . 0 . . . 0 00 (CT )−1 . . . 0 . . . 0 00 · · · (CT )−1 0 . . . 0 00 0 . . . Idpriv . . . 0 0
+
+. . . 
+
+0 0 . . . 0 . . . Idpriv 00 0 . . . 0 . . . 0 Ip
+
+
+
+(13) Let the vector version of the output of Algorithm 1, representing (Θ pub-out , Θpriv-out , ω out ), be 
+
+θout = 1
+
+T
+
+> T
+
+X
+
+> t=1
+
+θt (14) Let θ∗ denote the optimal parameter vector, corresponding to ((Θ pub )∗, (Θ priv )∗, ω ∗). Let bt and gt be the noise and gradient vector at iteration t ∈ [T ], corresponding to (Bpub  
+
+> t
+
+, Bpriv  
+
+> t
+
+, btop  
+
+> t
+
+) and (Gpub  
+
+> t
+
+, Gpriv  
+
+> t
+
+, gtop  
+
+> t
+
+), respectively. We note that 
+
+gt =
+
+ ∂L(t)
+
+∂θ pub ,1
+
+> t
+
+!T
+
+, . . . , ∂L(t)
+
+∂θ pub ,p pub 
+
+> t
+
+!T
+
+,
+
+ ∂L(t)
+
+∂θ priv ,1
+
+> t
+
+T
+
+, . . . , 
+
+ ∂L(t)
+
+∂θ priv ,p priv 
+
+> t
+
+T
+
+,
+
+ ∂L(t)
+
+∂ω t
+
+T
+
+
+
+> T
+
+(15) 
+
+= W T ∇L (W θt; D) (16) where 
+
+∂L(t)
+
+∂θ pub ,j t
+
+= 1
+
+n
+
+> n
+
+X
+
+> i=1
+
+∂l t,i 
+
+∂⟨CT θpub ,j t , xpub  
+
+> i
+
+⟩ · Cxpub  
+
+> i
+
+, ∀j ∈ [ppub ]
+
+∂L(t)
+
+∂θ priv ,j t
+
+= 1
+
+n
+
+> n
+
+X
+
+> i=1
+
+∂l t,i 
+
+∂θ priv ,j t
+
+= 1
+
+n
+
+> n
+
+X
+
+> i=1
+
+∂l t,i 
+
+∂⟨θpriv ,j t , xpriv  
+
+> i
+
+⟩ · xpriv  
+
+> i
+
+, ∀j ∈ [ppriv ]
+
+∂L(t)
+
+∂ω = 1
+
+n
+
+> n
+
+X
+
+> i=1
+
+∂l t,i 
+
+∂ω 
+
+and recall that lt,i = ∇L i(Θ pub  
+
+> t
+
+C, Θpriv  
+
+> t
+
+, ω t), ∀i ∈ [n], t ∈ [T ].By convexity of L (Assumption 4.5), 
+
+L(W θout ; D) − L (θ∗; D) = L( 1
+
+T
+
+> T
+
+X
+
+> t=1
+
+W θt; D) − L (θ∗; D) ≤ 1
+
+T
+
+> T
+
+X
+
+> t=1
+
+
+
+L(W θt; D) − L (θ∗; D)
+
+
+
+(17) 
+
+≤ 1
+
+T
+
+> T
+
+X
+
+> t=1
+
+⟨∇L (W θt; D), W θt − θ∗⟩ (18) In the following, we use EE [A] to denote the conditional expectation of variable A conditioned on the event E. Let 
+
+Φt(θ) = Eb1,..., bt
+
+h
+
+∥W θ − θ∗∥2(W W T )−1
+
+i
+
+where recall that ∥ · ∥ A denotes the norm ∥θ∥2 
+
+> A
+
+= ⟨θ, Aθ ⟩.By the update rule in Algorithm 1, 
+
+Φt(θt+1 ) = Eb1,..., bt
+
+h
+
+∥W θt+1 − θ∗∥2(W W T )−1
+
+i
+
+(19) 
+
+≤ Eb1,..., bt
+
+h
+
+∥W θt − θ∗ − ηW
+
+
+
+gt + bt
+
+
+
+∥2(W W T )−1
+
+i
+
+(20) 13 Private Learning with Public Feature Conditioning 
+
+= Eb1,..., bt
+
+h
+
+∥W θt − θ∗∥2(W W T )−1
+
+i
+
+(21) 
+
+− 2ηEb1,..., bt
+
+(W (gt + bt)) T (W W T )−1(W θt − θ∗)
+
++ η2Eb1,..., bt
+
+h
+
+∥W
+
+
+
+gt + bt
+
+
+
+∥2(W W T )−1
+
+i
+
+= Eb1,..., bt
+
+h
+
+∥W θt − θ∗∥2(W W T )−1
+
+i
+
+(22) 
+
+− 2ηEb1,..., bt
+
+(W W T ∇L (W θt; D)) T (W W T )−1(W θt − θ∗)
+
++ η2Eb1,..., bt
+
+h
+
+∥W
+
+
+
+W T ∇L (W θt; D) + bt
+
+
+
+∥2(W W T )−1
+
+i
+
+= Eb1,..., bt−1
+
+h
+
+∥W θt − θ∗∥2(W W T )−1
+
+i
+
+− 2ηEb1,..., bt−1 [⟨∇L (W θt; D), W θt − θ∗⟩] (23) 
+
++ η2Eb1,..., bt
+
+h
+
+∥W W T ∇L (W θt; D)∥2(W W T )−1
+
+i
+
++ η2Eb1,..., bt
+
+h
+
+∥W bt∥2(W W T )−1
+
+i
+
+= ( ∗)
+
+We proceed by bounding the last two variance terms. First, note that 
+
+∥W W T ∇L (W θt; D)∥2(W W T )−1 (24) 
+
+= ( W W T ∇L (W θt; D)) T (W W T )−1(W W T ∇L (W θt; D)) = ( ∇L (W θt; D)) T W W T ∇L (W θt; D) (25) 
+
+=
+
+ppub 
+
+X
+
+j=1 
+
+"
+
+∂L(t)
+
+∂CT θpub ,j t
+
+#T
+
+CT C
+
+"
+
+∂L(t)
+
+∂CT θpub ,j t
+
+#
+
++
+
+ppriv 
+
+X
+
+j=1 
+
+"
+
+∂L(t)
+
+∂θ priv ,j t
+
+#T "
+
+∂L(t)
+
+∂θ priv ,j t
+
+#
+
++
+
+ ∂L(t)
+
+∂ω 
+
+T  ∂L(t)
+
+∂ω 
+
+
+
+(26) 
+
+=
+
+ppub 
+
+X
+
+j=1 
+
+C ∂L(t)
+
+∂CT θpub ,j t
+
+2
+
++
+
+ppriv 
+
+X
+
+j=1 
+
+∂L(t)
+
+∂θ priv ,j t
+
+2
+
++ ∂L(t)
+
+∂ω 
+
+2
+
+(27) 
+
+=
+
+ppub 
+
+X
+
+j=1 
+
+C 1
+
+n
+
+nX
+
+i=1 
+
+∂l t,i 
+
+∂⟨CT θpub ,j t , xpub 
+
+i ⟩ · xpub 
+
+i
+
+2
+
++
+
+ppriv 
+
+X
+
+j=1 
+
+1
+
+n
+
+nX
+
+i=1 
+
+∂l t,i 
+
+∂⟨θpriv ,j t , xpriv 
+
+i ⟩ · xpriv 
+
+i
+
+2
+
++ ∂L(t)
+
+∂ω 
+
+2
+
+(28) 
+
+≤
+
+ppub 
+
+X
+
+j=1 
+
+C 1
+
+n
+
+nX
+
+i=1 
+
+∂l t,i 
+
+∂⟨CT θpub ,j t , xpub 
+
+i ⟩ · xpub 
+
+i
+
+2
+
++ bG2 · R2 + G2 (29) By Assumption 4.1 
+
+≤
+
+ppub 
+
+X
+
+j=1 
+
+ 1
+
+n
+
+nX
+
+i=1 
+
+∂l t,i 
+
+∂⟨CT θpub ,j t , xpub 
+
+i ⟩
+
+2
+
+· max 
+
+i∈[n] Cxpub 
+
+i
+
+2
+
++ bG2 · R2 + G2 (30) 
+
+≤ G2 · max 
+
+i∈[n] Cxpub 
+
+i
+
+2
+
++ bG2 · R2 + G2 (31) where the last inequality is by Assumption 4.1. Moreover, let ρ(p) ∼ N (0 , σ 2Ip) denote a random Gaussian vector of size p,
+
+Eb1,..., bt
+
+h
+
+∥W bt∥2(W W T )−1
+
+i
+
+= Eb1,..., bt
+
+bTt W T (W W T )−1W bt
+
+ (32) 
+
+=
+
+ppub 
+
+X
+
+j=1 
+
+Eb1,..., bt
+
+h
+
+ρ(dpub )
+
+j C(CT C)−1CT ρ(dpub )
+
+j
+
+i
+
++ ( ppriv dpriv + p)σ2 (33) 
+
+=
+
+ppub 
+
+X
+
+j=1 
+
+σ2Tr (C(CT C)−1CT ) + ( ppriv dpriv + p)σ2 (34) 
+
+=
+
+ppub 
+
+X
+
+j=1 
+
+σ2Tr (( CT C)−1CT C) + ( ppriv dpriv + p)σ2 ∵ Cyclic rule of trace (35) 14 Private Learning with Public Feature Conditioning 
+
+= ( ppub dpub + ppriv dpriv + p)σ2 = dσ 2 (36) Hence, following (*) in Eq. 23, 
+
+Φt(θt+1 ) ≤ Φt−1(θt) − 2ηEb1,..., bt−1 [⟨∇L (W θt; D), W θt − θ∗⟩] (37) 
+
++ η2
+
+G2 · max  
+
+> i∈[n]
+
+Cxpub 
+
+> i
+> 2
+
++ bG2 · R2 + G2 + dσ 2
+
+and therefore, 
+
+Eb1,..., bt [⟨∇L (W θt; D), W θt − θ∗⟩] ≤ 12η
+
+
+
+Φt−1(θt) − Φt(θt+1 )
+
+
+
+(38) 
+
++ η
+
+2
+
+
+
+G2 · max  
+
+> i∈[n]
+
+Cxpub 
+
+> i
+> 2
+
++ bG2 · R2 + G2 + dσ 2
+
+Summing from t = 1 to T , by Eq. 38 and Eq. 18, we have 
+
+E L(W θout ; D) − L (θ∗; D) ≤ 1
+
+T
+
+> T
+
+X
+
+> t=1
+
+Eb1,..., bt−1 [⟨∇L (W θt; D), W θt − θ∗⟩] (39) 
+
+≤ 12ηT ∥W θ0 − θ∗∥2(W W T )−1 + η
+
+2
+
+
+
+G2 · max  
+
+> i∈[n]
+
+Cxpub 
+
+> i
+> 2
+
++ bG2 · R2 + G2 + dσ 2
+
+(40) Setting the noise variance as σ2 = eO( M 2Tn2ϵ2 ), and following Eq. 40, we have 
+
+E L(W θout ; D) − L (θ∗; D) ≤ 12ηT ∥W θ0 − θ∗∥2(W W T )−1 + η
+
+2
+
+
+
+M 2 + dM 2Tn2ϵ2
+
+
+
+(41) 
+
+Setting the learning rate η. To minimize the R.H.S. of Eq. 41, let 
+
+12T η ∥W θ0 − θ∗∥2(W W T )−1 = η
+
+2
+
+
+
+M 2 + dM 2Tn2ϵ2
+
+
+
+(42) 
+
+η = ∥W θ0 − θ∗∥(W W T )−1
+
+q
+
+T M 2(1 + dT n2ϵ2 )
+
+(43) and hence, 
+
+E L(W θout ; D) − L (θ∗; D) ≤ ∥ W θ0 − θ∗∥(W W T )−1 M
+
+r 1
+
+T + dn2ϵ2 (44) Converting the above bound back to the matrix form of parameters yields the final theorem statement. 
+
+## C. Convergence of Private Models with Linear Input Transformations Under Strongly Convex Losses 
+
+The proofs in this section are a generalization of the proofs in (Rakhlin et al., 2012). 
+
+Lemma C.1 (Generalization of Lemma 2 in (Rakhlin et al., 2012)) . Suppose L(·; D) is μ-strongly convex and W is a full rank matrix. For any θ, if E[∥∇L (W θ; D)∥2(W W T )−1 ] ≤ G2, then 
+
+E[∥W θ − θ∗∥2(W W T )−1 ] ≤ 4λmax (W W T )G2
+
+μ2 · λmin (W W T ) (45) 
+
+where θ∗ = arg min θ L(θ; D) and λmin , λ max denote the minimum and maximum eigenvalues respectively. 
+
+15 Private Learning with Public Feature Conditioning 
+
+Proof. By strong convexity, for any θ,
+
+L(W θ; D) − L (θ∗; D) ≥ μ
+
+2 ∥W θ − θ∗∥2 (46) and by convexity, 
+
+L(W θ; D) − L (θ∗; D) ≤ ⟨∇L (W θ; D), W θ − θ∗⟩ (47) Therefore, 
+
+μ
+
+2 ∥W θ − θ∗∥2 ≤ ⟨∇L (W θ; D), W θ − θ∗⟩ (48) Combining this with the Cauchy-Schwarz inequality, we get, 
+
+μ2
+
+4 ∥W θ − θ∗∥2 ≤ ∥∇L (W θ; D)∥2 (49) 
+
+∥W θ − θ∗∥2 ≤ 4
+
+μ2 ∥∇L (W θ; D)∥2 (50) and so 
+
+∥W θ − θ∗∥2(W W T )−1 ≤ λmax (( W W T )−1)∥W θ − θ∗∥2 (51) 
+
+≤ λmax (( W W T )−1) 4
+
+μ2 ∥∇L (W θ; D)∥2 (52) 
+
+≤ 4
+
+μ2
+
+λmax (( W W T )−1)
+
+λmin (( W W T )−1) ∥∇L (W θ; D)∥2(W W T )−1 (53) 
+
+= 4
+
+μ2
+
+λmax (W W T )
+
+λmin (W W T ) ∥∇L (W θ; D)∥2(W W T )−1 (54) Taking expectation of both sides yields the above lemma statement. 
+
+Theorem C.2 (Re-statement of Theorem 4.8) . Let C be a conditioning matrix of full rank. Under Assumptions 4.7 and 4.1, if Algorithm 1 is run with ηt = 1 
+
+> μt
+
+, ∀t, and noise variance σ2 = eO( M 2Tϵ2n2 ), then it guarantees 
+
+E L(Θ pub-out C, Θpriv-out , ω out ; D) − L ∗ ≤ 16 β2
+
+μ2 ( 1
+
+T + dn2ϵ2 ) · K · M 2 (55) 
+
+where 
+
+K := ( σmax (C)
+
+σmin (C) )2 max {σ2
+
+> max
+
+(C), σ −2
+
+> min
+
+(C)} (56) 
+
+M 2 := G2 · max  
+
+> i∈[n]
+
+∥Cxpub  
+
+> i
+
+∥2 + bG2 · R2 + G2 (57) 
+
+and σmax (C) and σmin (C) denote the maximum and minimum singular value of C, respectively. Proof. For notational simplicity, we use similar terms and definitions as in the proof of the convex case (see Appendix B). We represent all model parameters as vectors. The definitions of the flattened parameter vectors θ, θC , and the transformation matrices W and W −1 follow Eq. 12 and Eq. 13. Following Eq. 14, the vector version of the output of Algorithm 1, representing (Θ pub-out , Θpriv-out , ω out ), is 
+
+θout = 1
+
+T
+
+> T
+
+X
+
+> t=1
+
+θt (58) 16 Private Learning with Public Feature Conditioning 
+
+And let the vector version of the optimum be θ∗, representing ((Θ pub )∗, (Θ priv )∗, ω ∗). and the noise vector at iteration 
+
+t ∈ [T ] is bt.We use EE [A] to denote the conditional expectation of variable A conditioned on the event E. The subscript E is dropped when the context is clear. Let Φt(θ) = Eb1,..., bt
+
+h
+
+∥W θ − θ∗∥2(W W T )−1
+
+i
+
+. By the update rule of Algorithm 1 and following Eq. 37, 
+
+Φt(θt+1 ) = Eb1,..., bt
+
+h
+
+∥W θt+1 − θ∗∥2(W W T )−1
+
+i
+
+(59) 
+
+≤ Eb1,..., bt−1
+
+h
+
+∥W θt − θ∗∥2(W W T )−1
+
+i
+
+− 2ηtEb1,..., bt−1 [⟨∇L (W θt; D), W θt − θ∗⟩] (60) 
+
++ η2
+
+> t
+
+
+
+G2 · max  
+
+> i∈[n]
+
+Cxpub 
+
+> i
+> 2
+
++ bG2 · R2 + G2
+
+| {z } 
+
+> := M2
+
++dσ 2
+
+= Φ t−1(θt) − 2ηtEb1,..., bt−1 [⟨∇L (W θt; D), W θt − θ∗⟩] + η2 
+
+> t
+
+(M 2 + dσ 2) (61) 
+
+= ( ∗)
+
+By μ-strong convexity (Assumption 4.7), 
+
+⟨∇L (W θt; D), W θt − θ∗⟩ ≥ L (W θt; D) − L (θ∗; D) + μ
+
+2 ∥W θt − θ∗∥2 (62) and 
+
+L(W θt; D) − L (θ∗; D) ≥ μ
+
+2 ∥W θt − θ∗∥2 (63) Let λmin (A) and λmax (A) denote the minimum and maximum eigenvalue of a positive definite matrix A, respectively. The above implies 
+
+(∗) ≤ Φt−1(θt) − 2ηtEb1,..., bt−1
+
+h
+
+L(W θt; D) − L (θ∗; D) + μ
+
+2 ∥W θt − θ∗∥2i
+
++ η2 
+
+> t
+
+(M 2 + dσ 2) (64) 
+
+≤ Φt−1(θt) − 2ηtEb1,..., bt−1
+
+h μ
+
+2 ∥W θt − θ∗∥2 + μ
+
+2 ∥W θt − θ∗∥2i
+
++ η2 
+
+> t
+
+(M 2 + dσ 2) (65) 
+
+= Eb1,..., bt−1 [∥W θt − θ∗∥2(W W T )−1 ] − 2μη tEb1,..., bt−1 [∥W θt − θ∗∥2] + η2 
+
+> t
+
+(M 2 + dσ 2) (66) 
+
+≤ (1 − 2ηtμλmax (( W W T )−1) )Eb1,..., bt−1
+
+h
+
+∥W θt − θ∗∥2(W W T )−1
+
+i
+
++ η2 
+
+> t
+
+(M 2 + dσ 2) (67) 
+
+= (1 − 2ηtμ · λmin (( W W T )) Eb1,..., bt−1
+
+h
+
+∥W θt − θ∗∥2(W W T )−1
+
+i
+
++ η2 
+
+> t
+
+(M 2 + dσ 2) (68) Setting ηt = 1   
+
+> μt ·λmin (W W T)
+
+, we get 
+
+Φt(θt+1 ) ≤ (1 − 2
+
+t )Φ t−1(θt) + 1
+
+μ2λ2
+
+> min
+
+(W W T )t2 (M 2 + dσ 2) (69) Note that by Lemma C.1, 
+
+Φ0(θ1) = ∥W θ1 − θ∗∥2(W W T )−1 ≤ 4
+
+μ2 · λmax (W W T )
+
+λmin (W W T ) (M 2 + dσ 2) (70) 
+
+≤ 4
+
+μ2 (M 2 + dσ 2) · max { λmax (W W T )
+
+λmin (W W T ) , 1
+
+λ2
+
+> min
+
+(W W T ) }
+
+| {z }
+
+> := ψ
+
+(71) For simplicity, let ψ := max { λmax (W W T )   
+
+> λmin (W W T)
+
+, 1   
+
+> λ2
+> min (W W T)
+
+}. Let σmax (C) and σmin (C) denote the maximum and minimum singular value of the matrix C. Note that 
+
+λmax (W W T ) = σ2
+
+> max
+
+(C), λmin (W W T ) = σ2
+
+> min
+
+(C) (72) 17 Private Learning with Public Feature Conditioning 
+
+ψ = max { σ2
+
+> max
+
+(C)
+
+σ2
+
+> min
+
+(C) , 1
+
+σ4
+
+> min
+
+(C) } = σ−2
+
+> min
+
+(C) · max {σ2
+
+> max
+
+(C), σ −2
+
+> min
+
+(C)} (73) Using Eq. 71 as the base case, and by induction 4 , we can show that 
+
+Φt−1(θt) ≤ 4( M 2 + dσ 2)ψμ2t (74) Finally, to analyze average iterate convergence, let θt = ( θ1 + . . . , +θt)/t ,
+
+Eb1,..., bt
+
+h
+
+∥W θt+1 − θ∗∥2(W W T )−1
+
+i
+
+(75) 
+
+= Eb1,..., bt
+
+
+
+∥ tt + 1 W ¯θt + 1
+
+t + 1 W θt+1 − θ∗∥2(W W T )−1
+
+
+
+= Eb1,..., bt
+
+
+
+∥ tt + 1 (W θt − θ∗) + 1
+
+t + 1 (W θt+1 − θ∗)∥2
+
+
+
+(76) 
+
+= ( tt + 1 )2Eb1,..., bt−1
+
+h
+
+∥W θt − θ∗∥2(W W T )−1
+
+i
+
+(77) 
+
++ 2t
+
+(t + 1) 2 Eb1,..., bt
+
+⟨W θt − θ∗, W θt+1 − θ∗⟩(W W T )−1
+
+
+
++ 1(t + 1) 2 Eb1,..., bt
+
+h
+
+∥W θt+1 − θ∗∥2(W W T )−1
+
+i
+
+> (a)
+
+≤ ( tt + 1 )2Eb1,..., bt−1
+
+h
+
+∥W θt − θ∗∥2(W W T )−1
+
+i
+
+(78) 
+
++ 2
+
+t + 1 
+
+r
+
+Eb1,..., bt−1
+
+h
+
+∥W θt − θ∗∥2(W W T )−1
+
+ir
+
+Eb1,..., bt
+
+h
+
+∥W θt+1 − θ∗∥2(W W T )−1
+
+i
+
++ 1(t + 1) 2 Eb1,..., bt
+
+h
+
+∥W θt+1 − θ∗∥2(W W T )−1
+
+i
+
+> (b)
+
+≤ ( tt + 1 )2Eb1,..., bt−1
+
+h
+
+∥W θt − θ∗∥2(W W T )−1
+
+i
+
+(79) 
+
++ 4p(M 2 + dσ 2)ψμ(t + 1) 3/2
+
+r
+
+Eb1,..., bt−1
+
+h
+
+∥W θt − θ∗∥2(W W T )−1
+
+i
+
++ 4( M 2 + dσ 2)ψμ2(t + 1) 3
+
+where (a) the last inequality uses the fact that E[XY ] ≤ pE[X2]pE[Y 2]] and (b) is by Eq. 74. Using Eq. 71 again as the base case, and by induction 5 ,
+
+Eb1,..., bT −1
+
+h
+
+∥W θT − θ∗∥2(W W T )−1
+
+i
+
+≤ 32( M 2 + dσ 2)ψμ2T (80) 
+
+> 4
+
+The induction here follows a similar structure as the one in the proof of Lemma 1 (Appendix B.2) in (Rakhlin et al., 2012). The main difference lies in the constant. Indeed, letting M ′ = 4( M 2+dσ 2)ψμ2 , we have 
+
+Φt(θt+1 ) ≤ (1 − 2
+
+t )Φ t−1(θt) + M ′
+
+4t2 by Eq. 69 
+
+≤ (1 − 2
+
+t ) M ′
+
+t + M ′
+
+4t2 by induction hypothesis To complete the induction, it suffices to prove that (1 − 2 
+
+> t
+
+) 1 
+
+> t
+
++ 14t2 ≤ 1 
+
+> t+1
+
+, which follows from simple algebra. 
+
+> 5
+
+The induction here follows a similar structure as the one in the proof of Theorem 2 (Appendix B.3) in (Rakhlin et al., 2012). The main difference again lies in the constant. Let Φt(θt+1 ) = Eb1,..., bt [∥W θt+1 − θ∗∥2].
+
+Φt(θt+1 ) ≤ ( tt + 1 )2Φt−1(θt) + 2√M ′
+
+(t + 1) 3/2
+
+q
+
+Φt−1(θt) + M ′
+
+(t + 1) 3 by Eq. 79 
+
+18 Private Learning with Public Feature Conditioning 
+
+Recall that W θout = W θT . By smoothness (Assumption 4.7), 
+
+E L(W θout ; D) − L ∗ ≤ β
+
+2 E ∥W θout − θ∗∥2 (81) 
+
+≤ β
+
+21
+
+λmin (( W W T )−1) E
+
+h
+
+∥W θout − θ∗∥2(W W T )−1
+
+i
+
+(82) 
+
+≤ β
+
+2 ψλ max (W W T ) 32( M 2 + dσ 2)
+
+μ2T = β
+
+2 ψσ 2
+
+> max
+
+(C) 32( M 2 + dσ 2)
+
+μ2T (83) Setting the noise variance as σ2 = eO( M 2Tn2ϵ2 ), and following Eq. 83, 
+
+E L(W θout ; D) − L ∗ ≤ ( σmax (C)
+
+σmin (C) )2 max {σ2
+
+> max
+
+(C), σ −2
+
+> min
+
+(C)} 16 βμ2 M 2( 1
+
+T + dn2ϵ2 ) (84) Converting the above bound back to the matrix form of parameters to obtain the final theorem statement. 
+
+## D. Convergence of Private Models with Linear Input Transformations Under Non-Convex Losses 
+
+Theorem D.1 (Re-statement of Theorem 4.10) . Let C be a conditioning matrix of full rank. Under Assumption 4.1 and 4.9, if Algorithm 1 is run with ηt = η = 1√T β , ∀t, and noise variance σ2 = eO( M 2Tϵ2n2 ), then it guarantees 
+
+E[∥∇L (Θ pub-out C, Θpriv-out , ω out ; D)∥2] (85) 
+
+≤ β0
+
+√T
+
+
+
+L(Θ pub  
+
+> 0
+
+C, Θpriv  
+
+> 0
+
+, ω 0; D) − L ∗
+
++
+
+
+
+G2 max  
+
+> i∈[n]
+
+∥Cx pub  
+
+> i
+
+∥2 + bG2R2 + G2
+
+·
+
+ β0
+
+2√T + d
+
+2n2ϵ2√T
+
+
+
+Proof. Following the notations we defined in Appendix B, recall that the loss function is L(Θ pub-out , Θpriv-out , ω ; D),where Θpub-out , Θpriv-out , ω denote model parameter corresponding to the public features, the private features in the bottom embedding layer, and model parameters in the upper prediction layer, respectively. D is the training dataset. Also recall that the loss L can be decomposed into Li’s, where each Li depends on on data sample di ∈ D. See Section 3 for details. θt
+
+and θout is the vector version of all parameters at iteration t and in the output, respectively. Consider a constant learning rate η, by the smoothness assumption in Assumption 4.9, we have 
+
+L(W θt+1 ; D) ≤ L (W θt; D) + ⟨∇L (W θt; D), W θt+1 − W θt⟩(W W T )−1 + β0
+
+2 ∥W θt+1 − W θt∥2(W W T )−1 (86) 
+
+= L(W θt; D) − η⟨∇L (W θt; D), W (gt + bt)⟩(W W T )−1 + β0
+
+2 η2∥W (gt + bt)∥2(W W T )−1 (87) 
+
+= L(W θt; D) − η(∇L (W θt; D)) T (W W T )−1W (gt + bt) + β0
+
+2 η2∥W (gt + bt)∥2(W W T )−1 (88) Taking expectation, the above is 
+
+E[L(W θt+1 ; D)] ≤ E[L(W θt; D)] − η(∇L (W θt; D)) T (W W T )−1W gt (89) 
+
++ β0
+
+2 η2E[∥W T gt∥2(W W T )−1 ] + β0
+
+2 η2E[∥W bt∥2(W W T )−1 ]= E[L(W θt; D)] − ηE[( ∇L (W θt; D)) T (W W T )−1W W T ∇L (W θt; D)] (90) 
+
+= 8tM ′
+
+(t + 1) 2 + 4√2M ′
+
+(t + 1) 3/2t1/2 + M ′
+
+(t + 1) 3 by induction hypothesis With some algebraic manipulation, it can be shown that tt+1 +
+
+> √2/2
+
+√t(t+1) + 18( t+1) 2 ≤ 1 for t ≥ 2. This implies that 8t 
+
+> (t+1) 2
+
++ 4√2(t+1) 3/2√t + 
+
+> 1(t+1) 3
+
+≤ 8 
+
+> t+1
+
+, which concludes the induction. 
+
+19 Private Learning with Public Feature Conditioning 
+
++ β0
+
+2 η2E[∥W T W ∇L (W θt; D)∥2(W W T )−1 ] + β0
+
+2 η2E[∥W bt∥2(W W T )−1 ]
+
+By Eq.(32) - Eq.(36), E[∥W bt∥2(W W T )−1 ] = dσ 2.By Eq.(24) - Eq.(31), E[∥W T W ∇L (W θt; D)∥2(W W T )−1 ] ≤ G2 max i∈[n] ∥Cx pub  
+
+> i
+
+∥2 + bG2R2 + G2 := M 2.Hence, 
+
+E[L(W θt+1 ; D)] ≤ E[L(W θt; D)] − ηE[∥∇L (W θt; D)∥2] + β0η2
+
+2 M 2 + β0η2
+
+2 dσ 2 (91) 
+
+E[∥∇L (W θt; D)∥2] ≤ 1
+
+η
+
+
+
+E[L(W θt; D)] − E[L(W θt+1 ; D)] 
+
+
+
++ β0η
+
+2 (M 2 + dσ 2) (92) and so 
+
+1
+
+T 
+
+> T−1
+
+X
+
+> t=0
+
+E[∥∇L (W θt; D)∥2] ≤ 1
+
+T η 
+
+
+
+L(W θ0; D) − E[L(W θT ; D)] 
+
+
+
++ β0η
+
+2 (M 2 + dσ 2) (93) 
+
+≤ 1
+
+T η 
+
+
+
+L(W θ0; D) − L ∗
+
++ β0η
+
+2 (M 2 + dσ 2) (94) Setting the noise variance as σ2 = eO( M 2Tn2ϵ2 ), it follows that 
+
+1
+
+T 
+
+> T−1
+
+X
+
+> t=0
+
+E[∥∇L (W θt; D)∥2] ≤ 1
+
+T η 
+
+
+
+L(W θ0; D) − L (θ∗; D)
+
+
+
++ β0η
+
+2 (M 2 + d M 2Tn2ϵ2 ) (95) Choosing η = O( 1√T β ), there exists bt ∈ { 0, 1, . . . , T − 1} such that 
+
+E[∥∇L (W θout ; D)∥2] = E[∥∇L (W θbt; D)∥]2] (96) 
+
+≤ β0
+
+√T
+
+
+
+L(W θ0; D) − L ∗
+
++ M 2 β0
+
+2√T + d
+
+2n2ϵ2√T
+
+
+
+Converting the above bound back to the matrix form of parameters yields the final theorem statement. 
+
+## E. Private Linear Regression 
+
+Lemma E.1 (Block Matrix Inversion) . Given a matrix X =
+
+A BC D
+
+
+
+, if A−1 or D−1 exists, then 
+
+X−1 =
+
+A−1 + A−1BS −1CA −1 −A−1BS −1
+
+−S−1CA −1 S−1
+
+
+
+(97) 
+
+where S = D − CA −1B.
+
+Lemma E.2 (Linear Regression Optimum) . Consider solving: 
+
+min 
+
+> θpub ,θ priv
+
+∥(Xpub θpub + Xpriv θpriv ) − y∥2
+
+where Xpub ∈ Rn×dpub 
+
+, Xpriv ∈Rn×dpriv 
+
+and y ∈ Rn represent the public features, private features and the labels, respectively. Let Xpub = U ΣV T be its SVD decomposition. Then the optimal solution (θpub )∗ and (θpub )∗ is given by 
+
+(θpub )∗ = V Σ−1
+
+In + U T Xpriv h
+
+(Xpriv )T (In − U U T )Xpriv i−1
+
+(Xpriv )T U
+
+
+
+U T y (98) 
+
+(θpriv )∗ =
+
+h
+
+(Xpriv )T (In − U U T )Xpriv i−1
+
+(Xpriv )T 
+
+− U U T + In
+
+
+
+y (99) 20 Private Learning with Public Feature Conditioning 
+
+Proof. For ease of presentation, we again write all parameters as a vector. Let 
+
+θ∗ =
+
+(θpub )∗
+
+(θpriv )∗
+
+
+
+= arg min 
+
+> θpub ,θ priv
+
+ Xpub Xpriv  θpub 
+
+θpriv 
+
+
+
+− y
+
+> 2
+
+= arg min 
+
+> θ
+
+∥Xθ − y∥2
+
+It is well known that 
+
+θ∗ = ( XT X)−1XT y =
+
+ (Xpub )T
+
+(Xpriv )T
+
+ Xpub Xpriv −1 (Xpub )T
+
+(Xpriv )T
+
+
+
+y (100) 
+
+=
+
+ (Xpub )T Xpub (Xpub )T Xpriv 
+
+(Xpriv )T Xpub (Xpriv )T Xpriv 
+
+ −1 (Xpub )T
+
+(Xpriv )T
+
+
+
+y (101) By Lemma E.1, let 
+
+(XT X)−1 := 
+
+A BC D
+
+
+
+(102) (103) where 
+
+A = (( Xpub )T Xpub )−1 + (( Xpub )T Xpub )−1(Xpub )T Xpriv S−1(Xpriv )T Xpub (( Xpub )T Xpub )−1 (104) 
+
+B = −(( Xpub )T Xpub )−1(Xpub )T Xpriv S−1 (105) 
+
+C = −S−1(Xpriv )T Xpub (( Xpub )T Xpub )−1 (106) 
+
+D = S−1 (107) 
+
+S = ( Xpriv )T Xpriv − (Xpriv )T Xpub (( Xpub )T Xpub )−1(Xpub )T Xpriv (108) Recall that Xpub = U ΣV T is its SVD decomposition, where U ∈ Rn×dpub 
+
+, Σ ∈ Rdpub ×dpub 
+
+and V ∈ Rdpub ×dpub 
+
+. Following the above, 
+
+(( Xpub )T Xpub )−1 = ( V ΣU T U ΣV T )−1 = V Σ−2V T (109) 
+
+(( Xpub )T Xpub )−1(Xpub )T = V Σ−2V T V ΣU T = V Σ−1U T (110) 
+
+Xpub (( Xpub )T Xpub )−1 = U ΣV T V Σ−2V T = U Σ−1V T (111) 
+
+Xpub (( Xpub )T Xpub )−1(Xpub )T = U Σ−1V T V ΣU T = U U T (112) 
+
+S = ( Xpriv )T 
+
+In − Xpub (( Xpub )T Xpub )−1(Xpub )T 
+
+Xpriv = ( Xpriv )T 
+
+In − U U T 
+
+Xpriv (113) And 
+
+θ∗ =
+
+A BC D
+
+  (Xpub )T
+
+(Xpriv )T
+
+
+
+y =
+
+(A(Xpub )T + B(Xpriv )T )y
+
+(C(Xpub )T + D(Xpriv )T )y
+
+
+
+=
+
+(θpub )∗
+
+(θpriv )∗
+
+
+
+(114) Note that 
+
+A(Xpub )T = (( Xpub )T Xpub )−1(Xpub )T (115) 
+
++ (( Xpub )T Xpub )−1(Xpub )T Xpriv S−1(Xpriv )T Xpub (( Xpub )T Xpub )−1(Xpub )T
+
+= V Σ−1U T + V Σ−1U T Xpriv h
+
+(Xpriv )T (In − U U T )Xpriv i−1
+
+(Xpriv )T U U T (116) 
+
+B(Xpriv )T = −(( Xpub )T Xpub )−1(Xpub )T Xpriv S−1(Xpriv )T (117) 21 Private Learning with Public Feature Conditioning 
+
+= −V Σ−1U T Xpriv h
+
+(Xpriv )T (InU U T )Xpriv i−1
+
+(Xpriv )T (118) Therefore, 
+
+(θpub )∗ = V Σ−1
+
+In + U T Xpriv h
+
+(Xpriv )T (In − U U T )Xpriv i−1
+
+(Xpriv )T U
+
+
+
+U T y (119) Similarly, 
+
+C(Xpub )T = −
+
+h
+
+(Xpriv )T (In − U U T )Xpriv i−1
+
+(Xpriv )T U U T (120) 
+
+D(Xpriv )T =
+
+h
+
+(Xpriv )T (In − U U T )Xpriv i−1
+
+(Xpriv )T (121) and 
+
+(θpriv )∗ =
+
+h
+
+(Xpriv )T (In − U U T )Xpriv i−1
+
+(Xpriv )T 
+
+− U U T + In
+
+
+
+y (122) 
+
+Lemma E.3 (Re-statement of Lemma 4.13) . Consider the linear regression problem defined in (5), and let the singular value decomposition (SVD) of the public feature matrix be Xpub = U ΣV T . Suppose Cond-DP (Algorithm 1) is run with 
+
+ηt, σ 2 as in Theorem B.1, then its excess risk is bounded as follows. If C = bC = V Σ−1V T , then 
+
+E L(θpub-out , θ priv-out ; D) − L ∗ ≤
+
+r 1
+
+T + dn2ϵ2 · p2∥by∥2 + F 2 · pG2 + E2 (123) 
+
+and if C = Idpub (corresponding to the DPSGD baseline), then 
+
+E L(θpub-out , θ priv-out ; D) − L ∗ ≤
+
+r 1
+
+T + dn2ϵ2 · p2∥Σ−1 by∥2 + F 2 · pG2σ2 
+
+> max
+
++ E2 (124) 
+
+where σmax is the largest singular value of Xpub , and 
+
+F 2 = 2 ∥θpub  
+
+> 0
+
+∥2 + ∥θpriv  
+
+> 0
+
+− (θpriv )∗∥2 (125) 
+
+E2 = bG2 · R2 (126) 
+
+by = ( In + U T Xpriv h
+
+(Xpriv )T (In − U U T )Xpriv i−1
+
+(Xpriv )T U )U T y (127) 
+
+Proof. Let Xpub = U ΣV T be its SGD decomposition. Consider the following preconditioning matrix bC as 
+
+bC = V Σ−1V T , and (C)−1 = ( CT )−1 = V ΣV T (128) Since ω = ∅, G = 0 in this case. By Theorem 4.6, the excess risk is bounded as follows, 
+
+E L(θpub-out , θ priv-out ; D) − L ∗ ≤
+
+r 1
+
+T + dn2ϵ2 ·
+
+r
+
+G2 · max  
+
+> i∈[n]
+
+∥Cxpub  
+
+> i
+
+∥2 + bG2 · R2 (129) 
+
+·
+
+q
+
+∥CT θpub  
+
+> 0
+
+− (θpub )∗∥2(CT C)−1 + ∥θpriv  
+
+> 0
+
+− (θpriv )∗∥2
+
+≤
+
+r 1
+
+T + dn2ϵ2 ·
+
+r
+
+G2 · max  
+
+> i∈[n]
+
+∥Cxpub  
+
+> i
+
+∥2 + bG2 · R2 (130) 
+
+·
+
+q
+
+2∥CT θpub  
+
+> 0
+
+∥2(CT C)−1 + 2 ∥(θpub )∗∥2(CT C)−1 + ∥θpriv  
+
+> 0
+
+− (θpriv )∗∥2
+
+22 Private Learning with Public Feature Conditioning 
+
+By Lemma E.2, the vector version of (Θ pub )∗ is given by 
+
+(θpub )∗ = V Σ−1 
+
+In + U T Xpriv h
+
+(Xpriv )T (In − U U T )Xpriv i−1
+
+(Xpriv )T U
+
+| {z }
+
+> := A
+
+U T y (131) 
+
+= V Σ−1AU T y (132) Let σmin and σmax be the minimum and maximum absolute singular values of Xpub .
+
+The DPSGD Baseline. Here, C = Idpub .
+
+∥CT θpub  
+
+> 0
+
+∥2(CT C)−1 = ∥θpub  
+
+> 0
+
+∥2 (133) 
+
+∥(θpub )∗∥2(CT C)−1 = ∥(θpub )∗∥2 = ∥V Σ−1AU T y∥2 = ∥Σ−1AU T y∥2 (134) 
+
+max  
+
+> i∈[n]
+
+∥Cxpub  
+
+> i
+
+∥2 = max  
+
+> i∈[n]
+
+∥V Σui∥2 = max  
+
+> i∈[n]
+
+∥Σui∥2 ≤ σ2 
+
+> max
+
+(135) Following Eq. 130, the excess risk of DPSGD is bounded by 
+
+E L(θpub-out , θ priv-out ; D) − L ∗ (136) 
+
+≤
+
+r 1
+
+T + dn2ϵ2 ·
+
+q
+
+G2σ2 
+
+> max
+
++ bG2 · R2 ·
+
+q
+
+2∥θpub  
+
+> 0
+
+∥2 + 2 ∥Σ−1AU T y∥2 + ∥θpriv  
+
+> 0
+
+− (θpriv )∗∥2
+
+Cond-DP . Under the choice C = bC = V Σ−1V T , we have 
+
+∥CT θpub  
+
+> 0
+
+∥2(CT C)−1 = ( θpub  
+
+> 0
+
+)T C(CT C)−1CT θpub  
+
+> 0
+
+(137) 
+
+= ( θpub  
+
+> 0
+
+)T V Σ−1V T V Σ2V T V Σ−1V T θpub  
+
+> 0
+
+= ∥θpub  
+
+> 0
+
+∥2 (138) 
+
+∥(θpub )∗∥2(CT C)−1 = (( θpub )∗)T (CT C)−1(θpub )∗ (139) 
+
+= yU A Σ−1V T V T Σ2V T V Σ−1AU T y = ∥AU T y∥2 (140) 
+
+max  
+
+> i∈[n]
+
+∥Cxpub  
+
+> i
+
+∥2 = max  
+
+> i∈[n]
+
+∥V Σ−1V T V Σui∥2 = max  
+
+> i∈[n]
+
+∥ui∥2 ≤ 1 (141) Following Eq. 130, the excess risk of Cond-DP is 
+
+E L(θpub-out , θ priv-out ; D) − L ∗ (142) 
+
+≤
+
+r 1
+
+T + dn2ϵ2 ·
+
+q
+
+G2 + bG2 · R2 ·
+
+q
+
+2∥θpub  
+
+> 0
+
+∥2 + 2 ∥AU T y∥2 + ∥θpriv  
+
+> 0
+
+− (θpriv )∗∥2
+
+## F. Comparison with RR-on-Bins Φ
+
+> ϵ
+
+The main state-of-the-art method for regression under label DP is RR-on-Bins Φ 
+
+> ϵ
+
+(Ghazi et al., 2023). Although both Cond-DP 
+
+and RR-on-Bins Φ 
+
+> ϵ
+
+aim to improve utility in label-DP settings, they differ in several key aspects. First, Cond-DP provides better privacy–utility trade-offs, particularly in low-privacy regimes, as it provides approximate DP guarantees, whereas RR-on-Bins Φ 
+
+> ϵ
+
+provides the more strict pure DP guarantees, whereas Cond-DP satisfies approximate differential privacy. Second, Cond-DP adopts a simpler solution. RR-on-Bins Φ 
+
+> ϵ
+
+requires discretizing labels via binning and privately estimating a prior distribution, both of which introduce additional design choices and hyperparameters, including the allocation of the privacy budget for prior estimation, making it hard to deploy in practice. In contrast, Cond-DP relies on a single conditioning step constructed from public features and integrates directly with standard DPSGD-style optimization. 23 Private Learning with Public Feature Conditioning 
+
+Finally, the computational profiles of the two methods differ substantially. The dominant cost of Cond-DP arises from computing an SVD of the public feature matrix, with complexity (dpub )3, whereas RR-on-Bins Φ 
+
+> ϵ
+
+incurs a computational cost of (npub )2. This cubic dependence on the feature dimension can significantly limit the scalability of RR-on-Bins Φ 
+
+> ϵ
+
+in high-dimensional settings. 
+
+## G. More About Experiments 
+
+G.1. Baselines 
+
+• DPSGD (Abadi et al., 2016): Applying DPSGD to train model using private and public features along with private labels. DPSGD provides approximate (ϵ, δ )-DP guarantees. • RR-on-Bins Φ 
+
+> ϵ
+
+(Ghazi et al., 2023): The algorithm first estimates a prior Φ over label distributions using a portion of the privacy budget, then adds noise to the labels based on this prior to minimize the distance to the true labels. The model is trained using public features and privatized labels, achieving pure ϵ-DP guarantees. Following (Ghazi et al., 2023), we allocate 0.25 ϵ for prior estimation and the remaining 0.75 ϵ for label privatization. • Weighted-LLP (Brahmbhatt et al., 2023): This algorithm is only applicable to private linear regression under label DP and provides approximate (ϵ, δ )-DP guarantees. It first adds Gaussian noise to a random fraction ρ ∈ (0 , 1] of training labels. Then, it selects a fraction α ∈ (0 , 1) of training samples, partitions them into bags, and aggregates each bag into a single noisy feature-label pair. The resulting noisy dataset is used to train the model via SGD. Following (Brahmbhatt et al., 2023), we set α = 0 .6 and treat ρ ∈ { 0.01 , 0.5, 1} as a tunable hyperparameter. 
+
+G.2. Additional Experiment Details Hardware. Most experiments were conducted on AWS g6e.48xlarge 6 instances equipped with NVIDIA L40S Tensor Core GPUs. 
+
+G.3. Datasets Spectra 
+
+We showed the singular spectrum of the synthetic , wine and energy dataset in Figure 5 and Figure 2, respec-tively. Here, we present the spectra of the remaining datasets: Boston housing , CA housing , supercond ,
+
+TomsHardware , wave and Criteo Sponsored Search Conversion in Figure 9. 0 2 4 6 8 10 
+
+0
+
+2000 
+
+4000 
+
+6000 
+
+8000 
+
+10000 
+
+Dataset: Boston_housing 0 1 2 3 4 5 6 7
+
+0
+
+50 
+
+100 
+
+150 
+
+200 
+
+Dataset: CA_housing 0 10 20 30 40 50 60 70 80  
+
+> 0
+> 500
+> 1000
+> 1500
+> 2000 Dataset: supercond
+
+0 20 40 60 80 
+
+0
+
+100 
+
+200 
+
+300 
+
+400 
+
+500 
+
+Dataset: TomsHardware 0 20 40 60 80 100 
+
+0
+
+200000 
+
+400000 
+
+600000 
+
+800000 
+
+Dataset: wave 0 500 1000 1500 2000 2500 3000 3500 4000  
+
+> 0
+> 1
+> 2
+> 3
+> 4
+> 5
+> 6
+> 7
+> 8
+> 1e8 Dataset: Criteo Sponsored Search Conversion
+
+Figure 9. Singular value spectra of datasets used in the experiments. 
+
+> 6
+
+https://aws.amazon.com/ec2/instance-types/g6e/ 
+
+24 Private Learning with Public Feature Conditioning 
+
+G.4. Full Experiment Results 
+
+We note that the baseline Weighted-LLP (Brahmbhatt et al., 2023) requires the number of samples aggregated per bag to scale at least on the order of 1/ϵ 4 and inversely with the label range. As a result, the method becomes impractical for datasets with limited sample sizes, in high-privacy regimes with small ϵ, or when the label range is large. For instance, 
+
+Weighted-LLP is not applicable to the Criteo Sponsored Search Conversion dataset due to its large label range of 400. In Table 2, 3, 4 and 5 we report the complete numerical results of our experiments and include Weighted-LLP only in settings where it applies. Dataset ϵ DPSGD RR-on-Bins Φ                                                                                                  
+
+> ϵWeighted-LLP Cond-DP
+> Boston housing
+> (×10 −2)0.25 1.3503 (0.0169) 1.3846 (0.0436) –1.3255 (0.0015) 0.5 1.3450 (0.0102) 1.3566 (0.0368) 22.9958 1.3196 (0.0002) 11.3412 (0.0091) 1.3492 (0.0163) 9.2981 1.3196 (0.0004) 21.3274 (0.0042) 1.3573 (0.0278) 4.1275 1.3193 (0.0006) 41.3272 (0.0040) 1.3556 (0.0348) 3.7440 1.3193 (0.0001)
+> ∞1.3267 (0.0087) ––1.3190 (0.0001)
+> wine
+> 0.25 0.7671 (0.0336) 0.7513 (0.0386) –0.7437 (0.0484) 0.5 0.7411 (0.0169) 0.7514 (0.0205) –0.7225 (0.0240) 10.7192 (0.0052) 0.7448 (0.0160) –0.6663 (0.0102) 20.6946 (0.0133) 0.6837 (0.0022) 4.6771 0.6457 (0.0067) 40.6833 (0.0149) 0.6324 (0.0003) 1.7021 0.6321 (0.0003)
+> ∞0.6802 (0.0053) ––0.6319 (0.0001)
+> energy
+> (×10 −3)0.25 8.2643 (0.2053) 8.5292 (0.0064) 3027.8 8.0378 (0.1372) 0.5 8.2027 (0.1870) 8.4731 (0.0023) 55.5 7.9668 (0.1036) 18.1793 (0.1011) 8.0962 (0.0018) 17.9 7.6883 (0.0832) 28.0678 (0.0872) 7.7093 (0.0006) 11.6 7.5157 (0.0425) 48.0339 (0.0206) 7.3350 (0.0005) 11.5 7.3320 (0.0581)
+> ∞7.9260 (0.0080) ––7.2562 (0.0071)
+> CA housing
+> 0.25 1.2643 (0.0281) 1.2951 (3.17e-5) –0.9184 (0.0497) 0.5 1.2561 (0.0357) 1.2605 (1.62e-5) –0.7611 (0.0104) 11.2316 (0.0232) 1.1347 (3.56e-6) 3.1290 0.6927 (0.0127) 21.1881 (0.0284) 0.8966 (1.82e-6) 0.6694 0.6570 (0.0111) 41.1321 (0.0215) 0.6500 (6.48e-6) 0.6635 0.6552 (0.0097)
+> ∞1.0641 (0.0011) ––0.6480 (0.0004)
+
+Table 2. Validation MSEs (mean and std. in parenthesis over 5 runs) for private linear regression on real-world datasets under varying privacy budgets ϵ.
+
+Dataset ϵ DPSGD RR-on-Bins Φ 
+
+> ϵ
+
+Switch-Cond-DP 
+
+supercond 
+
+0.25 0.0181 (0 .0014) 0.0330 (0 .0001) 0.0172 (0 .0009) 0.5 0.0147 (0 .0011) 0.0314 (0 .0001) 0.0147 (0 .0008) 1 0.0122 (0 .0007) 0.0249 (0 .0002) 0.0114 (0 .0005) 2 0.0101 (0 .0006) 0.0137 (0 .0003) 0.0095 (0 .0005) 4 0.0093 (0 .0004) 0.0065 (0 .0003) 0.0086 (0 .0007) 
+
+∞ 0.0055 (0.0002) – 0.0036 (0.0000) 
+
+TomsHardware 
+
+0.25 0.0945 (0.0108) 1.9202 (0.0308) 0.0870 (0.0052) 
+
+0.5 0.0838 (0.0071) 1.9251 (0.0366) 0.0818 (0.0025) 
+
+1 0.0799 (0.0099) 1.9071 (0.0666) 0.0793 (0.0074) 
+
+2 0.0781 (0.0041) 1.2699 (0.0026) 0.0748 (0.0089) 
+
+4 0.0764 (0.0072) 0.3229 (0.0004) 0.0719 (0.0034) 
+
+∞ 0.0212 (0.0002) – 0.0182 (0.0002) 
+
+wave 
+
+0.25 0.0597 (0 .0089) 0.0149 (0 .0002) 0.0127 (0 .0012) 0.5 0.0132 (0 .0015) 0.0142 (0 .0002) 0.0088 (0 .0016) 1 0.0099 (0 .0009) 0.0114 (0 .0001) 0.0043 (2 .30 e−04) 2 0.0080 (0 .0012) 0.0066 (0 .0002) 0.0030 (4 .85 e−05) 4 0.0056 (0 .0009) 0.0025 (0 .0002) 0.0028 (8 .23 e−05) 
+
+∞ 0.0019 (0.0003) – 0.0012 (0.0002) 
+
+Table 3. Validation MSEs (mean and std. in parenthesis over 5 runs) for private models with linear input transformations and a two-layer MLP prediction layer (16, 8 hidden units) under varying privacy budgets ϵ.
+
+25 Private Learning with Public Feature Conditioning                         
+
+> ϵDPSGD Cond-DP RR-on-Bins Φ
+> ϵ(reported) 0.25 6842.63 (15.63) 9677.99 (97.21) –0.5 6780.06 (107.82) 6998.62 (103.04) 10901.33 (36.54) 16673.56 (10.84) 5630.08 (46.49) 9744.08 (37.59) 26589.69 (4.86) 5335.86 (37.92) 7294.93 (34.03) 46565.11 (34.31) 5297.63 (12.28) 4769.61 (25.01)
+> ∞5287.43 (3.87) 4726.78 ( 1.98 ×10 −5)–
+
+Table 4. Validation MSEs (mean and std. in parenthesis over 5 runs) on Criteo Sponsored Search Conversion using linear models under varying privacy budgets ϵ. Results for RR-on-Bins Φ 
+
+> ϵ
+
+are taken from (Ghazi et al., 2023) when available. 
+
+ϵ DPSGD Switch-Cond-DP RR-on-Bins Φ 
+
+> ϵ
+
+(reported) 0.25 8533.74 (2001.51) 6975.90 (11.63) –0.5 8073.85 (883.22) 6959.93 (15.74) 10901.33 (36.54) 1 7472.65 (1022.24) 6935.00 (47.36) 9744.08 (37.59) 2 6933.28 (324.31) 6529.16 (45.53) 7294.93 (34.03) 4 6444.03 (405.99) 6365.98 (75.15) 4769.61 (25.01) 
+
+∞ 4296.44 (87.26) 4128.41 (23.31) –
+
+Table 5. Validation MSEs (mean and std. in parenthesis over 5 runs) on Criteo Sponsored Search Conversion using models with linear input transformations and a two-layer MLP prediction head (128, 64 hidden units) under varying privacy budgets ϵ. Results for 
+
+RR-on-Bins Φ 
+
+> ϵ
+
+are taken from (Ghazi et al., 2023) when available. 
+
+26

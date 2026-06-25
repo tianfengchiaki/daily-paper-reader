@@ -1,0 +1,86 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2606.18650v1/fig-001.webp",
+      "caption": "Table 7: Summary of the notations used throughout this paper. Variables only used in theoretical analysis are grayed for better readability.",
+      "page": 21,
+      "index": 1,
+      "width": 921,
+      "height": 334
+    },
+    {
+      "url": "assets/figures/arxiv/2606.18650v1/fig-002.webp",
+      "caption": "Table 3: Comparison for the CoT reasoning results of math pre-training. Both the smaller TinyLLama1.1B model (Upper) and the larger Llama2-7B (Lower) are considered. Results on 9 downstream tasks, the averaged accuracy, as well as the running wall clock time are reported. † denotes the results using our implementation. For a fair comparison, the reference model is of the same size as the proxy model in RHO-1. ∗ means sample-level selection method.",
+      "page": 7,
+      "index": 2,
+      "width": 826,
+      "height": 391
+    },
+    {
+      "url": "assets/figures/arxiv/2606.18650v1/fig-003.webp",
+      "caption": "Figure 1: The overall computation procedure of the BLADE framework. Twined proxy model (green) and reference model (orange) are used to guide the token selection (pink).",
+      "page": 3,
+      "index": 3,
+      "width": 711,
+      "height": 342
+    },
+    {
+      "url": "assets/figures/arxiv/2606.18650v1/fig-004.webp",
+      "caption": "Table 4: Comparison for the TinyLlama-1.1B model on general continuous pre-training. Results on 8 downstream tasks, as well as the averaged accuracy are reported. † denotes the results using our implementation.",
+      "page": 8,
+      "index": 4,
+      "width": 821,
+      "height": 192
+    },
+    {
+      "url": "assets/figures/arxiv/2606.18650v1/fig-005.webp",
+      "caption": "Figure 2: (a) The mean Llama2-70B oracle loss on the selected tokens. (b) The averaged accuracy when the reference model update interval τ changes. (c) The averaged accuracy when the keeping ratio γ changes.",
+      "page": 8,
+      "index": 5,
+      "width": 802,
+      "height": 223
+    },
+    {
+      "url": "assets/figures/arxiv/2606.18650v1/fig-006.webp",
+      "caption": "Figure 4: Trajectory of Dist(u,w). BLADE maintains the structural constraint of the bi-level objective (Equation (2)) through periodic synchronization, whereas RHO-1 exhibits inevitable divergence.",
+      "page": 9,
+      "index": 6,
+      "width": 766,
+      "height": 257
+    },
+    {
+      "url": "assets/figures/arxiv/2606.18650v1/fig-007.webp",
+      "caption": "Figure 3: Token-level score (∆) distributions at steps 1K, 2K, and 3K. While RHO-1’s scores collapse toward non-positive values due to its static reference, BLADE’s dynamic update maintains a pronounced right tail (∆ > 0). This preserves BLADE’s discriminative power to consistently select tokens with positive marginal utility.",
+      "page": 9,
+      "index": 7,
+      "width": 802,
+      "height": 212
+    },
+    {
+      "url": "assets/figures/arxiv/2606.18650v1/fig-008.webp",
+      "caption": "Table 5: Hyper-parameters of BLADE for different application scenarios",
+      "page": 20,
+      "index": 8,
+      "width": 710,
+      "height": 331
+    },
+    {
+      "url": "assets/figures/arxiv/2606.18650v1/fig-009.webp",
+      "caption": "Table 6: Comparison for the CoT reasoning results of math pre-training on the Llama2-7B. † denotes the results using our implementation. ∗ means sample level selection method. The result of transferring is grayed, where the token orchestration learned with TinlyLlama-1.1B is transferred to a larger (7B) model training.",
+      "page": 20,
+      "index": 9,
+      "width": 860,
+      "height": 205
+    },
+    {
+      "url": "assets/figures/arxiv/2606.18650v1/fig-010.webp",
+      "caption": "Table 1: BLADE unifies the principled bi-level origin of the influence-based and the tractable excessloss structure. By reformulating the bi-level objective with a penalty, BLADE bypasses the intractable Hessian required by the influence-based method, while employing a dynamic reference model to overcome the lagging issue of excess-loss based methods.",
+      "page": 5,
+      "index": 10,
+      "width": 744,
+      "height": 207
+    }
+  ]
+}

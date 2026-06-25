@@ -1,0 +1,38 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2606.18811v1/fig-001.webp",
+      "caption": "Figure 4: Training loss curves of ModernBERT- and Ettinbased SPLADE models under different rescaling factors.",
+      "page": 4,
+      "index": 1,
+      "width": 496,
+      "height": 257
+    },
+    {
+      "url": "assets/figures/arxiv/2606.18811v1/fig-002.webp",
+      "caption": "Figure 2: Effectiveness–sparsity trade-off onNanoBEIRunder different FLOPS regularization strengths.",
+      "page": 4,
+      "index": 2,
+      "width": 493,
+      "height": 329
+    },
+    {
+      "url": "assets/figures/arxiv/2606.18811v1/fig-003.webp",
+      "caption": "Figure 3: Effect of MLM-head rescaling on BEIR. Lines show small-norm backbones across rescaling factors, while stars indicate the best rescaled results for large-norm backbones.",
+      "page": 4,
+      "index": 3,
+      "width": 496,
+      "height": 365
+    },
+    {
+      "url": "assets/figures/arxiv/2606.18811v1/fig-004.webp",
+      "caption": "Table 2: Retrieval performance of SPLADE models with different MLM-head rescaling factors. The value in parentheses denotes the resulting MLM-head L2 norm ∥𝑊 ∥.",
+      "page": 3,
+      "index": 4,
+      "width": 506,
+      "height": 408
+    }
+  ]
+}

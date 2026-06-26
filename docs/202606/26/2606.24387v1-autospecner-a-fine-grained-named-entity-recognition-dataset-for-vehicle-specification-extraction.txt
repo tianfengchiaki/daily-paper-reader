@@ -1,0 +1,316 @@
+Title: AutoSpecNER: A Fine-Grained Named Entity Recognition Dataset for Vehicle Specification Extraction
+
+URL Source: https://arxiv.org/pdf/2606.24387v1
+
+Published Time: Wed, 24 Jun 2026 00:50:09 GMT
+
+Number of Pages: 13
+
+Markdown Content:
+# AutoSpecNER: A Fine-Grained Named Entity Recognition Dataset for Vehicle Specification Extraction 
+
+## Jordan Lee 1,2,* , Filippos Ventirozos 1,2 , Abdirahman Abdullahm 1, Ioanna Nteka 2,
+
+## Peter Appleby 2, Matthew Shardlow 11Department of Computing and Mathematics, Manchester Metropolitan University, UK 
+
+> 2
+
+## Autotrader Research Group, Autotrader UK 
+
+## {f.ventirozos,m.shardlow}@mmu.ac.uk 
+
+> *Work conducted during an internship at Autotrader UK.
+
+## Abstract 
+
+Vehicle advertisements contain rich specific-ation information, but automotive NER re-sources remain limited. We introduce Auto-SpecNER , an expert-annotated dataset for fine-grained entity recognition in vehicle list-ings. The dataset includes 659 advertise-ments from a popular car-selling website, with over 10,000 entities annotated across 15 cat-egories, including MODEL , ENGINE_SPEC , and 
+
+BATTERY_CAPACITY . Annotation quality was validated through inter-annotator agreement, achieving an average score of 91.5%. We benchmark rule-based extraction, fine-tuned transformer encoders, and large language mod-els. DeBERTa achieves the best performance with a 90% micro-F1 score, outperforming the rule-based baseline (43%) and the strongest large language model (77.8%). 
+
+## 1 Introduction 
+
+The automotive industry generates vast amounts of unstructured text through online vehicle advert-isements. These advertisements contain valuable specification information embedded in free-form descriptions, but extracting this structured data manually is impractical at scale. This challenge is compounded by the recent introduction of AI-generated advertisement content, which can con-tain hallucinations—factually incorrect informa-tion that may mislead consumers. Named entity recognition (NER) offers a solu-tion by automatically identifying and extracting specific information spans from text. While NER has been successfully applied to various domains including biomedical texts (Majid et al., 2024), news articles (Tjong Kim Sang and De Meulder, 2003), and social media (Derczynski et al., 2017), the automotive advertisement domain presents unique challenges: • Domain-specific terminology : Technical spe-cifications like “2.0L TDI”, “DSG transmis-sion”, or “Santorini [black colour]” require specialised understanding. • Fine-grained distinctions : Differentiating between similar concepts (e.g., exterior vs. interior colour, battery capacity vs. range). • Multi-word entities : Complex specifications often span multiple tokens (e.g., "18 minutes with 350kW charger"). • Mixed content sources : Advertisements in-clude both user-generated content with typos and informal language, and AI-generated con-tent with potential hallucinations. This paper presents two main contributions. First, we introduce Automotive Specification NER (AutoSpecNER ), a new, publicly available data-set 1 for fine-grained NER tailored to the automotive domain. The dataset contains 659 vehicle advert-isements annotated with 15 entity types critical for vehicle identification and comparison. Second, we provide a comprehensive benchmark evaluation on AutoSpecNER. We compare the per-formance of three diverse approaches: a rules-based system, transformer-based encoder models, and large language models (LLMs) prompted us-ing few-shot and self-verification techniques (Wang et al., 2023). Our analysis confirms that while NER is a viable technique for this task, the choice of model has a profound impact on performance, with fine-tuned encoders demonstrating superior capab-ilities. 
+
+## 2 Related Work 
+
+2.1 Domain-Specific NER and Fine-Grained Entity Recognition 
+
+Standard NER benchmarks like CoNLL-2003 (Tjong Kim Sang and De Meulder, 2003) focus 
+
+> 1Available at github.com/FilipposVentirozos/AutoSpecNER.
+
+1
+
+> arXiv:2606.24387v1 [cs.CL] 23 Jun 2026
+
+on coarse-grained entities (person, location, organ-isation) inadequate for technical domains. Fine-grained entity recognition (Ling and Weld, 2012) requires distinguishing between closely related en-tity types—a challenge particularly acute in auto-motive contexts where hierarchical relationships exist between entities (e.g., “2024 Ford F-150 Lim-ited” contains YEAR, MAKE, MODEL, and TRIM entities). Recent work has explored product and attribute extraction (Putthividhya and Hu, 2011; Chen et al., 2023), demonstrating unique challenges in tech-nical NER: domain-specific abbreviations, overlap-ping entity boundaries, and hierarchical entity rela-tionships. Fine-grained annotation schemas have proven essential for capturing technical specifica-tions in industrial domains (Bikaun et al., 2024), yet automotive-specific resources remain limited. 
+
+2.2 Automotive NER Research 
+
+The automotive domain has received minimal atten-tion in NER research. Hu and Ma (2024) addressed NER for automotive accessories in Chinese, while recent work by Ventirozos et al. (2024) introduces the Auto-AdvER approach for English vehicle ad-vertisements to understand the condition, historic claims and sales options offered. Recent datasets like FindVehicle (Guan et al., 2024) target vehicle retrieval with entity types including vehicle colour, brand, model, and location, but lack the granularity needed for technical specification extraction. Park et al. (2023) introduced ADMit, combin-ing adversarial training and multi-task learning for automotive NER for a Korean and English. Their work addresses domain adaptation between general and automotive-specific terminology but focuses on FAQ systems rather than technical specifications. Our work differs by targeting fine-grained vehicle identifiables critical for specification verification and hallucination detection. 
+
+2.3 Neural Approaches and Domain Adaptation 
+
+Transformer-based models have become stand-ard for NER, with BERT (Devlin et al., 2019) and its variants achieving strong baseline perform-ance. Domain-specific pre-training significantly improves technical entity recognition, as demon-strated in manufacturing domains where morpho-logical patterns guide entity recognition (Li et al., 2024). Few-shot NER methods combining knowledge graphs and contrastive learning show promise for low-resource domains (Zhang et al., 2024), ad-dressing the scarcity of labelled automotive data. While LLMs demonstrate competitive performance through prompting (Wang et al., 2023), recent stud-ies (Naguib et al., 2024) show that smaller, spe-cialised models often outperform LLMs in low-resource technical domains, making them more practical for deployment in automotive applica-tions. 
+
+## 3 The AutoSpecNER Dataset 
+
+3.1 Data Collection and Composition 
+
+We were provided 659 vehicle advertisements from one of the UK’s biggest online vehicle-selling web-sites. The dataset comprises two distinct sources: 
+
+User-generated advertisements (350) : The dataset was a sample of an equal distribution of ads written by individual sellers (stratified across differ-ent UK counties) and dealerships (stratified across the largest dealerships in the UK). The advertise-ments contain natural language variation, informal descriptions, typographical errors, and inconsistent formatting. Example: “::::: 
+
+lovley ford focus 1.8 ::::: 
+
+diesal , 2015 plate, full mot till next yr, grey :::::: 
+
+metalic paint” .
+
+AI-generated advertisements (309) : Created 2
+
+using Google Gemini 3 and Meta’s LLaMA3 4 by providing in the prompt the vehicle specifica-tions. These are grammatically correct and well-structured but may contain hallucinations. For ex-ample in this advertisement for an Audi RSQ8, where the generated advert incorrectly refers to the vehicle as an Audi RS6: “The Audi :::: 
+
+RS6 is a high-performance car that boasts a powerful 4.0-litre V8 engine. This petrol engine is paired with an automatic transmission...” Other hallucinations exist which are more subtle than this such as many adverts have additional in-formation inserted not present in the specifications, but could be true. An example of this is in the fol-lowing advert in which a Volkswagen Polo Match is referred to as a Volkswagen Polo EVO Match: 
+
+> 2These were generated by the team of the aforementioned UK website company. These AI generated descriptions were shown to the users and the users decided whether they want to keep them or edit/delete them.
+> 3gemini-2.0-flash-001
+> 4llama-3.1-8b-instruct
+
+2“With only 21,029 miles on the clock, this 2021 Volkswagen Polo ::::: 
+
+EVO Match is manufacturer approved...” This dual-source approach enables investigation of how NER models handle both human errors (typos, informality) and AI errors (hallucinations, specification confusion). Crucially, each advertise-ment is accompanied by structured meta-data (a fact table) that lists the vehicle’s actual specific-ations. This is a vital characteristic, as it allows for the verification of extracted entities and forms the basis for potential error/hallucination detection systems. 
+
+3.2 Corpus Annotation and Inter-Annotator Agreement 
+
+To ensure the reliability and interpretability of our proposed 15-label schema, we undertook a multi-stage annotation process. The process was iterat-ive, involving an initial schema refinement phase to produce clear guidelines 5, followed by a final validation phase to confirm their efficacy. Our initial phase involved two annotators inde-pendently labelling a pilot set of 50 advertisements, balanced between user- and AI-generated content. While this yielded a promising micro F1-score of 0.81, a qualitative analysis of the disagreements revealed systematic ambiguities. This analysis was crucial for developing a set of explicit annotation principles. The key principles that emerged from this refine-ment process were: • Prioritise Specificity over General Descrip-tion: Labels are reserved for specific, quanti-fiable details, not general descriptive statements. For instance, the phrase “low CO2 emissions”, while describing an engine’s characteristic, is not annotated as ENGINE_SPEC because it lacks a specific value. • Maintain Entity Separation for Adjacent, Dis-tinct Items: When multiple entities of the same type appear adjacently but refer to distinct details, they must be annotated as separate entities. For example, in the text “...TDCI 1.6L ECOnetic...”, each component (“TDCI”, “1.6L”, “ECOnetic”) is labelled as a separate ENGINE_SPEC entity.        
+
+> 5The annotation guidelines can be found at git-hub.com/FilipposVentirozos/AutoSpecNER.
+
+• Disambiguate Overlapping Concepts: Clear distinctions were established to prevent confu-sion. The MAKE label, for example, is restricted to the primary vehicle manufacturer; in ‘...a Ford Focus with a Mercedes...engine‘, only “Ford” is labelled as MAKE . Similarly, composite names like “e-SKYACTIV G Centre-Line” are split into “e-SKYACTIV G” ( ENGINE_SPEC ) and “Centre-Line” ( TRIM ). • Enforce Strict Contextual Boundaries: An-notators were instructed to capture the full, self-contained descriptive phrase. For BAT-TERY_RANGE , the entire phrase “maximum range of 280 miles when new” is captured, pre-serving the qualifying context. • Exclude Speculative and Ancillary Informa-tion: The guidelines were refined to ensure that only the direct attribute of the advertised vehicle is annotated. In cases where an advert mentions other available models (e.g., “The Golf is also available as a Station Wagon (Estate)”), only the body type of the primary advertised vehicle (e.g., “Hatchback”) is to be labelled. • Annotate the Text, Not the Structured Spe-cification: Annotations should reflect the entity span as it appears in the advertisement, even when it differs from the accompanying structured specification data or appears factually incorrect. For example, if the advert describes the trim as “220d Luxury”, annotators label the span in the text rather than normalising it to the official spe-cification value, “Luxury”. This ensures that models learn to extract the claims made in the free-text advert, which can later be compared against structured specifications to detect incon-sistencies or hallucinations. 
+
+3.3 Annotation Schema Overview 
+
+The final schema comprises 15 entity labels, organ-ised into four groups and defined with representat-ive examples in Table 1. 
+
+3.3.1 Final Validation and Agreement 
+
+Following the guideline refinement, a final inter-annotator agreement study was conducted. This involved three annotators (the authors of this pa-per) of mixed nationalities with English as either their first or second professional language and vary-ing levels of prior exposure to NLP annotation tasks, who labelled a new, larger random sample 3Label Definition Example                  
+
+> Vehicle identity
+> MAKE Vehicle manufacturer “CUPRA”
+> MODEL Specific model name “Focus”
+> TRIM Trim level / variant of a model “220d Luxury”
+> YEAR Registration year “2021”
+> Powertrain
+> ENGINE_SPEC Engine detail: volume, cylinders, or technology code “TDCI”
+> FUEL_TYPE Fuel powering the vehicle “petrol”
+> TRANSMISSION Gear system type “automatic”
+> Body & appearance
+> BODY_TYPE Shape/style of the chassis “Panel Van”
+> EXTERIOR_COLOUR Exterior paint colour, incl. descriptors “Black sapphire metallic”
+> INTERIOR_COLOUR Colour/material of interior features “black leather seats”
+> NO_SEATS Total seating capacity “5 seats”
+> BOOT_SIZE Boot storage capacity (litres) “6100 litres”
+> Electric vehicle
+> BATTERY_CAPACITY Battery capacity (kWh) “68 kWh”
+> BATTERY_RANGE Travel distance, incl. qualifiers “max range of 280 miles when new”
+> RECHARGE_TIME Recharge time, incl. charger/level context “empty to 80% in as little as 53 minutes”
+
+Table 1: The 15-label AutoSpecNER annotation schema, grouped by category with definitions and rep-resentative examples. 
+
+of 100 advertisements (50 user-generated and 50 AI-generated). Using the finalised guidelines, this validation achieved a strict-matching average mi-cro F1-score 6 of 91.5% across all three annotat-ors (standard deviation: 3.2% ). Precision consist-ently exceeded recall by approximately 2 percent-age points, indicating strong agreement on posit-ive entity identification while annotators exhibited greater conservatism when entity boundaries or la-bels were ambiguous. 
+
+> 6In NER in most cases Kappa is equivalent to F1, hence, we just measure F1 (Richie et al., 2022; Hripcsak and Roth-schild, 2005)
+
+3.4 Dataset Statistics 
+
+The dataset contains a total of 11,117 labelled entit-ies overall. Entity frequencies approximate a power law distribution, from MODEL (2,426 instances) to NO_SEATS (10 instances). This reflects natural occurrence patterns - every advertisement mentions the model, but seat count is specified only when notable. One can look into Figure 1 to view the label distributions for the user and the AI advert-isement generated text respectively. In total, the dataset contains 44 different brands, 237 unique models and the vehicles range from older (first re-gistered in 2006) to newest (this year 2025). 
+
+Figure 1: Proportion of labels from each source within the dataset. In dark blue are the the text advertisements generated by either Gemini or Llama and in green are the ones written by users. 
+
+## 4 Experiments 
+
+To prepare the annotated corpus for training, we performed two key steps: pre-processing the span-level annotations into a token-level format and par-titioning the corpus into training (~70%), validation (~15%), and testing (~15%) sets, the distribution of the entities can be found in Table 2. The three different ML approaches operate on different units: sub-word tokens for the encoders, whitespace tokens for the rule-based matcher, and LLM-generated free-form text. We therefore evalu-ate every system on a single, tokeniser-independent character-level IOB2 representation. Specific-ally, for each advert, the gold character-offset spans are expanded into a per-character IOB2 se-quence in which every character carries exactly one tag. Within an entity span, the first char-4Label Train Validation Test                                                 
+
+> ENGINE_SPEC 1694 283 468
+> MODEL 1630 347 449
+> TRIM 1399 285 349
+> MAKE 838 172 219
+> FUEL_TYPE 483 70 120
+> YEAR 353 75 111
+> EXTERIOR_COLOUR 297 58 125
+> RECHARGE_TIME 260 78 10
+> INTERIOR_COLOUR 178 16 107
+> BODY_TYPE 116 32 33
+> TRANSMISSION 114 916
+> BATTERY_CAPACITY 86 44 32
+> BATTERY_RANGE 71 41 3
+> BOOT_SIZE 16 812
+> NO_SEATS 406
+> Overall 7539 1518 2060
+> Table 2: Distribution of entity counts across the final training, validation, and testing sets.
+
+acter is tagged B- and each subsequent charac-ter—including whitespace within a multi-word en-tity—is tagged I-; every character that falls out-side any entity span is tagged O (“Outside”). Each system’s predictions are mapped onto the same per-character IOB2 representation, so all systems are scored on identical units; we then reconstruct en-tities and report entity-level precision, recall, and micro-F1 with seqeval (Nakayama, 2018). 
+
+4.1 Models 
+
+We evaluated three classes of models on the Auto-SpecNER dataset to establish a robust performance benchmark. 
+
+4.1.1 Rules-Based Approach 
+
+To establish a performance baseline and explore a non-AI alternative, we developed a hybrid rules-based system for entity extraction. This approach was designed to be computationally inexpensive at inference time and serves as a benchmark against which our neural models are compared. The sys-tem combines two core methodologies: taxonomy-based matching and regular expressions. 
+
+Methodology Our system employs a two-pronged strategy, applying different techniques based on the nature of the target entity. 
+
+Taxonomy-Based Matching For eight of the core vehicle attributes (MAKE , MODEL ,
+
+TRIM , FUEL_TYPE , BODY_TYPE , TRANSMISSION ,
+
+INTERIOR_COLOUR , and EXTERIOR_COLOUR ), we leveraged an external taxonomy provided by the company that provided the data. This taxonomy acts as a gazetteer of known values for each entity. The system iterates through the advertisement text, comparing text spans to the values in the gazetteer. We evaluated several matching strategies: • Strict Matching: Requires an exact, case-insensitive string match. • Partial Matching: To account for minor vari-ations and typographical errors, we implemen-ted partial matching using a normalised Leven-shtein distance function. Predictions were made only if the similarity score exceeded a pre-determined threshold. • Heuristic Filtering: To improve precision, we experimented with two disambiguation heuristics: (1) a most-common-value fil-ter, which retains only the most frequently matched entity for labels expected to appear once (e.g., MAKE ); and (2) hierarchical filter-ing , which uses known make-model-trim rela-tionships from the taxonomy to prune invalid predictions (e.g., removing a predicted trim that does not belong to the predicted model). 
+
+Regular Expressions For entities with highly predictable syntactic patterns that were not present in the taxonomy, we employed regular expres-sions. This approach was used for three specific la-bels: BATTERY_CAPACITY , NUMBER_OF_SEATS , and 
+
+YEAR . The patterns, detailed in Table 3, were de-signed to be robust enough to capture common formulations of these attributes. 
+
+4.1.2 Transformer Encoders 
+
+We fine-tuned four widely-used encoder models: BERT-base-cased (Devlin et al., 2019), RoBERTa-base (Liu et al., 2019), ModernBERT-base (Warner et al., 2025) and DeBERTa-v3-base (He et al., 2023). To perform the training and inference, we utilised the HuggingFace library (Wolf et al., 2020) for token classification. We perform grid search over learning rates {5 ×
+
+10 −5, 3×10 −5}, batch sizes {4, 8, 16 }, and weight decay values {0.0, 0.01 , 0.1} to identify optimal hyperparameters for each encoder architecture. We train all models for a maximum of 50 epochs with early stopping patience of 3 epochs, monitoring the weighted F1 score on the validation set. The best configuration across all models uses a learning rate 5Label Pattern Description 
+
+BATTERY_CAPACITY \b(\w+)\s+kWh\b Matches numeric values followed by "kWh". NO_SEATS (\d+)\s*\w*seat\w* Matches seat counts (e.g., "5 seats"). YEAR \b(?:19[0-9]...) Matches four-digit years from 1900-2030. 
+
+> Table 3: Regular expression patterns used for specific entity extraction.
+
+2 × 10 −5, batch size 8, weight decay 0.01, with a warmup of 100 steps and a maximum sequence length of 512 tokens used in all experiments. 
+
+4.1.3 Large Language Models 
+
+To provide a contemporary comparison to encoder-based models, we evaluated four open sourced LLMs for the NER task: Qwen3 (Yang et al., 2025) Mistral-7B (Jiang et al., 2023), LLaMA-3-8B (Grattafiori et al., 2024), Gemma-3 (Team et al., 2025b). Additionally, we evaluated two closed-sourced LLMs: Gemini-2.5 (Team et al., 2025a) and GPT-5 (Singh et al., 2026). These models were selected as representative of smaller and resource-efficient architectures. All the specific versions with their respective parameter sizes are listed in Table 4. 
+
+Prompt Engineering We adopted the GPT-NER methodology (Wang et al., 2023), implementing a single-turn per-label prompting strategy, where each advertisement was processed 15 times, once for each entity type. The refined prompting ap-proach incorporated three key components: • Task-specific prompts : Each prompt focused on a single entity type with a concise task description and label definition • Few-shot examples : 2 few-shot in-context learning examples were used. • Simplified output format : The output would copy verbatim the example that we want la-belled and the entities of interested would be marked with boundary delimiters (@@...||) rather than full NER formatting. 
+
+Self-Verification Following (Wang et al., 2023), a self-verification step was implemented to mit-igate the high false positive rate characteristic of LLM-based NER. This secondary prompt presen-ted the model’s initial predictions for validation, significantly improving precision whilst marginally reducing recall. Preliminary experiments, found in Appendix A, demonstrated the efficacy of includ-ing this step. Complete prompt templates are provided in Ap-pendix B. 
+
+## 5 Results 
+
+5.1 Rules-based Approach 
+
+The rules-based approach utilised a combination of taxonomy-based string matching and regular expressions. Performance was highly dependent on the complexity of the entity and the match-ing method employed. Methods involving partial matching via Fuzzy and Levenshtein algorithms, while more accurate for variable text, were signi-ficantly slower at inference time compared to exact matching. Table 5 summarises the best F1-scores achieved for each label. As shown, simpler, more regu-lar entities like YEAR , MAKE , and MODEL achieved strong performance (0.77–0.79 F1). In con-trast, more complex and nuanced labels such as INTERIOR_COLOUR and EXTERIOR_COLOUR per-formed poorly, with F1-scores below 0.03. An analysis of precision and recall scores repor-ted in Appendix C reveal that regex-based methods, where applicable (e.g., for YEAR ), achieved high recall at the cost of precision, whereas taxonomy-based matching often resulted in higher precision but lower recall, as it failed to capture variations not present in the pre-defined lists. Overall, when eval-uated across all present labels, the best-performing configuration of the rules-based approach achieved a micro-averaged F1-score of 0.43. 
+
+5.2 Encoder-based Models 
+
+We evaluated four transformer-based encoders: BERT, RoBERTa, ModernBERT and DeBERTa. Table 4 summarises the character-level perform-ance of all evaluated models. Fine-tuned encoder models achieve higher performance, with micro-F1 scores ranging from 82.9% to 90.1%, compared to LLMs which achieve only 77.8% to 41.7% micro-F1. 6Model Type Micro-F1 ↓                      
+
+> microsoft/deberta-v3-base Encoder 0.901 FacebookAI/roberta-base Encoder 0.895 bert-base-cased Encoder 0.873 answerdotai/ModernBERT-base Encoder 0.829 Gemini-2.5-Flash-Lite LLM 0.778 GPT-5-Nano LLM 0.775 Gemma-3-27B-IT LLM 0.753 Qwen3-30B-A3B-Instruct LLM 0.735 Llama-3.1-8B-Instruct LLM 0.682 Mistral-7B-Instruct-v0.2 LLM 0.417
+> Table 4: Overall character-level performance compar-ison. Encoders consistently outperform LLMs with 2-shot in-context learning. The micro-F1 scores are shown in descending order.
+
+The DeBERTa model demonstrated the best over-all performance, achieving an F1 score of 90.1%. After resampling the data splits and repeating the experiments three times, the standard deviation was 2.3%, indicating relatively stable performance across runs. This strong performance may be attrib-utable to DeBERTa’s disentangled attention mech-anism, which more effectively captures positional information, a feature that is particularly relev-ant for the consistently structured AI-generated adverts. Table 5 shows per-label F1 scores for all the family models. The encoders perform best on numeric entities such as YEAR and BAT-TERY_CAPACITY , standardised attributes like 
+
+FUEL_TYPE and TRANSMISSION , and vehicle identifiers including MAKE and MODEL . In con-trast, they struggle with more subjective attrib-utes such as INTERIOR_COLOUR and EXTER-IOR_COLOUR , likely due to the wide lexical variation in colour descriptions (e.g., “midnight blue”, “pearl white”, “metallic silver”). Our analysis of the training data size indicated that the dataset was sufficient for the task, as model performance (measured by evaluation loss) began to plateau after approximately 300–350 training samples. Further details and the corresponding graph are available in Appendix D. The one excep-tion is the NO_SEATS which was scarcely reported in the text descriptions. The decoder models, which are much larger in parameter size—many times more than 100 times larger—than their encoder counterparts excelled in various labels, especially in those with less support, comparatively to the encoders. Gemini-2.5 scored the highest amongst the LLMs but still second to the encoders. Its predic-tions across the test set reveal heterogeneous per-formance across entity types: strong (F1 > 75%) on YEAR, MAKE , and MODEL ; moderate (F1 50– 75%) on ENGINE_SPEC , EXTERIOR_COLOUR , TRIM ,
+
+BATTERY_CAPACITY , and BODY_TYPE ; and poor (F1 
+
+< 50%) on INTERIOR_COLOUR , TRANSMISSION ,and notably RECHARGE_TIME (0% F1 despite 10 test instances). LLMs exhibit three primary failure modes. First, boundary detection errors : extracting “300 miles” instead of “approximately 300 miles” 
+
+BATTERY_RANGE ), or “408” instead of “408 horsepower” ( ENGINE_SPEC ). Second, variant nor-malisation failures : achieving high recall on simple 
+
+FUEL_TYPE values (“petrol”, “diesel”, “electric”) while missing hybrid variants (“Petrol Hybrid”, “Petrol Plug-in Hybrid” , “Diesel Hybrid”). We identify three primary factors contributing to these LLM failures. First, our 2-shot learn-ing approach may not be indicative enough for the LLMs to perform inference. Second, vehicle specifications involve domain-specific terminology (“kWh”, “bhp”, “T-GDI”, “BiTurbo”) and complex entity boundaries (e.g., “2.0L Turbocharged Inline-4” as ENGINE_SPEC entities), for which pre-trained LLMs lack adequate exposure during training, un-like general entities such as persons or organisa-tions. Third, the severe lexical variation within cer-tain entity types (e.g., INTERIOR_COLOUR : “Bengal red Nappa leather”, “Light Oyster and Ebony”, “Full Black Valcona Leather”) exceeds what can be captured in 2-shot demonstrations, while more standardised types ( YEAR , MAKE ) benefit from prior knowledge in the pre-training corpus. Albeit, the LLMs proved resourceful, achiev-ing the highest F1 score amongst the other ap-proaches, when the support was quite low in the labels NO_SEATS , BATTERY_RANGE and BOOT_SIZE .
+
+5.3 Computational Resources 
+
+All encoder-based transformer models were fine-tuned on an Apple M4 MacBook. Open-source LLM inference was performed using vLLM (Kwon et al., 2023) on NVIDIA RTX PRO 6000 (96GB VRAM) or NVIDIA H200 SXM (141GB VRAM) GPUs, depending on model size. Closed-source models were accessed through their respective pro-vider APIs. To ensure deterministic outputs, we set the temperature to 0.0 where supported and used greedy decoding for all generations. Additional hardware and runtime details are provided in Ap-7Entity Type Best Encoder Encoder F1 Best LLM LLM F1 Rules F1                                                                            
+
+> MAKE RoBERTa 0.938 GPT-5-Nano 0.825 0.773 MODEL RoBERTa 0.950 Gemini-2.5-Flash-Lite 0.878 0.789 TRIM DeBERTa-v3 0.870 Gemini-2.5-Flash-Lite 0.715 0.482 YEAR DeBERTa-v3 0.982 Gemini/Gemma 0.948 0.773 BODY_TYPE DeBERTa-v3 0.721 GPT-5-Nano 0.769 0.531 FUEL_TYPE BERT-cased 0.957 Gemini-2.5-Flash-Lite 0.773 0.574 TRANSMISSION DeBERTa-v3 0.938 GPT-5-Nano 0.476 0.255 ENGINE_SPEC DeBERTa-v3 0.933 Gemini-2.5-Flash-Lite 0.907 0.279 EXTERIOR_COLOUR DeBERTa-v3 0.725 GPT-5-Nano 0.763 0.024 INTERIOR_COLOUR RoBERTa 0.623 Gemini/GPT 0.270 0.007 NO_SEATS N/A 0.000 Gemma-3-27B-IT 0.750 0.258 BOOT_SIZE DeBERTa-v3 0.909 Gemini-2.5-Flash-Lite 1.000 —BATTERY_CAPACITY DeBERTa-v3 1.000 Gemini/GPT 0.714 0.462 BATTERY_RANGE DeBERTa-v3/RoBERTa 0.800 Gemini-2.5-Flash-Lite 1.000 —RECHARGE_TIME RoBERTa 1.000 N/A 0.000 —
+
+Table 5: Per-label F1 scores comparing encoder, LLM, and rules-based performance. In bold are the top performants for each label. Some model names are shortened for illustration purposes but are the same version with the ones presented in Table 4. 
+
+pendix E. 
+
+## 6 Discussion 
+
+The current investigation has implications for de-ploying NER systems in production automotive applications. When the goal is extracting entity types and populating structured vehicle databases, fine-tuned encoder models—despite their train-ing requirement—remain the best solution overall, with DeBERTa leading when the supporting ex-amples are sufficient, followed by the LLMs and last the rule-based approaches. Looking beyond immediate deployment con-straints and efficiency considerations, several av-enues could improve LLM performance on this task. Increasing the few-shot to more examples per entity type could improve prediction accuracy. Similarly, retrieval-augmented prompting could dy-namically retrieve relevant examples that could boost the score as well. Finally, models further pre-trained or post-trained on automotive corpora may better handle specialised terminology and en-tity patterns. The high accuracy of the fine-tuned encoder models enables several valuable downstream ap-plications. While this work focused on advertise-ments, the models could be evaluated for tracking vehicles from unstructured social media posts to monitor consumer trends, popular features, and brand perception. Additionally, the process of ex-tracting entities can be used to detect hallucina-tions in AI-generated content by verifying whether a model that generated the content included ad-ditional or different specifications and whether it adhered to the structured vehicle specification data given, thereby enhancing platform integrity. It was notable how on average we could spot an around 20% increase in F1 score when detecting entities in the AI generated text alone. The fine-tuned encoders could prove resourceful at tracking these mentions from AI generated text, raising flags when necessary. 
+
+## 7 Conclusions 
+
+In this paper, we addressed the high-impact chal-lenge of extracting fine-grained vehicle specifica-tions from the text descriptions of car advertise-ments. Our dataset and annotation schema Auto-SpecNER comprises 659 advertisements—written by real users and AI-generated proprietary data ac-quired from the UK’s biggest online vehicle-selling website—labelled with 15 specification types ran-ging from MAKE and MODEL to RECHARGE_TIME ,with the schema validated at a commendable 91.5% inter-annotator F1 score. Benchmarking rule-based, fine-tuned encoder, and few-shot decoder approaches, we found the fine-tuned encoders ex-ceptionally well-suited to this task, with DeBERTa achieving a top micro F1-score of 0.901, followed by the decoders (led by Gemini-2.5) and last the rule-based approaches; the LLMs proved partic-ularly resourceful for low-support labels scarcely reported in the text. Finally, this dataset can support market trend analysis and, crucially, the detection of factual hallucinations in AI-generated content. 88 Limitations 
+
+The dataset was drawn exclusively from a propri-etary database maintained by a single UK-based company. Although substantial, it is unlikely to capture the full diversity of linguistic usage, doc-ument structures, and formatting conventions ob-served across different countries, platforms, and automotive retailers. In addition, the corpus is UK-specific and monolingual (English), preventing as-sessment of cross-lingual performance. Improving generalisability would require a more heterogen-eous, multi-source, and multilingual dataset. 
+
+## 9 Ethical Considerations 
+
+The development of the AutoSpecNER dataset and its associated models has been guided by key eth-ical considerations. The dataset was constructed from publicly accessible advertisements available on a major commercial platform. A manual re-view of the user-generated content was conducted, which confirmed the absence of Personally Identifi-able Information (PII) in the source data. While the data’s public availability and freedom from PII mit-igate privacy concerns, its origin introduces a risk of socio-economic bias. The model may exhibit performance disparities across content from differ-ent seller types, and if the system is more accurate on professionally formatted advertisements than on informal text from private sellers, its application could inadvertently create an unfair marketplace. Consideration must also be given to the poten-tial for misuse and downstream harms. The same technology that extracts specifications can be re-purposed for malicious ends. Models trained on this data could be exploited to generate convincing but fraudulent vehicle advertisements, either for individual scams or at scale to manipulate market perceptions of a vehicle’s value and availability. In a deployed application, over-reliance on the sys-tem’s output could lead to automation bias, where users and platform administrators place undue trust in the automated extractions. This could cause model errors to be systematically propagated, lead-ing consumers to make purchasing decisions based on incorrect information. Finally, we address the environmental impact of this research. Our experiments involved training and evaluating multiple large-scale models, which consumed significant computational resources and energy. However, our findings make a positive con-tribution in this area by demonstrating that smal-ler, fine-tuned encoder models significantly outper-form their much larger and more resource-intensive LLM counterparts for this task. This result advoc-ates for a more sustainable approach to deploying NLP in production environments, showing that for specialised industrial tasks, more energy-efficient models can also be the most effective. 
+
+## References              
+
+> Tyler K. Bikaun, Tim French, Michael Stewart, Wei Liu, and Melinda Hodkiewicz. 2024. MaintIE: A fine-grained annotation schema and benchmark for information extraction from maintenance short texts. In Proceedings of the 2024 Joint International Con-ference on Computational Linguistics, Language Resources and Evaluation (LREC-COLING 2024) ,pages 10939–10951. Wei-Te Chen, Keiji Shinzato, Naoki Yoshinaga, and Yandi Xia. 2023. Does named entity recognition truly not scale up to real-world product attribute ex-traction? In Proceedings of the 2023 Conference on Empirical Methods in Natural Language Processing: Industry Track , pages 163–173. Leon Derczynski, Eric Nichols, Marieke van Erp, and Nut Limsopatham. 2017. Results of the WNUT2017 shared task on novel and emerging entity recogni-tion. In Proceedings of the 3rd Workshop on Noisy User-generated Text , pages 140–147, Copenhagen, Denmark. Association for Computational Linguist-ics. Jacob Devlin, Ming-Wei Chang, Kenton Lee, and Kristina Toutanova. 2019. BERT: Pre-training of deep bidirectional transformers for language under-standing. In Proceedings of the 2019 Conference of the North American Chapter of the Association for Computational Linguistics: Human Language Tech-nologies, Volume 1 (Long and Short Papers) , pages 4171–4186, Minneapolis, Minnesota. Association for Computational Linguistics. Aaron Grattafiori, Abhimanyu Dubey, Abhinav Jauhri, Abhinav Pandey, Abhishek Kadian, Ahmad Al-Dahle, Aiesha Letman, Akhil Mathur, Alan Schel-ten, Alex Vaughan, Amy Yang, Angela Fan, Anirudh Goyal, Anthony Hartshorn, Aobo Yang, Archi Mitra, Archie Sravankumar, Artem Korenev, Arthur Hins-vark, and 542 others. 2024. The llama 3 herd of models. Preprint , arXiv:2407.21783. Runwei Guan, Ka Lok Man, Feifan Chen, Shanliang Yao, Rongsheng Hu, Xiaohui Zhu, Jeremy Smith, Eng Gee Lim, and Yutao Yue. 2024. Findvehicle and vehiclefinder: a ner dataset for natural language-based vehicle retrieval and a keyword-based cross-modal vehicle retrieval system. Multimedia Tools and Applications , 83(8):24841–24874.
+
+9Pengcheng He, Jianfeng Gao, and Weizhu Chen. 2023. Debertav3: Improving deberta using electra-style pre-training with gradient-disentangled embedding shar-ing. Preprint , arXiv:2111.09543. George Hripcsak and Adam S. Rothschild. 2005. Agree-ment, the f-measure, and reliability in information retrieval. Journal of the American Medical Inform-atics Association , 12(3):296–298. Epub 2005 Jan 31. Songhua Hu and Ruhu Ma. 2024. Named entity recog-nition of automotive parts based on roberta-crf model. In 2024 4th International Conference on Neural Net-works, Information and Communication Engineering (NNICE) , pages 604–612. Albert Q. Jiang, Alexandre Sablayrolles, Arthur Mensch, Chris Bamford, Devendra Singh Chap-lot, Diego de las Casas, Florian Bressand, Gi-anna Lengyel, Guillaume Lample, Lucile Saulnier, Lélio Renard Lavaud, Marie-Anne Lachaux, Pierre Stock, Teven Le Scao, Thibaut Lavril, Thomas Wang, Timothée Lacroix, and William El Sayed. 2023. Mis-tral 7b. Preprint , arXiv:2310.06825. Woosuk Kwon, Zhuohan Li, Siyuan Zhuang, Ying Sheng, Lianmin Zheng, Cody Hao Yu, Joseph E. Gonzalez, Hao Zhang, and Ion Stoica. 2023. Effi-cient memory management for large language model serving with pagedattention. In Proceedings of the ACM SIGOPS 29th Symposium on Operating Systems Principles .Ruiting Li, Peiyan Wang, Libang Wang, Danqingxin Yang, and Dongfeng Cai. 2024. A corpus and method for Chinese named entity recognition in manufactur-ing. In Proceedings of the 2024 Joint International Conference on Computational Linguistics, Language Resources and Evaluation (LREC-COLING 2024) ,pages 264–272. Xiao Ling and Daniel S. Weld. 2012. Fine-grained en-tity recognition. In Proceedings of the Twenty-Sixth AAAI Conference on Artificial Intelligence , pages 94–100. Yinhan Liu, Myle Ott, Naman Goyal, Jingfei Du, Man-dar Joshi, Danqi Chen, Omer Levy, Mike Lewis, Luke Zettlemoyer, and Veselin Stoyanov. 2019. Roberta: A robustly optimized bert pretraining ap-proach. Preprint , arXiv:1907.11692. Idris Majid, Vasudha Mishra, Raja Ravindranath, and Sophia Y. Wang. 2024. Evaluating the perform-ance of large language models for named entity re-cognition in ophthalmology clinical free-text notes. 
+
+Journal of the American Medical Informatics Associ-ation . Open Access. Marco Naguib, Xavier Tannier, and Aurélie Névéol. 2024. Few-shot clinical entity recognition in English, French and Spanish: masked language models outper-form generative model prompting. In Findings of the Association for Computational Linguistics: EMNLP 2024 , pages 6829–6852, Miami, Florida, USA. Asso-ciation for Computational Linguistics. Hiroki Nakayama. 2018. seqeval: A python framework for sequence labeling evaluation. Software available from https://github.com/chakki-works/seqeval. Cheoneum Park, Seohyeong Jeong, and Juae Kim. 2023. Admit: Improving NER in automotive domain with domain adversarial training and multi-task learning. 
+
+Expert Syst. Appl. , 225(C). Duangmanee Putthividhya and Junling Hu. 2011. Boot-strapped named entity recognition for product attrib-ute extraction. In Proceedings of the 2011 Confer-ence on Empirical Methods in Natural Language Processing , pages 1557–1567. Russell Richie, Sachin Grover, and Fuchiang (Rich) Tsui. 2022. Inter-annotator agreement is not the ceil-ing of machine learning performance: Evidence from a comprehensive set of simulations. In Proceedings of the 21st Workshop on Biomedical Language Pro-cessing , pages 275–284, Dublin, Ireland. Association for Computational Linguistics. Aaditya Singh, Adam Fry, Adam Perelman, Adam Tart, Adi Ganesh, Ahmed El-Kishky, Aidan McLaughlin, Aiden Low, AJ Ostrow, Akhila Ananthram, Akshay Nathan, Alan Luo, Alec Helyar, Aleksander Madry, Aleksandr Efremov, Aleksandra Spyra, Alex Baker-Whitcomb, Alex Beutel, Alex Karpenko, and 467 others. 2026. Openai gpt-5 system card. Preprint ,arXiv:2601.03267. Gemini Team, Rohan Anil, Sebastian Borgeaud, Jean-Baptiste Alayrac, Jiahui Yu, Radu Soricut, Johan Schalkwyk, Andrew M. Dai, Anja Hauth, Katie Mil-lican, David Silver, Melvin Johnson, Ioannis Ant-onoglou, Julian Schrittwieser, Amelia Glaese, Jilin Chen, Emily Pitler, Timothy Lillicrap, Angeliki Laz-aridou, and 1332 others. 2025a. Gemini: A fam-ily of highly capable multimodal models. Preprint ,arXiv:2312.11805. Gemma Team, Aishwarya Kamath, Johan Ferret, Shreya Pathak, Nino Vieillard, Ramona Merhej, Sarah Perrin, Tatiana Matejovicova, Alexandre Ramé, Morgane Rivière, Louis Rouillard, Thomas Mesnard, Geoffrey Cideron, Jean bastien Grill, Sabela Ramos, Edouard Yvinec, Michelle Casbon, Etienne Pot, Ivo Penchev, and 197 others. 2025b. Gemma 3 technical report. 
+
+Preprint , arXiv:2503.19786. Erik F. Tjong Kim Sang and Fien De Meulder. 2003. Introduction to the CoNLL-2003 shared task: Language-independent named entity recognition. In 
+
+Proceedings of the Seventh Conference on Natural Language Learning at HLT-NAACL 2003 , pages 142– 147. Filippos Ventirozos, Ioanna Nteka, Tania Nandy, Jozef Baca, Peter Appleby, and Matthew Shardlow. 2024. Shifting NER into high gear: The Auto-AdvER ap-proach. Preprint , arXiv:2412.05655. Shuhe Wang, Xiaofei Sun, Xiaoya Li, Rongbin Ouyang, Fei Wu, Tianwei Zhang, Jiwei Li, and Guoyin Wang. 2023. GPT-NER: Named entity recognition via large language models. arXiv preprint arXiv:2304.10428 .
+
+10 Benjamin Warner, Antoine Chaffin, Benjamin Clavié, Orion Weller, Oskar Hallström, Said Taghadouini, Alexis Gallagher, Raja Biswas, Faisal Ladhak, Tom Aarsen, Griffin Thomas Adams, Jeremy Howard, and Iacopo Poli. 2025. Smarter, better, faster, longer: A modern bidirectional encoder for fast, memory efficient, and long context finetuning and inference. In Proceedings of the 63rd Annual Meeting of the Association for Computational Linguistics (Volume 1: Long Papers) , pages 2526–2547, Vienna, Austria. Association for Computational Linguistics. Thomas Wolf, Lysandre Debut, Victor Sanh, Julien Chaumond, Clement Delangue, Anthony Moi, Pier-ric Cistac, Tim Rault, Rémi Louf, Morgan Funtowicz, Joe Davison, Sam Shleifer, Patrick von Platen, Clara Ma, Yacine Jernite, Julien Plu, Canwen Xu, Teven Le Scao, Sylvain Gugger, and 3 others. 2020. Hugging-face’s transformers: State-of-the-art natural language processing. Preprint , arXiv:1910.03771. An Yang, Anfeng Li, Baosong Yang, Beichen Zhang, Binyuan Hui, Bo Zheng, Bowen Yu, Chang Gao, Chengen Huang, Chenxu Lv, Chujie Zheng, Dayi-heng Liu, Fan Zhou, Fei Huang, Feng Hu, Hao Ge, Haoran Wei, Huan Lin, Jialong Tang, and 41 oth-ers. 2025. Qwen3 technical report. arXiv preprint arXiv:2505.09388 .Shan Zhang, Bin Cao, and Jing Fan. 2024. KCL: Few-shot named entity recognition with knowledge graph and contrastive learning. In Proceedings of the 2024 Joint International Conference on Compu-tational Linguistics, Language Resources and Evalu-ation (LREC-COLING 2024) , pages 9681–9692. 
+
+## A Preliminary Self-Verification Experiments 
+
+We conducted preliminary experiments to assess the effect of the LLM self-verification step. Verific-ation improved overall F1 for both Mistral-7B and LLaMA3-8B, mainly by increasing precision while slightly reducing recall. The effect was strongest for Mistral, whose weighted F1 increased from 0.375 to 0.409. For LLaMA3, the gain was smal-ler, with weighted F1 increasing from 0.473 to 0.481. However, verification produced larger gains for some lower-support labels. For instance, with LLaMA3, the F1-score for BATTERY_CAPACITY in-creased from 0.291 to 0.552 and for BOOT_SIZE 
+
+from 0.112 to 0.213. 
+
+## B LLM Prompts 
+
+We use a per-entity extraction strategy following Wang et al. (2023). Each advertisement is pro-cessed once per entity type using the prompts be-low.           
+
+> Model Initial F1 Verified F1
+> Mistral-7B, macro 0.184 0.211 Mistral-7B, weighted 0.375 0.409 LLaMA3-8B, macro 0.204 0.209 LLaMA3-8B, weighted 0.473 0.481
+
+Table 6: Effect of self-verification in preliminary LLM experiments. 
+
+Extraction Prompt System: 
+
+You are a NER Model. Your task is to label {entity_type} entities in the given sentence. 
+
+User: 
+
+Below are some examples. {few_shot_examples}Input: {text} Output: 
+
+where each few-shot example follows the template: 
+
+Input: {input_text} Output: {output_text} 
+
+Self-Verification Prompt System: 
+
+You are a verification expert. Your task is to verify if an extracted entity is correct. 
+
+User: 
+
+Original text: {text} Entity type: {entity_type} Extracted entity: {entity} Is this extraction correct and accurate? Consider: 1. Is the entity actually present in the text? 2. Is the entity type classification correct? 3. Are the boundaries accurate (no extra or missing characters)? Answer only with a “yes” if all statements are true, otherwise say “no”. Do not say anything more. Verification result: 
+
+11 C Rules-based Precision and Recall 
+
+Table 7 show the per-label precision and recall scores for the best-performing rules-based meth-ods. 
+
+> Table 7: Precision and Recall Scores for Best Rules-Based Methods.
+
+Label Precision Recall 
+
+battery 1.000 0.300 model 0.880 0.775 body_type 0.824 0.500 make 0.666 0.949 year 0.631 0.997 trim 0.575 0.584 fuel_type 0.479 0.717 engine_spec 0.295 0.289 transmission 0.197 0.655 number_of_seats 0.154 0.800 exterior_colour 0.015 0.134 interior_colour 0.004 0.064 
+
+## D Encoder Training Set Size Analysis 
+
+Figure 2 shows the evaluation loss of the encoder models relative to the number of training samples. The plateauing of the loss curve suggests that the dataset size of 659 adverts was sufficient for the models to learn the primary patterns in the data. 
+
+## E Hardware and Runtime Details 
+
+All encoder-based transformer models were fine-tuned on an Apple M4 MacBook Pro equipped with 36GB unified memory. Inference for the encoder-based models required between a few seconds and approximately one minute to process the complete test set. For open-source LLMs, models with fewer than 10 billion parameters were executed using vLLM (Kwon et al., 2023) on an NVIDIA RTX PRO 6000 GPU with 96GB VRAM. Larger mod-els were executed on an NVIDIA H200 SXM GPU with 141GB VRAM. LLM inference included both the entity extrac-tion and entity verification stages. Processing the full evaluation set required approximately 1.5 hours per model. This corresponded to approximately 
+
+109 × 15 × 2 = 3 , 270 model queries, where 109 is the number of test samples, 15 is the number of target entities, and 2 corresponds to the verification stage. Closed-source models (e.g., GPT and Gemini) were accessed through their respective provider APIs. All LLMs were interfaced using an OpenAI-compatible API format. To ensure deterministic outputs, we set the temperature to 0.0 where sup-ported by the API and used greedy decoding for all generations. 12 Figure 2: Evaluation loss vs. number of training samples for encoder models. 
+
+13

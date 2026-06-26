@@ -1,0 +1,38 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2606.25871v1/fig-001.webp",
+      "caption": "Figure 4: Learning curves by training-set size; smaller models saturate earlier while larger models keep improving.",
+      "page": 6,
+      "index": 1,
+      "width": 567,
+      "height": 366
+    },
+    {
+      "url": "assets/figures/arxiv/2606.25871v1/fig-002.webp",
+      "caption": "Figure 1: Accuracy-cost tradeoff: fine-tuning improves accuracy, while cascading reduces compute cost.",
+      "page": 2,
+      "index": 2,
+      "width": 567,
+      "height": 354
+    },
+    {
+      "url": "assets/figures/arxiv/2606.25871v1/fig-003.webp",
+      "caption": "Figure 3: Calibration curves before and after per-class isotonic calibration.",
+      "page": 4,
+      "index": 3,
+      "width": 756,
+      "height": 302
+    },
+    {
+      "url": "assets/figures/arxiv/2606.25871v1/fig-004.webp",
+      "caption": "Table 1 Training hyperparameters and single-H100 wall-clock training cost for the three cascade models.",
+      "page": 5,
+      "index": 4,
+      "width": 567,
+      "height": 253
+    }
+  ]
+}

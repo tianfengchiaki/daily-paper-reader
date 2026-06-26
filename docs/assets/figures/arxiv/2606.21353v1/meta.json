@@ -1,0 +1,30 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2606.21353v1/fig-001.webp",
+      "caption": "Table 6: Examples of generated keywords under Condition B (top 3 per cycle, 3 Runs).",
+      "page": 11,
+      "index": 1,
+      "width": 832,
+      "height": 193
+    },
+    {
+      "url": "assets/figures/arxiv/2606.21353v1/fig-002.webp",
+      "caption": "Table 3: Per-cycle aggregation results for each condition (mean±SD; Condition A: n = 2, Condition B: n = 3).",
+      "page": 10,
+      "index": 2,
+      "width": 752,
+      "height": 185
+    },
+    {
+      "url": "assets/figures/arxiv/2606.21353v1/fig-003.webp",
+      "caption": "Figure 1: Overall system architecture: a closed-loop of collection → classification → searchquery update. The page-level outputs of the classifier (fastText+LightGBM) are fed back into the search-query generation of the next cycle.",
+      "page": 4,
+      "index": 3,
+      "width": 860,
+      "height": 209
+    }
+  ]
+}

@@ -1,0 +1,94 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2606.21649v1/fig-001.webp",
+      "caption": "Figure 4 Construction pipeline of the EvoTrain-180K dataset. The process comprises three stages: (1) Raw Context Construction across diverse domains, formats, and lengths; (2) DynamicQAGeneration utilizing LLMs and 40+ templates to produce both semantic and reasoning-based queries; and (3) Formulation andVerification to perform positive/negative retrieval labeling and filter out noisy samples (e.g., hallucinations and context-independent queries).",
+      "page": 6,
+      "index": 1,
+      "width": 973,
+      "height": 302
+    },
+    {
+      "url": "assets/figures/arxiv/2606.21649v1/fig-002.webp",
+      "caption": "Figure 7 Data distributions of EvoTrain-180K. (Left) The distribution of context lengths (in tokens). (Right) The distribution of segment counts per sample. The highly varied distributions enable the model to learn robust evolvable representations across mixed-length scenarios.",
+      "page": 15,
+      "index": 2,
+      "width": 986,
+      "height": 343
+    },
+    {
+      "url": "assets/figures/arxiv/2606.21649v1/fig-003.webp",
+      "caption": "Table 1 Retrieval performance across diverse long-context and conversational benchmarks. We report Recall@10 and NDCG@10 following the evaluation protocol (Zhao et al., 2026b). The EvoEmbedding family achieves the best overall results across all scales, outperforming strong established baselines (e.g., Qwen3-Embedding-8B and KaLM-12B) with much smaller parameter sizes and embedding dimensions. The best results are highlighted in bold, and the second best are underlined.",
+      "page": 7,
+      "index": 3,
+      "width": 977,
+      "height": 445
+    },
+    {
+      "url": "assets/figures/arxiv/2606.21649v1/fig-004.webp",
+      "caption": "Table 4 Comparison of EvoEmbedding as a plug-and-play module against other strategies (reranking and reasoning) across different agentic memory systems on the LoCoMo benchmark. EvoEmbedding delivers superior overall performance.",
+      "page": 10,
+      "index": 4,
+      "width": 972,
+      "height": 323
+    },
+    {
+      "url": "assets/figures/arxiv/2606.21649v1/fig-005.webp",
+      "caption": "Figure 6 Analysis of Temporal Query Sensitivity in Long-Context Retrieval. Given 64 randomly selected long-context test samples (each with 256 segments), we query the segments using the template: “What did I mention [keyword] in our conversation?” under three temporal settings: “firstly”, “lastly”, and “in the middle”. (Top Row): Average similarity curves between queries and historical segments. For EvoEmbedding, the similarity between the query and segments exhibits a chronological increase for the keyword “lastly”, and peaks sharply at the initial segments for the keyword “firstly”. This indicates that EvoEmbedding can accurately retrieve context information from both the beginning and the end. (BottomRow): t-SNE visualization of query-conditioned segment representations (Hadamard product). Baseline representations remain fully entangled. In contrast, EvoEmbedding’s latent space is highly sensitive to temporal semantics.",
+      "page": 10,
+      "index": 5,
+      "width": 986,
+      "height": 385
+    },
+    {
+      "url": "assets/figures/arxiv/2606.21649v1/fig-006.webp",
+      "caption": "Table 9 Detailed generation performance (Accuracy %) across five benchmarks and overall average under varying Top-k retrieved contexts (k ∈ {1, 2, 4, 8, 16}). The best results are highlighted in bold, and the second best are underlined.",
+      "page": 18,
+      "index": 6,
+      "width": 972,
+      "height": 1219
+    },
+    {
+      "url": "assets/figures/arxiv/2606.21649v1/fig-007.webp",
+      "caption": "Figure 5 Generation accuracy (%) of a naive RAG pipeline using different retrieval methods. EvoEmbedding-4B achieves the best overall performance across different retrieval scales.",
+      "page": 8,
+      "index": 7,
+      "width": 980,
+      "height": 508
+    },
+    {
+      "url": "assets/figures/arxiv/2606.21649v1/fig-008.webp",
+      "caption": "Figure 8 Ablation on memory capacity and training scale. (Left) Retrieval performance (Overall R@10 and N@10) across varying memory queue capacities (C). A larger queue effectively extends the historical horizon, with performance saturating around C = 512. (Right) Generation accuracy across varying LoRA Ranks under different Top-k settings. EvoEmbedding demonstrates remarkable parameter efficiency, maintaining highly stable performance even at an extremely low rank (r = 16).",
+      "page": 17,
+      "index": 8,
+      "width": 986,
+      "height": 308
+    },
+    {
+      "url": "assets/figures/arxiv/2606.21649v1/fig-009.webp",
+      "caption": "Table 6 Efficiency and effectiveness comparison between EvoEmbedding and static embedding models. EvoEmbedding obtains the best LongMemEval performance while requiring substantially lower peak GPU memory, though it incurs additional encoding time due to memory construction.",
+      "page": 12,
+      "index": 9,
+      "width": 979,
+      "height": 200
+    },
+    {
+      "url": "assets/figures/arxiv/2606.21649v1/fig-010.webp",
+      "caption": "Table 3 Evaluation results on LongMemEval. A naive RAG pipeline with EvoEmbedding achieves the highest overall accuracy, surpassing both agentic memory systems and the full-context baseline. The capabilities are evaluated across six categories: Temporal Reasoning (Temp), Multi-Session Dialogue (Multi), Knowledge-Update (Knowledge), Single-User (User), Single-Assistant (Assistant), and Single-Preference (Preference).",
+      "page": 9,
+      "index": 10,
+      "width": 968,
+      "height": 354
+    },
+    {
+      "url": "assets/figures/arxiv/2606.21649v1/fig-011.webp",
+      "caption": "Table 2 Evaluation results on LoCoMo. A naive RAG pipeline with EvoEmbedding outperforms agentic memory systems and other embedding baselines.",
+      "page": 9,
+      "index": 11,
+      "width": 872,
+      "height": 346
+    }
+  ]
+}

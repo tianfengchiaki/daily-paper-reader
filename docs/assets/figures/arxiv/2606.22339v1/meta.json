@@ -1,0 +1,38 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2606.22339v1/fig-001.webp",
+      "caption": "Figure 2: Examples of severity progression in T-IMPACT. The top row shows localized visual manipulations of increasing impact, while the bottom row shows caption rewrites that progressively change the likely interpretation of the original post.",
+      "page": 4,
+      "index": 1,
+      "width": 1056,
+      "height": 442
+    },
+    {
+      "url": "assets/figures/arxiv/2606.22339v1/fig-002.webp",
+      "caption": "Table 2: First-release benchmark snapshot on T-IMPACT. Text, fusion-pruned, and Florence-2 are severity-only cross-validation baselines, so authenticity, type, and localization fields are unavailable. Qwen uses hard authenticity outputs for AUROC. TRUST-VL values are 𝑛-weighted aggregates of the uploaded phase summaries. Upward and downward rates denote predictions above or below the gold severity label. HAMMER is reported only on the tasks exposed by the current evaluation interface, so its row is partial.",
+      "page": 6,
+      "index": 2,
+      "width": 1036,
+      "height": 203
+    },
+    {
+      "url": "assets/figures/arxiv/2606.22339v1/fig-003.webp",
+      "caption": "Table 1: Comparison with representative misinformation, out-of-context, and multimodal manipulation datasets. T-IMPACT differs from prior resources by combining grounded multimodal edits with explicit semantic-impact supervision and an initial graded severity signal.",
+      "page": 2,
+      "index": 3,
+      "width": 1056,
+      "height": 273
+    },
+    {
+      "url": "assets/figures/arxiv/2606.22339v1/fig-004.webp",
+      "caption": "Figure 1: Overview of the T-IMPACT construction pipeline. Starting from a pristine image–text pair, the pipeline extracts semantic anchors, grounds them spatially, performs localized image edits and caption rewrites, computes severity scores, and calibrates them using expert annotations before final packaging.",
+      "page": 3,
+      "index": 4,
+      "width": 1056,
+      "height": 640
+    }
+  ]
+}

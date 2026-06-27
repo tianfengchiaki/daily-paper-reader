@@ -1,0 +1,78 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2606.21974v1/fig-001.webp",
+      "caption": "Figure 3: Train and validation loss of SFT training for the Non-parameterised (left) and Parameterised (right) circuit sets. Both sets converge within one epoch (390 steps).",
+      "page": 15,
+      "index": 1,
+      "width": 943,
+      "height": 790
+    },
+    {
+      "url": "assets/figures/arxiv/2606.21974v1/fig-002.webp",
+      "caption": "Figure 8: Example SFT+GRPO output illustrating the token-efficient shortcut behavior absent from the SFT training demonstrations. After circuit.h(4) places qubit 4 into superposition, the subsequent CZ(0, 4) gate has no effect because the control qubit 0 remains in |0⟩. Rather than re-listing the full 32-entry state vector, the model writes “So the state remains the same.”",
+      "page": 21,
+      "index": 2,
+      "width": 754,
+      "height": 881
+    },
+    {
+      "url": "assets/figures/arxiv/2606.21974v1/fig-003.webp",
+      "caption": "Figure 1: State-vector reasoning template for quantum circuit simulation.",
+      "page": 10,
+      "index": 3,
+      "width": 873,
+      "height": 410
+    },
+    {
+      "url": "assets/figures/arxiv/2606.21974v1/fig-004.webp",
+      "caption": "Figure 2: Full prompt-completion example for SFT training on a 1-qubit Non-parameterised circuit.",
+      "page": 10,
+      "index": 4,
+      "width": 884,
+      "height": 216
+    },
+    {
+      "url": "assets/figures/arxiv/2606.21974v1/fig-005.webp",
+      "caption": "Figure 6: Three-stage TVD progression and token-limit violation counts. (top) Mean TVD across the base model, Stage 1 SFT, and SFT+GRPO for the Non-parameterised and Parameterised sets on the three evaluation sets. (bottom) Number of samples whose generation exceeds the 32,768-token limit at each stage. The sharp rise in token-limit violations at Stage 1 SFT for the Parameterised set explains the elevated TVD at that stage. Stage 2 GRPO suppresses this by learning more concise reasoning strategies.",
+      "page": 18,
+      "index": 5,
+      "width": 850,
+      "height": 800
+    },
+    {
+      "url": "assets/figures/arxiv/2606.21974v1/fig-006.webp",
+      "caption": "Figure 7: Mean TVD as a function of circuit complexity for the Non-Parameterised Set (left column) and Parameterised Set (right column), broken down by number of qubits (top), circuit depth (middle), and number of gates (bottom). The number of qubits shows the strongest correlation with TVD degradation, followed by the number of gates, while circuit depth has the least influence.",
+      "page": 19,
+      "index": 6,
+      "width": 850,
+      "height": 867
+    },
+    {
+      "url": "assets/figures/arxiv/2606.21974v1/fig-007.webp",
+      "caption": "Figure 5: Training dynamics of the GRPO stage for the Non-parameterised and Parameterised circuit sets. Mean reward (left), actor entropy (centre), and mean response length (right) are plotted against training step. Both sets show a pattern of rising reward that is accompanied by declining entropy and shorter responses, indicating that the model converges toward more accurate and concise reasoning strategies. The Non-parameterised set converges faster than Parameterised set, reflecting the greater task complexity of parameterised circuits. Despite the difference in reward levels, entropy and response length converge to similar values across both sets by the end of training.",
+      "page": 17,
+      "index": 7,
+      "width": 943,
+      "height": 256
+    },
+    {
+      "url": "assets/figures/arxiv/2606.21974v1/fig-008.webp",
+      "caption": "Figure 4: Step-by-step quantum state fidelity of the SFT model during inference, evaluated on the Non-parameterised (left) and Parameterised (right) circuit sets. Fidelity remains above 99% throughout for the Non-parameterised set, while the Parameterised set exhibits a steeper decline with gate depth yet stays above 95% in aggregate, demonstrating that the model maintains a coherent intermediate quantum state representation across both settings. Notably, 5-qubit circuits show the most pronounced fidelity decline in both sets, reflecting the increased difficulty of tracking quantum state evolution over circuits with greater system size.",
+      "page": 16,
+      "index": 8,
+      "width": 943,
+      "height": 361
+    },
+    {
+      "url": "assets/figures/arxiv/2606.21974v1/fig-009.webp",
+      "caption": "Table 3: Ablation comparison across Non-parameterised and Parameterised sets. The SFT model trained with intermediate reasoning traces significantly outperforms the SFT model trained without traces, confirming that step-by-step reasoning provides critical learning signal for quantum circuit reasoning.",
+      "page": 16,
+      "index": 9,
+      "width": 763,
+      "height": 275
+    }
+  ]
+}

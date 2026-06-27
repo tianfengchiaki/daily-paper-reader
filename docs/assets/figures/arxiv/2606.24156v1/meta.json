@@ -1,0 +1,134 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2606.24156v1/fig-001.webp",
+      "caption": "Table 1. Performance comparison with state-of-the-art methods with different vision tokens preserved in LLaVA-1.5-7B. There are 576 visual tokens in the vanilla setting. Avg. reports the average of normalized results on all datasets. Best results in Bold.",
+      "page": 6,
+      "index": 1,
+      "width": 1036,
+      "height": 629
+    },
+    {
+      "url": "assets/figures/arxiv/2606.24156v1/fig-002.webp",
+      "caption": "Figure 8. FastV completely swaps the two signs, reading the large sign as “No Standing Anytime” and the small sign as “One Way”—an exact reversal that persists across both turns. PriorTR and Baseline correctly identify “One Way” and “No Standing Anytime”.",
+      "page": 21,
+      "index": 2,
+      "width": 832,
+      "height": 433
+    },
+    {
+      "url": "assets/figures/arxiv/2606.24156v1/fig-003.webp",
+      "caption": "Figure 7. Failure cases at K=64 (↓ 88.9%). Representative examples where the full-token baseline is correct but both FastV and PriorTR fail, across counting, left–right spatial relations, and depth ordering—a budget-level ceiling rather than a method-specific weakness.",
+      "page": 21,
+      "index": 3,
+      "width": 1018,
+      "height": 513
+    },
+    {
+      "url": "assets/figures/arxiv/2606.24156v1/fig-004.webp",
+      "caption": "Figure 1. Left: Visualization of text-to-visual attention maps across LLM decoding layers for a sample instruction (“What is the person doing in this image?”). (a) Null instruction: even without textual input, the model consistently attends to certain instruction-agnostic regions, revealing a strong model-induced prior. (b) Task instruction: attention distribution is partially influenced by the model-induced prior. (c) Prior-corrected attention: by correcting the prior, the resulting attention better highlights instruction-conditioned regions. Right: schematic illustration of our idea. A null token estimates the prior attention while the instruction produces the posterior attention within the same attention block; their contrast yields a prior-corrected signal used for visual token selection.",
+      "page": 2,
+      "index": 4,
+      "width": 982,
+      "height": 459
+    },
+    {
+      "url": "assets/figures/arxiv/2606.24156v1/fig-005.webp",
+      "caption": "Figure 3. Performance comparison under different token budgets on LLaVA-1.5-13B. These radar plots illustrate normalized performance across six representative benchmarks for four pruning methods under three token budgets.",
+      "page": 7,
+      "index": 5,
+      "width": 990,
+      "height": 345
+    },
+    {
+      "url": "assets/figures/arxiv/2606.24156v1/fig-006.webp",
+      "caption": "Figure 9. A bright white horse monopolizes FastV’s prior-driven attention, leaving the trolley’s front panel with virtually no token budget. FastV hallucinates “Central Park” (T1) and invents “South, North, and West” (T2). PriorTR correctly reads “Disneyland” and “Main Street / Toontown / Tomorrowland”.",
+      "page": 22,
+      "index": 6,
+      "width": 832,
+      "height": 431
+    },
+    {
+      "url": "assets/figures/arxiv/2606.24156v1/fig-007.webp",
+      "caption": "Figure 10. FastV’s prior-biased attention concentrates on the prominent teddy bear, leaving insufficient tokens for the sheep’s woolly texture; it misidentifies the second animal as “rabbit” in T1 and T2. PriorTR retains sufficient spatial coverage and correctly names “sheep” throughout. All three methods correctly read the shirt text in T3.",
+      "page": 22,
+      "index": 7,
+      "width": 602,
+      "height": 454
+    },
+    {
+      "url": "assets/figures/arxiv/2606.24156v1/fig-008.webp",
+      "caption": "Table 6. Comparative experiments on LLaVA-1.5-13B.",
+      "page": 18,
+      "index": 8,
+      "width": 485,
+      "height": 383
+    },
+    {
+      "url": "assets/figures/arxiv/2606.24156v1/fig-009.webp",
+      "caption": "Figure 11. No bat is present, yet FastV hallucinates “holding a baseball bat” in T1 and compounds this into “swinging a baseball bat” in T2. PriorTR avoids the bat hallucination (glove, pointing upward) though remains imprecise on the action. All three methods correctly read “Mariners” in T3.",
+      "page": 23,
+      "index": 9,
+      "width": 622,
+      "height": 498
+    },
+    {
+      "url": "assets/figures/arxiv/2606.24156v1/fig-010.webp",
+      "caption": "Table 5. Ablation study of token scoring functions on LLaVA-1.57B.",
+      "page": 8,
+      "index": 10,
+      "width": 490,
+      "height": 401
+    },
+    {
+      "url": "assets/figures/arxiv/2606.24156v1/fig-011.webp",
+      "caption": "Table 3. The results of Video-LLaVA with different pruning strategies on video question answering tasks. The original number of video tokens is 2048, while our experiment collectively prunes it down to 194 tokens. We report Accuracy (%) and Score (0-5) evaluated by GPT-4o-mini (GPT) and Gemini-2.5-Flash (Gem).",
+      "page": 8,
+      "index": 11,
+      "width": 1014,
+      "height": 310
+    },
+    {
+      "url": "assets/figures/arxiv/2606.24156v1/fig-012.webp",
+      "caption": "Figure 2. Overview of PriorTR. Given an input image and a task instruction, PriorTR performs a single forward pass up to layer L of the shared LLM decoder. At layer L, attention from the null token to visual tokens estimates the model-induced saliency prior, while attention from instruction tokens to visual tokens estimates the task-conditioned posterior. Visual tokens are then scored by their V-usable information contribution, and the top-K tokens are physically retained. The LLM decoder continues from layer L+1 using the pruned visual tokens to generate the final response, achieving efficient inference while preserving instruction-relevant visual evidence.",
+      "page": 4,
+      "index": 12,
+      "width": 1030,
+      "height": 412
+    },
+    {
+      "url": "assets/figures/arxiv/2606.24156v1/fig-013.webp",
+      "caption": "Table 7. Comparative experiments are performed on LLaVA-Next-7B using the same settings as LLaVA-1.5-7B.",
+      "page": 19,
+      "index": 13,
+      "width": 1036,
+      "height": 234
+    },
+    {
+      "url": "assets/figures/arxiv/2606.24156v1/fig-014.webp",
+      "caption": "Figure 4. Qualitative comparison of prior, posterior, and prior-corrected attention maps.",
+      "page": 9,
+      "index": 14,
+      "width": 940,
+      "height": 443
+    },
+    {
+      "url": "assets/figures/arxiv/2606.24156v1/fig-015.webp",
+      "caption": "Figure 6. Effect of pruning layer (K=64, LLaVA-1.5-7B). The dashed line denotes the full-token baseline. PriorTR is stable across depths and consistently outperforms FastV; FastV degrades noticeably at shallow layers.",
+      "page": 20,
+      "index": 15,
+      "width": 996,
+      "height": 266
+    },
+    {
+      "url": "assets/figures/arxiv/2606.24156v1/fig-016.webp",
+      "caption": "Figure 5. Representative examples from the 12 image understanding benchmarks used in our evaluation. Each panel shows a sample image together with the associated question and ground-truth answer.",
+      "page": 16,
+      "index": 16,
+      "width": 1010,
+      "height": 865
+    }
+  ]
+}

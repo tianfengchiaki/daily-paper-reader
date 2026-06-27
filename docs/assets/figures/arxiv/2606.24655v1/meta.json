@@ -1,0 +1,38 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2606.24655v1/fig-001.webp",
+      "caption": "Table 1. Product Entities and Their Associated Attribute Lists (Wave 1 Annotation)",
+      "page": 5,
+      "index": 1,
+      "width": 829,
+      "height": 566
+    },
+    {
+      "url": "assets/figures/arxiv/2606.24655v1/fig-002.webp",
+      "caption": "Table 2. Product Entities and Their Calculated Sample Sizes",
+      "page": 6,
+      "index": 2,
+      "width": 543,
+      "height": 659
+    },
+    {
+      "url": "assets/figures/arxiv/2606.24655v1/fig-003.webp",
+      "caption": "Table 3. F1-Score for Entity Prediction Across Product Types",
+      "page": 8,
+      "index": 3,
+      "width": 604,
+      "height": 656
+    },
+    {
+      "url": "assets/figures/arxiv/2606.24655v1/fig-004.webp",
+      "caption": "Table 4. Coverage for Entity Prediction Across Product Types",
+      "page": 9,
+      "index": 4,
+      "width": 920,
+      "height": 656
+    }
+  ]
+}

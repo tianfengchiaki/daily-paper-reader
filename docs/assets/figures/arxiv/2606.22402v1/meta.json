@@ -1,0 +1,94 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2606.22402v1/fig-001.webp",
+      "caption": "Figure 1: Extracting the code skeleton from the rule interpretation dataset.",
+      "page": 6,
+      "index": 1,
+      "width": 822,
+      "height": 458
+    },
+    {
+      "url": "assets/figures/arxiv/2606.22402v1/fig-002.webp",
+      "caption": "Figure 5: Prompts relating to (a) zero-shot setting in the proposed framework and (b) few-shot setting in SOTA LLMs.",
+      "page": 11,
+      "index": 2,
+      "width": 822,
+      "height": 480
+    },
+    {
+      "url": "assets/figures/arxiv/2606.22402v1/fig-003.webp",
+      "caption": "Figure 10: Example pertaining to one-way escape arrangements, showing (a) the reference, (b) the SFT-generated, and (c) the GRPO-refined code skeleton.",
+      "page": 15,
+      "index": 3,
+      "width": 822,
+      "height": 492
+    },
+    {
+      "url": "assets/figures/arxiv/2606.22402v1/fig-004.webp",
+      "caption": "Figure 9: Example pertaining to travel distance, showing (a) the reference, (b) the SFT-generated, and (c) the GRPO-refined code skeleton.",
+      "page": 14,
+      "index": 4,
+      "width": 822,
+      "height": 440
+    },
+    {
+      "url": "assets/figures/arxiv/2606.22402v1/fig-005.webp",
+      "caption": "Figure 8: (a) CodeBERTScore Precision and (b) CodeBERTScore Recall.",
+      "page": 13,
+      "index": 5,
+      "width": 818,
+      "height": 316
+    },
+    {
+      "url": "assets/figures/arxiv/2606.22402v1/fig-006.webp",
+      "caption": "Figure 7: Smoothed average logit entropy during generation.",
+      "page": 13,
+      "index": 6,
+      "width": 808,
+      "height": 534
+    },
+    {
+      "url": "assets/figures/arxiv/2606.22402v1/fig-007.webp",
+      "caption": "Figure 3: Reward system for the proposed framework.",
+      "page": 8,
+      "index": 7,
+      "width": 819,
+      "height": 450
+    },
+    {
+      "url": "assets/figures/arxiv/2606.22402v1/fig-008.webp",
+      "caption": "Figure 6: (a) Average tree edit distance and (b) average token-level Levenshtein distance. Lower values indicate better performance.",
+      "page": 12,
+      "index": 8,
+      "width": 820,
+      "height": 271
+    },
+    {
+      "url": "assets/figures/arxiv/2606.22402v1/fig-009.webp",
+      "caption": "Figure 4: Visualization of (a) tree edit distance and (b) token-level Levenshtein distance measures between generated and ground truth code skeletons.",
+      "page": 9,
+      "index": 9,
+      "width": 822,
+      "height": 494
+    },
+    {
+      "url": "assets/figures/arxiv/2606.22402v1/fig-010.webp",
+      "caption": "Figure 12: Example pertaining to shadow area calculation, showing (a) the reference, (b) the SFTgenerated, and (c) the GRPO-refined code skeleton.",
+      "page": 16,
+      "index": 10,
+      "width": 822,
+      "height": 261
+    },
+    {
+      "url": "assets/figures/arxiv/2606.22402v1/fig-011.webp",
+      "caption": "Figure 11: Example pertaining to underground pedestrian linkages, showing (a) the reference, (b) the SFT-generated, and (c) the GRPO-refined code skeleton.",
+      "page": 16,
+      "index": 11,
+      "width": 822,
+      "height": 375
+    }
+  ]
+}

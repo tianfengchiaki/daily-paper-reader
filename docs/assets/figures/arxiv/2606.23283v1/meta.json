@@ -1,0 +1,54 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2606.23283v1/fig-001.webp",
+      "caption": "Table 1: Main results for memory-level retrieval on IMLogic. Acc. (%) and Rel. Improv. (%) denote MCQ accuracy and the relative improvement of RootMem over each baseline, respectively. Error Distribution (%) reports the proportions of Preference, Generic, and Fabrication errors. Latency (s) denotes the average per-user latency, with separate measurements for offline memory consolidation and online memory retrieval.",
+      "page": 6,
+      "index": 1,
+      "width": 894,
+      "height": 325
+    },
+    {
+      "url": "assets/figures/arxiv/2606.23283v1/fig-002.webp",
+      "caption": "Figure 1: Illustration of the implicit logical memory retrieval challenge. While semantic retrieval identifies the surface-aligned semantic memory ms, it may overlook the logically critical but semantically distant memory ml due to a semantic gap. To generate a correct and safe personalized response, the model must bridge this gap to retrieve and reason over ml.",
+      "page": 2,
+      "index": 2,
+      "width": 893,
+      "height": 309
+    },
+    {
+      "url": "assets/figures/arxiv/2606.23283v1/fig-003.webp",
+      "caption": "Table 2: Main results for conversation-level retrieval on IMLogic. Retrieval Type denotes the core retrieval strategy employed by each baseline. For systems augmented with RootMem, values in parentheses in the Acc. (%) column indicate relative performance improvements, while those in Error Distribution (%) indicate relative changes in error rates.",
+      "page": 7,
+      "index": 3,
+      "width": 846,
+      "height": 307
+    },
+    {
+      "url": "assets/figures/arxiv/2606.23283v1/fig-004.webp",
+      "caption": "Table 4: Open-ended QA performance and generalization across LLM backbones. Values in parentheses indicate relative improvements after integrating RootMem.",
+      "page": 8,
+      "index": 4,
+      "width": 939,
+      "height": 204
+    },
+    {
+      "url": "assets/figures/arxiv/2606.23283v1/fig-005.webp",
+      "caption": "Figure 2: Overview of IMLogic construction pipeline.",
+      "page": 4,
+      "index": 5,
+      "width": 902,
+      "height": 311
+    },
+    {
+      "url": "assets/figures/arxiv/2606.23283v1/fig-006.webp",
+      "caption": "Table 5: Comparison of IMLogic with other personalization benchmarks. IM indicates implicit memory testing, regardless of whether it focuses on extraction or retrieval. CC refers to conversational coherence. SL denotes modeling difference or conflicts between semantic similarity and logical relation.",
+      "page": 12,
+      "index": 6,
+      "width": 941,
+      "height": 180
+    }
+  ]
+}

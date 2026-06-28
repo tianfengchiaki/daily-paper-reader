@@ -1,0 +1,54 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2606.21911v1/fig-001.webp",
+      "caption": "Figure 8: Layer scaling results of SPRINT and representative baselines on the SASRec++ backbone, where the number of layers is varied from 2 to 8, and the accuracy and fairness metrics are reported. Refer to Figure 4 for results on other datasets.",
+      "page": 21,
+      "index": 1,
+      "width": 997,
+      "height": 256
+    },
+    {
+      "url": "assets/figures/arxiv/2606.21911v1/fig-002.webp",
+      "caption": "Figure 9: Hyperparameter sensitivity analysis of SPRINT on the SASRec++ backbone with respect to the attention regularization weight 𝜆attn and the feed-forward regularization weight 𝜆ffn.",
+      "page": 21,
+      "index": 2,
+      "width": 1047,
+      "height": 232
+    },
+    {
+      "url": "assets/figures/arxiv/2606.21911v1/fig-003.webp",
+      "caption": "Figure 6: Ablation study investigating the impact of attention and feed-forward components on the spectral collapse of model predictions, evaluated using an 8-layer SASRec++ backbone with 256-dim embeddings. We compare the severity of spectral collapse in the full transformer model against variants where (1) 6 attention blocks or (2) 6 feed-forward blocks are removed. The results demonstrate that removing either component effectively mitigates the spectral collapse. Consequently, both components inherently drive the exacerbation of this collapse, verifying the necessity of jointly regularizing both architectural components to restrain popularity bias amplification.",
+      "page": 18,
+      "index": 3,
+      "width": 502,
+      "height": 241
+    },
+    {
+      "url": "assets/figures/arxiv/2606.21911v1/fig-004.webp",
+      "caption": "Figure 4: Layer scaling results of SPRINT and representative baselines on the SASRec++ backbone, where the number of layers is varied from 2 to 8, and the accuracy and fairness metrics are reported. Refer to Figure 8 for results on other datasets.",
+      "page": 8,
+      "index": 4,
+      "width": 997,
+      "height": 257
+    },
+    {
+      "url": "assets/figures/arxiv/2606.21911v1/fig-005.webp",
+      "caption": "Figure 5: Pareto frontier of accuracy and fairness for SPRINT and representative baselines on the SASRec++ backbone.",
+      "page": 8,
+      "index": 5,
+      "width": 1048,
+      "height": 271
+    },
+    {
+      "url": "assets/figures/arxiv/2606.21911v1/fig-006.webp",
+      "caption": "Table 6: Overall performance comparison on SASRec++ andHSTU. The columns \"N@𝐾\", \"H@𝐾\", and \"Fair\" denote the NDCG@𝐾 , HitRatio@𝐾 , and Fair-0.8 metrics, respectively. The best results are highlighted in bold, and the strongest baselines are underlined. \"Imp.%\" indicates the relative improvement of SPRINT over the best baseline (cf. Table 1 for top-5 results).",
+      "page": 20,
+      "index": 6,
+      "width": 1048,
+      "height": 418
+    }
+  ]
+}

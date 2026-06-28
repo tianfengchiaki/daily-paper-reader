@@ -1,0 +1,366 @@
+Title: TokenMinds: Pretrained User Tokens and Embeddings for User Understanding in Large Recommender Systems
+
+URL Source: https://arxiv.org/pdf/2606.25147v1
+
+Published Time: Thu, 25 Jun 2026 00:13:00 GMT
+
+Number of Pages: 10
+
+Markdown Content:
+# TokenMinds : Pretrained User Tokens and Embeddings for User Understanding in Large Recommender Systems 
+
+# Qingyun Liu ∗
+
+Google DeepMind 
+
+# Bo Yan 
+
+YouTube 
+
+# Yang Liu 
+
+YouTube 
+
+# Yuji Roh 
+
+Google DeepMind 
+
+# Ekansh Sharma 
+
+YouTube 
+
+# Likang Yin 
+
+YouTube 
+
+# Emma Olowo 
+
+YouTube 
+
+# Min-hsuan Tsai 
+
+Google DeepMind 
+
+# Yuxuan Li 
+
+YouTube 
+
+# Diego Uribe 
+
+YouTube 
+
+# Saksham Aggarwal 
+
+YouTube 
+
+# Siqi Wu 
+
+YouTube 
+
+# Yuan Hao 
+
+Google DeepMind 
+
+# Vikas Kedigehalli 
+
+YouTube 
+
+# Lukasz Heldt 
+
+YouTube 
+
+# Lichan Hong ∗
+
+Google DeepMind 
+
+# Li Wei ∗
+
+YouTube 
+
+# Xinyang Yi ∗
+
+Google DeepMind 
+
+## Abstract 
+
+User modeling in industrial recommender systems typically pro-duces dense embeddings, which suffer from representational con-straints inherent to fixed-dimensional vectors. An emerging alter-native for discrete user representation—using LLMs to generate text-based user tokens—captures topical co-occurrences rather than deep sequential behavior dynamics and produces outputs that are difficult to ground to item attributes. Meanwhile, Semantic ID (SID) based item tokenization has proven effective for improving gen-eralization in generative recommendation, yet discrete SID-based representations for users remain largely unexplored. We propose 
+
+TokenMinds , an industrial-scale system that extends the PLUM framework [ 9] from item retrieval to user modeling, generating both discrete SID-based user tokens and dense user embeddings via an encoder-decoder architecture adapted from pre-trained LLMs. This dual-output design provides the complementary benefits of discrete, semantically grounded user representations while main-taining compatibility with existing downstream models that rely on dense embeddings. Additionally, the shared SID vocabulary nat-urally extends to cross-scenario modeling: by unifying long-form and short-form video behaviors into a single model, we substan-tially reduce training and serving costs. We validate TokenMinds 
+
+through extensive offline experiments and live launches on multi-ple YouTube surfaces, served on full user traffic (billions of users) via an asynchronous infrastructure that decouples representation generation from downstream scoring. Focusing on ranking as the   
+
+> ∗Corresponding authors: {qyl, lichan, liwei, xinyang}@google.com .Permission to make digital or hard copies of all or part of this work for personal or classroom use is granted without fee provided that copies are not made or distributed for profit or commercial advantage and that copies bear this notice and the full citation on the first page. Copyrights for components of this work owned by others than the author(s) must be honored. Abstracting with credit is permitted. To copy otherwise, or republish, to post on servers or to redistribute to lists, requires prior specific permission and/or a fee. Request permissions from permissions@acm.org.
+> Conference’17, Washington, DC, USA
+> ©2026 Copyright held by the owner/author(s). Publication rights licensed to ACM. ACM ISBN 978-x-xxxx-xxxx-x/YYYY/MM https://doi.org/10.1145/nnnnnnn.nnnnnnn
+
+primary downstream use case, our results confirm the practical via-bility of SID-based user tokens at industrial scale and demonstrate that tokens and dense embeddings provide complementary value across different production ranking systems. 
+
+## 1 Introduction 
+
+Recommender systems have evolved from early factorization ma-chines to modern deep learning architectures, and increasingly from multi-stage cascaded architectures to end-to-end approaches. Sequential user modeling, which focuses on leveraging the his-tory users have engaged with, has long played a pivotal role in enabling the personalization of recommendation systems [ 4, 5 , 21 ]. Large Embedding Models (LEMs) [ 6 , 7] serve as the dominant indus-trial paradigm, relying on massive embedding tables to represent high-cardinality item IDs. While effective for memorizing user-item interactions, LEMs often limit generalization capabilities on complex networks [25]. Conversely, Large Language Models (LLMs), which allocate their parameter budgets primarily to neural networks rather than mas-sive embedding tables, have shown vast potential in recommenda-tion. Recent works leverage their reasoning and contextual under-standing capabilities for feature extraction, LEM integration [ 42 ], and end-to-end sequence modeling [ 19 , 40 , 41 ]. However, apply-ing LLMs to domain-specific recommendations reveals two critical bottlenecks. First, models pretrained on natural language suffer a fundamental modality gap when processing massive, non-textual ID spaces ( e.g. , billions of videos). Second, bridging this gap by coupling LLMs with traditional large embedding tables inherits the very limitations LLMs were meant to transcend: scaling con-straints, vocabulary churn, and bounded expressiveness [ 25 , 29 ]. To overcome these bottlenecks, Semantic IDs [ 24 ] tokenize items into hierarchical discrete codewords derived from content semantics, eliminating embedding table dependencies and improving general-ization through meaningful collisions [ 25 ]. With SIDs addressing the scaling and expressiveness limitations of traditional representa-tions, the PLUM framework [ 9] bridges the remaining modality gap by aligning the new SID vocabulary with the LLM’s pre-existing  
+
+> 1
+> arXiv:2606.25147v1 [cs.IR] 23 Jun 2026 Conference’17, July 2017, Washington, DC, USA Liu et al.
+
+knowledge through Continued Pre-Training (CPT) and task-specific post-training. While the PLUM framework was shown to be effective for item retrieval, its potential for sequential user modeling (SUM) remains unexplored. In this paper, we present TokenMinds , which ex-tends PLUM to generate user representations as SID-based user tokens. The SID-based representation is in contrast to the com-mon approach of using dense user embeddings [ 21 , 23 ], where compressing a user’s full spectrum of interests into one or a few fixed-dimensional vectors may lose fine-grained signals. There is also a growing interest in using LLMs to generate text-based user profiles [ 8, 26 , 32 ]. While text profiles can be considered as another form of discrete user representation, they face key limitations: LLMs without pre-training on user behavior signals tend to capture topical co-occurrences rather than deep sequential behavior dynamics [ 15 ], their text outputs are difficult to ground with item attributes in any target domain, and they introduce modality gaps when integrated into non-textual downstream systems [ 28 ]. In TokenMinds , we overcome these challenges by leveraging the CPT recipes from PLUM [ 9 ] and anchoring model outputs to SID tokens that are semantically meaningful and grounded in the recommendation corpus. Specifically, TokenMinds adopts an encoder-decoder architecture— a paradigm widely used in generative retrieval [ 24 , 40 ]—but re-purposes it for a novel dual-output design: the decoder generates SID-based user tokens, while the encoder processes sequential user features and simultaneously produces dense user embeddings, en-suring compatibility with existing downstream models that use dense embeddings (Sec. 3.2). Focusing on ranking as the primary downstream use case, we study how to properly integrate SID-based user tokens into production ranking models (Sec. 3.4). To serve this model for billions of users under strict latency constraints, we deploy TokenMinds atop an asynchronous serving infrastruc-ture [ 17 ], which decouples heavy representation generation from real-time scoring (Sec. 3.5). Beyond single-scenario user modeling, because TokenMinds 
+
+operates in a shared token space inherited from a pre-trained LLM, it naturally enables two further extensions. First, heterogeneous signals such as textual search queries can be trivially interleaved with watch histories within the input sequence (Sec. 4.2). Second, the shared SID vocabulary provides a natural bridge for cross-scenario modeling between long-form (LFV) and short-form videos (SFV), scenarios with disjoint video ID spaces and distinct con-sumption patterns [ 18 ]. We prepend scenario-specific condition tokens ( LFV /SFV ) to each watch, enabling a single model to train on chronologically interleaved cross-scenario sequences. At infer-ence, we introduce multi-context decoding : the encoder produces a shared user representation in a single forward pass, and the de-coder generates scenario-specific user tokens by conditioning on different scenario prefixes—effectively achieving scenario-aware output without multi-model overhead (Sec. 3.3). We summarize our contributions below: 
+
+• Dual-Output Architecture: We propose TokenMinds , a unified user modeling architecture designed for large-scale industrial recommender systems. Its novel dual-output mech-anism jointly generates both standard dense continuous em-beddings and discrete SID-based user tokens. 
+
+• Tokenized User Representations & Adaptation: We pro-pose a novel application of SID-based discrete tokens for user representation and identify optimal strategies for adapting them in downstream models. While TokenMinds supports various downstream tasks, this paper focuses on ranking integration, where we demonstrate the practical viability of tokenized representations at an industrial scale and prove that dense embeddings and discrete tokens can capture com-plementary signals, yielding amplified performance gains. 
+
+• Cross-Scenario Modeling: We introduce a highly efficient modeling paradigm that natively consolidates cross-scenario content training and serving. By jointly modeling funda-mentally distinct scenarios (LFV and SFV) within a single framework, we reduce upstream training compute by 50% and serving compute by 31% compared to maintaining sepa-rate models, while preserving core engagement quality and significantly improving fresh content metrics across both scenarios. 
+
+• Industrial-Scale Deployment: We validate TokenMinds 
+
+through extensive offline evaluation and live A/B testing on production ranking systems, achieving statistically signifi-cant gains of up to +0.11% in core user metrics and +0.62% in core engagement metrics. TokenMinds is deployed in pro-duction across multiple primary YouTube surfaces, serving both LFV and SFV recommendations on full user traffic. 
+
+## 2 Related work 
+
+Sequential User Modeling. Sequential recommendation has evolved from RNNs [ 10 ] and CNNs [ 27 ] to powerful Transformer-based models like SASRec [ 14 ] and trillion-parameter transducers like HSTU [ 37 ]. Despite their architectural sophistication, these models fundamentally rely on massive, continuous embedding tables for atomic item IDs. Recently, Semantic IDs (SIDs) have emerged as a compelling alternative for item representation that yields enhanced generalization [ 24 , 25 ] and improved sample efficiency [ 9]. On the user side, dense continuous embeddings are the prevalent industrial standard for user representation [4, 23, 31]. Recent LLM-based ap-proaches attempt to summarize preferences into natural language profiles [ 8, 26 , 32 ] but these tend to capture topical co-occurrences rather than user’s sequential dynamics [ 15 ] and faces the challenge of modality gaps in non-textual downstream systems [ 28 ]. Discrete, SID-based token representations for users remain largely unex-plored. Our work fills this gap by extending the SID paradigm from items to users, generating compact discrete user tokens while con-tinuing to output dense embeddings for compatibility with existing downstream systems. 
+
+Generative Recommendations. Generative recommendation re-frames the traditional embedding-table-based paradigm as a sequence-to-sequence task, e.g. , PLUM [ 9], GenRank [ 12 ], and GPR [ 38 ]. Our work extends the PLUM framework from retrieval to user modeling. While retrieval models are constrained to predict immediate next items, user modeling captures a broader spectrum of intents over longer time windows. It leverages coarser semantic granularity to  
+
+> 2TokenMinds : Pretrained User Tokens and Embeddings for User Understanding in Large Recommender Systems Conference’17, July 2017, Washington, DC, USA
+
+identify distinct areas of interest, avoiding the strict need to map back to specific individual items. Unlike GPR, which aligns user representation with downstream task metrics and policy optimiza-tion, we decouple the learning of user representations from specific downstream training objectives to provide a general purpose un-derstanding of user interests. Concurrently, LIGER [ 33 ] and COBRA [ 34 ] demonstrate that sparse semantic IDs and dense embeddings provide complementary item representations for retrieval. However, both operate exclu-sively at the item level. TokenMinds extends this sparse-dense complementarity from items to users, simultaneously generating discrete SID-based user tokens and continuous embeddings via a unified encoder-decoder architecture. Deploying heavy generative models online faces scaling bottle-necks of real-world systems. Recent works address this by opti-mizing the online architecture itself, such as HSTU’s [ 37 ] efficient transducers, LONGER’s [ 4] optimized representations, or parallel generation methods [ 11 ]. Because these models execute intensive computations during real-time scoring, strict computational bud-gets often confine them to sub-domains like advertising [ 30 , 38 ]rather than core organic traffic. To support billions of users, Token-Minds takes a different infrastructural approach by leveraging the asynchronous User Behavior Service (UBS) framework [ 17 ], which decouples representation generation from scoring. 
+
+Cross-Scenario Modeling. Modeling user behaviors across differ-ent scenarios remains a critical challenge in real-world recommen-dation systems[ 36 ]. Early approaches leverage multi-source user histories to improve performance in specific scenarios like CTR prediction[ 22 , 35 ]. More recently, industrial frameworks adopting foundation model paradigms have shown promising results in uni-fying multi-scenario behaviors [ 30 , 38 ]. While these approaches typically project user behaviors across different scenarios into a shared continuous space, TokenMinds goes further by generat-ing both a unified intent embedding and scenario-specific discrete token representations, enabling downstream models to leverage scenario-aware user signals. 
+
+## 3 TokenMinds Framework 
+
+We first introduce the overview for TokenMinds , including intu-itions behind the design. We then describe in detail how we generate SID-based discrete user tokens and dense user embeddings simul-taneously. Later we consider the cross-scenario where we have data with different formats. We then discuss SID-based user token adaptation in downstream models, and end this section with an introduction of the serving system. 
+
+## 3.1 System Overview 
+
+We adopt a sequence-to-sequence (seq2seq) framework for Token-Minds , as illustrated in Fig. 1. User behavior signals are tokenized into a sequential input and processed by a pre-trained foundation model to produce both dense user embeddings and discrete SID-based user tokens. Since foundation models lack prior exposure to our video corpus, we follow PLUM [ 9 ] with Continued Pre-Training (CPT) to align the new SID modality with the model’s existing knowledge (ablated in Sec. 4.2), followed by Supervised 
+
+Figure 1: Overview of the TokenMinds framework. An encoder-decoder architecture processes heterogeneous user signals: watches across long- and short-form videos, search queries, and associated engagement features. It simultane-ously produces dense user embeddings from the encoder and discrete SID-based user tokens from the decoder, which are served to downstream models. 
+
+Fine-Tuning (SFT) for user modeling. We describe the inputs, rep-resentations, and architecture below. 
+
+User Data. We incorporate disparate user behavior signals such as textual search queries alongside watch histories across multiple recommender applications ( e.g. directly recommended from home-page, suggested by features like what to watch next [ 39 ]). This behavioral data includes temporal and engagement signals from user histories, such as interaction timestamps and likes or dislikes. 
+
+Video Representation. Instead of randomly assigned video IDs (VIDs), we represent each video with a Semantic ID (SID)[ 24 ]: a hi-erarchical sequence of discrete codewords derived from the video’s content features via a Residual-Quantized Variational AutoEncoder (RQ-VAE)[ 9]. SIDs offer two key advantages for user modeling: better generalization across head and tail videos [ 25 ], and greater temporal stability, since VIDs suffer from vocabulary churn as the corpus evolves, which is a problem amplified when modeling long-range user histories. 
+
+Foundation Model Architecture. While decoder-only models are popular in generative recommendation [ 9 , 38 , 41 ], we adopt an encoder-decoder architecture for two reasons. First, encoders are known to capture more comprehensive sequential patterns on the full user history [ 13 ], where dense user embeddings can be nat-urally extracted from such contextualized representations, while the decoder autoregressively generates discrete SID-based user to-kens. Second, the architecture offers deployment flexibility: the encoder and decoder can be decoupled for serving [ 21 , 40 ], pairing a low-frequency heavy encoder for history compression with a high-frequency lightweight decoder for more recent behaviors. During training, the decoder attends to the full encoder output via cross-attention and learns to generate SID tokens for targeted watches (details in Sec. 3.2). At serving, dual-outputs are extracted: the dense user embedding is obtained via pooling ( e.g. , last-token or mean pooling) over encoder outputs, and discrete user tokens are produced by applying beam search on the decoder to generate multiple SID sequences, each truncated to a coarse-grained pre-fix that serves as a single user token (see Sec. 3.2 for details). We can also constrain the decoder cross-attention by limiting to a few  
+
+> 3Conference’17, July 2017, Washington, DC, USA Liu et al.
+
+Figure 2: Training illustration for a single-scenario user ex-ample. The encoder takes a sequence of interleaved SID to-kens and custom features. The decoder attends to the full encoder output via cross-attention and autoregressively gen-erates SID tokens for multiple near-future target watches. Both are initiated from Continued Pre-Training (CPT) [9]. 
+
+output embeddings from encoder ( e.g. learnt or attention pooled). However, this constrains model expressiveness, potentially degrad-ing decoding performance. To mitigate this, an auxiliary decoding task with constrained cross-attention can be introduced. 
+
+## 3.2 Model Training 
+
+In Fig. 2, we visualize the training for one user example, where the user’s watches are presented in chronological order and fed to the model to predict multiple near-future watches. For clarity, this depicts the base single-scenario case; extensions for cross-scenario condition tokens and search query integration are described in Sec.3.3. For instance, the input sequence ’A12 B278 C23 D77’ repre-sents the truncated L-token prefix (L=4) of a video’s hierarchical SID, while subsequent tokens like ’100.0s’, ’20%’, and ’IOS’ encode numerical and textual features (e.g., watch time ratio and device platform). 
+
+Notation. Let 𝑊 1, . . . ,𝑊 𝑛 denote a user’s chronological watch se-quence. A cutoff timestamp 𝑇 partitions this into a history [𝑊 1, . . . ,𝑊 𝑡 ]
+
+(watches before 𝑇 ) and a future window {𝑊 𝑡 +1, . . . ,𝑊 𝑛 } (watches in 
+
+[𝑇 ,𝑇 +24 h]). Each watch 𝑊 𝑘 is represented by SID: given its content embeddings, an RQ-VAE with 𝐿 𝑓 𝑢𝑙𝑙 =8 codebook levels produces a full codeword sequence [𝑆𝐼𝐷 𝑘, 1, . . . , 𝑆𝐼𝐷 𝑘,𝐿 𝑓 𝑢𝑙𝑙 ]; we retain only the prefix-𝐿 codes ( 𝐿 <𝐿 𝑓 𝑢𝑙𝑙 ), leveraging SID hierarchy to present video at a coarser granularity to encourage diversity and mitigate memorization issues [40] (ablation in Sec. 4.2). 
+
+Input Tokenization. Each watch 𝑊 𝑘 combines its prefix-𝐿 SID as hard tokens with non-SID features encoded as either hard or soft tokens. Hard tokens are obtained by bucketing dense features or mapping categorical/text features to a vocabulary. Soft tokens are produced by embedding each feature independently, concatenating the resulting representations, and projecting the concatenation to 
+
+𝑀 embeddings via an MLP. 
+
+Training Objective. We adopt two key departures from standard next-watch prediction, both validated by ablation in Sec.4.2. First, we employ look-ahead sampling[ 30 ]: rather than predicting the im-mediate next watch 𝑊 𝑡 +1, we randomly select up to 𝑁 targets from the future window {𝑊 𝑡 +1, . . . ,𝑊 𝑛 }, preventing overfitting to the im-mediate watches and improving generalization by approximating 
+
+Figure 3: Comparison between separate per-context infer-ence (left) and multi-context decoding (right). Multi-context decoding introduces a context stage that creates parallel sub-batches from a single shared encoder pass, enabling concur-rent scenario-specific decoding with full reuse of encoder hidden states. 
+
+near-future interests. Second, predicting multiple targets simulta-neously improves training efficiency over single-target training. Formally, TokenMinds minimizes: 
+
+L = −
+
+> 𝑁
+
+∑︁ 
+
+> 𝑖 =1
+
+𝑟 (𝑊 𝑖 ) · 
+
+> 𝐿
+
+∑︁ 
+
+> 𝑗 =1
+
+log 𝑃 (𝑆𝐼𝐷 𝑖,𝑗 | 𝑊 1, . . . ,𝑊 𝑡 , 𝑊 <𝑖 , 𝑆𝐼𝐷 𝑖, <𝑗 ). (1) Here, 𝑖 indexes the 𝑁 sampled targets and L is computed only over prefix-𝐿 SID tokens. The engagement reward, 𝑟 (𝑊 𝑖 ), encourages diverse and high-value consumption. It is formulated as a combina-tion of multiple user signals. It is computationally more efficient to sample training examples proportionally [ 9] to their rewards and weight them equally in Equation 1, rather than applying varying weights. Note that Eq. 1 applies only to decoder outputs; the encoder re-ceives gradients solely through the decoder’s cross-attention layers, which implicitly supervises the encoder to produce representations that support accurate SID generation. 
+
+## 3.3 Cross-Scenario Modeling 
+
+The architecture described above is trained and served indepen-dently for each content scenario. To consolidate these into a single model, we need to consider key differences between long-form (LFV) and short-form video (SFV) consumption. SFVs are con-sumed in a continuous browsing fashion without explicit click initiation [ 18 ], resulting in stronger feedback loop compared to LFVs. Furthermore, user interests are not isolated by format; nearly half of all users engage with both SFVs and LFVs, and their SIDs share significant vocabulary overlap (e.g., approximately 40% for the first two prefixes). This suggests that user interests in LFVs and SFVs overlap. Developing a unified model can improve computa-tional efficiency, facilitate transfer learning, and capture a more comprehensive view of user preferences. 
+
+3.3.1 Unified Training. To construct the unified input sequence, we prepend discrete condition tokens ( e.g. , <LFV> , <SFV> ) before each watch to distinguish content scenarios. Because TokenMinds 
+
+operates in a shared token space inherited from a pre-trained LLM, textual signals can be naturally interleaved alongside SID-based watch tokens. We leverage this by prepending a <Search> token to each of the 𝑆 most recent search queries and interleaving them chronologically within the watch sequence (ablated in Sec. 4.2).  
+
+> 4TokenMinds : Pretrained User Tokens and Embeddings for User Understanding in Large Recommender Systems Conference’17, July 2017, Washington, DC, USA
+
+For the training objective, we extend the random sampling of future target watches (Sec. 3.2) to uniformly include both SFVs and LFVs. Condition tokens are excluded from the loss, as predicting them is trivially easy and degrades SID prediction quality when included. 
+
+3.3.2 Multi-Context Decoding. A unified model is supposed to pro-duce scenario-specific user tokens for each context at serving time. A naive approach requires separate inference runs per context, re-dundantly processing the user history and negating the efficiency gains of a unified model. We propose multi-context decoding to elim-inate this redundancy. Given a shared encoder pass over the user history, we introduce a context stage that branches the decoding into parallel sub-batches, one per target context. Each sub-batch is initialized with its respective condition token and decoded indepen-dently via beam search, while all sub-batches fully share the encoder hidden states from a single encoder pass. As illustrated in Fig. 3, this enables a single prefill pass with concurrent, context-specific decoding—generating LFV and SFV user tokens simultaneously from the same cached user representation. 
+
+## 3.4 Downstream Adaptation 
+
+Integrating SID-based user tokens into downstream models—particularly traditional LEMs that require dense vectors—necessitates projecting discrete tokens into a continuous embedding space. We evaluate three token-to-embedding methods [ 25 ]: (1) Prefix Embedding Map-ping : maps each predicted 𝐿 -prefix SID (Sec. 3.2) back to the original content embeddings used to generate it. Since multiple videos may collapse to the same coarse-grained prefix, we mean-pool the origi-nal embeddings of all videos sharing the predicted prefix to obtain the SID embedding. (2) N-gram Embedding : segments each predicted SID sequence into fixed-length 𝑁 -gram sub-words ( e.g. , consecutive codeword pairs for 𝑁 =2), each mapped to a learned embedding; the SID representation is the sum of its sub-word embeddings. (3) SPM Embedding [16 ]: similar to N-gram, but uses SentencePiece to learn variable-length sub-words from item distributions. We refer to (2) and (3) collectively as Learnable Embeddings (LE) , as both employ randomly initialized embedding tables trained end-to-end with the downstream model, in contrast to the static mapping of (1) (Sec. 4.3 for comparison). At serving, beam search produces 𝐵 SID sequences per user, each representing a predicted future interest. To form a single user vector, we aggregate the corresponding 𝐵 SID embeddings via pooling ( e.g. ,attention-weighted, mean, max, or top-𝑘 concatenation). All strate-gies yield comparable downstream performance, suggesting that gains are driven primarily by the information in the tokens them-selves rather than the aggregation choice. Both the encoder-derived dense embeddings and the token-derived SID embeddings described above can serve as direct input features to downstream models, or as key-value pairs in cross-attention layers where candidate items attend over user representations. 
+
+## 3.5 Serving System 
+
+To overcome the high serving costs and latency at billion-user scale, we decouple user representation generation from real-time down-stream inference, as shown in Fig. 4. Built upon the User Behavior 
+
+Figure 4: Serving infrastructure for TokenMinds . User rep-resentations are generated asynchronously and cached in a key-value store. Real-time scoring retrieves cached rep-resentations directly; if expired or missing, a background Refresh Service re-generates them from the user’s latest his-tory (Steps 4.1–4.3). 
+
+Service (UBS) framework[ 17 ], TokenMinds generates user embed-dings and tokens asynchronously and caches them in a fast key-value store. Real-time models retrieve these cached representations during scoring, maintaining constant latency and cost regardless of the underlying complexity of TokenMinds . When a scoring request arrives, the client checks for valid, unexpired representa-tions; if available, they are fetched and fed directly into downstream models. Otherwise, a background refresh is triggered immediately: the Representation Refresh Service reads the user’s latest watch history, runs inference through the exported TokenMinds model, and writes updated representations back to the cache. 
+
+## 4 Experiments 
+
+We first detail experiment set-ups for TokenMinds (Sec. 4.1), and then examine recommendation quality from offline metrics (Sec. 4.2) and online evaluation on downstream integration (Sec. 4.3). Finally, we share learnings from additional studies (Sec. 4.4). We try to answer the following questions: 
+
+RQ1 (Token Adaptation & Viability): How can SID-based discrete user tokens be optimally adapted for downstream contin-uous models, and do they yield measurable improvements when deployed on industrial-scale recommendation surfaces? 
+
+RQ2 (Complementary Values): Does the dual-output nature of TokenMinds provide complementary value by simultaneously generating continuous embeddings and discrete tokens? 
+
+RQ3 (Cross-Scenario Modeling Impact): Can a unified, cross-scenario modeling paradigm (jointly training LFVs and SFVs) achieve computational efficiency gains without compromising downstream recommendation quality? 
+
+## 4.1 Experiment Set-up 
+
+Model. TokenMinds adopts an encoder-decoder architecture based on Gemini V1.5, comprising a 370M-parameter Mixture-of-Experts (MoE) encoder and a 370M-parameter dense decoder. Both are initialized from Continued Pre-Training (CPT) checkpoints [ 9]. 
+
+Training. TokenMinds is trained on YouTube LFV and SFV watch histories interleaved with textual search queries, using an internal JAX [ 2 ] and Pathways [ 1] framework developed for the Gemini ecosystem. We adopt continuous training on the latest daily  
+
+> 5Conference’17, July 2017, Washington, DC, USA Liu et al.
+
+Table 1: Ablation study on training objectives. Recall@10 evaluated on SID prefix-𝐿 predictions.            
+
+> Model Session Recall Cold-Start Recall
+> TokenMinds (Ours) 0.291 0.210 w/o Multiple Targets 0.265 ( -8.9% )0.203 ( -3.3% )w/o Look-ahead Window 0.278 ( -4.5% )0.189 ( -10.0% )w/o SID Truncation 0.247 ( -15.1% )0.174 ( -17.1% )
+
+data to capture fresh engagement signals, processing millions of examples per day, which is more sample-efficient than traditional LEMs that typically require billions of interactions. For each user sample, we use the most recent 1,200 watches interleaved with 
+
+𝑆 =10 search queries (Sec. 3.3), with a maximum input sequence length of 1,024 tokens (further analyzed in Sec. 4.4). Each watch consists of a condition token, prefix-𝐿 =4 SID tokens, and 𝑀 =1 soft token for non-SID features (Sec. 3.2); using a single soft token trades approximately 5% offline recall for a substantial reduction in se-quence length. Target selection samples up to 𝑁 =15 watches from the 24-hour look-ahead window. Through grid search over learning rates in [10 −6, 10 −3], we find that linear warmup with cosine decay and cyclic restarts[ 3, 20 ] achieves peak same-day performance, but a constant learning rate proves more robust to day-to-day distribu-tion shifts under continuous training. 
+
+Serving. TokenMinds is served via the asynchronous processing infra (Sec. 3.5) with a 24-hour refresh cadence. For each user, we extract a 1,152-dimensional dense embedding from the encoder and decode 𝐵 =40 SID sequences via beam search (20 LFV, 20 SFV), all with prefix length 𝐿 to form the user’s discrete token representation. 
+
+## 4.2 Representation Quality 
+
+All models in this section are trained on identical data until conver-gence to ensure fair comparison. 
+
+Token Accuracy and Training Ablations. We evaluate the pre-dictive accuracy of TokenMinds ’s generated tokens and ablate key training design decisions. We evaluate token accuracy un-der two protocols: Session Recall uses the near-complete history 
+
+[𝑊 1, . . . ,𝑊 𝑛 −1] as input and predicts the final watch 𝑊 𝑛 ; and Cold-Start Recall uses the truncated history [𝑊 1, . . . ,𝑊 𝑡 ] and predicts a randomly sampled watch from the future window {𝑊 𝑡 +1, . . . ,𝑊 𝑛 }.All variants are evaluated under both protocols to ensure compara-bility. In both cases, we generate the top-10 SID sequences (prefix length 𝐿 ) and compute Recall@10. Table 1 reports results alongside three ablations, each removing one training innovation while keeping evaluation fixed: (1) w/o Multiple Targets : reduces sampled targets from 𝑁 =15 to 1; (2) w/o Look-ahead Window : replaces look-ahead sampling with standard next-watch prediction (input [𝑊 1, . . . ,𝑊 𝑡 ], target 𝑊 𝑡 +1); (3) w/o SID Truncation : trains and encodes inputs with full-length SIDs ( 𝐿 𝑓 𝑢𝑙𝑙 )instead of prefix-𝐿 ; at evaluation, predictions are still compared at the prefix-𝐿 granularity to ensure metric comparability. All three degrade accuracy, with look-ahead removal and full-length SIDs being particularly detrimental to cold-start performance ( −10% and 
+
+−17% relative, respectively), confirming that temporal look-ahead 
+
+Table 2: Impact of initialization strategy and search queries. Metrics represent relative percentage improvements ( Δ%)over the Random initiated baseline without search.                    
+
+> Initialization Strategy +Search Queries Δ%Recall@10 Session Cold-Start
+> Pre-Trained No +3.3% +5.7% CPT No +5.3% +8.7% Random Yes +12.5% +16.9% Pre-Trained Yes +18.5% +25.1% CPT Yes +23.5% +31.5%
+
+Figure 5: Diversity of generated user tokens vs. ground-truth user watches. CDFs show that beam search produces diverse predictions without collapsing into redundant outputs. (Left) SID Prefix Duplication Rate: fraction of identical prefixes. (Right) SID Token Collision Rate: fraction of identical tokens at each position. 
+
+sampling and coarse-grained prefixes are essential for generalizing beyond the immediate session. 
+
+Initialization Strategy. To validate the choice of initializing from a CPT checkpoint [ 9], we compare against two baselines: a general-purpose Pre-Trained Gemini checkpoint (without SID-specific ground-ing) and random initialization. Table 2 shows these comparisons across configurations with and without search queries. We observe that CPT consistently outperforms Pre-Trained Gemini, which in turn outperforms random initialization. This confirms that the semantic grounding of SIDs during CPT [ 9] is beneficial for down-stream task-specific fine-tuning, beyond the general sequence mod-eling capabilities of the base LLM alone. 
+
+Impact of Search Queries. To quantify the contribution of search queries, we compare our full model against a variant trained with-out search signals. As shown in Table 2, adding 𝑆 =10 interleaved queries consistently improves recall across all initialization strate-gies, confirming that explicit textual intent provides complemen-tary signal beyond watch history alone. Furthermore, the benefit of search is amplified by stronger initialization, suggesting that an LLM backbone with aligned SID representations is better equipped to leverage textual search signals alongside behavioral watch histo-ries. 
+
+Token Diversity. Having established predictive accuracy and iden-tified some key factors driving it, we next verify that this per-formance is not achieved through redundant beams. Since each decoded SID serves as a distinct interest signal for downstream models, beam collapse—where multiple beams converge to near-identical outputs—would severely limit representational capacity.  
+
+> 6TokenMinds : Pretrained User Tokens and Embeddings for User Understanding in Large Recommender Systems Conference’17, July 2017, Washington, DC, USA
+
+Table 3: Online pivot study (110M model, SFV) comparing token adaptation strategies: Prefix Embedding Mapping (EM) vs. Learnable Embedding (LE, Unigram).       
+
+> Strategy Engaged Users Satisfied Engagement
+> EM +0.07% -0.02% LE +0.08% +0.22%
+
+Table 4: Online Evaluation for adding TokenMinds with different user representations for downstream clients.                
+
+> Surface Representation Engaged Users Satisfied Engagement
+> SFV Embed-only 0.00% +0.05% Token-only +0.04% +0.40%
+> Embed+Token +0.11% +0.62%
+> LFV Embed-only +0.04% +0.03% Token-only +0.01% +0.04% Embed+Token +0.02% +0.08%
+
+We assess diversity using two metrics: SID Token Collision Rate (mea-suring identical token frequency at position 𝑥 , where high collision signifies semantic beam collapse) and SID Prefix Duplication Rate 
+
+(counting identical prefixes up to 𝑥 , where high repetition indicates isolated exploration of a single branch). We evaluate these metrics over a sample of 5K users, comparing the generated tokens against ground-truth watches from the same look-ahead 24-hour window. To ensure a fair comparison despite size disparities, we downsample the larger set (ground-truth watches or generated SIDs) to match the size of the smaller set. To reduce the variance from subsampling, for each comparison, we repeat the downsampling of the larger set 10 times, and report the averaged similarity scores. The resulting CDFs across different token indices, plotted in Fig. 5, demonstrate that TokenMinds achieves prediction diversity on par with the ground-truth distribution, confirming that beam search produces diverse interest signals without collapsing into redundant outputs. 
+
+Embedding Quality. We evaluate embedding consistency across 2K random sampled users. For each user, we generate an embedding 
+
+𝐸 𝐴 from their full history and a perturbed variant 𝐸 𝐴 ∗ by randomly dropping watches, then compare against a random user’s embed-ding 𝐸 𝐵 . The average cosine similarity Sim (𝐸 𝐴 , 𝐸 𝐴 ∗ ) = 0.993 far exceeds Sim (𝐸 𝐴 , 𝐸 𝐵 ) = 0.761 , indicating that embeddings are stable under minor history perturbations while remaining discriminative across users. 
+
+## 4.3 Online Performance 
+
+We evaluate the real-world impact of TokenMinds through live A/B experiments, integrating user embeddings and tokens across multiple production ranking models. While TokenMinds has been deployed across YouTube’s ranking, retrieval, and LLM-based pro-duction systems, this paper focuses on ranking integration. All experiments were conducted over a seven-day period. We report performance across two key quality metrics in both LFV and SFV: 
+
+Table 5: Downstream integration overhead (same surface).         
+
+> Metric Token-only Embed + Token
+> Training Cost +2.85% +3.05% Training Speed -0.7% -4.2% Serving Throughput (Max QPS) -1.3% -7.4%
+
+Engaged Users and Satisfied Engagement. Throughout this sec-tion, bold numbers in tables denote statistical significance at 95% confidence. 
+
+Token Adaptation Pivot Study. Before committing massive com-pute to the full-scale dual-output architecture, we conducted an online pivot study using a lightweight 110M model on the SFV sur-face to determine the optimal token adaptation strategy. As shown in Table 3, we compared static Prefix Embedding Mapping (EM) against Learnable Embeddings (LE)—specifically Unigram ( 𝑁 =1)for SFV, matching existing item tokenization on that surface. LE consistently outperforms EM, affirming that allowing downstream models to learn a specialized embedding space yields better task adaptation [ 25 ]. Auxiliary evaluations on the LFV platform using SPM-based LE exhibited identical trends. We thus utilize LE exclu-sively for all subsequent full-scale evaluations, answering the first half of RQ1. 
+
+Downstream Quality. To assess the individual and complemen-tary impact of TokenMinds , we compare adding continuous em-beddings alone, discrete SID-based tokens alone (via LE), and both simultaneously. Table 4 reports results on primary SFV and LFV surfaces. We draw two key findings. First, SID-based user tokens provide additive value across production systems, directly answer-ing the latter half of RQ1. Beyond the primary surfaces in Table 4, token-only integration launched on two additional LFV surfaces achieved statistically significant gains of +0.04% /+0.16% in En-gaged Users and +0.07% /+0.11% in Satisfied Engagement, further confirming generalizability. Second, deploying embeddings and tokens together yields amplified gains, validating RQ2 on the com-plementary nature of these two modalities and our dual-output architecture. 
+
+Downstream Cost. TokenMinds requires approximately 339ms per user for joint token and embedding generation, fully absorbed in background processing. Each user’s discrete token representa-tion requires only 1,280 bytes compared to 4,608 bytes for the dense embedding—a 72% storage reduction. At serving time, the system achieves a 96.4% cache hit rate across 1.44M read requests per sec-ond from multiple production surfaces. Incorporating pre-computed embeddings as features introduces negligible computational cost; token integration overhead is detailed in Table 5. 
+
+Cross-Scenario Modeling. We evaluate the unified cross-scenario model against two baselines: a LFV-only model trained exclusively on LFV data for quality comparison, and separately trained LFV and SFV models for efficiency comparison. From Table 6 (Panel B), consolidating LFV and SFV into a single framework yields sub-stantial cost savings. Training compute is reduced by 50% as one model replaces two. Upstream serving cost is reduced by 31%, as multi-context decoding (Sec. 3.3) shares a single encoder pass across  
+
+> 7Conference’17, July 2017, Washington, DC, USA Liu et al.
+
+Table 6: Online Evaluation of cross-scenario modeling on LFVs and SFVs. Panel A reports quality. Panel B details effi-ciency. Panel A: Quality (vs. LFV-only) Metric SFV LFV 
+
+Engaged Users +0.02% +0.00% Satisfied Engagement +0.03% +0.03% Fresh Engagement +0.33% +0.19% Panel B: Resource Impact (vs. 2 Separate Models) Phase Resource Impact 
+
+Upstream Training −50% Compute Upstream Serving −31% Compute 
+
+Figure 6: Training and 8th-Day Recall@10 against training Iso-FLOPS for model architecture variants. All axes are in log-scale. 
+
+scenarios (481 chips) instead of running two full model passes (698 chips total). Downstream integration cost remains neutral, since the unified model produces outputs of identical shape to the LFV-only baseline. Quality-wise, Panel A shows that replacing the LFV-only base-line with unified representations consistently improves freshness metrics (Fresh Engagement measures user interaction with new videos), without degrading core engagement metrics. Notably, the unified model processes both LFV and SFV watches within the same fixed-length input sequence, almost halving the available LFV history. The fact that core metrics remain neutral despite this re-duction suggests that cross-scenario signals from SFV interactions compensate for the reduced LFV context—confirming that the uni-fied paradigm achieves substantial efficiency gains without quality compromise. 
+
+## 4.4 Scaling Studies 
+
+To optimize computational efficiency, these studies adopt an ac-celerated offline evaluation protocol [ 9]: models are trained on 7 randomly shuffled days and evaluated on the sequential 8th day. 
+
+Model Variants & Capacity Allocation. We explore the impact of architectural design and capacity allocation on model quality. Bounded by the availability of pre-trained Gemini checkpoints, we investigate three warm-started variants: a Balanced MoE (370M Enc / 370M MoE Dec), a Balanced Dense (370M Enc / 370M Dense Dec), and an Unbalanced Dense model (420M Enc / 110M Dense Dec). We pivot our learning rate grid-search [0.1 ×, 10 ×] around the Balanced Dense anchor. 
+
+Figure 7: 8th-Day Recall@10 for LFV and SFV against training steps for scaling up user history length (HL). 
+
+Fig. 6 presents Training and 8th-Day Recall against Iso-FLOPS for LFVs (SFVs omitted due to similar trends). While the Unbal-anced model shows lower Training Recall than the Balanced Dense baseline, it achieves comparable 8th-Day Recall. This opens the door to asymmetric serving strategies—pairing a heavier encoder refreshed at lower frequency for stable user embeddings with a lighter decoder refreshed more frequently to capture recent behav-iors. Furthermore, at matched FLOPS, the Balanced MoE decoder outperforms its Dense counterpart on 8th-Day Recall, confirming that sparse expert routing provides a tangible advantage in gener-alizing to future user behaviors. 
+
+Input Length Scaling. While modern user modeling typically benefits from long-term watch histories [ 21 ], developing compute-optimal models requires understanding scaling dynamics. We ana-lyze the impact of user history length (HL). As shown in Figure 7, 8th-Day Recall@10 for both LFV and SFV begins to saturate at approximately 1K watches. Extending to 2K watches yields compa-rable or slightly degraded performance on SFVs. 
+
+Batch Size Scaling. We evaluate batch sizes of 4K, 8K, and 16K, using 8K as the anchor configuration with extensively tuned learn-ing rate, and scaling to other batch sizes via the standard √𝑁 
+
+rule [ 3]. Relative to the 4K baseline, 8th-Day Recall@10 improves by +2.5%/+5.5% (SFV/LFV) at 8K and +7.6%/+13.7% at 16K. Con-sistent with the findings in PLUM [ 9], larger batches accelerate convergence and yield stronger representations within the same training window. This highlights the importance of maximizing batch size up to hardware capacity for compute-optimal training. 
+
+## 5 Conclusion 
+
+We introduced TokenMinds , a framework for generating discrete SID-based user tokens and dense user embeddings via a unified encoder-decoder architecture adapted from pre-trained LLMs. Cross-scenario modeling further unifies LFV and SFV under a shared SID vocabulary with multi-context decoding, substantially reducing upstream compute. As a deployed system on YouTube, TokenMinds demonstrates that SID-based user tokens are a viable representation for produc-tion ranking systems. Combining these tokens with dense embed-dings yields amplified performance gains, confirming the comple-mentary value of the dual-output design. Our ablations further validate the importance of CPT initialization and the synergistic benefit of search query signals for SID-based user modeling. These results suggest that discrete, semantically grounded user representations offer a promising direction for scaling user model-ing beyond the representational constraints of dense embeddings alone. 
+
+> 8
+
+TokenMinds : Pretrained User Tokens and Embeddings for User Understanding in Large Recommender Systems Conference’17, July 2017, Washington, DC, USA 
+
+## References 
+
+[1] Paul Barham, Aakanksha Chowdhery, Jeff Dean, Sanjay Ghemawat, Suyog Joshi, Manjunath Kudlur, Brian Levenstein, Claire Lloyd, Xinyuan Liu, Hao Mao, et al .2022. Pathways: Asynchronous Distributed Dataflow for ML. In Proceedings of the 5th Conference on Machine Learning and Systems (MLSys) .[2] James Bradbury, Roy Frostig, Peter Hawkins, Matthew James Johnson, Chris Leary, Dougal Maclaurin, George Necula, Adam Paszke, Jake VanderPlas, Skye Wanderman-Milne, and Qiao Zhang. 2018. JAX: composable transformations of Python+NumPy programs . http://github.com/google/jax [3] Tom Brown, Benjamin Mann, Nick Ryder, Melanie Subbiah, Jared D Kaplan, Prafulla Dhariwal, Arvind Neelakantan, Pranav Shyam, Girish Sastry, Amanda Askell, et al . 2020. Language models are few-shot learners. Advances in neural information processing systems 33 (2020), 1877–1901. [4] Zheng Chai, Qin Ren, Xijun Xiao, Huizhi Yang, Bo Han, Sijun Zhang, Di Chen, Hui Lu, Wenlin Zhao, Lele Yu, et al . 2025. Longer: Scaling up long sequence modeling in industrial recommenders. In Proceedings of the Nineteenth ACM Conference on Recommender Systems . 247–256. [5] Bo Chang, Alexandros Karatzoglou, Yuyan Wang, Can Xu, Ed H Chi, and Min-min Chen. 2023. Latent user intent modeling for sequential recommenders. In 
+
+Companion Proceedings of the ACM Web Conference 2023 . 427–431. [6] Benjamin Coleman, Wang-Cheng Kang, Matthew Fahrbach, Ruoxi Wang, Lichan Hong, Ed Chi, and Derek Cheng. 2023. Unified embedding: Battle-tested feature representations for web-scale ML systems. Advances in Neural Information Processing Systems 36 (2023), 56234–56255. [7] Paul Covington, Jay Adams, and Emre Sargin. 2016. Deep neural networks for youtube recommendations. In Proceedings of the 10th ACM conference on recommender systems . 191–198. [8] Shijie Geng, Shuchang Liu, Zuohui Fu, Yingqiang Ge, and Yongfeng Zhang. 2022. Recommendation as language processing (rlp): A unified pretrain, personalized prompt & predict paradigm (p5). In Proceedings of the 16th ACM conference on recommender systems . 299–315. [9] Ruining He, Lukasz Heldt, Lichan Hong, Raghunandan Keshavan, Shifan Mao, Nikhil Mehta, Zhengyang Su, Alicia Tsai, Yueqi Wang, Shao-Chuan Wang, et al .2025. Plum: Adapting pre-trained language models for industrial-scale generative recommendations. arXiv preprint arXiv:2510.07784 (2025). [10] Balázs Hidasi, Alexandros Karatzoglou, Linas Baltrunas, and Domonkos Tikk. 2016. Session-based Recommendations with Recurrent Neural Networks. In 
+
+International Conference on Learning Representations (ICLR) .[11] Yupeng Hou, Jiacheng Li, Ashley Shin, Jinsung Jeon, Abhishek Santhanam, Wei Shao, Kaveh Hassani, Ning Yao, and Julian McAuley. 2025. Generating long semantic ids in parallel for recommendation. In Proceedings of the 31st ACM SIGKDD Conference on Knowledge Discovery and Data Mining V. 2 . 956–966. [12] Yanhua Huang, Yuqi Chen, Xiong Cao, Rui Yang, Mingliang Qi, Yinghao Zhu, Qingchang Han, Yaowei Liu, Zhaoyu Liu, Xuefeng Yao, et al . 2025. Towards large-scale generative ranking. arXiv preprint arXiv:2505.04180 (2025). [13] Clark Mingxuan Ju, Liam Collins, Leonardo Neves, Bhuvesh Kumar, Louis Yufeng Wang, Tong Zhao, and Neil Shah. 2025. Generative Recommendation with Seman-tic IDs: A Practitioner’s Handbook. In Proceedings of the 34th ACM International Conference on Information and Knowledge Management . 6420–6425. [14] Wang-Cheng Kang and Julian McAuley. 2018. Self-Attentive Sequential Rec-ommendation. In IEEE International Conference on Data Mining (ICDM) . IEEE, 197–206. [15] Sein Kim, Hongseok Kang, Kibum Kim, Jiwan Kim, Donghyun Kim, Minchul Yang, Kwangjin Oh, Julian McAuley, and Chanyoung Park. 2025. Lost in Sequence: Do Large Language Models Understand Sequential Recommendation?. In Proceedings of the 31st ACM SIGKDD Conference on Knowledge Discovery and Data Mining V. 2. 1160–1171. [16] Taku Kudo. 2018. Subword regularization: Improving neural network translation models with multiple subword candidates. In Proceedings of the 56th Annual Meeting of the Association for Computational Linguistics (Volume 1: Long Papers) .66–75. [17] Yuening Li, Diego Uribe, Chuan He, Jiaxi Tang, Qingyun Liu, Junjie Shan, Ben Most, Kaushik Kalyan, Shuchao Bi, Xinyang Yi, et al . 2024. Short-form Video Needs Long-term Interests: An Industrial Solution for Serving Large User Se-quence Models. In Proceedings of the 18th ACM Conference on Recommender Systems . 832–834. [18] Qingyun Liu, Zhe Zhao, Liang Liu, Zhen Zhang, Junjie Shan, Yuening Li, Shuchao Bi, Lichan Hong, and Ed H Chi. 2023. Multitask Ranking System for Immersive Feed and No More Clicks: A Case Study of Short-Form Video Recommendation. In Proceedings of the 32nd ACM International Conference on Information and Knowledge Management . 4709–4716. [19] Zhanyu Liu, Shiyao Wang, Xingmei Wang, Rongzhou Zhang, Jiaxin Deng, Honghui Bao, Jinghao Zhang, Wuchao Li, Pengfei Zheng, Xiangyu Wu, et al .2025. Onerec-think: In-text reasoning for generative recommendation. arXiv preprint arXiv:2510.11639 (2025). [20] Ilya Loshchilov and Frank Hutter. 2016. Sgdr: Stochastic gradient descent with warm restarts. arXiv preprint arXiv:1608.03983 (2016). [21] Wenhan Lyu, Devashish Tyagi, Yihang Yang, Ziwei Li, Ajay Somani, Karthikeyan Shanmugasundaram, Nikola Andrejevic, Ferdi Adeputra, Curtis Zeng, Arun K Singh, et al . 2025. DV365: Extremely Long User History Modeling at Instagram. 
+
+arXiv preprint arXiv:2506.00450 (2025). [22] Muyang Ma, Pengjie Ren, Zhumin Chen, Zhaochun Ren, Lifan Zhao, Peiyu Liu, Jun Ma, and Maarten de Rijke. 2022. Mixed information flow for cross-domain sequential recommendations. ACM Transactions on Knowledge Discovery from Data (TKDD) 16, 4 (2022), 1–32. [23] Nikil Pancha, Andrew Zhai, Jure Leskovec, and Charles Rosenberg. 2022. Pinner-former: Sequence modeling for user representation at pinterest. In Proceedings of the 28th ACM SIGKDD conference on knowledge discovery and data mining .3702–3712. [24] Shashank Rajput, Nikhil Mehta, Anima Singh, Raghunandan Keshavan, Trung Vu, Lukasz Heldt, Lichan Hong, Yi Tay, Vinh Q. Tran, Jonah Samost, Maciej Kula, Ed H. Chi, and Maheswaran Sathiamoorthy. 2023. Recommender systems with generative retrieval. In Proceedings of the 37th International Conference on Neural Information Processing Systems (NIPS ’23) . Curran Associates Inc., Red Hook, NY, USA, Article 452. [25] Anima Singh, Trung Vu, Nikhil Mehta, Raghunandan Keshavan, Maheswaran Sathiamoorthy, Yilin Zheng, Lichan Hong, Lukasz Heldt, Li Wei, Devansh Tandon, Ed Chi, and Xinyang Yi. 2024. Better Generalization with Semantic IDs: A Case Study in Ranking for Recommendations. In Proceedings of the 18th ACM Conference on Recommender Systems (RecSys ’24) . Association for Computing Machinery, New York, NY, USA. [26] Juntao Tan, Shuyuan Xu, Wenyue Hua, Yingqiang Ge, Zelong Li, and Yongfeng Zhang. 2024. Idgenrec: Llm-recsys alignment with textual id learning. In Proceed-ings of the 47th international ACM SIGIR conference on research and development in information retrieval . 355–364. [27] Jiaxi Tang and Ke Wang. 2018. Personalized Top-N Sequential Recommendation via Convolutional Sequence Embedding. In Proceedings of the Eleventh ACM International Conference on Web Search and Data Mining (WSDM) . ACM, 565– 573. [28] Yuhao Wang, Yichao Wang, Zichuan Fu, Xiangyang Li, Wanyu Wang, Yuyang Ye, Xiangyu Zhao, Huifeng Guo, and Ruiming Tang. 2024. Llm4msr: An llm-enhanced paradigm for multi-scenario recommendation. In ACM International Conference on Information and Knowledge Management .[29] Orion Weller, Michael Boratko, Iftekhar Naim, and Jinhyuk Lee. 2025. On the theoretical limitations of embedding-based retrieval, 2025. URL https://arxiv. org/abs/2508.21038 (2025). [30] Manjie Xu, Cheng Chen, Xin Jia, Jingyi Zhou, Yongji Wu, Zejian Wang, Chi Zhang, Kai Zuo, Yibo Chen, Xu Tang, et al . 2025. Cross-Scenario Unified Modeling of User Interests at Billion Scale. arXiv preprint arXiv:2510.14788 (2025). [31] Bei Yang, Jie Gu, Ke Liu, Xiaoxiao Xu, Renjun Xu, Qinghui Sun, and Hong Liu. 2023. Empowering General-purpose User Representation with Full-life Cycle Behavior Modeling. In Proceedings of the 29th ACM SIGKDD Conference on Knowledge Discovery and Data Mining (KDD) . ACM, 5364–5374. [32] Fan Yang, Zheng Chen, Ziyan Jiang, Eunah Cho, Xiaojiang Huang, and Yanbin Lu. 2023. Palr: Personalization aware llms for recommendation. arXiv preprint arXiv:2305.07622 (2023). [33] Liu Yang, Fabian Paischer, Kaveh Hassani, Jiacheng Li, Shuai Shao, Zhang Gabriel Li, Yun He, Xue Feng, Nima Noorshams, Sem Park, et al . 2024. Unifying gen-erative and dense retrieval for sequential recommendation. arXiv preprint arXiv:2411.18814 (2024). [34] Yuhao Yang, Zhi Ji, Zhaopeng Li, Yi Li, Zhonglin Mo, Yue Ding, Kai Chen, Zijian Zhang, Jie Li, LIU LIN, et al . 2026. Sparse meets dense: Unified generative recommendations with cascaded sparse-dense representations. Advances in Neural Information Processing Systems 38 (2026), 93746–93770. [35] Zhiming Yang, Haining Gao, Dehong Gao, Luwei Yang, Libin Yang, Xiaoyan Cai, Wei Ning, and Guannan Zhang. 2024. Mlora: Multi-domain low-rank adaptive network for ctr prediction. In ACM Conference on Recommender Systems .[36] Tianzi Zang, Yanmin Zhu, Haobing Liu, Ruohan Zhang, and Jiadi Yu. 2022. A survey on cross-domain recommendation: taxonomies, methods, and future directions. ACM Transactions on Information Systems 41, 2 (2022), 1–39. [37] Jiaqi Zhai, Lucy Liao, Xing Liu, Yueming Wang, Rui Li, Xuan Cao, Leon Gao, Zhao-jie Gong, Fangda Gu, Michael He, et al . 2024. Actions Speak Louder than Words: Trillion-Parameter Sequential Transducers for Generative Recommendations. In 
+
+International Conference on Machine Learning (ICML) .[38] Jun Zhang, Yi Li, Yue Liu, Changping Wang, Yuan Wang, Yuling Xiong, Xun Liu, Haiyang Wu, Qian Li, Enming Zhang, et al . 2025. GPR: Towards a Generative Pre-trained One-Model Paradigm for Large-Scale Advertising Recommendation. 
+
+arXiv preprint arXiv:2511.10138 (2025). [39] Zhe Zhao, Lichan Hong, Li Wei, Jilin Chen, Aniruddh Nath, Shawn Andrews, Aditee Kumthekar, Maheswaran Sathiamoorthy, Xinyang Yi, and Ed Chi. 2019. Recommending what video to watch next: a multitask ranking system. In Pro-ceedings of the 13th ACM conference on recommender systems . 43–51. [40] Guorui Zhou, Jiaxin Deng, Jinghao Zhang, Kuo Cai, Lejian Ren, Qiang Luo, Qian-qian Wang, Qigen Hu, Rui Huang, Shiyao Wang, et al . 2025. OneRec Technical Report. arXiv preprint arXiv:2506.13695 (2025). 9Conference’17, July 2017, Washington, DC, USA Liu et al. 
+
+[41] Guorui Zhou, Hengrui Hu, Hongtao Cheng, Huanjie Wang, Jiaxin Deng, Jinghao Zhang, Kuo Cai, Lejian Ren, Lu Ren, Liao Yu, et al . 2025. Onerec-v2 technical report. arXiv preprint arXiv:2508.20900 (2025). [42] Jingyi Zhou, Cheng Chen, Kai Zuo, Manjie Xu, Zhendong Fu, Yibo Chen, Xu Tang, and Yao Hu. 2025. HyMiRec: A Hybrid Multi-interest Learning Framework for LLM-based Sequential Recommendation. arXiv preprint arXiv:2510.13738 
+
+(2025). 10

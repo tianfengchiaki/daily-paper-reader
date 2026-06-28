@@ -1,0 +1,86 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2606.27274v1/fig-001.webp",
+      "caption": "Table 10: Longformer performance across different maximum sequence lengths.",
+      "page": 15,
+      "index": 1,
+      "width": 933,
+      "height": 207
+    },
+    {
+      "url": "assets/figures/arxiv/2606.27274v1/fig-002.webp",
+      "caption": "Figure 2: Psychological manipulation, architecture, and mental health impact(a) Keyword frequency heatmap across betting categories. (b) Psychological trigger composition in gambling versus non-gambling content. (c) Sentiment KDE overlap confirming the Deceptive Positivity effect.",
+      "page": 7,
+      "index": 2,
+      "width": 854,
+      "height": 215
+    },
+    {
+      "url": "assets/figures/arxiv/2606.27274v1/fig-003.webp",
+      "caption": "Figure 3: Influence cues and deceptive claims across categories: (a) Influence cues intensity by category. (b) Prevalence of deceptive claims by category, with color prediction highest at 25.4%.",
+      "page": 7,
+      "index": 3,
+      "width": 808,
+      "height": 271
+    },
+    {
+      "url": "assets/figures/arxiv/2606.27274v1/fig-004.webp",
+      "caption": "Table 9: 95% bootstrap confidence intervals (10,000 resamples) for all models. CI widths for accuracy are ≈0.053- 0.060, consistent with the test set size (756 samples). Macro-F1 CIs are wider (≈0.077-0.083) due to higher variance on the minority deceptive class. Overlapping CIs between adjacent models are consistent with non-significant statistical tests.",
+      "page": 14,
+      "index": 4,
+      "width": 579,
+      "height": 1075
+    },
+    {
+      "url": "assets/figures/arxiv/2606.27274v1/fig-005.webp",
+      "caption": "Figure 1: Overview of the BetXplain framework, illustrating the pipeline from betting advertisement data collection and manual annotation to corpus construction and multi-aspect evaluation using transformer models and LLM-based explanation metrics.",
+      "page": 3,
+      "index": 5,
+      "width": 683,
+      "height": 348
+    },
+    {
+      "url": "assets/figures/arxiv/2606.27274v1/fig-006.webp",
+      "caption": "Figure 4: Clinical risk profile: (a) Risk severity distributions by disorder. (b) Psychological impact heatmap across five cognitive dimensions. (c) Neurobehavioral radar chart showing the asymmetric profile of gambling disorder and suicidal ideation risk.",
+      "page": 8,
+      "index": 6,
+      "width": 808,
+      "height": 288
+    },
+    {
+      "url": "assets/figures/arxiv/2606.27274v1/fig-007.webp",
+      "caption": "Table 13: Mental Health Disorders Triggered by Gambling Promotion Content",
+      "page": 17,
+      "index": 7,
+      "width": 950,
+      "height": 590
+    },
+    {
+      "url": "assets/figures/arxiv/2606.27274v1/fig-008.webp",
+      "caption": "Table 1: Sample instances from the BetXplain dataset illustrating each promotion label.",
+      "page": 5,
+      "index": 8,
+      "width": 761,
+      "height": 254
+    },
+    {
+      "url": "assets/figures/arxiv/2606.27274v1/fig-009.webp",
+      "caption": "Table 2: Classification results on the test set (756 samples). Bold: best fine-tuned model per metric. All metrics computed with 95% bootstrap confidence intervals (CI width ≈0.05–0.08); see supplementary materials for full CIs.",
+      "page": 5,
+      "index": 9,
+      "width": 452,
+      "height": 274
+    },
+    {
+      "url": "assets/figures/arxiv/2606.27274v1/fig-010.webp",
+      "caption": "Figure 5: Sentiment, emotional tone, and the deceptive positivity effect: (a) Sentiment polarity by segment. (b) Mean sentiment versus sports baseline. (c) Risk escalation transition heatmap showing systematic progression toward gambling disorder as sentiment becomes more positive.",
+      "page": 16,
+      "index": 10,
+      "width": 950,
+      "height": 217
+    }
+  ]
+}

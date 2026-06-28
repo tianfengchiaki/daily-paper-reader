@@ -1,0 +1,94 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2606.23919v1/fig-001.webp",
+      "caption": "Figure 2: Dataset construction pipeline. Human-labeled query–ad pairs (T1) seed five derived tasks via co-relevance, taxonomy, and embedding signals. All derived tasks undergo human validation (𝜅 ≥ 0.76), filtering, and balancing to produce the final 2.27M-example dataset.",
+      "page": 6,
+      "index": 1,
+      "width": 654,
+      "height": 444
+    },
+    {
+      "url": "assets/figures/arxiv/2606.23919v1/fig-002.webp",
+      "caption": "Table 5 Per-class precision, recall, and F1 for SH and MHP models on 453K test examples. “Partially Relevant” is hardest for all architectures.",
+      "page": 11,
+      "index": 2,
+      "width": 539,
+      "height": 370
+    },
+    {
+      "url": "assets/figures/arxiv/2606.23919v1/fig-003.webp",
+      "caption": "Figure 4: Per-task accuracy on 453K test examples. MHP Ensemble achieves the best accuracy on all six tasks. Cross-encoders excel on lexically-rich tasks (T2, T6) but struggle on abstract tasks (T3).",
+      "page": 11,
+      "index": 3,
+      "width": 922,
+      "height": 322
+    },
+    {
+      "url": "assets/figures/arxiv/2606.23919v1/fig-004.webp",
+      "caption": "Figure 1: End-to-end system overview: dataset construction from human-labeled seed data, multi-task training of LoRA LLMs and cross-encoders across three routing architectures, evaluation on 453K test examples, and majority-vote ensemble achieving 89.96% accuracy.",
+      "page": 2,
+      "index": 4,
+      "width": 943,
+      "height": 241
+    },
+    {
+      "url": "assets/figures/arxiv/2606.23919v1/fig-005.webp",
+      "caption": "Table 4 Main results on 453,511 test examples across six entity-pair tasks. Per-task accuracy (%). Overall = sample-weighted accuracy; Macro = unweighted mean of per-task accuracies. Best result per metric in bold. †Gemma MH exhibits training collapse (Section 7.3). Labels sourced from human annotation (T1) and validated derivation (T2–T6, 𝜅 ≥ 0.76). All pairwise differences ≥0.5% are statistically significant (𝑝 < 0.01, paired bootstrap, 10K resamples).",
+      "page": 10,
+      "index": 5,
+      "width": 944,
+      "height": 436
+    },
+    {
+      "url": "assets/figures/arxiv/2606.23919v1/fig-006.webp",
+      "caption": "Table 8 Task routing ablation. Overall accuracy (%) and Δ vs. text-prefix baseline (SH). †Training collapse. All |Δ| ≥ 0.5% significant at 𝑝 < 0.01.",
+      "page": 13,
+      "index": 6,
+      "width": 543,
+      "height": 288
+    },
+    {
+      "url": "assets/figures/arxiv/2606.23919v1/fig-007.webp",
+      "caption": "Table 3 Dataset statistics (V2). Label distribution in training set: Irrelevant 454K (33.4%), Partially Relevant 454K (33.3%), Relevant 453K (33.3%).",
+      "page": 8,
+      "index": 7,
+      "width": 587,
+      "height": 229
+    },
+    {
+      "url": "assets/figures/arxiv/2606.23919v1/fig-008.webp",
+      "caption": "Table 1 Task definitions for the six entity-pair relationship types. Totals are pre-filtering counts; see Table 3 for the final dataset.",
+      "page": 4,
+      "index": 8,
+      "width": 833,
+      "height": 193
+    },
+    {
+      "url": "assets/figures/arxiv/2606.23919v1/fig-009.webp",
+      "caption": "Figure 5: Model parameters (log scale) vs. accuracy. Cross-encoders show non-monotonic scaling; pre-training objective matters more than parameter count. LoRA LLMs train ∼0.1% of total parameters.",
+      "page": 12,
+      "index": 9,
+      "width": 912,
+      "height": 229
+    },
+    {
+      "url": "assets/figures/arxiv/2606.23919v1/fig-010.webp",
+      "caption": "Table 6 Ablation: dataset scale and numerical precision on 453K test examples. Accuracy (%). Differences <0.5% are not significant.",
+      "page": 12,
+      "index": 10,
+      "width": 637,
+      "height": 192
+    },
+    {
+      "url": "assets/figures/arxiv/2606.23919v1/fig-011.webp",
+      "caption": "Figure 3: Three task routing architectures. (a) Text-prefix (SH): task identity in input text, shared head. (b) Multi-head (MH): task-specific heads, hard routing by task ID. (c) MHP: task-specific transformer layers plus task-specific heads.",
+      "page": 9,
+      "index": 11,
+      "width": 855,
+      "height": 254
+    }
+  ]
+}

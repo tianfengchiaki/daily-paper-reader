@@ -1,0 +1,230 @@
+Title: Trajectory-Based Recommender Systems as Control Systems
+
+URL Source: https://arxiv.org/pdf/2606.22957v1
+
+Published Time: Tue, 23 Jun 2026 02:45:55 GMT
+
+Number of Pages: 8
+
+Markdown Content:
+# Trajectory-Based Recommender Systems as Control Systems 
+
+Eriam Schaffter ∗, Ahmed Bounekkar ∗, Elsa Negre †∗Université Claude Bernard Lyon 1, ERIC, 69100 Villeurbanne, France 
+
+> †
+
+Université Paris-Dauphine, PSL Research University, CNRS UMR 7243 LAMSADE, 75016 Paris, France Email: eriam.schaffter@etu.univ-lyon1.fr, ahmed.bounekkar@univ-lyon1.fr, elsa.negre@dauphine.fr 
+
+Abstract —Recommender Systems (RS) are a key research domain and play an increasing role in our content-overwhelmed lives. In this paper, we explore Trajectory-Based Recommender Systems (TBRS), a subfield for which many related studies exist, yet still lacking a common framework. We argue that Control Theory provides an appropriate foundation for formalizing and solving TBRS problems. TBRS, sometimes named Long Term goal Recommender Systems, share core principles with classical RS, but at their core lies the concept of a trajectory, a defining element that makes these systems a singular category. To date, most RSs that include a notion of goal or long-term objective, when this goal is explicit, have not been recognized as having specific characteristics that make them worth regrouping under a dedicated field of research. We review related work, observe how they differ from already conceptualized RSs, and sketch the foundations of a possible theoretical framework based on control theory. Finally, we show how Educational Recommender Systems (ERS), intrinsically long-term and goal-driven, can be modeled within the proposed TBRS framework. 
+
+Index Terms —Recommender systems, Long-term recommen-dation, Trajectories, Control theory, Model predictive control, Education. 
+
+I. I NTRODUCTION 
+
+A recommender system (RS) is a system that selects items from a collection and suggests them to users. RSs are a major field of research and play an increasingly important role in our content-overwhelmed lives [1], [2]. They are applied in diverse domains, ranging from content recommendation on media platforms to product suggestion on commercial websites, and even people matching on dating applications. While the current state of the art identifies several distinctive categories of RSs, we argue that a significant aspect has so far been largely overlooked. It seems there is an elephant in the room of RSs. Indeed, the literature identifies two main approaches, along with many variations, for building RSs. The two main approaches are collaborative filtering–based recommender systems (CFBRSs), based on social interactions and items evaluation by users, and content-based recommender systems (CBRSs), based on feature analysis of items and/or users [3], [4]. In these methods, the RS is constructed either from the social and interactional perspective or from the feature-based perspective (content-based, using item and/or user attributes). Among the variations we find context-aware RSs, location-based RSs, knowledge-based RSs, time-sensitive RSs, and many others [5]–[7]. While the literature sometimes distinguishes utility-based and knowledge-based recommenders as separate categories, they can be seen as special cases or reformulations of more general paradigms. Utility-based systems rely on an explicit utility function that estimates the usefulness of an item for a user. However, such a function is implicit in virtually all recommender systems, since any predicted rating or ranking corresponds to an estimation of utility. Similarly, knowledge-based systems encode explicit domain knowledge about items and/or user needs, but their reasoning mechanisms often overlap with content-based approaches. Therefore, both can be viewed as specific instantiations or extensions of the broader content-based or collaborative filtering paradigms, rather than as fundamentally distinct categories. Also, Context-Aware RSs usually leverage additional information such as location, season or social data to improve recommendations. This additional information mainly concerns the user and/or the items and can be seen as an evolutionary step in recommender systems of that time. Historically, it is worth noting that research on recommender systems initially focused on short-term, engagement-oriented recommendations before gradually expanding to encompass other objectives [8]. But there is also an additional category of recommender systems specifically designed to guide users toward a defined goal, for example Educational Recommender System (ERS) or Point-of-Interest Recommender System (POIRS) used in tourism: we except that these systems will “recommend a sequence” [1]. While related to existing approaches, it differs in a fundamental way [9], [10]. We argue that, in this category of RSs, dynamics, and more specifically trajectories, are the central constituent of the RS. As occasionally found in the literature, such systems are referred to as Trajectory-Based Recommender Systems (TBRSs) or Long-Term Goal Recommender Systems (LTRSs). In this paper, we adopt the TBRS denomination to emphasize that the core of the system is the trajectory thereby making this denomination appropriate for a whole class of problem resolutions and, in our view, the term trajectory is preferable to path, as it conveys a stronger association with dynamic processes, whereas path suggests a more static notion [11], [12]. Yet, we will occasionally use the term path to remain consistent with the terminology employed in the cited papers. Several existing systems could already be interpreted as TBRSs [7], [13]–[15] in tourism, education or even health. And while it seems that numbers of RSs inherently contain a trajectory dimension and that RSs can 
+
+> arXiv:2606.22957v1 [cs.IR] 22 Jun 2026
+
+produce trajectorial effects on users, relatively to the choosen utility function of the RS, neither the trajectorial effect nor the trajectory dimension only makes a TBRS. In our view, a TBRS is a RS in which the trajectory is at the center of the system, not only a dimension, and we argue that framing this problem within the formalism of Control Theory (CT) enables both the application of established solutions and the evaluation of outcomes of these systems. The central research question is whether CT can effectively be appropriate for modeling TBRSs. The remainder of this paper is organized as follows. Section II reviews related work, identifies the emergence of trajectory-based recommender systems in various domains and formalizes the concept of TBRSs. Section III introduces a control-theoretic formulation providing a unified mathematical framework for TBRSs. Section IV illustrates its application to ERSs. Finally, Section VI concludes and discusses future research directions. II. R ELATED WORK 
+
+Since the first mention of this model by Goldberg, Nichols, Oki, et al. [16], originally intended to facilitate the reading of electronic mail, up to the Netflix Prize, the history of recommender systems (RS) has been marked by rapid ad-vances aimed at bringing adequate content directly to users, before they explicitly search for it [17]. The field of RSs remains highly active, with applications ranging from content-streaming platforms and social networks to education [18], health education [19], and tourism [20]. In essence, a RS consists of a set of resources (the items )
+
+R = {r1, r 2, . . . , r m} with m ∈ N+, a recommendation engine (RE), a user interface (UI) and a user and/or a set of users .In the literature, creating a recommendation is suggesting within R a subset R∗ ⊆ R containing the item the user will most likely make a decision with, that is maximizing a relevance function f (user, r i):
+
+R∗ = arg max 
+
+> ri∈R
+
+f (user, r i),
+
+where f (user, r i) represents the relevance or utility of item 
+
+ri for user , with i ∈ N and resources defined in dimension m
+
+[1]. The decision usually involve choosing a music to listen, choosing a news to read or a product to buy but it can also be which point of interest to reach or which food to order while the relevance is usually related to the on-going engagement of the user in the RS. Various techniques coexist to provide recommendations to users. 
+
+A. Classical Recommender Systems 
+
+In the classical methods for items recommendation we first find the principle of recommendation based on Neighborhood-Based Collaborative Filtering (NBCF). It relies on ratings 
+
+provided by users on items . It assumes that users with similar preferences tend to rate similar items in similar ways [2], thereby allowing the prediction of ratings for items that a user has not yet evaluated. Two main approaches of NBCF are User-Based Collaborative Filtering (UBCF) and Item-Based Collaborative Filtering (IBCF). UBCF recommends an item to a user based on the similarity of that item’s ratings among other users who share similar evaluation patterns across other items. Conversely, IBCF recommends an item to a user by considering the similarity among a set S of items and the ratings the user has assigned to the items in S. In both methods, the predicted rating is typically computed as a weighted average of the neighbors’ ratings [2]. In these approaches, both algorithms can be used either to predict a rating for a specific user–item pair, or to generate a top-k list identifying the k most relevant items or users. In practice, generating a top-k items list to recommend to a user is often more useful than predicting an individual rating value. Second the RSs based on the features of the items constitutes what’s called Content Based Recommender Systems (CBRS). Many variations of theses systems exists and they share the basic principle of an approach that consists of matching features of the item side to features of the user side (preferences of the user). It usually uses historical and implicit or explicit preferences of the user and extrapolates, based on the features of items, to which items the user may be attracted to [1]. These systems can often take advantage of a semantic enrichment, though the use of ontologies for example, to offer better recommendation outcomes. Then, hybrid approaches tend to mix various techniques to produce an adequate list of recommended items and to over-come the limitations of individual methods [1]. Context-Aware Recommender Systems (CARS) can also provide additional information improving the relevance of recommended items based on context related to the user and/or the items [1]. Finally, numerous evaluation metrics assess RS performance, most of which focus on the top-k recommended items, the typical output of RSs, regardless of whether they rely on col-laborative, content-based, hybrid, or context-aware approaches. 
+
+B. Trajectory-Based Recommender Systems 
+
+Then, by adding to a RS a notion of goal the paper Long Term Goal Oriented Recommender Systems by Nabizadeh et al. [9] introduced the fundamental concept of a RS that actively drives a user towards “a target area of the item space”. While the importance of Long-Term Recommender Systems (LTRS) is clearly articulated in this work, the opportunity to investigate the problem independently from the influence of classical RS paradigms seems to have been overlooked. In the same paper, among the promising applications of LTRS discussed, the authors identify educational recommendation as a particularly fertile domain. In this paper Nabizadeh et al. formulated the idea of an educational LTRS, an idea presented before as the Learning Path Recommendation (LPR) in [21]. More recently the research community focus widely on the long term goal in Educational Recommender Systems (ERS) and devised the recommendation task as a sequential decision process [10], [22]. In other domains, path-based recommendation has also been extensively studied [13], [23], [24]. Tourism, for instance, offers a natural setting in which points of interest (POIs) can be sequenced into a personalized itinerary adapted to each visitor [13]. Health care is another domain where path recommendations are particularly relevant. The sector is characterized by both its imperative for mass customization and its commitment to quality of care. Clinical pathways, in particular, are designed to provide patients with trajectories that combine standardization for safety and efficiency with customization for individual needs [14]. Recently, Bogina et al. [8] reviewed extensively the temporal aspects in RSs, they underlined the fact that the time dimension should be seen as either a container for short term preferences or a container for long term preferences of the user. The paper mention the Four-Phase Model of Interest Development that includes four sequential phases: an initial situational interest, a maintained situational interest, an initial individual interest and finally a developed individual interest which somehow defines a journey through the evolving interests of the user. But having a time-aware RS does not necessary means building a TBRS: considering time in a RS, to improve the quality of recommendations, does not imply considering a goal in the item space. Similarly considering sequences of user choices [25], to improve the quality of recommendations, does not imply considering a goal in the item space. The notion of goal is essential in a TBRS and the field of requirement engineering defines a goal as “expressions of intent and thus, declarative with a prescriptive nature” [26] similar to what a trajectory is made to achieve. So, unlike general-purpose RSs, which focus on satisfying the user’s immediate preferences, we are interested in systems explicitly addressing long-term objectives. These RSs aim to optimize a process of some sort, effectively distinguishing themselves by their notion of goal from classical short sighted RSs often optimizing for engagement and therefore sometimes fall short of serving the user’s true benefit [6]. The type of process being optimized is not restricted as long as it involves taking decisions. While optimizing a specific process these RSs should also exhibit features according to what is academically considered being a recommendation. First, what makes a TBRS a RS is that it constitutes a complete system, comprising a specific design, a dedicated user interface (UI), and a recommendation engine (RE) [1]. Within the framework presented here, it is explicitly assumed that it constitutes a whole system which goal is to guide the user along a trajectory towards a desired state. Second, a TBRS usually targets users who either lack the competences or the experience required to evaluate which items are relevant [1], in our case, users are expected to make a sequence of decisions while lacking prior knowledge of the most adequate decision to take at the most adequate moment. Third, classical RSs typically produce a ranked list of individual items and a TBRS also produces a ranked list of items, but these items collectively and sequentially organized constitute a trajectory. Finally a TBRS is user-centered, a single trajectory for a user is potentially different from a trajectory of a different user. Finally it also operates within a large item space to reduce information overload [1]. The Table I summarize these findings.                  
+
+> Feature Classical RSs TBRSs
+> Complete system Yes Yes Has a trajectory Implicit Explicit, central Target novice users Yes Yes Decision process One-shot Sequential Recommendation output Ranked list Ranked list Handling large item space Yes Yes Table I COMPARISON BETWEEN RS S AND TBRS S[1].
+
+Thus, by comparing these features, we can identify the two key differences that distinguish TBRS from classical RSs: first, the central role of goal orientation in TBRS, and second, its consequential impact on the user’s decision process, which becomes inherently sequential rather than one-shot. One side remark, however, is that some RSs can also be useful for informed users, in addition to being beneficial for novice users, particularly in situations where information is either sparse or overly abundant [7]. A review of the literature reveals that these conceptual features are reflected in a wide range of existing works, as summarized in Table II. This literature review followed an exploratory approach rather than a systematic methodology, aiming to identify representative works illustrating each con-ceptual feature.          
+
+> Illustrated feature Representative references
+> Complete system [27], [28] Has a trajectory [6], [29]–[31] Target novice users [32] Decision process [10], [33] Recommendation output [34] Handling large item space [25] Table II ILLUSTRATED TBRS FEATURES FOUND IN THE LITERATURE
+
+A TBRS transcends the notion of a simple path-finding algorithm, even though a study evoke a depth-first search as an possible solution [28]. While preserving the fundamental characteristics of RSs, it differentiates itself from classical RSs through the distinct behavioral expectations placed upon it: a TBRS mediates the user’s need for engagement on the platform through a more subtle, goal-oriented utility function. This distinctiveness substantiates the need for a dedicated and rigorous conceptual model at the core of such systems. III. A C ONTROL -T HEORETIC FORMULATION 
+
+As we just discussed, classical recommender systems (RS) are typically designed for short-term optimization, suggesting a set of items that maximize immediate user utility. In contrast TBRS aim to guide a user from an initial state to a desired target state, thus optimizing over a longitudinal trajectory rather than a single decision. Numerous approaches has been tested to solve this problem, amongst these we find particle swarm optimization [35], [36], reinforcement learning [10], [22] or deep learning [37]. To our understanding, however, existing methods lack a global, coherent, simple, and comprehensive formulation. In the authors’ view, this is partly due to a conceptual jump in considering the user in a TBRS as being 
+
+guided through sequential choices and progressively drawn toward a goal: considering the user as a dynamical system. Acknowledging the idea of purposefully guiding sequential choices and, more generally, guiding the user, viewed as a dynamical system, toward long-term outcomes opens the way to framing the problem within a unified theoretical model. And this formulation resonates with a well-established frame-work in the control of dynamical systems, whether mechanical, biological, or social, that has not yet been systematically explored for recommender systems: Control Theory (CT). CT provides a rigorous and extensible mathematical foundation, which is not restrictive on solution methods, which naturally accommodates uncertainty, and which directly aligns with the requirements of TBRS: steering a dynamical system (the evolving user state) from an initial state x0 to a target state 
+
+xtarget , through a sequence of control inputs (what will become the recommendations in the RS), while preserving agency and choice for the user. CT is also appropriate for a RS because it can accommodate various control strategies. Robust control is suitable when significant discrepancies exist between the model and the real system, and the controller must ensure fail-safe performance. Optimal control aims to determine the best possible control inputs according to a predefined cost function. Stochastic control deals with uncertainty and is conceptually close to Partially Observable Markov Decision Processes (POMDP). And, finally, intelligent control leverages various artificial intelligence approaches to govern a dynamical system. Using CT and translating it to our field of problem, in its simplest linear formulation [38], we could express a TBRS dynamics as: 
+
+x(t + 1) = Ax (t) + Bu (t) (1) where x(t) ∈ Rn 
+
+> +
+
+denotes the user’s state at time t, and 
+
+u(t) ∈ Rm represents the recommendations (We will later discuss how to derive the top-k items from the optimization problem and how to incorporate the user’s choice into the system dynamics). The matrix A ∈ Rn×n models the natural evolution of the user’s state (its interpretation may vary depending on whether the TBRS concerns education, tourism, or health), while B ∈ Rn×m captures the effect of the recommended items and is constituted by the resource base .These matrices may be heuristically designed, empirically estimated, or learned from data. 
+
+A. Solving with a Model Predictive Control 
+
+This formulation directly enables the use of standard control-theoretic tools. Remember that in a TBRS we place a focus on the trajectory and its direction towards a goal. As we discussed one of the option for solving our TBRS dynamic is to optimize the trajectory over a cost function. We can build a TBRS upon an optimal control approach and we can either solve the entire path with a Linear–Quadratic Regulator (LQR) [38] or solve a portion of the path and iterate towards the goal with Model Predictive Control (MPC) [38]. MPC performs a partial optimization of the control sequence over a finite horizon and is well suited to accommodate constraints. It provides an optimal set of controls at time t: U ∗(t) consisting of the sequence of optimal controls [u0(t), . . . , u T (t)] for each step up to the finite horizon T .Therefore, using MPC constitutes an appropriate approach. We will discuss this method as an example of how to compute the optimal recommendation trajectory, which can be expressed as the minimization of a quadratic cost function over a prediction horizon T :
+
+U ∗(t) = arg min   
+
+> {u(τ)}t+T−1
+> t
+
+( T −1X
+
+> k=0
+
+ x⊤
+
+> t+k
+
+Q xt+k + u⊤
+
+> t+k
+
+R ut+k
+
+)
+
++ x⊤ 
+
+> t+T
+
+Qf xt+T .
+
+(2) where Q ∈ Rn×n weights the deviation of states (encourag-ing fast convergence), R ∈ Rm×m penalizes excessive or costly recommendations, and Qf ∈ Rn×n emphasizes the quality of the final state. The resolution of this optimization yields an optimal se-quence of items guiding the user along a trajectory toward the target state. At each interaction, the user’s state x(t)
+
+is updated, and a new optimization is solved, making the TBRS an iterative and adaptive RS grounded in CT. Moreover, this formalism is extensible: non-linear dynamics, stochastic formulations, or hybrid models can be employed to capture richer user behaviors while constraints on controls input can satisfy real-world or heuristics limitations. Constraints can also encode optimization heuristics derived from model knowledge, effectively implementing a more efficient trajectory-based model. But, unlike traditional CT systems, and due to the nature of our system as a RS, the human is in the loop. And while the construction of the control input vector u(t) requires the formulation of an MPC optimization problem, instead of directly applying this control vector to the system, only a single resource from the resource base could be used by the user at time t as we consider that any use of the RS consists of the choice of a single resource (and in its effective use by the user). So we suggest that U ∗(t) will be used to generate the Top-k items in the recommender and that the user’s choice, here illustrated by a(t) will then directly influence the system dynamics through the action vector as illustrated by Figure 1. 
+
+B. Generating the top-k items 
+
+So, as each optimization occurs, at each time t we have a sequence U ∗(t) = [ u0(t), . . . , u n(t)] and, as we just observed, in the control of automated dynamical systems, u0(t) is usually applied all at once which means that each element of u0(t) is multiplied by B to produce the desired effect on the dynamical system. Since we are building a RS we preserve user agency in the choice of the single control to apply, effectively translating Figure 1. Sequence diagram of the TBRS 
+
+one element of the generated Top-k into the single action a(t)
+
+applied to the dynamics. This leaves us with the question of the generation of the Top-k items from U ∗(t). As a simplification we can built it long-sighted or short sighted depending on any combination of the items evaluated during the optimization and existing in U ∗. That means we can built the Top-k only on u0(t) or on u0(t)..u T (t) following a decision of offering to the user more items in the pool of the immediate controls or in the pool of subsequent controls. Selecting whether to construct the Top-k recommendations from the instantaneous control 
+
+u0(t) or from the entire optimized sequence U ∗ represents an interesting policy design question that may depend on multiple contextual factors. Intuitively, as in TBRS, combining short-term recommendations driven by the current state with long-term guidance derived from the optimized trajectory could lead to improved performance. Below is an example optimization for a set of four controls over an horizon of five. We can see that we have a decision to make over the choice of controls selected to build a Top-k:
+
+U ∗(t) = 
+
+
+
+u0,1(t) u1,1(t) u2,1(t) u3,1(t) u4,1(t)
+
+u0,2(t) u1,2(t) u2,2(t) u3,2(t) u4,2(t)
+
+u0,3(t) u1,3(t) u2,3(t) u3,3(t) u4,3(t)
+
+u0,4(t) u1,4(t) u2,4(t) u3,4(t) u4,4(t)
+
+
+
+We can produce a Top-k by solving the Hadamard product 1
+
+of our U ∗(t) with a one-hot projection matrix that can satisfy various policy. For example a short term policy that would create a Top-k out of the first two set of controls: 
+
+> 1The Hadamard product is an element-wise matrix multiplication that takes two matrices of the same dimensions and multiplies each element of one matrix by the corresponding element of the other.
+
+P short  
+
+> K
+
+=
+
+
+
+1 1 0 0 01 1 0 0 01 1 0 0 01 1 0 0 0
+
+ T op short  
+
+> k
+
+(t) = U ∗(t) ⊙ P short 
+
+> K
+
+Or another policy that would build a medium sighted Top-k:
+
+P med  
+
+> k
+
+=
+
+
+
+1 0 0 0 01 1 0 0 01 1 1 0 01 1 1 1 0
+
+ T op med  
+
+> K
+
+(t) = U ∗(t) ⊙ P med 
+
+> k
+
+Then, provided with a Top-k the user can select an item and the action chosen by the user among the Top-k items is then applied to the user model according to: 
+
+x(t + 1) = A x (t) + B  u(t) ⊙ a(t),
+
+where a(t) is a one-hot vector identifying the selected resource. This formulation preserves the predictive control structure while introducing the human-in-the-loop selection at each step. Finally and iteratively the optimization process is ran again as illustrated by the sequence diagram 1. In essence, this perspective positions TBRS as a control problem on user trajectories, offering a principled way to design RSs that are not merely reactive but goal-directed, adaptive, and optimally sequenced. As with most classical RSs, a TBRS can be evaluated using standard ranking metrics such as precision, recall, Root Mean Square Error (RMSE) or the Normalized Discounted Cumulative Gain (NDCG) [39]. In addition, several domain-specific evaluation approaches have been proposed, many of which are closely tied to the application context, for example measuring the distance from top learners in [10]. The proposed framework for TBRS has yet to be consistently evaluated for its relevance with these common metrics on offline datasets. IV. A N APPLICATION IN EDUCATION 
+
+A. Framing the Control-Based Learning Solution 
+
+As Nabizadeh et al. [9] and others have stated, education is a perfect field for building TBRSs, the learner needs agency [40] and need to acquire competencies over time. To illustrate the applicability of the control-theoretic formulation to educational recommender systems (ERS), we would consider a learner interested in improving his competences. So, if we use the system dynamics Equation 1 to represent the learner’s evolution we could use A to model the natural progression (or forgetting dynamics, for example we could apply a decay similar to Ebbinghaus’ curve [41]), we could use x(t) ∈ Rn to encode the learner’s state vector and thus the estimated mastery level over n competences, then in B we could encodes the pedagogical effect of each resource coming from a resource base on each competence dimension, B would have a size of Rn∗m. In B, each row represents a competence and each column corresponds to a specific learning resource. Now, we want to recommend a sequence of learning items that drives measurable progress over time. So we want to produce a Top-k recommendation items set based on U ∗ as discussed above and using a medium policy of projection. To generate a list of recommendations for our learners, we recall that our recommender system (RS) is trajectory-based: it predicts and optimizes the learner’s evolution over time. In order to compute this trajectory, we must specify a target state that represents the desired level of mastery for each skill. This target vector encodes the competencies that our student is expected to acquire by the end of the learning period. The goal of the trajectory-based recommender is thus to determine the optimal sequence of learning items that minimizes the gap between a learner’s current skill vector 
+
+x(t) and the target xtarget over the prediction horizon. We can then use an MPC optimization to build such a sequence. In our educational setting, the MPC formulation governs the allocation of learning resources in order to guide learners toward a desired target skill set. We can use the optimization presented in Equation 2 and solve to obtain our optimal U ∗(t).In this MPC formulation the target state does not play a direct role in the optimization though, it serves only as a reference. In the case where the target state should be reached, during the optimization, it should be stated as an additional constraint in Equation 2. With this approach, once the optimal control sequence U ∗(t)
+
+has been computed, the system can generate an ordered list of recommended resources. Each component of our Top-k
+
+corresponds to a whole or a part of each column of the matrix 
+
+B, that is, to a specific pedagogical resource or learning action. The resources are ranked according to their efficiency in driving the user’s current state x(t) toward the desired goal xtarget .In effect, in the user interface, our learners are presented an ordered list of items. They can then select the one that best suits their preferences at time t. By making such a choice, the learner effectively selects one resource, and we infer from this choice an action a(t), corresponding to the chosen action. We consider, as a simplification, that consuming a resource equals acquiring the level of competence specified by this resource So finally, in the user interface, our learners sees the ranked list and picks one item. After the user action has been applied and the new state x(t+1) is obtained, the system can iterate and re-optimize the control sequence U ∗(t+1) using the updated state of the learner. This receding-horizon process continuously adapts recom-mendations to the evolving competence profile as illustrated in the Figure 1. Through this loop of prediction, action, and re-optimization, the system behaves as a dynamic TBRS, where educational trajectories are generated in real time based on the learner’s feedback and choices. 
+
+B. Simulating and Evaluating Various Learning Scenarios 
+
+We test three different scenarios of our MPC-based solution using synthetic data and a number of simplifying assump-tions. The first scenario assumes mono-competence resources, where each action primarily affects a single skill dimension. The second scenario introduces semi-clustered competences, allowing limited overlap between related skills. The third scenario considers multi-competence resources, where each action influences several skills simultaneously. We chose to simulate the learner’s choice as probabilistically oriented toward the highest-ranked recommendation, while introducing a small stochastic component within the Top-k
+
+set to reflect natural variability in learner behavior. We also experimented with various parameterizations of Q and Qf ,while assigning higher weights in R to resources categorized as more difficult. Finally, we generated 80 random resources to allow the solver to optimize the trajectory over a small but reasonable number of items. We chose arbitrary small values to test a MPC optimization. The optimization was resolved every 10 steps, using a Top-
+
+k of 8 items generated under a long-term policy. A decay factor of 0.99 was applied to the transition matrix A to model the natural forgetting process, this value illustrates a very small forgetting process and it could be calibrated more wisely. Running the simulation produce the appropriate list of Top-k
+
+and the simulation of learner’s choice including a stochastic noise provides some insights. Using the simulation run over 50 time steps and observing the system behavior in Figs. 2–4 illustrate how competences could theoretically progress for a learner.   
+
+> Figure 2. Simulation results for Scenario 1 (mono-competence resources) under the long-term policy.
+> Figure 3. Simulation results for Scenario 2 (semi-clustered competences) under the long-term policy.
+
+Of course, these figures are based on synthetic data and cannot be interpreted as representative of real-world experimen-Figure 4. Simulation results for Scenario 3 (multi-competence resources) under the long-term policy. 
+
+tation. Rather, they illustrate the type of analytical outcomes that could be expected from such experiments. Likewise, Figure 5 primarily reflects the chosen simulation parameters for the different scenarios, but it also suggests the kind of trends one might observe in a real-world ERS evaluation.  
+
+> Figure 5. Convergence speed of the TBRS model, expressed as the Euclidean distance over time.
+
+V. C ONCLUSION 
+
+As recommender systems (RS) continue to shape digital experiences, classical approaches may still exhibit a trajectorial effect, in which user interactions are guided along limited or suboptimal paths. This highlights the need for more adaptive and goal-oriented recommendation strategies. In this context, trajectory-based recommender systems (TBRS) explicitly incor-porate notions of user goals and trajectories, aiming to guide users through an item space in a coherent and progressive manner. We argue that a control-theoretic formulation provides an appropriate and versatile framework for designing such systems. By formalizing TBRS within this framework, a perspective explored in only a few prior studies [42], [43], we offer a systematic approach that can model user trajectories, accommodate stochastic dynamics, and integrate constraints arising from robustness requirements or data availability. This framework allows the generation of recommendations starting from a minimal set of items, progressively expanding the system as additional resources or usage data become available. In our educational setting, this approach is particularly relevant: a limited set of initial learning resources can serve as a foundation, while prerequisites, evaluations, and usage traces guide the incremental adaptation of the RS. The flexibility of the control-theoretic approach ensures that evaluations (obser-vations) and initial states can be handled without restrictive assumptions, making it possible to incorporate domain-specific constraints and objectives naturally. Several important avenues remain for future work. First, empirical validation of TBRS in real-world environments or on offline datasets is needed to assess their effectiveness. Second, the choice of resolution methods within the TBRS framework, balancing robustness, performance, and prediction accuracy, requires further investigation. Third, Top-k recommendation strategies may be oriented toward short-term or long-term objectives, depending on the application context, and exploring the integration of contextual information could substantially enhance performance. Finally, extending the control-theoretic framework to higher-dimensional or more complex recommen-dation scenarios offers a promising research direction. Overall, the proposed control-theoretic perspective provides a rigorous, generalizable, and adaptable foundation for TBRS. It not only formalizes the notion of guided user trajectories but also opens the door to innovative, data-driven strategies capable of addressing diverse domains and evolving user needs. REFERENCES 
+
+[1] F. Ricci, L. Rokach, and B. Shapira, Eds., Recommender Systems Handbook , English, Third Edition 2022. 2022. [2] C. C. Aggarwal, Recommender systems: the textbook ,eng. 2016. [3] G. Adomavicius and A. Tuzhilin, “Towards the Next Generation of Recommender Systems: A Survey of the State-of-the-Art and Possible Extensions,” en, IEEE transactions on knowledge and data engineering, 2005. [4] B. Hidasi et al. , Session-based Recommendations with Recurrent Neural Networks , en, 2016. [5] E. Negre, “Recommender systems: Generality, evalua-tion, and improvements,” fr, HDR, 2017. [6] M. S. Anwar, P. S. Dhillon, and G. Schoenebeck, “Recommendation and Temptation,” en, in Proceedings of the Nineteenth ACM Conference on Recommender Systems , 2025, pp. 422–431. [7] T. N. T. Tran et al. , “Recommender systems in the healthcare domain: State-of-the-art and research issues,” en, Journal of Intelligent Information Systems , vol. 57, no. 1, pp. 171–201, 2021. [8] V. Bogina et al. , “Considering temporal aspects in recommender systems: A survey,” en, User Modeling and User-Adapted Interaction , vol. 33, no. 1, pp. 81–119, 2023. [9] A. Hossein Nabizadeh, A. Mário Jorge, and J. Paulo Leal, “Long Term Goal Oriented Recommender Systems:” en, in Proceedings of the 11th International Conference on Web Information Systems and Technologies , 2015, pp. 552–557. [10] Z. Zhang, “Learning Path Recommendation: A Sequen-tial Decision Process,” fr, Ph.D. dissertation, 2022. [11] wiktionary.org, Trajectory , en, 2024. [12] wiktionary.org, Path , en, 2025. [13] R. Baraglia et al. , “A Trajectory-Based Recommender System for Tourism,” en, in Active Media Technology ,D. Hutchison et al. , Eds., vol. 7669, 2012, pp. 196–205. [14] Z. Huang, X. Lu, and H. Duan, “Using Recommendation to Support Adaptive Clinical Pathways,” en, Journal of Medical Systems , vol. 36, no. 3, pp. 1849–1860, 2012. [15] A. Barbaric et al. , “Health recommender systems to fa-cilitate collaborative decision-making in chronic disease management: A scoping review,” en, DIGITAL HEALTH ,vol. 11, p. 20 552 076 241 309 386, 2025. [16] D. Goldberg et al. , “Using collaborative filtering to weave an information tapestry,” en, Communications of the ACM , vol. 35, no. 12, pp. 61–70, 1992. [17] P. Resnick and H. R. Varian, “Recommender systems,” en, COMMUNICATIONS OF THE ACM , vol. 40, no. 3, 1997. [18] M. Tadlaoui, “Educational resource recommendation sys-tem based on social links: Formalization and evaluation,” fr, Ph.D. dissertation, 2018. [19] J. Vandeputte et al. , “Coaching Agent: Making Rec-ommendations for Behavior Change. A Case Study on Improving Eating Habits,” en, 2022. [20] R. Picot-Clémente, “A generic framework for recom-mender systems generating combination of items : Application to the tourism domain,” fr, Ph.D. dissertation, 2011. [21] G. Durand, N. Belacel, and F. LaPlante, “Graph the-ory based model for learning path recommendation,” 
+
+Information Sciences , vol. 251, pp. 10–21, 2013. [22] L. Huang et al. , “A deep reinforcement learning based long-term recommender system,” en, Knowledge-Based Systems , vol. 213, p. 106 706, 2021. [23] R. Liu et al. , “Pathway-Finder: An Interactive Rec-ommender System for Supporting Personalized Care Pathways,” en, in 2014 IEEE International Conference on Data Mining Workshop , 2014, pp. 1219–1222. [24] X. Yuan et al. , Improving Sequential Recommendation Consistency with Self-Supervised Imitation , en, 2021. [25] Y. Meng et al. , User Long-Term Multi-Interest Retrieval Model for Recommendation , en, 2025. [26] C. Rolland and C. Salinesi, “Modeling Goals and Rea-soning with Them,” en, in Engineering and Managing Software Requirements , A. Aurum and C. Wohlin, Eds., 2005, pp. 189–217. [27] M. Hafsa et al. , “Multi-objective recommender system for corporate MOOC,” en, in Proceedings of the Genetic and Evolutionary Computation Conference Companion ,2022, pp. 2314–2317. [28] Amir Hossein Nabizadeh et al. , “RUTICO: Recommend-ing Successful Learning Paths Under Time Constraints,” pp. 153–158, 2017. [29] J. Golbeck, “Recommender System-Induced Eating Dis-order Relapse: Harmful Content and the Challenges of Responsible Recommendation,” en, ACM Transactions on Intelligent Systems and Technology , vol. 16, no. 1, pp. 1–13, 2025. [30] F. Ferrero, “Narrative-Driven Itinerary Recommendation: LLM Integration for Immersive Urban Walking,” en, in Proceedings of the Nineteenth ACM Conference on Recommender Systems , 2025, pp. 1485–1491. [31] W. -W. Du, T. Udagawa, and K. Tateno, Not Just What, But When: Integrating Irregular Intervals to LLM for Sequential Recommendation , en, 2025. [32] P. Di Bitonto et al. , “Automated Generation of Itineraries in Recommender Systems for Tourism,” en, in Current Trends in Web Engineering , F. Daniel and F. M. Facca, Eds., vol. 6385, 2010, pp. 498–508. [33] R. Liaw et al. , “REVEAL 2022: Reinforcement Learning-Based Recommender Systems at Scale,” en, in Proceed-ings of the 16th ACM Conference on Recommender Systems , 2022, pp. 684–685. [34] Henning, Peter A. et al. , “Learning pathway recom-mendation based on a pedagogical ontology and its implementation in Moodle,” en, in 2018. [35] E. Subiyantoro, A. Ashari, and S. Suprapto, “Learning Path Recommendation using Hybrid Particle Swarm Optimization,” en, Advances in Science, Technology and Engineering Systems Journal , vol. 6, no. 1, pp. 570–576, 2021. [36] Xiaojing Sheng et al. , “Adaptive Curriculum Sequencing and Education Management System via Group-Theoretic Particle Swarm Optimization,” vol. 11, no. 1, pp. 34–34, 2023. [37] Y. Zhou et al. , “Personalized learning full-path recom-mendation model based on LSTM neural networks,” en, 
+
+Information Sciences , vol. 444, pp. 135–152, 2018. [38] J. B. Rawlings, D. Q. Mayne, and M. Diehl, Model Predictive Control: Theory, Computation, and Design ,en. 2017. [39] L. Michiels, “Best Practices for Offline Evaluation,” en, 2024. [40] F. Guay, “Applying Self-Determination Theory to Ed-ucation: Regulations Types, Psychological Needs, and Autonomy Supporting Behaviors,” en, Canadian Journal of School Psychology , vol. 37, no. 1, pp. 75–92, 2022. [41] J. M. J. Murre and J. Dros, “Replication and Analysis of Ebbinghaus’ Forgetting Curve,” en, PLOS ONE , vol. 10, no. 7, D. R. Chialvo, Ed., e0120644, 2015. [42] C. N. Loong and C. - C. Chang, “Control knowledge tracing: Modeling students’ learning dynamics from a control-theory perspective,” en, Computers and Educa-tion: Artificial Intelligence , vol. 7, p. 100 292, 2024. [43] S. - M. Chow et al. , “Control Theory Forecasts of Optimal Training Dosage to Facilitate Children’s Arithmetic Learning in a Digital Educational Application,” en, 
+
+Psychometrika , vol. 87, no. 2, pp. 559–592, 2024.

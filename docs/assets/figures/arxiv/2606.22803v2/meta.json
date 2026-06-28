@@ -1,0 +1,182 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2606.22803v2/fig-001.webp",
+      "caption": "Fig. 2. (a) User Profile Shows the multi-domain profiles, demonstrating that our simulator can quickly adapt to new domains. (b) PromptOptimization Illustrates the automatic prompt optimization process when adapting to a new domain: first, domain adaptation is performed, followed by iterative optimization of the prompt based on interactions with CRS. (c) Simulator. After optimizing the prompt, we integrate it into the simulator and employ an open-ended action generation method to enhance domain adaptability, along with the “think-then-respond” approach to control language style.",
+      "page": 6,
+      "index": 1,
+      "width": 820,
+      "height": 406
+    },
+    {
+      "url": "assets/figures/arxiv/2606.22803v2/fig-002.webp",
+      "caption": "Fig. 5. The adherence of the user simulator to the designated style across four LLM backbones and four style dimensions. Rows correspond to different backbones, while columns report formality, sentiment, conciseness, and carelessness. Entries marked (w) indicate that the model performs reasoning before generating a response, while (w/o) entries indicate direct response generation without intermediate reasoning. All values are percentages.",
+      "page": 15,
+      "index": 2,
+      "width": 814,
+      "height": 827
+    },
+    {
+      "url": "assets/figures/arxiv/2606.22803v2/fig-003.webp",
+      "caption": "Fig. 12. The first bad case of iEvaLM based on the GPT-4o backbone, where the lack of strategic guidance resulted in role reversal issues.ACM Trans. Inf. Syst., Vol. 1, No. 1, Article 1. Publication date: January 2025.",
+      "page": 30,
+      "index": 3,
+      "width": 827,
+      "height": 1148
+    },
+    {
+      "url": "assets/figures/arxiv/2606.22803v2/fig-004.webp",
+      "caption": "Fig. 11. The second bad case of RecuserSim based on GPT-4o backbone, where improper refinement led to role reversal.",
+      "page": 29,
+      "index": 4,
+      "width": 827,
+      "height": 1313
+    },
+    {
+      "url": "assets/figures/arxiv/2606.22803v2/fig-005.webp",
+      "caption": "Fig. 16. The good case of AdaptSim based on the GPT-4o backbone, where the fine-grained formal style is controlled.",
+      "page": 34,
+      "index": 5,
+      "width": 827,
+      "height": 1010
+    },
+    {
+      "url": "assets/figures/arxiv/2606.22803v2/fig-006.webp",
+      "caption": "Fig. 4. Human validation of the LLM-as-a-judge protocol. Three senior annotators in the recommender systems domain reviewed the pairwise judgments and marked each case as agreement or disagreement. The left panel reports annotator-wise agreement rates across the three comparison sets, the middle panel summarizes their mean agreement rates and ranges, and the right panel reports pairwise inter-annotator consistency. The results show that all annotators agree with the LLM outputs in more than 60% of cases on average, with moderate-to-high inter-annotator consistency, supporting the reliability of LLM-based evaluation.",
+      "page": 14,
+      "index": 6,
+      "width": 814,
+      "height": 214
+    },
+    {
+      "url": "assets/figures/arxiv/2606.22803v2/fig-007.webp",
+      "caption": "Fig. 3. Pairwise win–draw–loss comparison of AdaptSim against three baseline simulators across the Food, Beauty, and Shop domains. Each panel reports six dimensions: naturalness (Nat.), clarity (Cla.), adaptability (Ada.), relevance (Rel.), role-play ability (Rol.), and realism (Rea.). The four settings are AdaptSimwithGPT-4omini versus RecUserSim, iEvaLM, and CSHI, and AdaptSim with GPT-3.5-turbo versus RecUserSim. Higher win proportions indicate better performance.",
+      "page": 14,
+      "index": 7,
+      "width": 824,
+      "height": 484
+    },
+    {
+      "url": "assets/figures/arxiv/2606.22803v2/fig-008.webp",
+      "caption": "Fig. 1. An illustration of the three core capabilities of an ideal user simulator. (a) Efficient Domain Adaptability: The ability to quickly adapt to new domains with minimal human intervention. (b) Fine-grained User Modeling: The capacity to precisely manipulate the stylistic attributes of generated language. (c) Sufficient Evaluation Validity: The capability to provide an accurate, unbiased, and fine-grained evaluation of a CRS’s performance and robustness.",
+      "page": 3,
+      "index": 8,
+      "width": 823,
+      "height": 331
+    },
+    {
+      "url": "assets/figures/arxiv/2606.22803v2/fig-009.webp",
+      "caption": "Fig. 15. The second bad case of CSHI based on the GPT-4o backbone, where limited strategies led to repeated questioning. ACM Trans. Inf. Syst., Vol. 1, No. 1, Article 1. Publication date: January 2025.",
+      "page": 33,
+      "index": 9,
+      "width": 827,
+      "height": 1189
+    },
+    {
+      "url": "assets/figures/arxiv/2606.22803v2/fig-010.webp",
+      "caption": "Fig. 17. The good case of AdaptSim based on the GPT-4o backbone, where the fine-grained informal style is controlled.",
+      "page": 35,
+      "index": 10,
+      "width": 827,
+      "height": 937
+    },
+    {
+      "url": "assets/figures/arxiv/2606.22803v2/fig-011.webp",
+      "caption": "Table 2. Pairwise evaluation results of AdaptSim using different prompt sources: initial prompt (IP), humancrafted prompt (HP), and optimized prompt (OP). The “Model” refers to the backbone used by AdaptSim. The evaluation metrics include naturalness, clarity, relevance, roleplay, realism and adaptability",
+      "page": 18,
+      "index": 11,
+      "width": 819,
+      "height": 285
+    },
+    {
+      "url": "assets/figures/arxiv/2606.22803v2/fig-012.webp",
+      "caption": "Fig. 8. Pairwise evaluation of CRS performance under normal and careless user conditions. Here, BC denotes BaseCRS; AC, AgentCRS; Rec, Recommendation; and 3.5-turbo and 4o-mini are shorthands for the base LLMs GPT-3.5-turbo and GPT-4o-mini.",
+      "page": 18,
+      "index": 12,
+      "width": 813,
+      "height": 636
+    },
+    {
+      "url": "assets/figures/arxiv/2606.22803v2/fig-013.webp",
+      "caption": "Fig. 10. The first bad case of RecuserSim based on GPT-4o backbone, where improper refinement led to role reversal.",
+      "page": 28,
+      "index": 13,
+      "width": 827,
+      "height": 917
+    },
+    {
+      "url": "assets/figures/arxiv/2606.22803v2/fig-014.webp",
+      "caption": "Table 1. Related work on user simulators in CRS. For the simulators themselves, “Style”, and “Adaptability” refer to, language style, and fast adaptation across domains, respectively. For CRS evaluation, “Basics” refers to the ability to perform unbiased evaluation of the CRS basics, while “Robustness” refers to the ability to assess the CRS’s robustness.",
+      "page": 4,
+      "index": 14,
+      "width": 660,
+      "height": 211
+    },
+    {
+      "url": "assets/figures/arxiv/2606.22803v2/fig-015.webp",
+      "caption": "Fig. 18. The good case of AdaptSim based on the GPT-4o backbone, where the fine-grained long style is controlled.",
+      "page": 36,
+      "index": 15,
+      "width": 827,
+      "height": 754
+    },
+    {
+      "url": "assets/figures/arxiv/2606.22803v2/fig-016.webp",
+      "caption": "Fig. 7. Ablation analysis of open-ended action generation. The figure compares an open action space with a fixed action space across the Food, Beauty, and Shop domains using win–draw–loss proportions. Each radar chart reports six evaluation dimensions: naturalness (Nat.), clarity (Cla.), adaptability (Ada.), relevance (Rel.), role-play ability (Rol.), and realism (Rea.). Larger win regions indicate stronger performance of the open action space.",
+      "page": 17,
+      "index": 16,
+      "width": 809,
+      "height": 283
+    },
+    {
+      "url": "assets/figures/arxiv/2606.22803v2/fig-017.webp",
+      "caption": "Fig. 14. The first bad case of CSHI based on the GPT-4o backbone, where limited strategies led to repeated questioning.",
+      "page": 32,
+      "index": 17,
+      "width": 827,
+      "height": 1169
+    },
+    {
+      "url": "assets/figures/arxiv/2606.22803v2/fig-018.webp",
+      "caption": "Fig. 19. The good case of AdaptSim based on the GPT-4o backbone, where the fine-grained short style is controlled.",
+      "page": 37,
+      "index": 18,
+      "width": 827,
+      "height": 544
+    },
+    {
+      "url": "assets/figures/arxiv/2606.22803v2/fig-019.webp",
+      "caption": "Fig. 13. The second bad case of iEvaLM based on the GPT-4o backbone, where the lack of strategic guidance resulted in role reversal issues.",
+      "page": 31,
+      "index": 19,
+      "width": 827,
+      "height": 1237
+    },
+    {
+      "url": "assets/figures/arxiv/2606.22803v2/fig-020.webp",
+      "caption": "Table 3. Pairwise evaluation results of AdaptSim in assessing CRS models built with different base LLMs. AS, BC, and AC denote AdaptSim, BaseCRS, and AgentCRS, respectively, while 4.1-mini and 4o-mini are shorthands for GPT-4.1-mini and GPT-4o-mini.",
+      "page": 20,
+      "index": 20,
+      "width": 814,
+      "height": 313
+    },
+    {
+      "url": "assets/figures/arxiv/2606.22803v2/fig-021.webp",
+      "caption": "Fig. 9. Pearson and Spearman correlation of AdaptSim evaluation scores across backbone LLMpairs and task dimensions (Action, Language, Recommendation). All reported correlations are statistically significant (𝑝 < 0.05), indicating that the proposed evaluation protocol produces stable and consistent rankings regardless of the simulator backbone.",
+      "page": 20,
+      "index": 21,
+      "width": 814,
+      "height": 316
+    },
+    {
+      "url": "assets/figures/arxiv/2606.22803v2/fig-022.webp",
+      "caption": "Fig. 6. Comparison of AdaptSim vs. Prompting Methods in Chit-Chat Conversations. The metrics include overall performance, coherence, diversity, realism, adaptability, and clarity.",
+      "page": 16,
+      "index": 22,
+      "width": 467,
+      "height": 358
+    }
+  ]
+}

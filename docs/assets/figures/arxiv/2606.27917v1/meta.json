@@ -1,0 +1,30 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2606.27917v1/fig-001.webp",
+      "caption": "Table 3: Cumulative regret R(T ) against graph-aware bandits ( T=20000, 5 seeds synthetic; lowest per row in bold). GraphDRLinUCB beats both SpectralUCB and Laplacian-regularized LinUCB on the synthetic benchmark and on five of six real datasets. The single exception is ogbn-arxiv (ζk=0.96): even soft graph-aware methods beat hard bottom-k projection when the eigenspace is misaligned with the reward. The advantage of hard spectral truncation over soft eigenvalue-penalized smoothing is that truncation entirely removes the exploration cost of high-frequency directions rather than merely down-weighting it.",
+      "page": 7,
+      "index": 1,
+      "width": 706,
+      "height": 192
+    },
+    {
+      "url": "assets/figures/arxiv/2606.27917v1/fig-002.webp",
+      "caption": "Table 1: Summary of the four theoretical regimes. The structure-specific bound (Thm. 5) tightens the generic worstcase linear bias to realized graph quantities SRLT andCRWT (Corollary 9); the estimated-residual variant (Thm. 7) makes it implementable.",
+      "page": 3,
+      "index": 2,
+      "width": 527,
+      "height": 356
+    },
+    {
+      "url": "assets/figures/arxiv/2606.27917v1/fig-003.webp",
+      "caption": "Table 9: The subspace-capture margin Γk predicts the GraphDR-vs-content-PCA outcome where ζk cannot. Rows sorted by Γk; final column is the realized outcome (signed gap RGraphDR − RPCA in parentheses, negative = GraphDR wins). The fitted-threshold rule is leave-one-base-dataset-out correct on 6/6; the zero-parameter sign rule Γk > 0 is correct on 5/6 (lone miss: MIND at the near-tie Γk = −0.008, where both subspaces capture almost no reward energy yet GraphDR wins because content-PCA is itself far from the reward). Crucially, Γk orders ogbn-arxiv (−0.240, GraphDR’s documented failure) at the bottom while ζk cannot: MIND has the largest tail (0.99) yet GraphDR wins, exactly the inversion that defeated the scalar tail and the unit-weighted Gk.",
+      "page": 13,
+      "index": 3,
+      "width": 648,
+      "height": 199
+    }
+  ]
+}

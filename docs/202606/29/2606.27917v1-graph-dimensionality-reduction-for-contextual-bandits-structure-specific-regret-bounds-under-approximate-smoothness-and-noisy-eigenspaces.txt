@@ -1,0 +1,1872 @@
+Title: Graph Dimensionality Reduction for Contextual Bandits: Structure-Specific Regret Bounds under Approximate Smoothness and Noisy Eigenspaces
+
+URL Source: https://arxiv.org/pdf/2606.27917v1
+
+Published Time: Mon, 29 Jun 2026 00:45:25 GMT
+
+Number of Pages: 13
+
+Markdown Content:
+# Graph Dimensionality Reduction for Contextual Bandits: Structure-Specific Regret Bounds under Approximate Smoothness and Noisy Eigenspaces 
+
+## Joyanta Jyoti Mondal 1∗, Ibne Farabi Shihab 2∗† , Anuj Sharma 3
+
+> 1
+
+Department of Computer and Information Sciences, University of Delaware, USA 
+
+> 2
+
+Department of Computer Science, Iowa State University, USA 
+
+> 3
+
+Department of Civil, Construction & Environmental Engineering, Iowa State University, USA joyanta@udel.edu, {ishihab, anujs}@iastate.edu 
+
+Abstract 
+
+Contextual bandits with graph-structured arms arise in rec-ommendation, citation retrieval, and social advertising, where arms connected on a graph tend to share reward signal. Stan-dard dimensionality reduction ignores this structure, inflating exploration cost by a factor of d/k . We propose GraphDR-LinUCB , which projects arm features onto the graph’s low-frequency spectral subspace and runs linear UCB in the result-ing k-dimensional space. We prove the first eO(k√T ) regret bound for spectral-projection-based contextual bandits, reduc-ing dimension dependence from d to k; a perturbation argu-ment extends this to noisy graphs, with an explicit penalty for reward-smoothness mismatch and graph-estimation error. Our central theoretical finding is that the high-frequency reward component need not incur a worst-case linear-in-T penalty: its actual cost depends on its realized impact along the played path, not on its total energy. A simple spectral comparison be-tween subspaces ( Γk ) predicts which reducer wins on a given dataset, correctly calling five of six real-dataset outcomes without any fitted threshold. Across a synthetic benchmark and six real datasets (MovieLens, Amazon, LastFM, ogbn-arxiv, MIND), GraphDR-LinUCB reduces cumulative regret by 15 × over full-dimensional LinUCB and outperforms com-peting graph-aware methods on five of six; the single failure is precisely where the graph’s spectral subspace is misaligned with the reward. 
+
+## Introduction 
+
+Contextual bandits with graph-structured arms appear broadly in deployed systems [25]; users connected by so-cial links, products organized by co-purchase or genre, and documents linked by citation. In each setting, reward func-tions are typically smooth over the graph (nearby nodes share expected reward), and graph spectral methods are designed precisely to capture this structure. The natural question is whether projecting arm features onto a low-frequency Lapla-cian eigenspace, reducing the exploration dimension from d
+
+to k ≪ d, can deliver a genuine regret improvement over operating in the full feature space. 
+
+> ∗
+
+These authors contributed equally. 
+
+> †
+
+Corresponding author. Copyright © 2027, Association for the Advancement of Artificial Intelligence (www.aaai.org). All rights reserved. 
+
+The answer is not obvious. Standard misspecified-linear-bandit theory [24, 12] charges a worst-case bias proportional to νkT for any deviation of the reward from the projected sub-space, which can quickly dominate the √T exploration gain. Prior graph-bandit work sidesteps this by either propagating information along edges [13, 5] or soft-regularizing with the graph Laplacian [38]; neither performs a hard projection that actually reduces the exploration dimension. Spectral bandits [34] operate in a graph-frequency basis but do not analyze noisy eigenspaces or quantify the cost of imperfect graph smoothness. The theoretical viability of hard graph-spectral projection for bandits, and its practical conditions, remain uncharacterized. Moreover, a hard projection is useful only when the reward is smooth on the graph (a property of the data, not the algorithm), making a structural falsification test essential: projecting onto a node-permuted eigenspace leaves the dimension unchanged but destroys graph-reward align-ment, so any genuine gain must collapse. To tackle these challenges, we study GraphDR-LinUCB 
+
+(graph dimensionality reduction): project each arm’s fea-ture vector onto the bottom-k Laplacian eigenspace and run LinUCB [1, 3] in the resulting k-dimensional space, with graph-shuffle controls on every experiment as a structural falsification test. We prove exact-subspace and Davis–Kahan robust regret bounds, develop a structure-specific residual analysis that replaces the worst-case misspecification penalty with realized graph quantities, and introduce a spectral se-lection rule for choosing between graph-DR and competing reducers without fitting any threshold. 
+
+Contributions. 
+
+• Finite-sample and robust bounds. We prove that 
+
+GraphDR-LinUCB achieves eO(k√T ) regret under ex-act graph smoothness, reducing dimension dependence from d to k. A Davis–Kahan argument extends this to approximate smoothness and noisy graph observation, making the regret cost of eigenspace estimation error ex-plicit through the spectral gap ∆k and smoothness tail 
+
+ζk.
+
+• Structure-specific residual theorem. We show that the high-frequency residual need not be paid for at the worst-case linear-in-T rate. The cost is governed by two realized 
+
+> arXiv:2606.27917v1 [cs.LG] 26 Jun 2026
+
+graph quantities, residual leverage SRL T and candidate-set residual width CRW T , which are sublinear when the residual is graph-benign. An implementable pilot-based variant makes this bound computable from data. 
+
+• Spectral selection rule. We define the subspace-capture margin Γk = U ⊤ 
+
+> k
+
+θ 22 − P ⊤θ 22, a zero-parameter spec-tral statistic that predicts which reducer better aligns with the reward without requiring any fitted threshold. We eval-uate it alongside the theory-derived diagnostic Gk and the scalar tail ζk.
+
+• Empirical evaluation. We validate the approach on stochastic block model and random-geometric-graph syn-thetics with graph-shuffle controls on every configura-tion, and evaluate on six real graph-bandit datasets span-ning recommendation, news, and citation (MovieLens-100k/1M, Amazon, LastFM, MIND-small, ogbn-arxiv). 
+
+## Related Work 
+
+Linear contextual bandits. The LinUCB framework [7, 3, 1] achieves eO(d√T ) regret for d-dimensional linear rewards through elliptical confidence sets and self-normalized mar-tingale concentration [23], with a matching Ω( d√T ) lower bound established by Dani et al. [9]. Beyond UCB, Thompson sampling [6, 32] provides a Bayesian alternative exploration strategy. 
+
+Misspecified linear bandits. When the reward is only ap-proximately linear in the chosen features, regret incurs an additional bias term. Worst-case analyses [24, 12] pay an envelope that is linear in the horizon and proportional to the misspecification level, a cost that quickly dominates the √T
+
+exploration term even under mild misspecification. Sharp horizon-dependent analyses of KL-regularized contextual bandits [40] sharpen these worst-case envelopes under reg-ularization, though the graph-structural form of the residual remains unexamined. 
+
+Graph bandits. Online clustering of bandits [13] prop-agates reward information across a user graph by sharing estimates between neighboring arms. Laplacian-regularized LinUCB [38] adds a graph-smoothness penalty to the ridge objective, biasing the estimator toward functions that vary slowly over the graph. The graph-feedback bandit setting of Mannor and Shamir [26] observes neighboring arm rewards as side information; recent work extends this to similar-arm graphs [30, 17] and interference structures [18]. Wang et al. [36] combine low-rank structure and graph Laplacian regu-larization for matrix contextual bandits via soft penalization; the present paper instead uses hard spectral projection and derives an explicit spectral-gap regret bound. 
+
+Spectral bandits. Spectral bandits [34] design algorithms for payoffs that are smooth functions on a graph, with regret governed by a spectral effective dimension that reflects the concentration of the payoff in low-frequency graph coordi-nates. The algorithm operates in the full graph-frequency basis with a per-eigenvalue smoothness weight rather than a hard truncation at a fixed dimension k.
+
+Graph signal processing and spectral embeddings. 
+
+Laplacian eigenvectors as low-frequency graph coordinates originate in graph signal processing [33] and underpin Lapla-cian Eigenmaps [4] and spectral clustering [27, 35]. Our con-tribution is not a new embedding method but the first bandit regret analysis tying hard spectral projection to exploration cost. 
+
+Model selection and adaptive k. Corralling methods [2] achieve regret competitive with the best algorithm in a pool of base learners, and model selection for contextual bandits more broadly has been studied via smoothed meta-algorithms [28], providing a plausible path to adaptive-k GraphDR; a tight graph-specific theorem is left to future work. 
+
+Dimension reduction in bandits. Random projection [39] reduces the feature dimension before running a linear ban-dit, with regret depending on the projected dimension. Bilinear bandits [20] exploit low-rank reward structure via a two-stage subspace-exploration approach achieving 
+
+eO(( d1+d2)3/2√rT ) regret, and tight two-to-infinity sub-space recovery methods [19] sharpen these bounds for ma-trix bandits. Recent work handles non-stationary subspaces: Khosravi and Huo [21] prove eO(r√T ) dynamic regret for piecewise-stationary low-rank linear bandits, and Dai et al. [8] attain rank-dependent regret for adversarial contex-tual bandits with low-rank experts in a model-routing set-ting. Beyond subspace methods, matrix sketching for high-dimensional linear bandits [37] shows adaptive sketch sizing is needed to avoid linear regret under heavy spectral tails. In multi-agent and distributed settings, the spectral gap of the communication graph directly controls the regret of cooper-ative bandit algorithms [29, 31]. None of the above uses a graph-structural subspace as the feature projector or ties bandit regret to the reward-graph spectral gap. The present paper provides the first such anal-ysis, characterizing when projecting arm features onto the Laplacian eigenspace reduces exploration cost and when it does not. 
+
+## Setup and Algorithm 
+
+Graph and Laplacian. Let G be an undirected graph with symmetric normalized Laplacian L = I − D−1/2AD −1/2,whose eigenvalues satisfy 0 = λ1 ≤ λ2 ≤ · · · ≤ λn ≤ 2.We assume nonnegative edge weights and no isolated nodes, adding self-loops where needed so that Dii > 0. We further assume a positive separating eigengap ∆k = λk+1 −λk > 0,so that the bottom-k eigenspace is well defined. Let Ek ∈
+
+Rd×k be an orthonormal basis for the feature-space low-frequency subspace, with projector Πk = EkE⊤ 
+
+> k
+
+. In the node-arm, one-hot-feature case, d = n and Ek = Uk, where 
+
+Uk collects the k lowest-frequency Laplacian eigenvectors. Throughout the theory, Uk includes the constant eigenvec-tor u1 (λ1 = 0 on connected graphs); experiments shift to 
+
+u2, . . . , u k+1 and report that convention explicitly. The anal-ysis is for the node-arm setting d = n, xt,a = ea, Ek = Uk.
+
+Bandit interaction. At each round t, the learner observes a finite arm set At, where arm a ∈ A t has feature xt,a ∈ Rd.Algorithm 1: GraphDR-LinUCB 
+
+Input : Observed Laplacian bL; arm-feature oracle xt,a ; di-mension k; regularization λ > 0; confidence sequence 
+
+(βt)t≥1
+
+Output : Pulled arms a1, . . . , a T
+
+1: Compute bottom-k orthonormal eigenbasis bEk ∈ Rd×k
+
+of bL.
+
+2: Initialize V1 ← λI k, b1 ← 0 ∈ Rk.
+
+3: for t = 1 , 2, . . . , T do 
+
+4: Compute bαt ← V −1 
+
+> t
+
+bt.
+
+5: Observe candidate set At; project each arm: zt,a ←
+
+bE⊤ 
+
+> k
+
+xt,a for all a ∈ A t.
+
+6: Pull at ← arg max a∈A t
+
+h
+
+z⊤ 
+
+> t,a
+
+bαt + βt ∥zt,a ∥V −1
+
+> t
+
+i
+
+.
+
+7: Observe reward yt.
+
+8: Vt+1 ← Vt + zt,a t z⊤ 
+
+> t,a t
+
+; bt+1 ← bt + zt,a t yt.
+
+9: end for 
+
+After choosing at, it receives reward yt = x⊤ 
+
+> t,a t
+
+θ⋆ +ηt, where 
+
+θ⋆ ∈ Rd is unknown and ηt is conditionally sub-Gaussian noise. In practice, the clean Laplacian may be unavailable. We let bL denote an observed or estimated Laplacian and bEk ∈
+
+Rd×k an orthonormal basis for its bottom-k eigenspace, and set bΠk = bEk bE⊤ 
+
+> k
+
+and bP = bE⊤ 
+
+> k
+
+. The projected feature is 
+
+zt,a = bE⊤ 
+
+> k
+
+xt,a ∈ Rk.
+
+Algorithm. GraphDR-LinUCB (Algorithm 1; pipeline in Figure 1) runs ordinary linear UCB in the k-dimensional projected space; the projection bP is the only thing that dis-tinguishes it from standard LinUCB. 
+
+## Theory 
+
+We present three theorems in order of increasing sharpness. Table 1 summarizes all three regimes; proofs are in the ap-pendix section. 
+
+Exact known-subspace bound 
+
+When the reward is perfectly smooth on the graph, projection onto the Laplacian eigenspace is lossless and the problem reduces exactly to a k-dimensional linear bandit. 
+
+Assumption 1 (Exact graph smoothness) . There exists α⋆ ∈
+
+Rk such that θ⋆ = Ekα⋆. Equivalently, θ⋆ ∈ range(Π k).
+
+Under Assumption 1, zt,a = E⊤ 
+
+> k
+
+xt,a satisfies 
+
+x⊤
+
+> t,a
+
+θ⋆ = x⊤
+
+> t,a
+
+Ekα⋆ = ( E⊤ 
+
+> k
+
+xt,a )⊤α⋆ = z⊤
+
+> t,a
+
+α⋆,
+
+so the projected problem is an exact k-dimensional linear bandit and the standard LinUCB analysis applies verbatim in 
+
+Rk.
+
+Assumption 2 (Bandit regularity) . For all t and a ∈ A t,
+
+∥zt,a ∥2 ≤ Lx. The projected parameter satisfies ∥α⋆∥2 ≤ S.The noise sequence is conditionally R-sub-Gaussian with respect to the filtration Ft generated by the history before observing yt: E[exp( sη t) | F t] ≤ exp( s2R2/2) for every 
+
+s ∈ R. The arm sets and features may be chosen adaptively from the past but are fixed before ηt is realized. 
+
+Regime Assumption Regret guarantee Exact subspace (Thm. 1) 
+
+θ⋆ ∈
+
+range(Π k ),known Ek
+
+eO(k√T ), dimension d → k
+
+Generic ro-bust (Thm. 4) tail 
+
+∥rk ∥ ≤ ζk ,
+
+bL − L ≤
+
+εL
+
+eO k√T + Lx(ζk +
+
+Sk εL/∆k ) kT  (linear bias) Structure-specific oracle (Thm. 5) realized tra-jectory 
+
+≤ 2β0 
+
+> T+1
+
+AT + 2 SRL T AT +
+
+CRW T
+
+Estimated residual (Thm. 7) pilot br,
+
+∥br − r⊥,k ∥ ≤ 
+
+er
+
+oracle bound + eO(er kT ); imple-mentable 
+
+Table 1: Summary of the four theoretical regimes. The structure-specific bound (Thm. 5) tightens the generic worst-case linear bias to realized graph quantities SRL T and CRW T
+
+(Corollary 9); the estimated-residual variant (Thm. 7) makes it implementable. Define pseudo-regret 
+
+Reg( T ) = PTt=1 
+
+  max a∈A t x⊤
+
+> t,a
+
+θ⋆ − x⊤ 
+
+> t,a t
+
+θ⋆.
+
+Theorem 1 (Reduced-dimension regret under exact smooth-ness) . Under Assumptions 1 and 2, suppose the algorithm uses the true projection E⊤ 
+
+> k
+
+, regularization λ ≥ L2
+
+> x
+
+, and confidence radius 
+
+βt = R
+
+r
+
+k log 
+
+
+
+1 + (t−1) L2
+
+> x
+> λk
+
+
+
++ 2 log 1 
+
+> δ
+
++ √λS. 
+
+Then, with probability at least 1 − δ, simultaneously for all 
+
+T ≥ 1,
+
+Reg( T ) ≤ 2βT +1 
+
+r
+
+2T k log 
+
+
+
+1 + T L 2
+
+> x
+> λk
+
+
+
+.
+
+Consequently, for fixed R, L x, S, λ, δ , Reg( T ) = eO(k√T ).
+
+Corollary 2 (Comparison with full-dimensional LinUCB) .
+
+Full-dimensional LinUCB in Rd has rate eO(d√T ). Under exact graph smoothness and k ≪ d, GraphDR-LinUCB re-duces the dimension dependence from d to k.
+
+Robust gap-dependent bound 
+
+In practice, two idealizations of Theorem 1 fail simultane-ously: the reward may carry energy outside the first k graph frequencies ( ζk > 0), and the eigenspace is estimated from a noisy Laplacian ( εL > 0). The following handles both. The key tool is a projector-perturbation bound from Davis and Kahan. 
+
+Lemma 3 (Davis–Kahan projector perturbation [10]) . As-sume L and bL are symmetric and bL − L 2
+
+≤ εL ≤
+
+∆k/4. Then bΠk − Πk 2
+
+≤ 4εL/∆k, and consequently 
+
+(I − bΠk)Π k 2
+
+≤ 4εL/∆k.Graph G Laplacian L
+
+basis bEk
+
+project 
+
+z = bE⊤ 
+
+> k
+
+x
+
+LinUCB in Rk pull at
+
+residual r⊥,k = ( I − bΠk )θ⋆
+
+controls SRL T , CRW T
+
+Figure 1: GraphDR-LinUCB . The graph determines a bottom-k low-frequency Laplacian eigenbasis bEk; arm features are projected to Rk and LinUCB runs there. Only the high-frequency residual r⊥,k left outside the subspace can hurt the learner; its effect is governed by the realized graph quantities SRL T and CRW T . The shuffle control permutes node labels before computing 
+
+bEk, preserving the projected dimension but destroying graph alignment and eliminating the regret advantage. 
+
+Assumption 3 (Approximate smoothness and noisy graph) .
+
+Let rk = ( I − Πk)θ⋆. Assume ∥Πkθ⋆∥2 ≤ Sk and ∥rk∥2 ≤
+
+ζk. The ambient features satisfy ∥xt,a ∥2 ≤ Lx for all t, a .The noise is conditionally R-sub-Gaussian as in Assump-tion 2, and the arm sets are chosen before the current noise is realized. 
+
+Theorem 4 (Generic robust regret bound) . Assume Lemma 3 and Assumption 3. Run GraphDR-LinUCB with bP =
+
+bE⊤ 
+
+> k
+
+and λ ≥ L2
+
+> x
+
+, with confidence radius βt = β0 
+
+> t
+
++
+
+νk
+
+p2( t − 1) k log(1 + ( t − 1) L2
+
+> x
+
+/(λk )) (equivalently β0 
+
+> t
+
++
+
+νkAT for known horizon T ), which requires νk known or upper-bounded. Define 
+
+γk = 4εL
+
+∆k
+
+,νk = Lx(ζk + Skγk) = Lx
+
+
+
+ζk + 4Sk εL
+
+> ∆k
+
+
+
+,Sk = Sk + ζk.β0 
+
+> t
+
+= R
+
+r
+
+k log 
+
+
+
+1 + (t−1) L2
+
+> x
+> λk
+
+
+
++ 2 log 1 
+
+> δ
+
++ √λ S k,AT =
+
+r
+
+2T k log 
+
+
+
+1 + T L 2
+
+> x
+> λk
+
+
+
+.
+
+Then, with probability at least 1 − δ, simultaneously for all T ≥ 1,
+
+Reg( T ) ≤ 2β0 
+
+> T+1
+
+AT + 2 νkA2 
+
+> T
+
++ 2 νkT
+
+= 2 β0 
+
+> T+1
+
+AT + 4 νkT k log 
+
+
+
+1 + T L 2
+
+> x
+> λk
+
+
+
++ 2 νkT. 
+
+Suppressing logarithmic factors, Reg( T ) = eO k√T +
+
+Lx(ζk + SkεL/∆k)kT . If ζk = 0 and εL = 0 , then νk = 0 
+
+and the bound reduces to eO(k√T ). If νk is unknown it must be replaced by an upper bound or selected by a doubling or grid wrapper; otherwise the result is an oracle bound. 
+
+The εL/∆k dependence is the key takeaway: a large spec-tral gap protects against graph noise, while a small gap am-plifies it. 
+
+Main result: structure-specific residual regret 
+
+The generic bound of Theorem 4 uses only the scalar en-velope |ξt,a | ≤ νk, treating the high-frequency residual 
+
+(I − bΠk)θ⋆ as an arbitrary adversary. In graph problems this residual is not arbitrary: it is a high-frequency graph signal, and it harms the learner only through the arms that actually appear and the low-frequency coordinates that are actually played. The following theorem retains this structure instead of collapsing it into νk.Let r⊥,k = ( I − bΠk)θ⋆ and ξt(a) = x⊤
+
+> t,a
+
+r⊥,k .
+
+Definition 1 (Residual leverage and candidate residual width) . For a realized trajectory, define the residual leverage 
+
+SRL T (r⊥,k ) = max  
+
+> 1≤t≤T+1
+
+Pt−1 
+
+> s=1
+
+zs,a s ξs(as) V −1
+
+> t
+
+,
+
+and the cumulative candidate residual width 
+
+CRW T (r⊥,k ) = 
+
+> T
+
+X
+
+> t=1
+
+
+
+max 
+
+> a∈A t
+
+ξt(a) − min 
+
+> a∈A t
+
+ξt(a)
+
+
+
+.
+
+SRL T is the self-normalized bias that the high-frequency residual injects into the regression updates; CRW T is the amount by which the residual can change the ordering of arms within each candidate set. In the node-arm case ( xt,a =
+
+ea, r⊥,k = U>k c>k ), both are determined by where the high-frequency graph signal lives and which arms the bandit actually compares: a strictly finer characterization than the scalar tail ζk.
+
+Theorem 5 (A posteriori oracle residual bound) . Assume the noise and bounded projected-feature conditions in Assump-tion 2. Fix a horizon T and suppose GraphDR-LinUCB is run with bEk, λ ≥ L2
+
+> x
+
+, and confidence radius βt = β0 
+
+> t
+
++ BT
+
+with BT ≥ SRL T (r⊥,k ), where 
+
+β0 
+
+> t
+
+= R
+
+r
+
+k log 
+
+
+
+1 + (t−1) L2
+
+> x
+> λk
+
+
+
++ 2 log 1 
+
+> δ
+
++ √λ bE⊤ 
+
+> k
+
+θ⋆
+
+> 2
+
+,AT =
+
+r
+
+2T k log 
+
+
+
+1 + T L 2
+
+> x
+> λk
+
+
+
+.
+
+Then, with probability at least 1 − δ,
+
+Reg( T ) ≤ 2β0 
+
+> T+1
+
+AT + 2 BT AT + CRW T (r⊥,k ).
+
+In particular, the oracle choice BT = SRL T (r⊥,k ) yields 
+
+Reg( T ) ≤ 2β0 
+
+> T+1
+
+AT + 2 SRL T (r⊥,k )AT + CRW T (r⊥,k ).This is an a posteriori oracle inequality: BT depends on the unknown θ⋆ and the realized trajectory. Proposition 6 below characterizes exactly what is lost when the confidence radius is not inflated, explaining why an estimate of SRL T is needed for an implementable algorithm. 
+
+Proposition 6 (What happens without residual-radius infla-tion) . If the same algorithm is run with the smaller radius 
+
+β0 
+
+> t
+
+only, the same proof gives the valid bound 
+
+Reg( T ) ≤ 2β0 
+
+> T+1
+
+AT + SRL T (r⊥,k )AT
+
++ T SRL T (r⊥,k ) + CRW T (r⊥,k ).
+
+Thus the clean 2SRL T AT oracle term requires either a known upper bound on SRL T or an estimated-residual confi-dence inflation. Without inflation, the comparator arm is not the played arm, and its uncertainty cannot be collapsed by the elliptical-potential lemma. 
+
+The oracle bound becomes implementable by replacing the unknown residual with a pilot estimate. 
+
+Theorem 7 (Estimated-residual horizon oracle bound) .
+
+Let br be a pilot estimate of r⊥,k obtained from data independent of the bandit noise used in the re-gret run, with ∥br − r⊥,k ∥2 ≤ er and ∥xt,a ∥2 ≤
+
+Lx. Define bξt(a) = x⊤
+
+> t,a
+
+br and a computable leverage bound bBT ≥ max 1≤t≤T +1 
+
+P 
+
+> s<t
+
+zs,a s
+
+bξs(as) V −1
+
+> t
+
+. Run 
+
+GraphDR-LinUCB with radius βt = β0 
+
+> t
+
++ bBT + Lxer AT .Then, on the same high-probability event as Theorem 5, 
+
+Reg( T ) ≤ 2β0 
+
+> T+1
+
+AT + 2( bBT + Lxer AT )AT
+
++ [CRW T (br) + 2 Lxer T, 
+
+where [CRW T (br) = PTt=1 (max a x⊤
+
+> t,a
+
+br − min a x⊤
+
+> t,a
+
+br). To be genuinely online, use the predictable radii βt = β0 
+
+> t
+
++
+
+bBt + Lxer At with bBt = max u≤t
+
+P 
+
+> s<u
+
+zs bξs(as) V −1
+
+> u
+
+;the stated horizon-T form is the special case at t = T .
+
+Two corollaries bound the range of behaviour. First, the generic theorem is only a loose special case of Theorem 5. 
+
+Corollary 8 (Generic theorem as a loose special case) . If 
+
+|ξt(a)| ≤ νk for all t, a , then SRL T (r⊥,k ) ≤ νkAT and 
+
+CRW T (r⊥,k ) ≤ 2νkT . Substituting these into the oracle version of Theorem 5 with BT = νkAT recovers Theorem 4, up to the harmless replacement of bE⊤ 
+
+> k
+
+θ⋆
+
+> 2
+
+by Sk.
+
+Corollary 9 (Benign residuals yield sublinear extra bias) .
+
+On any problem sequence with SRL T (r⊥,k ) = O(√k log T )
+
+and CRW T (r⊥,k ) = O(√T ), the oracle-inflated algorithm of Theorem 5 gives Reg( T ) = eO(k√T ) + eO(k√T ) + 
+
+O(√T ) = eO(k√T ), since SRL T AT = eO(k√T ), so the high-frequency residual contributes only sublinear regret. These conditions hold, for example, when the residual is nearly common-mode inside most candidate sets and its product with the played low-frequency features exhibits self-normalized cancellation rather than worst-case alignment. PCA+LinUCB 
+
+> Random
+> GraphDR-shuffled
+> (control)
+> JL+LinUCB
+> LinUCB-full
+> GraphDR+LinUCB
+> (ours)
+> Method
+> 10 2
+> 10 3
+> Cumulative regret  R(T = 20,000)  2142
+> 1226
+> 958
+> 778
+> 481
+> 31
+
+Figure 2: Main synthetic comparison with the graph-shuffle control. GraphDR +LinUCB dominates; the shuffled eigenspace collapses toward the random-policy level. 
+
+## Synthetic Experiments 
+
+We validate the dimension-reduction mechanism on con-trolled synthetic graphs where the reward subspace is known by construction. Arms are graph nodes with one-hot fea-tures ( d = n), and θ⋆ = Ukα⋆/ ∥Ukα⋆∥ uses the true bottom-k nontrivial Laplacian eigenvectors, so the reward is graph-smooth by design. All methods compared are: Ran-dom; LinUCB-full ( d = n); principal component analy-sis (PCA)+LinUCB; Johnson-Lindenstrauss (JL)+LinUCB; 
+
+GraphDR +LinUCB; and GraphDR-shuffled , the graph-shuffle control that projects with the bottom-k nontrivial eigenvectors of a node-permuted copy of the same graph. The shuffle control has the same projected dimension as GraphDR but a graph-misaligned eigenspace; any genuine gain must collapse when it is applied, and in every exper-iment below, it does. Regret R(T ) is the mean ± standard error over 8 seeds; LinUCB uses Sherman-Morrison updates. 
+
+Main comparison. On a stochastic block model (SBM) with n = d = 200 , C = k⋆ = 5 communities, and 
+
+T = 20 ,000 , GraphDR-LinUCB reduces regret by more than 15 × relative to full LinUCB and 69 × relative to PCA (Figure 2): 
+
+Method R(T ) ↓ ± s.e.m. PCA+LinUCB 2152 .3 9.9
+
+Random 1226 .0 2.8
+
+GraphDR-shuffled (control) 957 .8 6.9
+
+JL+LinUCB 777 .8 4.5
+
+LinUCB-full ( d = 200 ) 480 .8 2.7
+
+GraphDR+LinUCB 31 .3 0.7
+
+The shuffle control collapses toward the random-policy level ( 957 .8), showing the gain is structural rather than merely dimensional. PCA performs poorly because one-hot features are isotropic and carry no variance signal. 
+
+Dimension scaling. Fixing k⋆ = 5 and scaling d = n from 
+
+60 to 800 , GraphDR regret stays nearly flat (from 22 .2 to 
+
+40 .6, a 1.8× growth) while full-dimensional LinUCB grows steeply (from 183 .0 to 852 .1, a 4.7× growth), matching the predicted k-versus-d exploration cost of Corollary 2 (Fig-ure 3). 60 120 240 480 800      
+
+> Ambient dimension d=n
+> 10 2
+> 10 3
+> Cumulative regret  R(T = 20,000)
+> 4.7 × growth
+> 1.8 × growth
+> LinUCB-full
+> GraphDR+LinUCB (ours)
+
+Figure 3: Dimension scaling at fixed k⋆ = 5 . GraphDR-LinUCB remains nearly flat as d = n grows; full LinUCB grows with ambient dimension. Random    
+
+> GraphDR-shuffled
+> (control)
+> JL+LinUCB
+> PCA+LinUCB
+> LinUCB-full
+> GraphDR+LinUCB
+> (ours)
+> Method
+> 10 2
+> 10 3
+> Cumulative regret  R(T)
+> 2613 2546 2364 2297
+> 418
+> 18
+
+Figure 4: Second graph family: random geometric graph. GraphDR dominates; the graph-shuffle control collapses. 
+
+Second graph family. On a random geometric graph (RGG, n = 200 , radius 0.16 ) the same pattern holds: GraphDR attains R(T ) = 18 .1 against 417 .8 for full Lin-UCB and over 2000 for PCA, JL, and Random, with the shuffle control collapsing to 2544 .6 (Figure 4). 
+
+k-sweep. Sweeping the projected dimension at fixed 
+
+k⋆ = 5 on the SBM confirms that regret is mini-mized exactly at k = 5 and rises on both sides: too few dimensions omit signal; too many reintroduce ex-ploration cost. The regret at k = 1, 2, 3, 5, 8, 12 , 20 is 
+
+419 .9, 384 .2, 98 .6, 28 .7, 39 .5, 55 .4, 69 .5 (Figure 5). 
+
+Noise stress test and robust theorem validation. When 
+
+G is observed under edge-flip noise, k must be selected from a noisy spectrum. The bootstrap and naive eigengap estima-tors return identical bk at every noise level; under heavier noise bk degrades ( 4 → 2 → 1) with measurable regret cost. A complementary stress test directly probes the misspecifica-tion envelope νk by measuring ζk and εL in each run: regret rises monotonically with both terms (pooled Spearman 0.68 
+
+across 16 runs). 
+
+## Real-Data Benchmarks 
+
+We evaluate on six real graph-bandit datasets: four recom-mendation graphs (MovieLens-100k/1M [25], Amazon Dig-ital Music, LastFM/HetRec) and two non-recommendation 1 2 3 5 8 12 20    
+
+> Projected dimension k
+> 100
+> 200
+> 300
+> 400
+> 500
+> Cumulative regret  R(T)
+> k*= 5
+> (29)
+> LinUCB-full
+> (481)
+> LinUCB-full
+> GraphDR+LinUCB (ours)
+
+Figure 5: Regret versus projected dimension k. The minimum is at the true spectral dimension k⋆ = 5 .graphs (MIND-small news [11], ogbn-arxiv citation [16]). Items, artists, papers, or news articles are arms; features are node indicators; the graph is built from co-rating, co-listening, citation, or category and co-click relations; and rewards are calibrated from real ratings, plays, labels, or click-through statistics. All runs report cumulative regret at 
+
+T = 20 ,000 over 5 seeds. Full dataset construction, per-dataset MovieLens results, and the measured spectral quan-tities ( bk, eigengap, and ζk) are in the appendix. 
+
+Cross-dataset summary. Table 2 shows GraphDR-LinUCB beats full LinUCB on five of six datasets; the ex-ception is ogbn-arxiv, where the citation-graph eigenspace is misaligned with the subject-label reward ( ζk = 0 .96 ). The GraphDR-versus-PCA comparison is more nuanced: GraphDR leads on four datasets (MovieLens-100k, Ama-zon, LastFM, MIND), while PCA wins on MovieLens-1M and ogbn-arxiv. At scale and when the reward is only weakly smooth, learned content variance can carry signal that PCA exploits better than the graph. The scalar reward tail ζk
+
+partially but not fully predicts this: ogbn-arxiv ( 0.96 ) is GraphDR’s clearest failure, yet MIND has the largest tail (0.99 ) and GraphDR wins decisively. The structure-specific theorem explains the discrepancy; what matters is not total high-frequency energy but whether the residual creates large candidate-set width or residual leverage along the played path. 
+
+Comparison against graph-aware baselines. The deci-sive test for a graph-DR contribution is whether the algorithm beats bandits that already exploit the graph. Table 3 com-pares against SpectralUCB [34]: LinUCB in the full Lapla-cian eigenbasis with a per-eigenvalue smoothness penalty and no hard truncation, and Laplacian-regularized LinUCB [38]: full-d LinUCB with graph-smoothness regularization replacing ridge. 
+
+GraphDR-LinUCB ’s advantage holds against graph-aware competitors on every graph-smooth dataset; on the misaligned ogbn-arxiv ( ζk = 0 .96 ), Laplacian-regularized LinUCB is the safer choice. To isolate the projection map from the feature source, a matched experiment replaces content-PCA with graph-only PCA (top-k singular vectors of A, the same graph-only input Dataset ζk GraphDR PCA full LinUCB shuffle MovieLens-100k 0.67 238 .4 331 .5 615 .0 712 .7                         
+
+> MovieLens-1M 0.68 273 .3186 .7592 .6650 .2
+> Amazon (Dig. Music) 0.86 309 .9338 .6463 .4526 .4
+> LastFM (HetRec) 0.90 412 .1508 .5678 .9774 .3
+> ogbn-arxiv 0.96 667 .6258 .5492 .2602 .1
+> MIND-small 0.99 415 .0887 .7780 .5943 .9
+
+Table 2: Cumulative regret R(T = 20 ,000) across six real graph-bandit datasets (top-1500 nodes each, 5 seeds; lowest in bold ). 
+
+GraphDR-LinUCB beats full LinUCB on five of six datasets, failing only on ogbn-arxiv where the citation-graph eigenspace is misaligned with the subject-label reward. The graph-shuffle control is always near-random. GraphDR wins on 4/6 against PCA; the scalar tail ζk partially but not fully predicts the pattern.                                         
+
+> Dataset GraphDR SpectralUCB Laplacian-reg PCA full LinUCB Synthetic SBM 31 .3466 .2462 .12157 .6484 .9
+> MovieLens-100k 122 .7256 .0247 .2184 .7259 .1
+> MovieLens-1M 147 .7245 .1238 .0199 .4250 .6
+> Amazon 148 .6195 .0189 .4227 .2196 .0
+> LastFM 186 .4282 .7276 .9286 .3285 .9
+> MIND-small 169 .4341 .7325 .9358 .1346 .1
+> ogbn-arxiv 277 .0210 .8203 .2228 .2214 .8
+
+Table 3: Cumulative regret R(T ) against graph-aware bandits ( T =20000 , 5 seeds synthetic; lowest per row in bold ). GraphDR-LinUCB beats both SpectralUCB and Laplacian-regularized LinUCB on the synthetic benchmark and on five of six real datasets. The single exception is ogbn-arxiv ( ζk=0 .96 ): even soft graph-aware methods beat hard bottom-k projection when the eigenspace is misaligned with the reward. The advantage of hard spectral truncation over soft eigenvalue-penalized smoothing is that truncation entirely removes the exploration cost of high-frequency directions rather than merely down-weighting it. GraphDR receives): both graph-spectral maps beat graph-blind baselines on most datasets, and GraphDR and graph-PCA split 3–3 given identical input, confirming the advantage is structural. 
+
+Diagnostic. A theory-motivated diagnostic Gk based on the residual quantities of Theorem 5 was evaluated but failed to outperform ζk on the signed gap; we replace it with the computable Γk below. 
+
+A working selection rule: the subspace-capture margin 
+
+The structure-specific theorem says a reducer hurts the learner only through the reward energy it fails to keep. The GraphDR-vs-PCA contest is therefore most directly predicted not by the absolute graph tail ζk, but by a comparison of how much reward energy each reducer’s subspace captures. Let 
+
+Uk be GraphDR’s bottom-k nontrivial Laplacian eigenbasis and P the competing reducer’s k-dimensional basis (content-PCA here). Define the subspace-capture margin 
+
+Γk = U ⊤ 
+
+> k
+
+θ 22 − P ⊤θ 22
+
+= U ⊤ 
+
+> k
+
+θ 22
+
+| {z }
+
+> graph low-freq energy kept
+
+− P ⊤θ 22
+
+| {z }
+
+> competitor energy kept
+
+,
+
+the (squared, unit-norm-reward) reward energy GraphDR’s subspace captures minus that the competitor captures. Γk >
+
+0 predicts GraphDR; Γk < 0 predicts the competitor. Unlike 
+
+ζk, which only sees GraphDR’s own tail, Γk is a head-to-head alignment statistic and is computable from the same pilot reward estimate bθ the diagnostic Gk already requires. Validated on all six real datasets, the fitted-threshold rule is leave-one-out correct on 6/6; the zero-parameter sign rule 
+
+Γk > 0 is correct on 5/6, with the lone miss at the near-tie 
+
+Γk = −0.008 (MIND-small). Against the dead diagnostic Gk (|ρs| ≈ 0.11 , 2/6 leave-one-out) and the scalar tail ζk (2/6), Γk is the clear headline rule; the eigengap ∆k correlates at 0.83 but reaches only 
+
+4/6 leave-one-out and lacks mechanistic justification for the head-to-head comparison. 
+
+## Conclusion 
+
+We presented GraphDR-LinUCB , a reduction from graph-smooth contextual bandits to k-dimensional linear bandits via Laplacian eigenspace projection. The central theoretical insight is that the high-frequency reward component need not cost a linear-in-T penalty: its actual cost is governed by two realized graph quantities, residual leverage and candidate-set residual width, rather than by the tail energy ζk alone. This structure-specific view replaces worst-case misspeci-fication theory with a finer, graph-aware accounting, and the subspace-capture margin Γk translates this accounting into a practical, threshold-free selection rule. Graph-shuffle controls on every configuration confirm the gain is struc-tural, and synthetic and real-data experiments validate the approach across recommendation, news, and citation graphs. References 
+
+[1] Abbasi-Yadkori, Y.; Pál, D.; and Szepesvári, C. 2011. Improved algorithms for linear stochastic bandits. In 
+
+Advances in Neural Information Processing Systems .[2] Agarwal, A.; Luo, H.; Neyshabur, B.; and Schapire, R. E. 2017. Corralling a band of bandit algorithms. In 
+
+Conference on Learning Theory .[3] Auer, P. 2002. Using confidence bounds for exploitation-exploration trade-offs. Journal of Machine Learning Research , 3: 397–422. [4] Belkin, M.; and Niyogi, P. 2003. Laplacian Eigenmaps for Dimensionality Reduction and Data Representation. 
+
+Neural Computation , 15(6): 1373–1396. [5] Cesa-Bianchi, N.; Gentile, C.; and Zappella, G. 2013. A gang of bandits. In Advances in Neural Information Processing Systems .[6] Chapelle, O.; and Li, L. 2011. An empirical evalua-tion of Thompson sampling. In Advances in Neural Information Processing Systems .[7] Chu, W.; Li, L.; Reyzin, L.; and Schapire, R. E. 2011. Contextual Bandits with Linear Payoff Functions. In 
+
+International Conference on Artificial Intelligence and Statistics .[8] Dai, Y.; Golrezaei, N.; and Jaillet, P. 2026. Policy Re-gret for Embedding Model Routing: Contextual Bandits with Low-Rank Experts. arXiv:2606.14929. [9] Dani, V.; Hayes, T. P.; and Kakade, S. M. 2008. Stochas-tic Linear Optimization under Bandit Feedback. In 
+
+Conference on Learning Theory .[10] Davis, C.; and Kahan, W. M. 1970. The rotation of eigenvectors by a perturbation. III. SIAM Journal on Numerical Analysis , 7(1): 1–46. [11] Dudík, M.; Langford, J.; and Li, L. 2011. Doubly ro-bust policy evaluation and learning. In International Conference on Machine Learning .[12] Foster, D. J.; Gentile, C.; Mohri, M.; and Zimmert, J. 2020. Adapting to misspecification in contextual bandits. In Advances in Neural Information Processing Systems .[13] Gentile, C.; Li, S.; and Zappella, G. 2014. Online clustering of bandits. In International Conference on Machine Learning .[14] Ghojogh, B.; Ghodsi, A.; Karray, F.; and Crowley, M. 2021. Laplacian-Based Dimensionality Reduction In-cluding Spectral Clustering, Laplacian Eigenmap, Lo-cality Preserving Projection, Graph Embedding, and Diffusion Map: Tutorial and Survey. arXiv:2106.02154. [15] Hamilton, W. L.; Ying, R.; and Leskovec, J. 2017. Inductive Representation Learning on Large Graphs. arXiv:1706.02216. [16] Hu, W.; Fey, M.; Zitnik, M.; Dong, Y.; Ren, H.; Liu, B.; Catasta, M.; and Leskovec, J. 2020. Open Graph Benchmark: Datasets for Machine Learning on Graphs. arXiv:2005.00687. [17] Huang, R.; and Huang, Z. 2025. Nearly Tight Bounds for Cross-Learning Contextual Bandits with Graphical Feedback. arXiv preprint arXiv:2502.04678 .[18] Jamshidi, F.; Shahverdikondori, M.; and Kiyavash, N. 2025. Graph-Dependent Regret Bounds in Multi-Armed Bandits with Interference. arXiv:2503.07555. [19] Jedra, Y.; Réveillard, W.; Stojanovic, S.; and Proutiere, A. 2024. Low-Rank Bandits via Tight Two-to-Infinity Singular Subspace Recovery. arXiv:2402.15739. [20] Jun, K.-S.; Willett, R.; Wright, S.; and Nowak, R. 2019. Bilinear Bandits with Low-rank Structure. arXiv:1901.02470. [21] Khosravi, H.; and Huo, X. 2026. Catching a Mov-ing Subspace: Low-Rank Bandits Beyond Stationarity. arXiv:2605.20269. [22] Kipf, T. N.; and Welling, M. 2017. Semi-Supervised Classification with Graph Convolutional Networks. arXiv:1609.02907. [23] Lattimore, T.; and Szepesvári, C. 2020. Bandit Algo-rithms . Cambridge University Press. [24] Lattimore, T.; Szepesvári, C.; and Weisz, G. 2019. Learning with good feature representations in bandits and in RL with a generative model. In International Conference on Machine Learning .[25] Li, L.; Chu, W.; Langford, J.; and Schapire, R. E. 2010. A contextual-bandit approach to personalized news ar-ticle recommendation. In International Conference on World Wide Web .[26] Mannor, S.; and Shamir, O. 2011. From Ban-dits to Experts: On the Value of Side-Observations. arXiv:1106.2436. [27] Ng, A. Y.; Jordan, M. I.; and Weiss, Y. 2001. On Spectral Clustering: Analysis and an Algorithm. In 
+
+Advances in Neural Information Processing Systems .[28] Pacchiano, A.; Phan, M.; Abbasi-Yadkori, Y.; Rao, A.; Zimmert, J.; Lattimore, T.; and Szepesvari, C. 2020. Model Selection in Contextual Stochastic Bandit Prob-lems. arXiv:2003.01704. [29] Paschalidis, P.; Zhang, R.; and Li, N. 2024. Cooperative Multi-Agent Graph Bandits: UCB Algorithm and Re-gret Analysis. In American Control Conference (ACC) .[30] Qi, H.; Guo, F.-Y.; Zhu, L.; Zhang, Q.; and Li, X. 2025. Graph Feedback Bandits on Similar Arms: With and Without Graph Structures. arXiv preprint arXiv:2501.14314 .[31] Qiu, H.; Zhang, M.; and Cesa-Bianchi, N. 2026. Near-Optimal Regret for Distributed Adversarial Bandits: A Black-Box Approach. arXiv preprint arXiv:2602.06404 .[32] Russo, D.; Van Roy, B.; Kazerouni, A.; Osband, I.; and Wen, Z. 2017. A Tutorial on Thompson Sampling. arXiv:1707.02038. [33] Shuman, D. I.; Narang, S. K.; Frossard, P.; Ortega, A.; and Vandergheynst, P. 2013. The emerging field of signal processing on graphs. IEEE Signal Processing Magazine , 30(3): 83–98. [34] Valko, M.; Munos, R.; Kveton, B.; and Kocák, T. 2014. Spectral bandits for smooth graph functions. In Inter-national Conference on Machine Learning .[35] von Luxburg, U. 2007. A Tutorial on Spectral Cluster-ing. arXiv:0711.0189. [36] Wang, Y.; Li, J.; Kang, Y.; Gao, S.; and Xiao, Z. 2025. Generalized Low-Rank Matrix Contextual Bandits with Graph Information. arXiv:2507.17528. [37] Wen, D.; Yin, H.; Zhang, X.; Zhao, P.; Zhang, L.; and Wei, Z. 2024. Revisiting Matrix Sketching in Linear Bandits: Achieving Sublinear Regret via Dyadic Block Sketching. arXiv preprint arXiv:2410.10258 .[38] Yang, K.; Toni, L.; and Dong, X. 2020. Laplacian-regularized graph bandits: Algorithms and theoretical analysis. In International Conference on Artificial In-telligence and Statistics .[39] Yu, X. 2019. Contextual Bandits with Random Projec-tion. arXiv:1903.08600. [40] Zhao, H.; Ye, C.; Gu, Q.; and Zhang, T. 2024. Sharp Analysis for KL-Regularized Contextual Bandits and RLHF. arXiv:2411.04625. 
+
+## Proofs 
+
+This appendix contains the proofs of all results stated in the Theory section, in the order they appear. Each proof begins with a brief sketch of the key step to orient before the formal argument. 
+
+Proof of Theorem 1. Sketch. The projection E⊤ 
+
+> k
+
+makes the problem exactly k-dimensional; the standard self-normalized concentration and elliptical potential arguments then apply directly in Rk.Let zt = zt,a t . Under Assumption 1, yt = z⊤ 
+
+> t
+
+α⋆ + ηt. The ridge estimate satisfies 
+
+bαt − α⋆ = V −1
+
+> tt−1
+
+X
+
+> s=1
+
+zsηs − λV −1 
+
+> t
+
+α⋆.
+
+Taking the Vt-norm and using Vt ⪰ λI k,
+
+∥bαt − α⋆∥Vt ≤ Pt−1 
+
+> s=1
+
+zsηs V −1
+
+> t
+
++ √λS. 
+
+The self-normalized martingale inequality gives, with prob-ability at least 1 − δ, uniformly over t,
+
+Pt−1 
+
+> s=1
+
+zsηs V −1
+
+> t
+
+≤ R
+
+r
+
+2 log 
+
+ det( Vt)1/2 
+
+> det( λI k)1/2δ
+
+
+
+.
+
+Since ∥zs∥2 ≤ Lx, log det( Vt)det( λI k ) ≤ k log(1 + (t−1) L2 
+
+> x
+> λk
+
+), so 
+
+∥bαt − α⋆∥Vt ≤ βt for all t on this event. For any arm, Cauchy–Schwarz gives |z⊤
+
+> t,a
+
+(bαt − α⋆)| ≤ βt ∥zt,a ∥V −1
+
+> t
+
+, so the UCB is optimistic. Letting a⋆t be optimal, the standard optimism argument yields x⊤ 
+
+> t,a ⋆t
+
+θ⋆ −x⊤ 
+
+> t,a t
+
+θ⋆ ≤ 2βt ∥zt∥V −1
+
+> t
+
+.Summing and using monotonicity of βt, Reg( T ) ≤
+
+2βT +1 
+
+PTt=1 ∥zt∥V −1
+
+> t
+
+. Because λ ≥ L2
+
+> x
+
+, ∥zt∥2 
+
+> V−1
+> t
+
+≤ 1,and the elliptical potential lemma gives PTt=1 ∥zt∥V −1
+
+> t
+
+≤
+
+q
+
+2T k log(1 + T L 2 
+
+> x
+> λk
+
+). Substitution proves the theorem. 
+
+Proof of Lemma 3. Sketch. Weyl’s inequality controls the eigenvalue shift; Davis–Kahan then bounds the projector ro-tation by the shift divided by the gap. By Weyl’s inequality, each eigenvalue of bL differs from the corresponding eigenvalue of L by at most εL, so the separa-tion between the perturbed bottom-k cluster and the rest is at least ∆k − 2εL ≥ ∆k/2. The Davis–Kahan sin Θ theorem for symmetric matrices gives bΠk − Πk 2
+
+≤ 2∥bL−L∥2  
+
+> ∆k−2εL
+
+≤
+
+4εL/∆k. The second inequality holds because (I − bΠk)Π k
+
+is a cross-projector bounded in operator norm by the distance between projectors. 
+
+Proof of Theorem 4. Sketch. Decompose θ⋆ into its in-subspace part and high-frequency residual; bound the resid-ual’s effect on the regression updates by νk pointwise; then apply the standard optimism argument with an inflated con-fidence radius. Decompose θ⋆ = bΠkθ⋆ +( I − bΠk)θ⋆ and set bα⋆ = bE⊤ 
+
+> k
+
+θ⋆,so bΠkθ⋆ = bEk bα⋆ and ∥bα⋆∥2 ≤ ∥ θ⋆∥2 ≤ Sk + ζk = Sk.Moreover, 
+
+(I − bΠk)θ⋆
+
+> 2
+
+= (I − bΠk)(Π kθ⋆ + rk) 2
+
+≤ (I − bΠk)Π k 2
+
+∥Πkθ⋆∥2 + (I − bΠk)rk 2
+
+≤ γkSk + ζk.
+
+For any arm define ξt,a = x⊤
+
+> t,a
+
+(I − bΠk)θ⋆; then |ξt,a | ≤ 
+
+Lx (I − bΠk)θ⋆
+
+> 2
+
+≤ Lx(ζk + Skγk) = νk, and x⊤
+
+> t,a
+
+θ⋆ =
+
+z⊤ 
+
+> t,a
+
+bα⋆ + ξt,a with |ξt,a | ≤ νk. For the selected arm write 
+
+zt = zt,a t , ξt = ξt,a t , so yt = z⊤ 
+
+> t
+
+bα⋆ + ηt + ξt and 
+
+bαt − bα⋆ = V −1
+
+> t
+
+X
+
+> s<t
+
+zsηs + V −1
+
+> t
+
+X
+
+> s<t
+
+zsξs − λV −1 
+
+> t
+
+bα⋆.
+
+On the self-normalized event, P 
+
+> s<t
+
+zsηs V −1
+
+> t
+
+≤
+
+R
+
+q
+
+k log(1 + (t−1) L2 
+
+> x
+> λk
+
+) + 2 log 1 
+
+> δ
+
+and λ ∥bα⋆∥V −1
+
+> t
+
+≤√λ S k. Since |ξs| ≤ νk and Vt ⪰ Vs,
+
+P 
+
+> s<t
+
+zsξs V −1
+
+> t
+
+≤ νk
+
+X
+
+> s<t
+
+∥zs∥V −1
+
+> s
+
+≤ νk
+
+r
+
+2( t − 1) k log 
+
+
+
+1 + (t−1) L2
+
+> x
+> λk
+
+
+
+.
+
+Hence ∥bαt − bα⋆∥Vt ≤ β0 
+
+> t
+
++
+
+νk
+
+q
+
+2( t − 1) k log(1 + (t−1) L2 
+
+> x
+> λk
+
+). With μt(a) = x⊤
+
+> t,a
+
+θ⋆,
+
+qt(a) = z⊤ 
+
+> t,a
+
+bα⋆, we have |μt − qt| ≤ νk, and for a⋆t ∈
+
+arg max μt, μt(a⋆t ) − μt(at) ≤ qt(a⋆t ) − qt(at) + 2 νk. The optimism argument applied to qt with the inflated radius and summation give Reg( T ) ≤ 2β0 
+
+> T+1
+
+AT +2 νkA2 
+
+> T
+
++2 νkT .
+
+Why the generic bound is too pessimistic. Theorem 4 uses only the uniform envelope |ξt,a | ≤ νk, treating the residual as an adversary that can corrupt every regression update and change the best arm every round. In graph prob-lems ξt,a is not arbitrary: it is the value of the high-frequency graph signal (I − bΠk)θ⋆ on the arms that actually appear. The next theorem keeps this structure instead of collapsing it into the scalar νk.
+
+Proof of Theorem 5. Sketch. Decompose the instantaneous regret into a low-frequency part (controlled by the UCB op-timism in the projected space) and a high-frequency part (controlled by CRW T summed over rounds); the regression bias from the residual is absorbed into SRL T .Write μt(a) = x⊤
+
+> t,a
+
+θ⋆, qt(a) = z⊤ 
+
+> t,a
+
+bE⊤ 
+
+> k
+
+θ⋆, so μt(a) = 
+
+qt(a) + ξt(a) and yt = qt(at) + ηt + ξt(at). The ridge error decomposes as 
+
+bαt− bE⊤ 
+
+> k
+
+θ⋆ = V −1
+
+> t
+
+X
+
+> s<t
+
+zsηs+V −1
+
+> t
+
+X
+
+> s<t
+
+zsξs(as)−λV −1 
+
+> t
+
+bE⊤ 
+
+> k
+
+θ⋆.
+
+On the self-normalized event, for all t, bαt − bE⊤ 
+
+> k
+
+θ⋆
+
+> Vt
+
+≤
+
+β0 
+
+> t
+
++ SRL T (r⊥,k ) ≤ β0 
+
+> t
+
++ BT . Because the algorithm uses radius β0 
+
+> t
+
++ BT , its UCB is optimistic for the projected means qt. Letting aqt ∈ arg max a qt(a), the LinUCB ar-gument gives qt(aqt ) − qt(at) ≤ 2( β0 
+
+> t
+
++ BT ) ∥zt∥V −1
+
+> t
+
+. Since 
+
+a⋆t maximizes μt rather than qt,
+
+μt(a⋆t ) − μt(at) = qt(a⋆t ) − qt(at) + ξt(a⋆t ) − ξt(at)
+
+≤ qt(aqt ) − qt(at) + 
+
+
+
+max  
+
+> a
+
+ξt(a) − min  
+
+> a
+
+ξt(a)
+
+
+
+.
+
+Summing and using the elliptical potential bound proves the theorem. 
+
+Proof of Proposition 6. The confidence event still gives 
+
+|qt(a) − z⊤ 
+
+> t,a
+
+bαt| ≤ (β0 
+
+> t
+
++ SRL T ) ∥zt,a ∥V −1
+
+> t
+
+, but the al-gorithm only maximizes the UCB with radius β0 
+
+> t
+
+, so 
+
+z⊤
+
+> t,a qt
+
+bαt + β0 
+
+> t
+
+zt,a qt V −1
+
+> t
+
+≤ z⊤ 
+
+> t,a t
+
+bαt + β0 
+
+> t
+
+∥zt,a t ∥V −1
+
+> t
+
+. Com-bining, 
+
+qt(aqt )−qt(at) ≤ SRL T zt,a qt V −1
+
+> t
+
++(2 β0 
+
+> t
+
++SRL T ) ∥zt∥V −1
+
+> t
+
+.
+
+The played-arm terms sum to at most (2 β0  
+
+> T+1
+
++ SRL T )AT ,while zt,a qt V −1
+
+> t
+
+≤ 1 under λ ≥ L2
+
+> x
+
+, giving the extra 
+
+T SRL T term. Adding CRW T proves the claim. 
+
+Proof of Theorem 7. The residual-leverage estima-tion error obeys P 
+
+> s<t
+
+zs(ξs(as) − bξs(as)) V −1
+
+> t
+
+≤
+
+Lxer
+
+P 
+
+> s<t
+
+∥zs∥V −1 
+
+> s
+
+≤ Lxer AT , since |x⊤ 
+
+> s,a s
+
+(r⊥,k − br)| ≤ 
+
+Lxer . Hence bBT + Lxer AT upper-bounds SRL T (r⊥,k ).The true candidate residual width differs from the esti-mated one by at most 2Lxer T . Applying Theorem 5 with 
+
+BT = bBT + Lxer AT proves the result. 
+
+The implementable advantage is contingent on pilot qual-ity. Theorem 7 improves on Theorem 4 only when the pi-lot estimate is good. The terms 2Lxer A2 
+
+> T
+
+= eO(er kT ) and 
+
+2Lxer T are linear in T , so a poor pilot ( er = Θ(1) ) recovers the generic linear bias. The estimated-residual bound is most useful when a cheap exploration prefix or logged data yields 
+
+er = o(1) and the realized bBT , [CRW T are small, precisely the benign-residual regime the diagnostic in Appendix is designed to detect. 
+
+Proof of Corollary 8. P 
+
+> s<t
+
+zsξs(as) V −1
+
+> t
+
+≤
+
+νk
+
+P 
+
+> s<t
+
+∥zs∥V −1 
+
+> s
+
+≤ νkAT , and every candidate-set residual range is at most 2νk.
+
+What is graph-specific about the theorem. In the one-hot node-arm case xt,a = ea and r⊥,k = U>k c>k is the high-frequency graph signal, so ξt(a) = e⊤ 
+
+> a
+
+U>k c>k . Thus CRW T
+
+is the cumulative range of the high-frequency graph signal over the candidate sets, while SRL T is the self-normalized cross-correlation between low-frequency coordinates Uk(a)
+
+and high-frequency residual values (U>k c>k )a along the played path. This is sharper than ζk because it knows where 
+
+the residual lives on the graph and which arms the bandit compares. 
+
+## Projection Identity 
+
+If θ⋆ = Ekα⋆ and E⊤ 
+
+> k
+
+Ek = Ik, then ∥θ⋆∥22 =(α⋆)⊤E⊤ 
+
+> k
+
+Ekα⋆ = ∥α⋆∥22, and for every x ∈ Rd, x⊤θ⋆ =(E⊤ 
+
+> k
+
+x)⊤α⋆. Thus projection to E⊤ 
+
+> k
+
+x is signal-lossless under exact graph smoothness. 
+
+## Elliptical Potential Bound 
+
+Let V1 = λI k, Vt+1 = Vt + ztz⊤ 
+
+> t
+
+, λ ≥ L2
+
+> x
+
+, ∥zt∥2 ≤
+
+Lx. Then ∥zt∥2 
+
+> V−1
+> t
+
+≤ 1, and by the matrix determi-nant lemma det( Vt+1 ) = det( Vt)(1 + ∥zt∥2 
+
+> V−1
+> t
+
+). Since 
+
+u ≤ 2 log(1 + u) for u ∈ [0 , 1] , PTt=1 ∥zt∥2 
+
+> V−1
+> t
+
+≤
+
+2 log det( VT +1 )det( V1) , and the trace–determinant inequality gives 
+
+log det( VT +1 )det( V1) ≤ k log(1 + T L 2 
+
+> x
+> λk
+
+). Hence PTt=1 ∥zt∥V −1
+
+> t
+
+≤
+
+q
+
+2T k log(1 + T L 2 
+
+> x
+> λk
+
+).
+
+## A Predictive Diagnostic and Its Held-Out Evaluation 
+
+Diagnostic construction. The real-data picture in the Real-Data Benchmarks section exposes a gap that the scalar tail ζk cannot close: ζk is large on both MIND ( 0.99 ) and ogbn-arxiv ( 0.96 ), yet GraphDR wins decisively on MIND and loses on ogbn-arxiv. The structure-specific theorem says the deciding factor is not total high-frequency energy but whether the residual is harmless in the candidate distribu-tion. This motivates a computable alignment diagnostic. Given a pilot reward estimate bθ from logged data, val-idation data, or a short exploration prefix, define br⊥,k =(I − bΠk)bθ. For a candidate-set sample D = {A t}Mt=1 we measure the empirical analogues of the two theorem quanti-ties: the candidate residual width 
+
+[CRW k(D) = 1
+
+M
+
+> M
+
+X
+
+> t=1
+
+
+
+max 
+
+> a∈A t
+
+x⊤
+
+> t,a
+
+br⊥,k − min 
+
+> a∈A t
+
+x⊤
+
+> t,a
+
+br⊥,k 
+
+
+
+,
+
+and an approximate residual leverage dSRL k(D) =max 1≤t≤M +1 
+
+P 
+
+> s<t
+
+bzs,a s x⊤ 
+
+> s,a s
+
+br⊥,k bV −1
+
+> t
+
+computed along a short greedy or random prefix, combined into 
+
+Gk(D) = [CRW k(D)+2 
+
+r 2k log(1 + M L 2
+
+> x
+
+/(λk )) 
+
+M dSRL k(D).Small Gk is hypothesized to indicate that GraphDR should be competitive; large Gk suggests PCA, full LinUCB, or a Laplacian-regularized alternative may be safer. 
+
+Held-out evaluation protocol. A binary outcome over six datasets cannot support fitting and validating a thresh-old rule, so we expand each base dataset into 150 prob-lem instances by subsampling node-induced subgraphs at several sizes, varying k ∈ {2, 5, 10 , 20 , 40 }, vary-ing candidate-set construction (uniform, popularity-biased, neighbourhood-restricted), and edge-perturbing the graph at several noise levels. Each instance produces one tuple 
+
+(ζk, SRL T , CRW T , Gk, R GraphDR  
+
+> T
+
+, R PCA  
+
+> T
+
+). The primary test rank-correlates each predictor with the signed gap G−P := 
+
+RGraphDR  
+
+> T
+
+− RPCA  
+
+> T
+
+(negative means GraphDR wins); the decision-rule test fits a threshold bY (τ ) = 1{G k ≤ τ } under leave-one-base-dataset-out. 
+
+Results. The outcome is, on its declared primary test, neg-ative , and we report it straight. Measured over the 150 in-stances, the absolute Spearman correlation with the signed gap is 0.252 for ζk, 0.07 for SRL T , 0.03 for CRW T , and 0.11 
+
+for Gk (the theorem-consistent normalization raises Gk’s cor-relation from 0.036 to 0.106 , still below ζk). No structure-specific predictor beats ζk on rank correlation, so the declared positive criterion is not met. The leave-one-base-dataset-out decision-rule test is more favourable: Gk reaches held-out accuracy 0.62 versus 0.47 for ζk (and CRW T alone 0.63 ), so the realized residual quantities do help a held-out clas-sifier. On the MIND-versus-ogbn separation that motivated the diagnostic, Gk does not separate the two cases (MIND 
+
+0.192 versus ogbn 0.137 , the wrong direction), so the scalar collapse fails the specific case it was designed for. We therefore present Gk as a theory-motivated diagnos-tic with honest empirical characterization, not a validated model-selection rule. The structure-specific theorem stands on its own; the realized residual quantities carry some held-out classification signal; but a unit-weighted scalar collapse does not beat ζk, and a deployable rule would require a learned (SRL T , CRW T ) weighting and more base graphs. 
+
+## Estimating the Residual Diagnostic 
+
+The diagnostic Gk from the predictive diagnostic appendix is computed as follows. 1. Build bL from the training graph and compute bEk.2. Fit a pilot reward model bθ from a disjoint exploration pre-fix, logged data, or cross-fitting (a node reward estimate in the one-hot case; a ridge or doubly robust model with general features). 3. Compute br⊥,k = ( I − bΠk)bθ.4. Estimate [CRW k on held-out candidate sets by averaging the range of x⊤
+
+> t,a
+
+br⊥,k over candidates. 5. Estimate dSRL k on a short simulated or logged prefix. 6. Compute the subspace-capture margin Γk = U ⊤ 
+
+> k
+
+bθ 22
+
+−
+
+P ⊤ bθ 22
+
+against the competing reducer’s basis P . Se-lect GraphDR when Γk > 0; otherwise prefer PCA, full LinUCB, or a Laplacian-regularized baseline. 
+
+## Full Diagnostic-Validation Protocol 
+
+The protocol behind the predictive diagnostic evaluation is specified here in full so that the negative primary result can-not be read as post hoc. The instance generation expands each of the five base datasets used in the diagnostic study (MovieLens-100k, LastFM, Amazon, ogbn-arxiv, MIND-small; MovieLens-1M is omitted from the subgraph-resampled study) by subsampling node-induced subgraphs at sizes 
+
+{400 , 800 , 1500 }, varying k ∈ { 2, 5, 10 , 20 , 40 }, varying candidate-set construction across uniform, popularity-biased, and neighbourhood-restricted sampling, and edge-perturbing the graph at noise levels {0, 0.05 }.This yields 150 instances, each producing one tuple 
+
+(ζk, SRL T , CRW T , Gk, R GraphDR  
+
+> T
+
+, R PCA  
+
+> T
+
+) at T =8000 over 
+
+3 seeds. The continuous target is the signed gap G − P := 
+
+RGraphDR  
+
+> T
+
+− RPCA  
+
+> T
+
+(negative means GraphDR wins), and the binary target is Y = 1{RGraphDR  
+
+> T
+
+< R PCA  
+
+> T
+
+}. We re-port each of SRL T and CRW T separately, together with a two-dimensional logistic predictor on (SRL T , CRW T ), be-fore collapsing to the scalar Gk. The primary test rank-correlates (Spearman, Kendall) each predictor with G − P
+
+across instances. For the decision-rule claim we fit a thresh-old bY (τ ) = 1{G k ≤ τ } on training instances and eval-uate held-out using leave-one-base-dataset-out, comparing against the analogous threshold rule on ζk by AUC and held-out accuracy. Because Gk depends on a pilot estimate br, we also report Gk and its predictive power across pilot budgets. The measured correlations and held-out accuracies are re-ported in the predictive diagnostic appendix. 
+
+## Real-Data Construction and Per-Dataset Results 
+
+The six datasets comprise four recommendation graphs (MovieLens-100k/1M, Amazon Digital Music, LastFM/HetRec) and two non-recommendation graphs (MIND-small news, ogbn-arxiv citation). Table 4 records how each graph and bandit protocol is built. The two MovieLens datasets bracket the GraphDR-versus-PCA boundary. On MovieLens-100k ( n = 1682 items, an item–item kNN co-rating graph with 13 ,686 edges, real cen-tered unit-normalized mean-rating reward), GraphDR attains the lowest regret, though by a small margin over PCA and far below the synthetic regime, consistent with the measured tail ζk = 0 .67 (Table 6). The PCA baseline here uses learned item embeddings whereas GraphDR uses node indicators, so the comparison tests whether graph structure beats learned feature variance, not whether Laplacian projection beats PCA on the same input; the matched comparison is in the matched-comparison appendix. On MovieLens-1M (top-1500 most-rated items, ζk = 0 .68 ) GraphDR beats full LinUCB by 
+
+2.2× and the shuffle control collapses to near-random, but PCA wins: at scale learned item embeddings carry strong Dataset Graph construc-tion Bandit protocol Result MovieLens-100k Co-rating item                     
+
+> kNN graph. Node-indicator arms, real mean-rating reward; GraphDR vs. PCA/JL/full + shuf-fle. Table 6 MovieLens-1M Co-rating item
+> kNN graph on top-1500 items. Identical protocol; tests scale. Table 7 Amazon (Digital Music) Co-rating prod-uct kNN graph. Node-indicator arms, real mean-rating reward. Table 2 MIND-small Article–article category/co-click graph. Node-indicator arms, real CTR reward. Table 2 LastFM /HetRec Artist co-listen
+> kNN graph. Node-indicator arms, log play-count reward. Table 2 ogbn-arxiv Symmetrized paper citation graph. Node-indicator arms, subject-label reward; non-recommendation. Table 2
+
+Table 4: Real-data benchmarks: four recommendation graphs and two non-recommendation graphs. All datasets use node-indicator arm features ( xi = ei, d = n) consistent with the graph-causal synthetic model. variance signal that content-PCA exploits better than the graph when the reward is only weakly smooth (Table 7).                    
+
+> Method R(T)↓±s.e.m. GraphDR-shuffled (control) 712 .73.2
+> Random 704 .21.9
+> JL+LinUCB 653 .43.3
+> LinUCB-full ( d=n)615 .01.2
+> PCA+LinUCB 331 .53.6
+> GraphDR+LinUCB 238 .42.1
+
+Table 6: MovieLens-100k cumulative regret. GraphDR at-tains the lowest regret; the margin over PCA is small and far below the synthetic regime, consistent with ζk = 0 .67 .                   
+
+> Method R(T)↓±s.e.m. Random 677 .61.7
+> JL+LinUCB 660 .01.9
+> GraphDR-shuffled (control) 650 .22.9
+> LinUCB-full ( d=n)592 .61.9
+> GraphDR+LinUCB 273 .35.7
+> PCA+LinUCB 186 .72.5
+
+Table 7: MovieLens-1M (top-1500 most-rated items), ζk =0.68 . GraphDR beats full LinUCB ( 2.2×) and the shuffle control collapses to near-random, but PCA wins. 
+
+## Matched Comparison: Graph-Only PCA on the Same Input 
+
+The PCA baseline in the main body consumes learned item embeddings. To isolate the projection map from the fea-ture source , we add graph-only PCA: PCA applied to the graph adjacency itself (the top-k right singular vectors of 
+
+A), which consumes exactly the same graph-only information GraphDR receives, with no ratings or content. The only re-maining difference from GraphDR is the projection criterion (top variance directions of A versus bottom-k low-frequency Laplacian eigenvectors). 
+
+## Subspace-Capture Margin: Full Validation 
+
+Comparison to alternative selectors. Γk’s Spearman rank-correlation with the signed gap is 0.49 and its leave-one-out accuracy is 6/6 (fitted) / 5/6 (zero-parameter), ver-sus the original Gk’s |ρs| ≈ 0.11 and ζk’s 2/6. The eigengap 
+
+∆k alone rank-correlates at 0.83 but reaches only 4/6 leave-one-out and has no mechanistic justification for the head-to-head comparison against content-PCA; we report Γk as the headline rule and ∆k as a correlated secondary signal. With 
+
+n = 6 base datasets we cannot certify a threshold law; the open task is to confirm this regularity on more base graphs and against the matched graph-PCA competitor. 
+
+## Additional Synthetic Results 
+
+This appendix collects the full synthetic results summarized in the Synthetic Experiments section. 
+
+Dimension scaling. Fixing k⋆ = 5 and scaling d = n from 
+
+60 to 800 :                               
+
+> d=n60 120 240 480 800
+> GraphDR R(T)22 .218 .631 .526 .840 .6
+> GraphDR slope 0.16 0.14 0.23 0.20 0.29
+> Full LinUCB R(T)183 .0354 .8607 .0848 .8852 .1
+> Full LinUCB slope 1.33 2.58 4.35 5.91 5.82
+
+GraphDR regret stays nearly flat as d grows while full-dimensional LinUCB grows substantially, matching the pre-dicted k-versus-d exploration cost (Figure 3). 
+
+Second graph family. On a random geometric graph ( n =200 , radius 0.16 ): GraphDR R(T ) = 18 .1 versus LinUCB-full 417 .8, PCA 2045 .5, JL 2364 .1, Random 2613 .0; the shuffle control collapses to 2544 .6, near-random (Figure 4). 
+
+Regret versus projected dimension k. Projecting onto the true bottom-k nontrivial eigenvectors in the SBM with k⋆ = 5, regret at k = 1, 2, 3, 5, 8, 12 , 20 is 
+
+419 .9, 384 .2, 98 .6, 28 .7, 39 .5, 55 .4, 69 .5. Regret is mini-mized at k = k⋆ = 5 and rises on both sides (Figure 5). 
+
+Noisy graph stress test. When the graph is observed under edge-flip noise, the bootstrap estimator and naive eigengap estimator return identical bk at each noise level; under heavier noise bk degrades ( 4 → 2 → 1) with measurable regret cost, motivating Theorem 4. Dataset ζk U ⊤                                         
+
+> kθ2P⊤θ2ΓkGraphDR vs. PCA MovieLens-100k 0.67 0.528 0.389 +0 .139 win (−93 .1)Amazon 0.86 0.265 0.128 +0 .137 win (−28 .7)LastFM 0.90 0.183 0.154 +0 .028 win (−96 .4)MIND-small 0.99 0.023 0.031 −0.008 win (−472 .7)MovieLens-1M 0.68 0.532 0.771 −0.239 lose ( +86 .6)ogbn-arxiv 0.96 0.101 0.341 −0.240 lose ( +409 .1)
+
+Table 9: The subspace-capture margin Γk predicts the GraphDR-vs-content-PCA outcome where ζk cannot. Rows sorted by Γk; final column is the realized outcome (signed gap RGraphDR − RPCA in parentheses, negative = GraphDR wins). The fitted-threshold rule is leave-one-base-dataset-out correct on 6/6; the zero-parameter sign rule Γk > 0 is correct on 5/6 (lone miss: MIND at the near-tie Γk = −0.008 , where both subspaces capture almost no reward energy yet GraphDR wins because content-PCA is itself far from the reward). Crucially, Γk orders ogbn-arxiv ( −0.240 , GraphDR’s documented failure) at the bottom while ζk cannot: MIND has the largest tail ( 0.99 ) yet GraphDR wins, exactly the inversion that defeated the scalar tail and the unit-weighted Gk.
+
+Validating the robust theorem. We measure ζk and εL in each run ( n = 200 SBM, k⋆ = 5 , T = 20000 , 5 seeds). In-jecting reward energy outside the bottom-k subspace raises 
+
+ζk from 0 to 0.71 and regret rises monotonically; holding the reward exactly smooth and perturbing edges raises εL from 
+
+0 to 0.48 and regret again rises monotonically (Table 10). Pooled Spearman (R, ρ k) = 0 .68 , monotone in binned me-dians.                                       
+
+> Smoothness sweep (εL= 0 ): R(T)vs. reward tail ζk
+> ζk00.11 0.24 0.39 0.55 0.71
+> R(T)28 47 121 271 505 801
+> Noise sweep (ζk= 0 ): R(T)vs. εL
+> εL00.18 0.23 0.29 0.43 0.48
+> R(T)28 218 242 308 445 590
+
+Table 10: Stress test consistent with the generic robust the-orem: regret rises monotonically with each measured mis-specification term. Pooled Spearman (R, ρ k) = 0 .68 .
+
+## Limitations and Additional Evaluation 
+
+Several boundaries of the results deserve explicit statement. The structure-specific bound (Theorem 5) uses 
+
+SRL T (r⊥,k ), which depends on the unknown θ⋆; we state it as an oracle inequality and make it implementable only through the estimated-residual variant of Theorem 7, whose advantage is contingent on a good pilot. If the residual has large candidate-set width every round, the residual term re-mains linear in T ; this cost is unavoidable without benign-residual structure. Our real-data protocol calibrates rewards from ratings and clicks rather than from a logged online experiment with known propensities. With logged propensities or an explo-ration log under a known logging policy p, one could report, for a target policy π,
+
+bVIPS (π) = 1
+
+N
+
+> N
+
+X
+
+> i=1
+
+π(ai | xi)
+
+pi(ai | xi) ri,
+
+bVSNIPS (π) = 
+
+P 
+
+> iπ(ai|xi)
+> pi(ai|xi)
+
+ri
+
+P
+
+> iπ(ai|xi)
+> pi(ai|xi)
+
+.
+
+bVDR (π) = 1
+
+N
+
+> N
+
+X
+
+> i=1
+
+"X
+
+> a
+
+π(a | xi)bμ(xi, a )+ π(ai | xi)
+
+pi(ai | xi)
+
+ ri − bμ(xi, a i)#
+
+.
+
+A fully logged evaluation and an adaptive-k study (testing whether a corralling wrapper [2] matches oracle-k regret) are natural extensions left to future work. Replacing the node-indicator arm features with learned graph embeddings [22, 15] and studying how embedding quality affects the spectral gap is a further direction, as is extending the Laplacian-based DR survey of [14] to the bandit feedback setting. We also prove only upper bounds; matching lower bounds for the εL/∆k dependence and for the residual leverage and candidate-width terms remain open.

@@ -1,0 +1,22 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2606.25787v1/fig-001.webp",
+      "caption": "Table 3 Typed source-type mix, NB URL citations (131,514 rows).",
+      "page": 6,
+      "index": 1,
+      "width": 439,
+      "height": 277
+    },
+    {
+      "url": "assets/figures/arxiv/2606.25787v1/fig-002.webp",
+      "caption": "Table 4 Per-language top-1 cited domain, NB (post vertex-resolution). Wikipedia leads 11 of 12 languages; Lithuanian is the exception.",
+      "page": 7,
+      "index": 2,
+      "width": 412,
+      "height": 322
+    }
+  ]
+}

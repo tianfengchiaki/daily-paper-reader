@@ -1,0 +1,30 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2606.24605v1/fig-001.webp",
+      "caption": "Figure 7. Structured reasoning chains for a correctly predicted user and a mispredicted user.",
+      "page": 14,
+      "index": 1,
+      "width": 1008,
+      "height": 298
+    },
+    {
+      "url": "assets/figures/arxiv/2606.24605v1/fig-002.webp",
+      "caption": "Figure 6. Average token-level perplexity of reasoning chains before and after entropy-guided self-refinement.",
+      "page": 13,
+      "index": 2,
+      "width": 472,
+      "height": 298
+    },
+    {
+      "url": "assets/figures/arxiv/2606.24605v1/fig-003.webp",
+      "caption": "Figure 2. Overview of ScaleToT. The framework has two stages. (1) Structured Reasoning Construction: a teacher constructs typed user-state chains with bounded ToT, and a student learns to generate these chains from sparse profiles through SFT and OSIPO. (2) Reasoning Transfer for Population-Scale Inference: a lightweight profile encoder maps each sparse profile to a user-specific representation and uses it to retrieve shared reasoning representations from VQ codebooks; a profile-conditioned gate network then combines the user-specific and retrieved representations for prediction. In the advertising LTV instantiation, each chain contains K=5 lifecycle fields.",
+      "page": 4,
+      "index": 3,
+      "width": 1007,
+      "height": 611
+    }
+  ]
+}

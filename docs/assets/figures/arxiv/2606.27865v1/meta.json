@@ -1,0 +1,54 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2606.27865v1/fig-001.webp",
+      "caption": "Figure 6: Cases of different pages on Kuaishou APP.",
+      "page": 11,
+      "index": 1,
+      "width": 466,
+      "height": 328
+    },
+    {
+      "url": "assets/figures/arxiv/2606.27865v1/fig-002.webp",
+      "caption": "Figure 1: An example of the interaction paradigm in PLPM: Within each session 𝜉𝑡 , the landing page is assigned by the platform (left of the red line), while the subsequent pages are actively navigated by the user (right of the red line), forming an ordered page sequence from the landing page to the exit page. All the sessions of corresponding user constitute the intra-day trajectory T = (𝜉1, . . . , 𝜉𝑁 ).",
+      "page": 2,
+      "index": 2,
+      "width": 467,
+      "height": 348
+    },
+    {
+      "url": "assets/figures/arxiv/2606.27865v1/fig-003.webp",
+      "caption": "Figure 4: Illustration of the online pipeline.",
+      "page": 7,
+      "index": 3,
+      "width": 502,
+      "height": 241
+    },
+    {
+      "url": "assets/figures/arxiv/2606.27865v1/fig-004.webp",
+      "caption": "Figure 2: (a) The observed log-linear correlation between daily app usage time and session frequency; (b) the comparison between the step-wise bootstrapping of CQL and the trajectory-based sequence modeling of Decision Transformer; (c) an illustration of the credit ambiguity in naive session-level reward.",
+      "page": 3,
+      "index": 4,
+      "width": 1050,
+      "height": 318
+    },
+    {
+      "url": "assets/figures/arxiv/2606.27865v1/fig-005.webp",
+      "caption": "Figure 5: Online A/B test experimental results of DAU and LT.",
+      "page": 8,
+      "index": 5,
+      "width": 1047,
+      "height": 266
+    },
+    {
+      "url": "assets/figures/arxiv/2606.27865v1/fig-006.webp",
+      "caption": "Figure 3: The architecture of our proposed method.",
+      "page": 5,
+      "index": 6,
+      "width": 942,
+      "height": 667
+    }
+  ]
+}

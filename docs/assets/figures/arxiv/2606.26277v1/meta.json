@@ -1,0 +1,14 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2606.26277v1/fig-001.webp",
+      "caption": "Figure 1: System architecture overview. Left (Section 3.2): multi-modal clickstream events are fused and encoded into session embeddings. Right (Section 3.3): clustering-based sampling, iterative taxonomy generation, label assignment, and distillation.",
+      "page": 4,
+      "index": 1,
+      "width": 1056,
+      "height": 667
+    }
+  ]
+}

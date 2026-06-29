@@ -1,0 +1,190 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2606.26859v2/fig-001.webp",
+      "caption": "Table 14 | Performance comparison of multi-module combination results on public datasets based on RankMixer. The baseline results are boldfaced, the optimal results for different numbers of multi-module combination are underlined, and the results of the overall optimal combination are highlighted in blue.",
+      "page": 43,
+      "index": 1,
+      "width": 946,
+      "height": 694
+    },
+    {
+      "url": "assets/figures/arxiv/2606.26859v2/fig-002.webp",
+      "caption": "Table 3 | Five evaluation dimensions for coding patch replay.",
+      "page": 25,
+      "index": 2,
+      "width": 587,
+      "height": 367
+    },
+    {
+      "url": "assets/figures/arxiv/2606.26859v2/fig-003.webp",
+      "caption": "Table 4 | SGPO-II case study: before and after self-evolution on a complex async module. The overall score improves from 2.60 to 4.90 (+88%) after the harness accumulates project-specific constraints from earlier failures.",
+      "page": 26,
+      "index": 3,
+      "width": 787,
+      "height": 352
+    },
+    {
+      "url": "assets/figures/arxiv/2606.26859v2/fig-004.webp",
+      "caption": "Figure 9 | Case study: per-dimension score trajectory for a complex async module across SGPO-II self-evolution iterations. The harness converges from 2.60 to 4.90, with semantic correctness and safety reaching the maximum while style consistency shows the smallest remaining gap.",
+      "page": 26,
+      "index": 4,
+      "width": 837,
+      "height": 384
+    },
+    {
+      "url": "assets/figures/arxiv/2606.26859v2/fig-005.webp",
+      "caption": "Figure 4 | Architecture of the Developing Agent for the online strategy track. The central pipeline transforms a strategy specification into a validated code submission through four sequential stages: abstracting requirements, orchestrating the implementation plan, executing atomic sub-requirements, and assembling with validation. The case toolbox (right) injects constraint checks and context retrieval into the pipeline, comprising schema-retrieval tools for user-, context-, and item-side feature structs, a ranking DSL checker, a C++ syntax checker, and a lightweight static linter that accumulates project-specific rules automatically.",
+      "page": 15,
+      "index": 5,
+      "width": 808,
+      "height": 352
+    },
+    {
+      "url": "assets/figures/arxiv/2606.26859v2/fig-006.webp",
+      "caption": "Table 7 | Categorized failure modes observed in the coding phase.",
+      "page": 30,
+      "index": 6,
+      "width": 683,
+      "height": 252
+    },
+    {
+      "url": "assets/figures/arxiv/2606.26859v2/fig-007.webp",
+      "caption": "Table 6 | Categorized rejection reasons for the 268 ideas that failed the validate gate. Each idea is assigned to exactly one category by priority 𝐴 → 𝐵 → 𝐶 → 𝐸 → 𝐷 → 𝐹 → 𝑍.",
+      "page": 30,
+      "index": 7,
+      "width": 893,
+      "height": 252
+    },
+    {
+      "url": "assets/figures/arxiv/2606.26859v2/fig-008.webp",
+      "caption": "Table 10 | Loop 1: Direct PCV boosting – agent inputs and outputs.",
+      "page": 34,
+      "index": 8,
+      "width": 993,
+      "height": 523
+    },
+    {
+      "url": "assets/figures/arxiv/2606.26859v2/fig-009.webp",
+      "caption": "Table 13 | Performance comparison of reproduced models across multiple methods. The baseline results are boldfaced, the optimal results are underlined.",
+      "page": 42,
+      "index": 9,
+      "width": 987,
+      "height": 387
+    },
+    {
+      "url": "assets/figures/arxiv/2606.26859v2/fig-010.webp",
+      "caption": "Table 11 | Loop 2: Constrained PCV ranking – agent inputs and outputs.",
+      "page": 35,
+      "index": 10,
+      "width": 993,
+      "height": 448
+    },
+    {
+      "url": "assets/figures/arxiv/2606.26859v2/fig-011.webp",
+      "caption": "Figure 7 | SGPO-I trace-based harness evolution. Accumulated traces are sampled into rubrics and replay tasks; evaluator feedback is converted into a semantic gradient, refined into a candidate harness, and admitted only through paired replay.",
+      "page": 23,
+      "index": 11,
+      "width": 787,
+      "height": 377
+    },
+    {
+      "url": "assets/figures/arxiv/2606.26859v2/fig-012.webp",
+      "caption": "Table 15 | Performance comparison of multi-module combination results on industrial scenario dataset. The best result is highlighted in blue.",
+      "page": 45,
+      "index": 12,
+      "width": 479,
+      "height": 294
+    },
+    {
+      "url": "assets/figures/arxiv/2606.26859v2/fig-013.webp",
+      "caption": "Figure 2 | Overall framework of AgentX.",
+      "page": 8,
+      "index": 13,
+      "width": 983,
+      "height": 457
+    },
+    {
+      "url": "assets/figures/arxiv/2606.26859v2/fig-014.webp",
+      "caption": "Figure 11 | Production flow for the life-service recommendation decision agent. AgentX converts diagnostic signals into production operators, while the resulting operators expand the atomic action space available to the decision agent.",
+      "page": 36,
+      "index": 14,
+      "width": 787,
+      "height": 477
+    },
+    {
+      "url": "assets/figures/arxiv/2606.26859v2/fig-015.webp",
+      "caption": "Figure 6 | Architecture of the Evaluation Agent, which chains OpenAPI-mediated safe deployment, online A/B execution, and guardrail-vetoed judgement, turning production feedback into the reward signal for later AgentX iterations.",
+      "page": 19,
+      "index": 15,
+      "width": 730,
+      "height": 729
+    },
+    {
+      "url": "assets/figures/arxiv/2606.26859v2/fig-016.webp",
+      "caption": "Figure 5 | Architecture of the Coding Agent for the offline model track. The central pipeline (bottom) turns a model-architecture proposal into a trustworthy training conclusion through four sequential stages: declaring a policy, implementing and verifying the code change, running training and evaluation, and reviewing the result with causal-chain attribution. The verification-and-experts harness (top) injects checks and evidence through an isolated expert panel voting for consensus, a change verifier that confirms the code matches the policy, a metric reader that extracts AUC from training logs, and an attribution check that adjudicates whether each causal-chain link holds.",
+      "page": 17,
+      "index": 16,
+      "width": 808,
+      "height": 362
+    },
+    {
+      "url": "assets/figures/arxiv/2606.26859v2/fig-017.webp",
+      "caption": "Figure 10 | Three weeks of self-evolution transformed the AgentX loop: weekly concurrent experiments quadrupled (15→60), idea pass rate tripled (15%→45%), and weekly launchable results more than doubled (2→5). Skill consolidation, pitfalls accumulation, and dryrun-template maturation compounded throughput with selectivity—the system no longer just produces more, it produces more of the right ideas.",
+      "page": 32,
+      "index": 17,
+      "width": 739,
+      "height": 425
+    },
+    {
+      "url": "assets/figures/arxiv/2606.26859v2/fig-018.webp",
+      "caption": "Table 2 | SGPO-I evolution trace for the brainstorm subagent. Each round samples traces, proposes a local harness edit, and admits the edit only after paired replay.",
+      "page": 24,
+      "index": 18,
+      "width": 837,
+      "height": 367
+    },
+    {
+      "url": "assets/figures/arxiv/2606.26859v2/fig-019.webp",
+      "caption": "Figure 8 | Representative SGPO-I evolution patterns on the brainstorm workflow. Each panel shows eight SGPO rounds under a fixed setting: trace batch size 5, 8 rubric items, and 10 replay tasks. The three curves track the idea generation subagent, idea validation subagent, and idea propose subagent. Since rubrics and replay tasks are regenerated dynamically, harness evolution may show steady gains, early saturation, temporary regression, or noisy recovery rather than a strictly monotonic trend.",
+      "page": 24,
+      "index": 19,
+      "width": 869,
+      "height": 488
+    },
+    {
+      "url": "assets/figures/arxiv/2606.26859v2/fig-020.webp",
+      "caption": "Figure 3 | Brainstorm Agent workflow. Historical experiment memory and system knowledge are organized into Experiment KB and System KB. The Brainstorm Agent clarifies the task, produces candidate ideas, validates them with review and boundary checks, and materializes accepted ideas for downstream execution.",
+      "page": 9,
+      "index": 20,
+      "width": 691,
+      "height": 509
+    },
+    {
+      "url": "assets/figures/arxiv/2606.26859v2/fig-021.webp",
+      "caption": "Table 12 | Expert agent and AgentX co-evolution loop – agent inputs and outputs. Revenue refers to the commercial revenue generated in the online advertising system of the Kuaishou platform.",
+      "page": 37,
+      "index": 21,
+      "width": 983,
+      "height": 461
+    },
+    {
+      "url": "assets/figures/arxiv/2606.26859v2/fig-022.webp",
+      "caption": "Figure 1 | AgentX transforms recommendation iteration from a human-driven, manually handed-off pipeline into an agent-driven closed loop, where online A/B feedback and trajectory data continuously improve the system itself.",
+      "page": 5,
+      "index": 22,
+      "width": 983,
+      "height": 294
+    },
+    {
+      "url": "assets/figures/arxiv/2606.26859v2/fig-023.webp",
+      "caption": "Table 1 | Eight-dimensional coding quality score factors.",
+      "page": 16,
+      "index": 23,
+      "width": 635,
+      "height": 281
+    }
+  ]
+}

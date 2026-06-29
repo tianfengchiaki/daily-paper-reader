@@ -1,0 +1,54 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2606.27243v2/fig-001.webp",
+      "caption": "Table 6: Component-level ablation on the L3 task. Each variant disables one NOVA component while keeping the rest of the harness unchanged. Higher is better for LPR/EPR, lower is better for SFR.",
+      "page": 8,
+      "index": 1,
+      "width": 1056,
+      "height": 221
+    },
+    {
+      "url": "assets/figures/arxiv/2606.27243v2/fig-002.webp",
+      "caption": "Figure 1: Overview of the NOVA level-aware architecture-gradient workflow. The Main Agent fixes the task level and execution mode, coordinates seven specialized stages, and updates the architecture gradient from the previous modification, verification diagnostics, metric feedback, and trajectory memory. The offline inner loop explores candidate modifications, while the online outer loop validates the selected candidate with business metrics.",
+      "page": 4,
+      "index": 2,
+      "width": 844,
+      "height": 419
+    },
+    {
+      "url": "assets/figures/arxiv/2606.27243v2/fig-003.webp",
+      "caption": "Table 3: Capability levels and execution modes. The mode depends on skill-specification coverage, not directly on the level.",
+      "page": 4,
+      "index": 3,
+      "width": 1056,
+      "height": 190
+    },
+    {
+      "url": "assets/figures/arxiv/2606.27243v2/fig-004.webp",
+      "caption": "Table 9: End-to-end velocity: legacy human workflow vs. NOVA harness, by stage. All values in the abstract engineer-hour unit 𝑢. The two training rows have the same wall-clock time in both workflows because they are GPU-bound; the savings come from reduced human monitoring.",
+      "page": 12,
+      "index": 4,
+      "width": 1056,
+      "height": 783
+    },
+    {
+      "url": "assets/figures/arxiv/2606.27243v2/fig-005.webp",
+      "caption": "Figure 3: Future evolution roadmap of NOVA across fullfunnel scope expansion, full-lifecycle R&D automation, selfevolving skills, and gradient-aware resource scheduling.",
+      "page": 9,
+      "index": 5,
+      "width": 506,
+      "height": 246
+    },
+    {
+      "url": "assets/figures/arxiv/2606.27243v2/fig-006.webp",
+      "caption": "Table 4: Key operations in Algorithm 1.",
+      "page": 5,
+      "index": 6,
+      "width": 506,
+      "height": 329
+    }
+  ]
+}

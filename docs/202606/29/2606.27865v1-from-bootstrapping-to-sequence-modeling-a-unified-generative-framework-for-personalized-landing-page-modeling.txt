@@ -1,0 +1,844 @@
+Title: From Bootstrapping to Sequence Modeling: A Unified Generative Framework for Personalized Landing-Page Modeling
+
+URL Source: https://arxiv.org/pdf/2606.27865v1
+
+Published Time: Mon, 29 Jun 2026 00:36:10 GMT
+
+Number of Pages: 11
+
+Markdown Content:
+# From Bootstrapping to Sequence Modeling: A Unified Generative Framework for Personalized Landing-Page Modeling 
+
+# Fan Li ∗† 
+
+Duke University Durham, USA fan.li@duke.edu 
+
+# Chang Meng ∗
+
+Kuaishou Technology Beijing, China mengchang@kuaishou.com 
+
+# Jiaqi Fu 
+
+Kuaishou Technology Beijing, China fujiaqi05@kuaishou.com 
+
+# Shuchang Liu 
+
+Kuaishou Technology Beijing, China liushuchang@kuaishou.com 
+
+# Tianke Zhang 
+
+Kuaishou Technology Beijing, China zhangtianke@kuaishou.com 
+
+# Xueliang Wang ‡
+
+Kuaishou Technology Beijing, China wangxueliang03@kuaishou.com 
+
+# Xiaoqiang Feng ‡
+
+Kuaishou Technology Beijing, China fengxiaoqiang@kuaishou.com 
+
+# Yongqi Liu 
+
+Kuaishou Technology Beijing, China liuyongqi@kuaishou.com 
+
+# Kaiqiao Zhan 
+
+Kuaishou Technology Beijing, China zhankaiqiao@kuaishou.com 
+
+## Abstract 
+
+Modern online platforms increasingly adopt multi-page architec-tures to accommodate diverse user needs. On these platforms, page navigation (the process of directing users to specific functional pages upon app entry) serves as a critical gateway that shapes user’s first impression and significantly influences subsequent en-gagement. To optimize this process, Kuaishou formulated the task of Personalized Landing Page Modeling (PLPM) and proposed KLAN, a reinforcement learning framework built upon Conservative Q-Learning (CQL). However, CQL-based approaches suffer from two fundamental limitations: (1) the Markov assumption fails to capture the strong non-Markovian temporal dependencies inherent in real-world user behaviors, and (2) TD learning with bootstrapping incurs severe cumulative errors and credit assignment difficulties under delayed rewards, particularly in long-horizon settings where users enter the app multiple times daily. To address these limitations, we propose GLAN ( Generative Landing-page Adaptive Navigator), a sequence modeling framework built on Decision Transformer to tackle PLPM from a unified global-local perspective. Specifically, GLAN incorporates two key modules. First, we design the L-RTG module that captures users’ inter-day consumption dynamics to provide accurate global guidance for all page assignments within a day. Furthermore, we propose the HRM module that decomposes session-level feedback into fine-grained signals, enabling precise  
+
+> ∗Both authors contributed equally to this research.
+> †Work done at Kuaishou Technology.
+> ‡The corresponding author.
+> This work is licensed under a Creative Commons Attribution 4.0 International License.
+> KDD ’26, Jeju Island, Republic of Korea
+> ©2026 Copyright held by the owner/author(s). ACM ISBN 979-8-4007-2259-2/2026/08 https://doi.org/10.1145/3770855.3818417
+
+local supervision for each page assignment. Extensive online exper-iments conducted on the Kuaishou platform demonstrate the effec-tiveness of GLAN, achieving +0.158% and +0.108% improvements on Daily Active Users (DAU) and user Lifetime (LT) respectively. 
+
+## CCS Concepts 
+
+• Information systems → Recommender systems .
+
+## Keywords 
+
+Personalized Landing Page, Decision Transformer 
+
+ACM Reference Format: 
+
+Fan Li, Chang Meng, Jiaqi Fu, Shuchang Liu, Tianke Zhang, Xueliang Wang, Xiaoqiang Feng, Yongqi Liu, and Kaiqiao Zhan. 2026. From Bootstrapping to Sequence Modeling: A Unified Generative Framework for Personalized Landing-Page Modeling. In Proceedings of the 32nd ACM SIGKDD Conference on Knowledge Discovery and Data Mining V.2 (KDD ’26), August 09–13, 2026, Jeju Island, Republic of Korea. ACM, New York, NY, USA, 11 pages. https: //doi.org/10.1145/3770855.3818417 
+
+## 1 Introduction 
+
+From e-commerce platforms (e.g., Taobao) to short-video applica-tions (e.g., TikTok and Kuaishou), modern online platforms increas-ingly adopt a multi-page architecture to cater to users’ diverse needs. In this context, page navigation (the process of navigating users to a specific functional or channel page upon app entry), serves as a critical gateway that shapes the first impression and significantly impacts subsequent user engagement. However, with rapidly ex-panding user bases and increasing industrial constraints, traditional heuristic-based methods struggle to make effective page navigation, often failing to provide fine-grained personalization and adhere to industrial constraints. This challenge is further compounded by users’ intra-day dynamic interest transition: users typically launch the app multiple times daily with evolving intents, rendering static heuristics fundamentally inadequate. Recognizing its importance, Kuaishou formulated the task of 
+
+Personalized Landing Page Modeling (PLPM) [ 22 ] (illustrated    
+
+> arXiv:2606.27865v1 [cs.IR] 26 Jun 2026 KDD ’26, August 09–13, 2026, Jeju Island, Republic of Korea Fan Li et al. Landing Page Exit
+> Page
+
+# … 
+
+> Page 2
+
+# … 
+
+> Page 2
+
+# … 
+
+> Page 2
+
+Session -level Page Sequence   
+
+> Landing Page
+> Landing Page
+
+𝝃 𝟏 
+
+𝝃 𝟐 
+
+𝝃 𝑵 
+
+> …
+> …
+> Intra -day Session Trajectory
+> Exit
+> Page
+> Exit
+> Page
+> …
+
+Figure 1: An example of the interaction paradigm in PLPM: Within each session 𝜉 𝑡 , the landing page is assigned by the platform (left of the red line), while the subsequent pages are actively navigated by the user (right of the red line), forming an ordered page sequence from the landing page to the exit page. All the sessions of corresponding user constitute the intra-day trajectory T = (𝜉 1, . . . , 𝜉 𝑁 ).
+
+in Figure 1) and proposes KLAN [ 22 ], a RL-based framework that models users’ intra-day interest dynamics to optimize page assign-ment upon app entry. However, the proposed RL-based approach for PLPM suffers from two critical limitations. First, KLAN adopts CQL [ 18 , 20 , 42 ] based on Markov Decision Processes (MDPs) [ 29 ,50 , 57 ], yet real-world user behaviors exhibit strong non-Markovian temporal dependencies [ 5 , 10 , 14 , 24 , 33 –35 ]. Although prior works [ 1,17 , 27 , 54 , 60 ] attempt to encode historical sequences into the state representation (e.g., using RNNs, Transformers, or mean pooling), such approaches essentially perform lossy compression of trajec-tory history. Constructing a state representation that strictly sat-isfies the Markov property remains theoretically challenging and practically intractable in complex industrial environments. Second, PLPM inherently involves delayed rewards [ 13 , 16 , 45 ]. For instance, assigning a high-stickiness page (e.g., the Following page) in the morning may not yield immediate engagement gains, but can sig-nificantly increase the probability of evening revisits and boost the corresponding consumption metrics. Using temporal difference (TD) [ 39 ] updates to learn a value function through bootstrapping, CQL is prone to severe cumulative errors and credit assignment difficulties under such delayed reward structures. These issues are further amplified in long-horizon settings where users enter the app multiple times within a day. Recently, Decision Transformer [ 5, 10 ] has emerged as a promis-ing paradigm, effectively capturing temporal dependencies and his-torical context via condition sequence modeling. Applying DT to PLPM offers a principled solution to the aforementioned challenges. Specifically, to address the non-Markovian issue, DT inherently op-erates on the full trajectory sequence (𝑅 1, 𝑠 1, 𝑎 1, . . . , 𝑅 𝑡 , 𝑠 𝑡 , 𝑎 𝑡 ), lever-aging the Transformer’s self-attention mechanism to capture long-range temporal dependencies without requiring the Markov as-sumption (shown in Figure 2(b)). Moreover, DT circumvents the in-stability of TD-learning by adopting a supervised learning paradigm conditioned on Returns-to-Go (RTG), effectively avoiding the cu-mulative error propagation inherent in bootstrapping-based value estimation. With the global modeling capacity of self-attention and the trajectory-level RTG supervision, DT demonstrates robustness to reward redistribution and outperforms TD-based methods in scenarios requiring long-horizon credit assignment [2, 3]. However, several critical challenges emerge when implementing a DT-based approach for PLPM in real-world scenarios. 
+
+• Inter-day RTG Modeling: During offline training, DT is super-vised using posterior RTG values collected from Intra-day trajec-tory. At inference time, however, the user’s future engagement is unavailable, necessitating a prior target RTG to guide global decision-making. This introduces a critical initialization dilemma inherent to the DT paradigm: conditioning on an overly aggres-sive target for low-activity users leads to out-of-distribution (OOD) states and model hallucination, whereas overly conserva-tive targets fail to exploit the full potential of high-value users. This is further compounded by the inherent periodicity and volatility of user engagement patterns (e.g., weekday vs. weekend behaviors), as well as evolving platform strategies. 
+
+• Session-level Value Modeling: A naive session-level reward (e.g., total session duration) is not a sufficient statistic for evaluat-ing the landing-page action, resulting in severe credit ambiguity (Figure 2(c)). Consider two sessions with identical total dura-tion: in one, the user engages deeply with the assigned landing page, indicating accurate preference alignment; in the other, the user quickly drops the landing page but compensates through downstream consumption on subsequent pages. Despite opposite action quality, both yield the same posterior session duration. This ambiguity necessitates decomposing session-level feedback into fine-grained components, enabling precise local supervision for each page assignment. To address the aforementioned challenges, we propose GLAN (Generative Landing-page Adaptive Navigator), an enhanced DT framework designed to provide personalized landing pages under the formulation of PLPM. First, to address the challenge of Inter-day RTG Modeling, we introduce the L-RTG (Lagrangian-constrained Return-to-Go) module. Recognizing that user engagement exhibits both periodicity and variability, we decouple the modeling into two complementary perspectives: (1) periodicity-aware patterns , which capture stable weekly cyclic behaviors, and (2) sequential dynam-ics , which model the evolving and stochastic fluctuations in user interests. Furthermore, leveraging the inherent synergy between app usage time and session frequency in PLPM (Figure 2(a)), we formulate L-RTG as a constrained optimization problem. Second, to mitigate the credit ambiguity in Session-level Value Modeling, we design the HRM (Hierarchical Reward Model) module. Unlike naive duration-based metrics, our model decomposes session-level feedback into fine-grained signals, including page-specific con-sumption duration and landing-page drop-off risk, enabling the model to distinguish genuine preference alignment from compen-satory downstream consumption and thereby providing precise local supervision for each page assignment. Our contributions can be summarized as follows: From Bootstrapping to Sequence Modeling: A Unified Generative Framework for Personalized Landing-Page Modeling KDD ’26, August 09–13, 2026, Jeju Island, Republic of Korea Exit 
+
+t1=90s t2=10s T=100s 
+
+t1=10s T=100s 
+
+t1=5s T=5s 
+
+# …
+
+# …
+
+t2=90s 
+
+> 𝝃 𝟏
+> 𝝃 𝟑
+> 𝝃 𝟐
+
+# …
+
+# …
+
+CQL 
+
+DT Self -Attention       
+
+> 𝝃 𝒕 𝝃 𝒕 "𝟏 𝝃 𝑵
+> 𝝃 𝒕 𝝃 𝒕 "𝟏 𝝃 𝑵
+> 𝝃 𝒕 $𝟏
+> 𝝃 𝒕 $𝟏
+> Cumulative Error
+> Temporal Correlations
+> (a) User Session -Duration Analysis (b) CQL vs DT (c) Credit Ambiguity in Session Evaluation
+
+Figure 2: (a) The observed log-linear correlation between daily app usage time and session frequency; (b) the comparison between the step-wise bootstrapping of CQL and the trajectory-based sequence modeling of Decision Transformer; (c) an illustration of the credit ambiguity in naive session-level reward. 
+
+• We provide a systematic analysis of the limitations in exist-ing PLPM approaches, examining the compatibility between se-quence modeling and traditional RL frameworks. 
+
+• We propose GLAN, a sequence modeling framework based on Decision Transformer to tackle PLPM from a unified global-local perspective. 
+
+• We conducted extensive online experiments on the Kuaishou platform, obtaining 0.158% and 0.108% improvements on DAU and LT respectively. 
+
+## 2 Related Work 2.1 Offline Reinforcement Learning and Decision Transformers 
+
+Unlike traditional methods that optimize for one-step recommen-dations, reinforcement learning [ 40 ] formulates video recommen-dation as a Markov Decision Process (MDP), aiming to maximize long-term user satisfaction through cumulative reward optimiza-tion. Reinforcement learning (RL) approaches can be broadly cate-gorized into on-policy [36, 38] and off-policy [15, 42, 44] methods. Due to the high variance and low sample efficiency of on-policy methods, off-policy methods have become the predominant choice in industrial applications. Within the off-policy paradigm, policy gradient methods [ 4, 6, 11 , 12 , 26 , 48 ] suffer from distribution mis-match between the behavior policy and the target policy, leading to substantial discrepancies between offline evaluation and online performance. Value gradient approaches [ 37 , 41 , 42 , 56 , 58 ], promi-nently represented by Q-learning [ 18 , 20 , 42 ], have demonstrated superior stability and data efficiency by leveraging experience re-play. However, these methods share a fundamental limitation: their reliance on the Markov assumption restricts access to historical observations, thereby hindering the modeling of long-horizon de-pendencies [ 2, 3 , 19 ], critical in sequential tasks with strong tem-poral patterns. Decision Transformers (DT) overcome these lim-itations by reformulating reinforcement learning as a sequence modeling problem. By leveraging transformer architectures, DT effectively captures historical patterns and long-term dependen-cies, achieving state-of-the-art performance in offline RL settings. Subsequent extensions have further enhanced DT’s capabilities, including architectural improvement [ 28 , 30 , 49 , 59 ] and industrial adaptation [ 10 , 25 ], demonstrating the versatility of the sequence modeling paradigm for decision-making problems. 
+
+## 2.2 Page Navigation 
+
+Modern online platforms increasingly adopt a multi-page archi-tecture [ 7 , 21 , 23 , 32 , 46 , 47 , 52 , 53 ] to accommodate diverse user needs, establishing a two-stage interaction paradigm: an initial page navigation stage and a subsequent in-page interaction stage. Personalized Landing Page Modeling (PLPM) [ 22 ] is formulated as a decision-making task that addresses the first stage, aiming to proactively select the optimal landing page (e.g., functional tabs or content channels) that maximizes both short-term satisfaction and long-term engagement under industrial constraints. Early efforts to address PLPM relied on static heuristics, such as resuming the last exited page or selecting the most frequently visited page from offline statistics. These approaches lack real-time adaptability and fine-grained personalization, often failing to capture users’ evolv-ing intents. To bridge this gap, KLAN [ 22 ] was proposed as the first framework specifically designed for PLPM, built upon Conservative Q-Learning (CQL) [ 20 ]. Additionally, KLAN also introduce Page Drop-off Ratio (PDR) [ 22 ] as a key metric to quantify the probability of immediate user departure, serving as a direct proxy for landing page relevance and user satisfaction. 
+
+## 3 Preliminary 3.1 Personalized Landing Page Modeling 
+
+To comprehensively capture the evolution of user interests within a day, we characterize the interaction paradigm in PLPM as a hier-archical structure (as illustrated in Figure 1). 
+
+• Session-level Page Sequence: A session is defined as the se-quence of interactions that starts with the display of a landing page when the user enters the app and ends when the user exits. Formally, let 𝜉 𝑡 denote the 𝑡 -th session of a user within a day. Each session corresponds to an ordered sequence of visited pages: 
+
+𝜉 𝑡 = (𝑝 𝑡, 1 → 𝑝 𝑡, 2 → · · · → 𝑝 𝑡,𝑘 → · · · → 𝑝 𝑡,𝑀 𝑡 ), (1) KDD ’26, August 09–13, 2026, Jeju Island, Republic of Korea Fan Li et al. 
+
+where 𝑝 𝑡, 1 denotes the landing page and the subsequent pages 
+
+{𝑝 𝑡,𝑘 }𝑘 >1 represent the user’s voluntary navigation behaviors following the landing page. Here, 𝑀 𝑡 denotes the total number of pages visited within the 𝑡 -th session. 
+
+• Intra-day Trajectory: Users typically engage with an app across multiple sessions throughout a day, with their intent and interest evolving dynamically over time. Rather than being independent, these sessions exhibit significant temporal dependencies. To cap-ture such cross-session temporal dependencies, we define the intra-day trajectory T as an ordered sequence of sessions. 
+
+T = (𝜉 1, . . . , 𝜉 𝑡 , 𝜉 𝑡 +1, . . . , 𝜉 𝑁 ), (2) where 𝑁 denotes the total number of sessions initiated by the user within a day. 
+
+## 3.2 DT-based PLPM 
+
+Decision Transformer (DT) [ 5, 10 ] has recently emerged as a pow-erful paradigm for sequential decision-making by reformulating reinforcement learning as a sequence modeling problem. Without relying on Markovian assumption [ 5 , 10 , 24 ], DT excels at capturing long-range dependencies from a global perspective [ 2], making it well-suited for PLPM where user behaviors display significant tem-poral dependencies across sessions. Building upon this insight, we formulate PLPM as a sequential modeling task under DT settings. 
+
+• state 𝑠 𝑡 : The continuous representation space of the user state. Each state 𝑠 𝑡 encodes the user’s real-time features, daily features upon app entry at step 𝑡 .
+
+• action 𝑎 𝑡 : Each action 𝑎 𝑡 represents the assignment of a specific landing page upon app entry at step 𝑡 . The action space 𝐴 com-prises all available landing page (Following Page, Explore Page and Featured Page) assignments. 
+
+• reward ˆ𝑟 𝑡 : The reward ˆ𝑟 𝑡 is defined as the Session-level value estimate of corresponding session. 
+
+• Return-To-Go (RTG) ˆ𝑅 𝑡 : The RTG value indicates the total amount of rewards to be obtained in the future time steps: 
+
+ˆ𝑅 𝑡 =∑︁ ˆ𝑟 𝑡 (3) These settings result in the following trajectory representation, which is well-suited for autoregressive training and inference: 
+
+T = ( ˆ𝑅 1, 𝑠 1, 𝑎 1, ˆ𝑅 2, 𝑠 2, 𝑎 2 . . . , ˆ𝑅 𝑡 , 𝑠 𝑡 , 𝑎 𝑡 ) (4) 
+
+## 3.3 The L-RTG Modeling 
+
+The collected dataset is denoted as Z = {𝑧 1, 𝑧 2, . . . , 𝑧 𝑁 } and 𝑁 is the total number of instances. Each instance 𝑧 𝑖 = (x𝑖 , t𝑖 , se 𝑖 , 𝑦 𝑤𝑡 𝑖 , 𝑦 𝑠𝑒𝑠𝑠𝑖𝑜𝑛 𝑖 )
+
+comprises the user feature x𝑖 , the statistical feature t𝑖 , the histori-cal behavior sequence se 𝑖 , and two observed responses: app usage time 𝑦 𝑤𝑡 𝑖 and session frequency 𝑦 𝑠𝑒𝑠𝑠𝑖𝑜𝑛 𝑖 . The historical behavior sequence is denoted as se 𝑖 = {v𝑖, 1, v𝑖, 2, . . . , v𝑖,𝐿 }, where v𝑖,𝑡 repre-sents the behavior feature vector at the 𝑡 -th historical step and 
+
+𝐿 is the sequence length. The objective of L-RTG modeling is to estimate the user’s expected total consumption duration for the current day based on their historical behavior, thereby providing accurate global guidance for GLAN inference. 
+
+## 3.4 The Hierarchical Reward Modeling 
+
+In the online video recommendation pipeline, we design a real-time data streaming for session-level evaluation. Each instance is represented as a tuple (x𝑖 , c𝑖 , v𝑖 , k𝑖 , Y𝑖 ), where x𝑖 denotes the user features, c𝑖 denotes the contextual features, v𝑖 represents the corre-sponding session features, k𝑖 indicates the landing page assigned by the platform and Y𝑖 is the observed user response. Specifically, 
+
+Y𝑖 = {𝑇 1 
+
+> 𝑖
+
+,𝑇 2 
+
+> 𝑖
+
+,𝑇 3 
+
+> 𝑖
+
+, 𝑦 sw  
+
+> 𝑖
+
+}, where 𝑇 𝑗 𝑖 denotes the consumption duration on the 𝑗 -th page type. The binary signal 𝑦 𝑠𝑤 𝑖 ∈ { 0, 1} indicates whether the user quickly abandons (drop off) the assigned land-ing page. Formally, if the consumption duration of landing page within the session is less than a threshold 𝜏 , the user is considered dissatisfied with the assigned landing page and 𝑦 sw  
+
+> 𝑖
+
+is labeled as 1; otherwise, it is labeled as 0. The objective of hierarchical reward modeling is to leverage these features to accurately evaluate session-level value, thereby providing precise local supervision signals for GLAN. 
+
+## 4 Method 4.1 L-RTG 
+
+4.1.1 Periodicity-Aware Feature Representation: We first em-ploy trainable embedding layers to obtain the representations of user features x𝑖 and the statistical feature t𝑖 , denoted as e𝑥𝑖 and 
+
+e𝑡𝑖 , respectively. These representations are then concatenated to form a unified static context embedding. The context embedding is formulated as: 
+
+e𝑐𝑜𝑛𝑡𝑒𝑥𝑡 𝑖 = Concat (e𝑥𝑖 , e𝑡𝑖 ). (5) For the historical behavior sequence se 𝑖 , we apply a transforma-tion layer to derive the corresponding latent representations H𝑖 =
+
+[h𝑖, 1, . . . , h𝑖,𝐿 ] ∈ R𝐿 ×𝑑 , where 𝐿 denotes the sequence length and 𝑑 
+
+is the embedding dimension. To aggregate the sequential information, we compute the atten-tion [ 43 , 51 ], scores between the target context and the historical sequence. Unlike standard dot-product attention, we introduce a 
+
+modulo-based periodic bias to explicitly capture weekly periodic-ity inherent in user behavior patterns. The attention scores are computed as: 
+
+w𝑖 = q𝑖 K⊤
+
+> 𝑖
+
+√𝑑 𝑘 
+
++ b𝑝𝑒𝑟𝑖𝑜𝑑 , (6) where q𝑖 = e𝑐𝑜𝑛𝑡𝑒𝑥𝑡 𝑖 W𝑄 ∈ R𝑑 𝑘 denotes the query vector derived from the context embedding and K𝑖 = H𝑖 W𝐾 ∈ R𝐿 ×𝑑 𝑘 represents the key matrix of the historical sequence. Here, W𝑄 and W𝐾 are learnable projection parameters. bperiod ∈ R𝐿 represents the learn-able periodicity bias: 
+
+bperiod [𝑡 ] = Bweek [Δ𝑡 mod 7 ] + Bdist [bucket (Δ𝑡 )] , (7) where Δ𝑡 denotes the temporal distance between the current con-text and the 𝑡 -th historical step. Bweek ∈ R7 and Bdist ∈ R𝐵 are learnable lookup tables weekly periodic effects and temporal decay, respectively. The function bucket (·) maps Δ𝑡 into 𝐵 non-uniform bins with finer granularity for recent days and coarser granularity for distant ones. Finally, we obtain the periodicity-aware sequence representation 
+
+e𝑝 𝑖 via the weighted aggregation: 
+
+e𝑝 𝑖 = softmax (w𝑖 ) · V𝑖 , (8) where V𝑖 = H𝑖 W𝑉 ∈ R𝐿 ×𝑑 𝑣 represents the value matrix, and W𝑉 
+
+is the corresponding projection matrix. Then we define the user From Bootstrapping to Sequence Modeling: A Unified Generative Framework for Personalized Landing-Page Modeling KDD ’26, August 09–13, 2026, Jeju Island, Republic of Korea Adaptive 
+
+> Gate
+> Statistic
+> features
+> User
+> Features
+
+Periodicity -Aware 
+
+Encoder  
+
+> Tower Tower
+
+𝑧 ! 
+
+> "#
+
+𝑧 !
+
+> $%
+
+𝑦 #! 
+
+> "#
+
+𝑦 #!
+
+> $%
+
+L-RTG Model 
+
+> Concat
+> Shared Control
+> Expert
+> Task Specific
+> Expert
+> Adaptive
+> Gate
+
+ℒ!"#$ 
+
+> Transformer
+> Encoder
+> Historical
+> Behavior
+> Concat
+> Transformer
+> Encoder
+> Historical
+> Behavior
+> Concat
+
+## SR! 0 0 0
+
+# a
+
+# a t-1 t-1 t-1 t t t
+
+## SR! a SR! a
+
+0 t-1 t
+
+# a a
+
+# …
+
+emb. + pos.enc. 
+
+linear decoder 
+
+Reward Model 
+
+# causal transformer  
+
+> User
+> Features
+> Contextual
+> Features
+> Session Statistic
+> Features
+
+MMOE    
+
+> Tower Tower Tower Tower
+
+𝑇 %!& 𝑇 %!' 𝑇 %!( 𝑦 #!
+
+> $"
+
+Embedding 
+
+Feature Selection 
+
+> Landing
+> Page
+
+Embedding 
+
+> Historical
+> Behavior
+
+𝑧 ! 
+
+> &
+
+𝑧 ! 
+
+> '
+
+𝑧 ! 
+
+> (
+
+𝑧 !
+
+> )*
+
+𝑒 ! 
+
+> +
+
+𝑒 !
+
+> +
+
+𝑢 !
+
+Figure 3: The architecture of our proposed method. 
+
+representation as 
+
+u𝑖 = Concat (e𝑐𝑜𝑛𝑡𝑒𝑥𝑡 𝑖 , e𝑝 𝑖 ) (9) 
+
+4.1.2 Sequential Dynamics Modeling . While the periodicity branch captures cyclical patterns, user behaviors also exhibit evolv-ing trends and stochastic fluctuations caused by dynamic strate-gies in platform. To capture the sequential dynamics, we employ a standard Transformer Encoder to model the historical sequence dependencies: 
+
+H𝑑 𝑖 = Transformer_Encoder (H𝑖 + P), (10) where P denotes the absolute positional embeddings. We then apply an attention-pooling layer to aggregate the hidden states into a compact trend representation e𝑑 𝑖 , which encapsulates the evolution of user interests and response variance: 
+
+e𝑑 𝑖 = AttentionPooling (H𝑑 𝑖 ). (11) 
+
+4.1.3 Adaptive Gating Mechanism . Through the preceding modules, we obtain two complementary representations: (1) The periodicity-aware user representation u𝑖 , , which encodes static user profiles and stable weekly cyclic patterns; and (2) The sequen-tial dynamics representation e𝑑 𝑖 , modeling the evolving dynamics and stochastic fluctuations in user interests. To enhance the model’s representational capacity, we first use op-erations (e.g. MLP) to generate 𝑀 expert representations {dim }𝑀 𝑚 =1
+
+from u𝑖 . To effectively aggregate the expert information, we intro-duce a task-specific adaptive gating mechanism. Specifically, for each task 𝑘 ∈ { 𝑤𝑡, 𝑠𝑒 } (representing App Usage Time and Session, respectively), a dedicated gating network leverages both the sequen-tial dynamics and periodicity-aware representations to compute task-specific aggregation weights: 
+
+g𝑘 𝑖 = Softmax 
+
+
+
+W𝑘 𝑔 (e𝑑 𝑖 ∥ u𝑖 ) + b𝑘 𝑔 
+
+
+
+,
+
+z𝑘 𝑖 =
+
+> 𝑀
+
+∑︁ 
+
+> 𝑚 =1
+
+𝑔 𝑘 𝑖 (𝑚 ) · d𝑖𝑚 ,
+
+(12) where 𝑊 𝑘 𝑔 ∈ R𝑀 ×𝑑 and 𝑏 𝑘 𝑔 ∈ R𝑀 ×1 are transformation matrix and bias matrix, and 𝑔 𝑘 𝑖 ∈ R𝑀 ×1 represents the gating weights with 
+
+g𝑘 𝑖 (𝑚 ) denoting its 𝑚 -th.element. 𝑧 𝑘 𝑖 is the output latent represen-tation of corresponding gate. The final score is then output through a specific tower, using this accumulated information as input, which can be formulated as: 
+
+ˆ𝑦 𝑤𝑡 𝑖 = softplus (ℎ𝑤𝑡 (z𝑤𝑡 𝑖 )) ,
+
+ˆ𝑦 𝑠𝑒 𝑖 = softplus (ℎ𝑠𝑒 (z𝑠𝑒 𝑖 )) , (13) where ℎ𝑘 (·) are the tower functions and the softplus (·) activation is applied to ensure non-negative outputs. 
+
+4.1.4 Optimization . Motivated by the inherent synergy between app usage time and session frequency in PLPM (as shown in Figure KDD ’26, August 09–13, 2026, Jeju Island, Republic of Korea Fan Li et al. 
+
+2(a)), we formulate the training of L-RTG as a constrained optimiza-tion problem. The primary objective is to prioritize the accuracy of app usage time prediction while constraining (i) the session-frequency prediction quality and (ii) the structural consistency between the two predictions: 
+
+min 
+
+> Θ
+
+¯L𝑤𝑡 (Θ) s.t. ¯L𝑠𝑒 (Θ) ≤ 𝜖 𝑠𝑒 , ¯L𝑟𝑒𝑙 (Θ) ≤ 𝜖 𝑟𝑒𝑙 , (14) where ¯L𝑘 (Θ) = 1
+
+> | B |
+
+Í𝑖 ∈ B L𝑘,𝑖 denotes the mini-batch average loss over a batch B.We now specify each loss term. Given the long-tailed nature of app usage time distributions, we adopt the Huber loss to mitigate the influence of extreme values: 
+
+L𝑤𝑡 (𝑦 𝑤𝑡 𝑖 , ˆ𝑦 𝑤𝑡 𝑖 ) =
+
+( 12 (𝑦 𝑤𝑡 𝑖 − ˆ𝑦 𝑤𝑡 𝑖 )2, if |𝑦 𝑤𝑡 𝑖 − ˆ𝑦 𝑤𝑡 𝑖 | ≤ 𝛿 𝛿  |𝑦 𝑤𝑡 𝑖 − ˆ𝑦 𝑤𝑡 𝑖 | − 12 𝛿  , otherwise (15) where 𝛿 is a threshold hyperparameter. For session frequency, we use the standard Mean Squared Error (MSE) loss: 
+
+L𝑠𝑒 (𝑦 𝑠𝑒 𝑖 , ˆ𝑦 𝑠𝑒 𝑖 ) = (𝑦 𝑠𝑒 𝑖 − ˆ𝑦 𝑠𝑒 𝑖 )2. (16) The structural-consistency loss enforces the empirical relationship between the two targets observed in online data (Figure 2(a)): 
+
+L𝑟𝑒𝑙,𝑖 =   ˆ𝑦 𝑤𝑡 𝑖 − 𝑎 ln (1 + ˆ𝑦 𝑠𝑒 𝑖 ) − 𝑏 2 . (17) Here 𝑎 and 𝑏 are obtained from online data statistics. We solve the constrained problem via primal-dual optimization of the Lagrangian: 
+
+min  
+
+> Θ
+
+max   
+
+> 𝜆 𝑠𝑒 ≥0,𝜆 𝑟𝑒𝑙 ≥0
+
+¯L𝑤𝑡 (Θ)+ 𝜆 𝑠𝑒 
+
+  ¯L𝑠𝑒 (Θ) − 𝜖 𝑠𝑒 
+
++𝜆 𝑟𝑒𝑙 
+
+  ¯L𝑟𝑒𝑙 (Θ) − 𝜖 𝑟𝑒𝑙 
+
+ .
+
+(18) At each iteration, the model parameters Θ are updated by gradient descent, while the dual variables are updated by projected gradient ascent: 
+
+𝜆 𝑠𝑒 ← 𝜆 𝑠𝑒 + 𝜂 𝜆 
+
+  ¯L𝑠𝑒 − 𝜖 𝑠𝑒 
+
+  
+
+> +
+
+, 𝜆 𝑟𝑒𝑙 ← 𝜆 𝑟𝑒𝑙 + 𝜂 𝜆 
+
+  ¯L𝑟𝑒𝑙 − 𝜖 𝑟𝑒𝑙 
+
+  
+
+> +
+
+,
+
+(19) where [𝑥 ]+ = max (0, 𝑥 ). To reduce the variance of mini-batch estimates and stabilize the dual updates, we maintain an exponential moving average (EMA) of the constraint losses: 
+
+˜L𝑘 ← 𝜌 ˜L𝑘 + ( 1 − 𝜌 ) ¯L𝑘 , 𝑘 ∈ { 𝑠𝑒, 𝑟𝑒𝑙 }, (20) and substitute ˜L𝑘 for ¯L𝑘 in the dual updates. In practice, we also clip the dual variables to 𝜆 𝑘 ≤ 𝜆 max to prevent unbounded penalty growth. 
+
+4.1.5 Inference . During inference, the L-RTG module predicts the expected app usage time ˆ𝑦 𝑤𝑡 𝑖 , which is subsequently adopted by GLAN as the initial return-to-go ˆ𝑅 1, providing a global guidance signal for the day-level policy. 
+
+## 4.2 Hierarchical Reward Model 
+
+4.2.1 Feature Selection and Fusion . Given an input instance 
+
+(x𝑖 , c𝑖 , v𝑖 , k𝑖 , Y𝑖 ), we first use trainable embedding layers to obtain the representations of all of them, denoted as e𝑥𝑖 , e𝑐𝑖 , e𝑣𝑖 and e𝑘𝑖 ,respectively. We then apply a target attention mechanism for page-specific feature selection, extracting relevant information from 
+
+e𝑥𝑖 ∥e𝑐𝑖 ∥e𝑣𝑖 guided by the landing page embedding e𝑘𝑖 :
+
+e𝑢𝑖 = FS (( e𝑥𝑖 || e𝑐𝑖 || e𝑣𝑖 ), e𝑘𝑖 ), (21) where FS (·) denotes the page-specific feature selection module (de-tailed in Appendix A.2). These embeddings are then concatenated to form f𝑖 , which serves as the input feature vector for the subsequent stage: 
+
+f𝑖 = Concat (e𝑢𝑖 , e𝑘𝑖 ) (22) 
+
+4.2.2 Multi-Task Prediction . To effectively model the correla-tions among duration distributions of different page types while iso-lating the landing page’s specific risk (i.e., immediate Landing-page switching), we adopt the Multi-gate Mixture-of-Experts (MMoE) as the shared backbone: 
+
+z1, z2, z3, zsw = MMoE (fi). (23) Subsequently, four independent towers process these representa-tions to generate the final predictions: 
+
+ˆ𝑇 𝑘 𝑖 = softplus (ℎ𝑘 (z𝑘 𝑖 )) , 𝑘 ∈ { 1, 2, 3}
+
+ˆ𝑦 sw  
+
+> 𝑖
+
+= 𝜎 (ℎsw (zsw  
+
+> 𝑖
+
+)) , (24) where ℎ𝑘 (·) and ℎsw (·) denote the task-specific tower networks (e.g., MLPs), and 𝜎 (·) is the sigmoid function. 
+
+4.2.3 Optimization . Through the preceding steps, we obtain the estimated outputs [ ˆ𝑇 1 
+
+> 𝑖
+
+, ˆ𝑇 2 
+
+> 𝑖
+
+, ˆ𝑇 3 
+
+> 𝑖
+
+, ˆ𝑦 𝑠𝑤 𝑖 ]. For training , we design a hybrid loss comprising a fine-grained regression loss and a page drop-off risk penalty .
+
+Fine-grained Regression Loss. To capture the fine-grained signal within each session, we supervise duration predictions across all page types using the Huber Loss: 
+
+Lreg =
+
+> 3
+
+∑︁ 
+
+> 𝑗 =1
+
+Huber ( ˆ𝑇 𝑗 𝑖 ,𝑇 𝑗 𝑖 ). (25) 
+
+page drop-off risk penalty. The switching label 𝑦 sw  
+
+> 𝑖
+
+is highly imbalanced in the online data stream. Moreover, false negatives (predicting retention when the user actually switches) are particu-larly detrimental, as they encourage the dispatching of mismatched pages. We therefore adopt a focal binary cross-entropy loss to em-phasize hard samples and penalize overconfident predictions: 
+
+Lsw = − 1
+
+|B| ∑︁ 𝑖 ∈ B 
+
+h
+
+𝑦 sw  
+
+> 𝑖
+
+(1− ˆ𝑦 sw  
+
+> 𝑖
+
+)𝛾 log ( ˆ𝑦 sw  
+
+> 𝑖
+
+)+( 1−𝑦 sw  
+
+> 𝑖
+
+)( ˆ𝑦 sw  
+
+> 𝑖
+
+)𝛾 log (1− ˆ𝑦 sw  
+
+> 𝑖
+
+)
+
+i
+
+,
+
+(26) where 𝛾 is hyperparameter and B denotes the training batch. The overall loss for hierarchical reward modeling (HRM) is: 
+
+Ltotal = Lreg + 𝜆 · L sw . (27) where 𝜆 balances the regression and drop-off objectives. 
+
+4.2.4 Inference . During inference, the session-level reward is computed as the expected total duration calibrated by switch risk: 
+
+ˆ𝑟 𝑖 = (1 − ˆ𝑦 sw  
+
+> 𝑖
+
+) · 
+
+> 3
+
+∑︁ 
+
+> 𝑗 =1
+
+ˆ𝑇 𝑗 𝑖 . (28) This formulation discounts sessions with high drop-off risk, pro-viding precise local supervision for GLAN. 
+
+## 5 Experiment 5.1 Dataset 
+
+5.1.1 Daily-level Data . Here, we evaluate our L-RTG using an industrial-scale dataset collected from the Kuaishou short-video platform. The dataset consists of two months of anonymized user interaction logs, tailored for the task of daily-level Return-to-Go From Bootstrapping to Sequence Modeling: A Unified Generative Framework for Personalized Landing-Page Modeling KDD ’26, August 09–13, 2026, Jeju Island, Republic of Korea HRM  
+
+> GLAN
+> Daily -level
+> user logs
+> Session -level
+> user logs Rerank
+> Cascading Ranker
+> Featured -Page
+> Recsys
+> Exposed
+> Videos
+> Feedback
+> Update
+> Request  Retrieval
+> Result: Featured -Page
+
+causal transformer          
+
+> (𝑅 #!,…,𝑅 #",𝑠 ",𝑎 ",𝑅 #"#!,𝑠 "#!,𝑎 "#!)
+> 𝑎 !𝑎 "
+> Database
+
+… 𝑎 "#!
+
+> L-RTG
+> Ranking
+
+Figure 4: Illustration of the online pipeline. 
+
+(RTG) prediction. We will publicly release this large-scale real-world benchmark to promote further research in this area upon paper acceptance. Specifically, each instance includes three cate-gories of features: (1) user profile attributes such as age, region, and activity level; (2) statistical consumption features, including general consumption statistics (e.g., app usage duration, video view counts) over the past 7 and 30 days and page-specific engagement metrics(e.g., page stay duration, page video playtime, and page livestream playtime) over the past 7 and 14 days; and (3) Dynamic behavior sequence over the past 30 days, including daily session frequency and daily app usage time. As for the ground-truth labels, we collect both the total app usage time and the session frequency of the following day. 
+
+5.1.2 Session-level Data . To facilitate precise session value eval-uation and reward model training, we construct a real-time stream dataset derived from online user interaction logs. Each instance encompasses a complete session-level page sequence 𝜉 𝑡 , annotated with fine-grained page-specific consumption features (e.g., watch time and video view counts). To enable real-time user state mod-eling, we incorporate two complementary categories of features during training: (1)real-time contextual features, including current-day page-level consumption statistics, the number of live broadcasts by followed creators at the time of session entry, and the count of prior app entries on the same day; and (2) historical statistical features, comprising aggregated page-level consumption behaviors over the past 𝑛 days. 
+
+## 5.2 Online A/B Test 
+
+To further evaluate the online performance of our proposed GLAN in a real-world production environment, we rebuilt the original personalized landing page service and directly deployed GLAN on the Kuaishou platform, which serves hundreds of millions of users. We then conducted an online experiment on approximately 5% of the traffic for about 56 days, covering both the AA and AB testing phases. 
+
+## 5.3 System Description 
+
+As shown in Figure 4, we present the online serving pipeline of the Kuaishou platform. When a user enters the app, a request is dispatched to the server, which first invokes the personalized land-ing page service. in the pipeline of the Kuaishou platform. This service processes the user’s historical interaction records, intra-day session trajectory, and other contextual information to deter-mine the optimal landing page. Once the page indicator is returned, the initial request completes, and subsequent requests are trig-gered to invoke the corresponding downstream services Taking the featured-page recommendation service as an example, this request will send the corresponding user attributes and context features to the featured-page recommendation online service. Then trigger the online pipeline to filter and select videos from the candidate pool in a cascading form. Finally, after guiding the user to the corresponding page, the selected videos will be displayed to the user. Last but not least, when the user kills an app process in the background and re-enters the app, a new request is initiated to invoke the personalized landing page service once again, thereby beginning a new session. The current online baseline is instantiated by our previously deployed framework, KLAN , which employs a Conservative Q-Learning (CQL) model updated on an hourly basis. For each user request, the CQL-based model estimates the Q-values of candidate pages and greedily selects the page with the maximum expected reward. The inherent bootstrapping instability and the ab-sence of global trajectory modeling have made the long-term value estimation increasingly unreliable, posing significant challenges for precise credit assignment and daily-level optimization. 
+
+5.3.1 Scheme Overview. Our proposed framework is built upon the Decision Transformer (DT) , augmented with two key mod-ules: the L-RTG Module for initializing the target return condi-tion, and the HRM for session-level value evaluation. For each user within a day, the inference proceeds as follows: (1) Initial RTG Setting. At the beginning of each day, the L-RTG module is invoked once to initialize the target return. Specifically, it analyzes the user’s inter-day profile to predict a personalized target Return-to-Go, denoted as ˆ𝑅 1. This value serves as the initial conditioning signal for GLAN. (2) Autoregressive Action Generation. Upon each app entry, GLAN generates a landing page action. At step 𝑡 , it takes the current state 𝑠 𝑡 , the remaining target return ˆ𝑅 𝑡 and the his-torical trajectory 𝜏 <𝑡 as input. Leveraging its causal self-attention mechanism, GLAN autoregressively generates the optimal landing page action: 
+
+𝑎 𝑡 ∼ 𝜋 𝜃 (· | 𝑠 𝑡 , ˆ𝑅 𝑡 , 𝜏 <𝑡 ), (29) where 𝜏 <𝑡 denotes the sequence of past states, actions, and RTG within the current day. (3) Session-level Reward Evaluation and RTG Update. Upon session completion, HRM module evaluates the user’s realized behavior and computes a scalar reward ˆ𝑟 𝑡 . The remaining target return is then updated accordingly: 
+
+ˆ𝑅 𝑡 +1 = ˆ𝑅 𝑡 − ˆ𝑟 𝑡 (30) Steps (2) and (3) alternate iteratively throughout the day: each new app entry triggers action generation conditioned on the updated RTG, followed by reward evaluation upon session completion. This closed-loop process continues until no further sessions occur, en-abling the Decision Transformer to dynamically adjust its policy across sessions to fulfill the daily engagement objective. 
+
+## 5.4 Online Experimental Results 
+
+5.4.1 Online A/B test results . We evaluate GLAN using com-mon consumption metrics (APP usage time, watch time, and daily active users), commercial metrics (video view), PLPM-specific met-rics (page drop-off ratio), platform constrain metrics (effective page KDD ’26, August 09–13, 2026, Jeju Island, Republic of Korea Fan Li et al. 0 5 10 15 20 25 30 35 40 45 50 55                  
+
+> Day
+> 0.00
+> 0.05
+> 0.10
+> 0.15
+> 0.20
+> DAU Growth Rate (%)  AA Period AB Period
+> (a) Daily Active User Growth During AA/AB Test
+> 0510 15 20 25 30 35 40 45 50 55
+> Day
+> 0.00
+> 0.02
+> 0.04
+> 0.06
+> 0.08
+> 0.10
+> LT Growth Rate (%)  AA Period AB Period
+> (b) Lifetime Growth During AA/AB Test
+> DAU Growth Rate LT Growth Rate AA/AB Split AA Period AB Period
+
+Figure 5: Online A/B test experimental results of DAU and LT. Table 1: The performance of Online A/B Testing at the plat-form. Boldface represents significance level 𝑝 -value < 0.05 
+
+of comparing GLAN with the online baseline. The values presented in the table represent the average observations of the last 7 days. 
+
+Dataset Online Platform Metrics DT 
+
+Daily Active Users +0.158% 
+
+Lifetime (LT) +0.108% 
+
+APP usage time +0.369% 
+
+Watch Time +0.394% 
+
+Video View +0.469% 
+
+Page Drop-off Ratio -15.832% 
+
+Overall Page Effective Entry Frequency +1.079% 
+
+Latency +0.087% 
+
+entry frequency and latency), and retention metrics (LT) to com-prehensively assess its online performance. Among these metrics, 
+
+LT serves as a critical indicator of user retention and experience quality [31], defined as: LT =
+
+Í𝑇 𝑖 =max (𝑇 −6,𝑇 0 ) DAU 𝑖 
+
+Total number of active users from 𝑇 0 to 𝑇 (31) Figure 5 illustrates the temporal evolution of DAU and LT growth rates throughout the 56-day experimental period, comprising a 14-day AA test followed by a 42-day AB test. During the AB test phase, GLAN demonstrates consistent and significant improvements in both metrics. Table 1 reports statistically significant gains across all evaluation dimensions compared to the online baseline. Notably, APP usage time, watch time and video view counts show substantial growth, while page drop-off ratio decreases significantly, indicating enhanced user satisfaction with assigned landing pages. Regarding platform constraint metrics, the effective page entry frequency met-rics for all three pages show positive improvements. Latency results indicate our model maintains real-time efficiency with negligible overhead. Currently, GLAN is fully deployed on Kuaishou, serving hundreds of millions of daily active users every day. 
+
+5.4.2 Ablation Test of GLAN . We conduct online ablation stud-ies to evaluate the contribution of each key component in GLAN. We compare GLAN against two degraded variants: (1) w/o L-RTG ,which removes the L-RTG module and initializes the target RTG using the user’s historical average engagement over the past 7 days; (2) w/o HRM , which replaces the hierarchical reward model with a 
+
+Table 2: The ablation result of Online A/B Testing at the platform. Boldface represents significance level 𝑝 -value <
+
+0.05 of comparing GLAN variants with GLAN. 
+
+Scenario Online Platform Metrics APP usage time Watch Time Video View GLAN +0.369% +0.394% +0.469% 
+
+w/o L-RTG +0.137% +0.175% +0.158% 
+
+w/o HRM +0.277% +0.278% +0.404% 
+
+naive reward defined as the total session duration. As shown in Ta-ble 2, all DT-based variants consistently outperform the online base-line (KLAN), demonstrating the effectiveness of modeling intra-day session trajectories from a global perspective through the sequence modeling paradigm. Regarding individual components, w/o L-RTG 
+
+incurs the largest performance drop, indicating that static heuris-tics fail to capture inter-day engagement volatility and result in inaccurate global guidance that hinders optimal policy generation. Removing HRM also leads to notable degradation across all metrics, confirms that coarse-grained session-level rewards are insufficient for precise credit assignment. Without hierarchical decomposition, the model struggles to distinguish between a genuinely effective landing page assignment and a suboptimal assignment compen-sated by subsequent user actions. The integration of global guidance (via L-RTG) and local supervision (via HRM) enables synergistic performance beyond their individual contributions. 
+
+5.4.3 In-depth Analysis . To further investigate the source of performance gains, we analyze the online results of landing-page assignment distribution and the corresponding user engagement across page types (Table 3). Historically, the Featured Page dom-inates the assignment of landing page due to its generally high consumption duration, leading to a "winner-takes-all" phenomenon in online baseline. GLAN significantly alleviates this imbalance: the Featured Page assignment ratio decreases, while the ratios for the Explore and Following pages substantially increase. This indicates that GLAN, leveraging the global receptive field of the Decision Transformer, effectively breaks the greedy feedback loop and uncov-ers diverse user intents that were previously underserved. Crucially, the effective page entry frequency metrics for all three pages show positive improvements, confirming that the reassigned traffic gen-uinely matches user preferences rather than merely diversifying assignments. From Bootstrapping to Sequence Modeling: A Unified Generative Framework for Personalized Landing-Page Modeling KDD ’26, August 09–13, 2026, Jeju Island, Republic of Korea 
+
+Table 3: The page-specific results of Online A/B Testing at the platform. Boldface represents significance level 𝑝 -value 
+
+< 0.05 of comparing GLAN with the online baseline. 
+
+Dataset Online Platform Metrics DT 
+
+Featured Page Assign Ratio -2.481% 
+
+Explore Page Assign Ratio +5.264% 
+
+Following Page Assign Ratio +8.461% 
+
+Featured Page Effective Entry Frequency +0.825% 
+
+Explore Page Effective Entry Frequency +3.717% 
+
+Following Page Effective Entry Frequency +2.489% 
+
+## 6 Conclusion and Future Work 
+
+In this paper, we formally identify the fundamental limitations in-herent in the existing CQL-based KLAN framework for PLPM. To ad-dress it, we propose GLAN, an enhanced DT framework designed to provide personalized landing pages under the formulation of PLPM. Extensive online experiments on Kuaishou demonstrate GLAN’s effectiveness and scalability. Moreover, our proposed GLAN is now deployed online with full users at Kuaishou platform, serving for hundreds of millions of users every day. 
+
+## References 
+
+[1] Stefanos Antaris and Dimitrios Rafailidis. 2021. Sequence Adaptation via Reinforcement Learning in Recommender Systems. arXiv:2108.01442 [cs.IR] https://arxiv.org/abs/2108.01442 [2] Prajjwal Bhargava, Rohan Chitnis, Alborz Geramifard, Shagun Sodhani, and Amy Zhang. 2024. When should we prefer Decision Transformers for Offline Reinforcement Learning? arXiv:2305.14550 [cs.LG] https://arxiv.org/abs/2305. 14550 [3] David Brandfonbrener, Alberto Bietti, Jacob Buckman, Romain Laroche, and Joan Bruna. 2023. When does return-conditioned supervised learning work for offline reinforcement learning? arXiv:2206.01079 [cs.LG] https://arxiv.org/abs/2206. 01079 [4] Haokun Chen, Xinyi Dai, Han Cai, Weinan Zhang, Xuejian Wang, Ruiming Tang, Yuzhou Zhang, and Yong Yu. 2019. Large-scale Interactive Recommendation with Tree-structured Policy Gradient. In Proceedings of the AAAI Conference on Artificial Intelligence , Vol. 33. 3312–3320. [5] Lili Chen, Kevin Lu, Aravind Rajeswaran, Kimin Lee, Aditya Grover, Michael Laskin, Pieter Abbeel, Aravind Srinivas, and Igor Mordatch. 2021. Decision Transformer: Reinforcement Learning via Sequence Modeling. arXiv:2106.01345 [cs.LG] https://arxiv.org/abs/2106.01345 [6] Minmin Chen, Alex Beutel, Paul Covington, Sagar Jain, Francois Belletti, and Ed H. Chi. 2019. Top-k Off-policy Correction for a REINFORCE Recommender System. In Proceedings of the Twelfth ACM International Conference on Web Search and Data Mining (WSDM ’19) . 456–464. [7] Chao Cui, Shisong Tang, Fan Li, Jiechao Gao, and Hechang Chen. 2025. Cali-brating Video Watch-time Predictions with Credible Prototype Alignment. In 
+
+Proceedings of the 42nd International Conference on Machine Learning (Proceedings of Machine Learning Research, Vol. 267) . PMLR. https://openreview.net/forum? id=aYUjVw9zcO ICML 2025 poster. [8] Jingtong Gao, Bo Chen, Weiwen Liu, Xiangyang Li, Yichao Wang, Wanyu Wang, Huifeng Guo, Ruiming Tang, and Xiangyu Zhao. 2025. LLM4Rerank: LLM-based Auto-Reranking Framework for Recommendations. arXiv:2406.12433 [cs.IR] https://arxiv.org/abs/2406.12433 [9] Jingtong Gao, Zhaocheng Du, Xiaopeng Li, Yichao Wang, Xiangyang Li, Huifeng Guo, Ruiming Tang, and Xiangyu Zhao. 2025. SampleLLM: Optimizing Tabular Data Synthesis in Recommendations. arXiv:2501.16125 [cs.IR] https://arxiv.org/ abs/2501.16125 [10] Jingtong Gao, Yewen Li, Shuai Mao, Peng Jiang, Nan Jiang, Yejing Wang, Qing-peng Cai, Fei Pan, Peng Jiang, Kun Gai, Bo An, and Xiangyu Zhao. 2025. Gener-ative Auto-Bidding with Value-Guided Explorations. In Proceedings of the 48th International ACM SIGIR Conference on Research and Development in Information Retrieval (Padua, Italy) (SIGIR ’25) . Association for Computing Machinery, New York, NY, USA, 244–254. doi:10.1145/3726302.3729987 [11] Yingqiang Ge, Shuchang Liu, Ruoyuan Gao, Yikun Xian, Yunqi Li, Xiangyu Zhao, Changhua Pei, Fei Sun, Junfeng Ge, Wenwu Ou, and Yongfeng Zhang. 2021. Towards Long-term Fairness in Recommendation. In Proceedings of the 14th ACM International Conference on Web Search and Data Mining (WSDM ’21) . 445–453. [12] Yingqiang Ge, Xiaoting Zhao, Lucia Yu, Saurabh Paul, Diane Hu, Chu-Cheng Hsieh, and Yongfeng Zhang. 2022. Toward Pareto Efficient Fairness-Utility Tradeoff in Recommendation Through Reinforcement Learning. In Proceedings of the Fifteenth ACM International Conference on Web Search and Data Mining (WSDM ’22) . 316–324. [13] Majid Ghasemi, Amir Hossein Moosavi, and Dariush Ebrahimi. 2025. A Com-prehensive Survey of Reinforcement Learning: From Algorithms to Practical Challenges. arXiv:2411.18892 [cs.AI] https://arxiv.org/abs/2411.18892 [14] Wei Guo, Chang Meng, Enming Yuan, Zhicheng He, Huifeng Guo, Yingxue Zhang, Bo Chen, Yaochen Hu, Ruiming Tang, Xiu Li, and Rui Zhang. 2023. Compressed Interaction Graph based Framework for Multi-behavior Recommendation. In 
+
+Proceedings of the ACM Web Conference 2023 (Austin, TX, USA) (WWW ’23) .Association for Computing Machinery, New York, NY, USA, 960–970. doi:10. 1145/3543507.3583312 [15] Tuomas Haarnoja, Aurick Zhou, Pieter Abbeel, and Sergey Levine. 2018. Soft Actor-Critic: Off-Policy Maximum Entropy Deep Reinforcement Learning with a Stochastic Actor. In Proceedings of the 35th International Conference on Machine Learning, ICML 2018 (Proceedings of Machine Learning Research, Vol. 80) , Jennifer Dy and Andreas Krause (Eds.). PMLR, 1861–1870. [16] Beining Han, Zhizhou Ren, Zuofan Wu, Yuan Zhou, and Jian Peng. 2021. Off-Policy Reinforcement Learning with Delayed Rewards. arXiv:2106.11854 [cs.LG] https://arxiv.org/abs/2106.11854 [17] Wang-Cheng Kang and Julian McAuley. 2018. Self-Attentive Sequential Recom-mendation. arXiv:1808.09781 [cs.IR] https://arxiv.org/abs/1808.09781 [18] Ilya Kostrikov, Ashvin Nair, and Sergey Levine. 2021. Offline Reinforcement Learning with Implicit Q-Learning. arXiv:2110.06169 [cs.LG] https://arxiv.org/ abs/2110.06169 [19] Aviral Kumar, Joey Hong, Anikait Singh, and Sergey Levine. 2022. When Should We Prefer Offline Reinforcement Learning Over Behavioral Cloning? arXiv:2204.05618 [cs.LG] https://arxiv.org/abs/2204.05618 [20] Aviral Kumar, Aurick Zhou, George Tucker, and Sergey Levine. 2020. Conserva-tive Q-Learning for Offline Reinforcement Learning. arXiv:2006.04779 [cs.LG] https://arxiv.org/abs/2006.04779 [21] Fan Li, Jiazhen Huang, Shisong Tang, Bing Han, Huafeng Cao, Haochen Sui, Ting Xu, and Xiaoyu Kang. 2025. Contrastive Prototype Framework for Calibrating Video Recommendation. In Proceedings of the 33rd ACM International Conference on Multimedia . 6373–6382. [22] Fan Li, Chang Meng, Jiaqi Fu, Shuchang Liu, Jiashuo Zhang, Tianke Zhang, Xueliang Wang, and Xiaoqiang Feng. 2026. KLAN: Kuaishou Landing-page Adaptive Navigator. arXiv:2507.23459 [cs.IR] https://arxiv.org/abs/2507.23459 [23] Fan Li, Xu Si, Shisong Tang, Dingmin Wang, Kunyan Han, Bing Han, Guorui Zhou, Yang Song, and Hechang Chen. 2024. Contextual Distillation Model for Diversified Recommendation. In Proceedings of the 30th ACM SIGKDD Con-ference on Knowledge Discovery and Data Mining (Barcelona, Spain) (KDD ’24) . Association for Computing Machinery, New York, NY, USA, 5307–5316. doi:10.1145/3637528.3671514 [24] Xinhang Li, Zhaopeng Qiu, Xiangyu Zhao, Zihao Wang, Yong Zhang, Chunxiao Xing, and Xian Wu. 2022. Gromov-Wasserstein Guided Representation Learning for Cross-Domain Recommendation. In Proceedings of the 31st ACM International Conference on Information & Knowledge Management (Atlanta, GA, USA) (CIKM ’22) . Association for Computing Machinery, New York, NY, USA, 1199–1208. doi:10.1145/3511808.3557338 [25] Yewen Li, Jingtong Gao, Nan Jiang, Shuai Mao, Ruyi An, Fei Pan, Xiangyu Zhao, Bo An, Qingpeng Cai, and Peng Jiang. 2025. Generative Auto-Bidding in Large-Scale Competitive Auctions via Diffusion Completer-Aligner. arXiv:2509.03348 [cs.GT] https://arxiv.org/abs/2509.03348 [26] Zelong Li, Jianchao Ji, Yingqiang Ge, and Yongfeng Zhang. 2022. AutoLossGen: Automatic Loss Function Generation for Recommender Systems. In Proceedings of the 45th International ACM SIGIR Conference on Research and Development in Information Retrieval (SIGIR ’22) . 1304–1315. [27] Feng Liu, Ruiming Tang, Xutao Li, Weinan Zhang, Yunming Ye, Haokun Chen, Huifeng Guo, and Yuzhou Zhang. 2019. Deep Reinforcement Learn-ing based Recommendation with Explicit User-Item Interactions Modeling. arXiv:1810.12027 [cs.IR] https://arxiv.org/abs/1810.12027 [28] Zuxin Liu, Zijian Guo, Yihang Yao, Zhepeng Cen, Wenhao Yu, Tingnan Zhang, and Ding Zhao. 2023. Constrained Decision Transformer for Offline Safe Rein-forcement Learning. arXiv:2302.07351 [cs.LG] https://arxiv.org/abs/2302.07351 [29] Ziru Liu, Jiejie Tian, Qingpeng Cai, Xiangyu Zhao, Jingtong Gao, Shuchang Liu, Dayou Chen, Tonghao He, Dong Zheng, Peng Jiang, and Kun Gai. 2023. Multi-Task Recommendations with Reinforcement Learning. In Proceedings of the ACM Web Conference 2023 (WWW ’23) . ACM, 1273–1282. doi:10.1145/3543507.3583467 [30] Xingyu Lu, Tianke Zhang, Chang Meng, Xiaobei Wang, Jinpeng Wang, Yifan Zhang, Shisong Tang, Changyi Liu, Haojie Ding, Kaiyu Jiang, Kaiyu Tang, Bin Wen, Hai-Tao Zheng, Fan Yang, Tingting Gao, Di Zhang, and Kun Gai. 2025. VLM as Policy: Common-Law Content Moderation Framework for Short Video Plat-form. In Proceedings of the 31st ACM SIGKDD Conference on Knowledge Discovery and Data Mining V.2 (Toronto, ON, Canada) (KDD ’25) . Association for Computing Machinery, New York, NY, USA, 4682–4693. doi:10.1145/3711896.3737273 KDD ’26, August 09–13, 2026, Jeju Island, Republic of Korea Fan Li et al. 
+
+[31] Chang Meng, Chenhao Zhai, Xueliang Wang, Shuchang Liu, Xiaoqiang Feng, Lantao Hu, Xiu Li, Han Li, and Kun Gai. 2024. Coarse-to-fine Dynamic Uplift Modeling for Real-time Video Recommendation. arXiv:2410.16755 [cs.IR] https: //arxiv.org/abs/2410.16755 [32] Chang Meng, Chenhao Zhai, Xueliang Wang, Shuchang Liu, Xiaoqiang Feng, Lantao Hu, Xiu Li, Han Li, and Kun Gai. 2025. Enhancing Online Video Rec-ommendation via a Coarse-to-fine Dynamic Uplift Modeling Framework. In 
+
+Proceedings of the Nineteenth ACM Conference on Recommender Systems (Rec-Sys ’25) . Association for Computing Machinery, New York, NY, USA, 82–92. doi:10.1145/3705328.3748070 [33] Chang Meng, Chenhao Zhai, Yu Yang, Hengyu Zhang, and Xiu Li. 2023. Parallel Knowledge Enhancement based Framework for Multi-behavior Recommendation. In Proceedings of the 32nd ACM International Conference on Information and Knowledge Management (Birmingham, United Kingdom) (CIKM ’23) . Association for Computing Machinery, New York, NY, USA, 1797–1806. doi:10.1145/3583780. 3615004 [34] Chang Meng, Hengyu Zhang, Wei Guo, Huifeng Guo, Haotian Liu, Yingxue Zhang, Hongkun Zheng, Ruiming Tang, Xiu Li, and Rui Zhang. 2023. Hierarchical Projection Enhanced Multi-behavior Recommendation. In Proceedings of the 29th ACM SIGKDD Conference on Knowledge Discovery and Data Mining (Long Beach, CA, USA) (KDD ’23) . Association for Computing Machinery, New York, NY, USA, 4649–4660. doi:10.1145/3580305.3599838 [35] Chang Meng, Ziqi Zhao, Wei Guo, Yingxue Zhang, Haolun Wu, Chen Gao, Dong Li, Xiu Li, and Ruiming Tang. 2023. Coarse-to-Fine Knowledge-Enhanced Multi-Interest Learning Framework for Multi-Behavior Recommendation. ACM Trans. Inf. Syst. 42, 1, Article 30 (Aug. 2023), 27 pages. doi:10.1145/3606369 [36] Volodymyr Mnih, Adrià Puigdomènech Badia, Mehdi Mirza, Alex Graves, Timo-thy P. Lillicrap, Tim Harley, David Silver, and Koray Kavukcuoglu. 2016. Asyn-chronous Methods for Deep Reinforcement Learning. In Proceedings of the 33rd International Conference on Machine Learning, ICML 2016 (JMLR Workshop and Conference Proceedings, Vol. 48) , Maria-Florina Balcan and Kilian Q. Weinberger (Eds.). JMLR.org, 1928–1937. [37] Changhua Pei, Xinru Yang, Qing Cui, Xiao Lin, Fei Sun, Peng Jiang, Wenwu Ou, and Yongfeng Zhang. 2019. Value-aware Recommendation Based on Rein-forcement Profit Maximization. In The World Wide Web Conference (WWW ’19) .3123–3129. [38] Gavin A. Rummery and Mahesan Niranjan. 1994. On-Line Q-Learning Using Connectionist Systems . Technical Report CUED/F-INFENG/TR 166. Cambridge University Engineering Department. [39] Richard S. Sutton. 1988. Learning to Predict by the Methods of Temporal Differ-ences. Mach. Learn. 3, 1 (Aug. 1988), 9–44. doi:10.1023/A:1022633531479 [40] Richard S. Sutton and Andrew G. Barto. 1998. Reinforcement Learning: An Introduction. IEEE Transactions on Neural Networks 9, 5 (1998), 1054. [41] Nima Taghipour, Ahmad Kardan, and Saeed Shiry Ghidary. 2007. Usage-based Web Recommendations: a Reinforcement Learning Approach. In Proceedings of the 2007 ACM Conference on Recommender Systems (RecSys ’07) . 113–120. [42] Hado van Hasselt, Arthur Guez, and David Silver. 2015. Deep Reinforcement Learning with Double Q-learning. arXiv:1509.06461 [cs.LG] https://arxiv.org/ abs/1509.06461 [43] Ashish Vaswani, Noam Shazeer, Niki Parmar, Jakob Uszkoreit, Llion Jones, Aidan N. Gomez, Lukasz Kaiser, and Illia Polosukhin. 2023. Attention Is All You Need. arXiv:1706.03762 [cs.CL] https://arxiv.org/abs/1706.03762 [44] Christopher John Cornish Hellaby Watkins. 1989. Learning from Delayed Rewards .Ph. D. Dissertation. King’s College, Cambridge. [45] Kasun Weerakoon, Souradip Chakraborty, Nare Karapetyan, Adarsh Jagan Sathyamoorthy, Amrit Singh Bedi, and Dinesh Manocha. 2022. HTRON:Efficient Outdoor Navigation with Sparse Rewards via Heavy Tailed Adaptive Reinforce Algorithm. arXiv:2207.03694 [cs.RO] https://arxiv.org/abs/2207.03694 [46] Binrui Wu, Shisong Tang, Fan Li, Bing Han, Chang Meng, Jingyu Xiao, and Jiechao Gao. 2025. Aligning and Balancing ID and Multimodal Representations for Recommendation. In Proceedings of the 31st ACM SIGKDD Conference on Knowledge Discovery and Data Mining V.2 (Toronto, ON, Canada) (KDD ’25) .Association for Computing Machinery, New York, NY, USA, 5029–5038. doi:10. 1145/3711896.3737275 [47] Yidong Wu, Siyuan Chen, Binrui Wu, Fan Li, and Jiechao Gao. 2025. Adap-tive Gradient Masking for Balancing ID and MLLM-based Representations in Recommendation. In The Thirty-ninth Annual Conference on Neural Information Processing Systems . https://openreview.net/forum?id=Ykg7dr6c1Y NeurIPS 2025 poster. [48] Yikun Xian, Zuohui Fu, Shan Muthukrishnan, Gerard De Melo, and Yongfeng Zhang. 2019. Reinforcement Knowledge Graph Reasoning for Explainable Rec-ommendation. In Proceedings of the 42nd International ACM SIGIR Conference on Research and Development in Information Retrieval (SIGIR ’19) . 285–294. [49] Taku Yamagata, Ahmed Khalil, and Raul Santos-Rodriguez. 2023. Q-learning Decision Transformer: Leveraging Dynamic Programming for Conditional Se-quence Modelling in Offline RL. arXiv:2209.03993 [cs.LG] https://arxiv.org/abs/ 2209.03993 [50] Yujian Ye, Dawei Qiu, Mingyang Sun, Dimitrios Papadaskalopoulos, and Goran Strbac. 2020. Deep Reinforcement Learning for Strategic Bidding in Electricity Markets. IEEE Transactions on Smart Grid 11, 2 (2020), 1343–1355. doi:10.1109/ TSG.2019.2936142 [51] Feng Yu, Yanqiao Zhu, Qiang Liu, Shu Wu, Liang Wang, and Tieniu Tan. 2020. TAGNN: Target Attentive Graph Neural Networks for Session-based Recom-mendation. In Proceedings of the 43rd International ACM SIGIR Conference on Research and Development in Information Retrieval (SIGIR ’20) . ACM, 1921–1924. doi:10.1145/3397271.3401319 [52] Qing Yu, Xiaobei Wang, Shuchang Liu, Yandong Bai, Xiaoyu Yang, Xueliang Wang, Chang Meng, Shanshan Wu, Hailan Yang, Bin Wen, Huihui Xiao, Xiang Li, Fan Yang, Xiaoqiang Feng, Lantao Hu, Han Li, Kun Gai, and Lixin Zou. 2025. Who You Are Matters: Bridging Interests and Social Roles via LLM-Enhanced Logic Recommendation. In The Thirty-ninth Annual Conference on Neural Information Processing Systems . https://openreview.net/forum?id=01hPO0uJhS NeurIPS 2025 poster. [53] Chenhao Zhai, Chang Meng, Xueliang Wang, Shuchang Liu, Xiaolong Hu, Shisong Tang, Xiaoqiang Feng, and Xiu Li. 2026. Heterogeneous Multi-treatment Uplift Modeling for Trade-off Optimization in Short-Video Recommendation. In Proceedings of the 32nd ACM SIGKDD Conference on Knowledge Discovery and Data Mining V.1 (Jeju Island, Korea) (KDD ’26) . Association for Computing Machinery, New York, NY, USA, 2562–2572. doi:10.1145/3770854.3783933 [54] Chenhao Zhai, Chang Meng, Yu Yang, Kexin Zhang, Xuhao Zhao, and Xiu Li. 2025. Combinatorial Optimization Perspective based Framework for Multi-behavior Recommendation. In Proceedings of the 31st ACM SIGKDD Confer-ence on Knowledge Discovery and Data Mining V.1 (Toronto, ON, Canada) (KDD ’25) . Association for Computing Machinery, New York, NY, USA, 1891–1902. doi:10.1145/3690624.3709278 [55] Hengyu Zhang, Chang Meng, Wei Guo, Huifeng Guo, Jieming Zhu, Guangpeng Zhao, Ruiming Tang, and Xiu Li. 2023. Time-aligned Exposure-enhanced Model for Click-Through Rate Prediction. arXiv:2308.09966 [cs.IR] https://arxiv.org/ abs/2308.09966 [56] Xiangyu Zhao, Changsheng Gu, Haoshenglun Zhang, Xiwang Yang, Xiaobing Liu, Hui Liu, and Jiliang Tang. 2021. DEAR: Deep Reinforcement Learning for Online Advertising Impression in Recommender Systems. In Proceedings of the AAAI Conference on Artificial Intelligence , Vol. 35. 750–758. [57] Xiangyu Zhao, Long Xia, Jiliang Tang, and Dawei Yin. 2019. “Deep rein-forcement learning for search, recommendation, and online advertising: a sur-vey” by Xiangyu Zhao, Long Xia, Jiliang Tang, and Dawei Yin with Martin Vesely as coordinator. ACM SIGWEB Newsletter 2019, Spring (July 2019), 1–15. doi:10.1145/3320496.3320500 [58] Xiangyu Zhao, Liang Zhang, Zhuoye Ding, Long Xia, Jiliang Tang, and Dawei Yin. 2018. Recommendations with Negative Feedback via Pairwise Deep Reinforce-ment Learning. In Proceedings of the 24th ACM SIGKDD International Conference on Knowledge Discovery & Data Mining (KDD ’18) . 1040–1048. [59] Hongling Zheng, Li Shen, Yong Luo, Deheng Ye, Bo Du, Jialie Shen, and Dacheng Tao. 2025. Decision Mixer: Integrating Long-term and Local Dependencies via Dynamic Token Selection for Decision-Making. In Proceedings of the 42nd International Conference on Machine Learning (ICML 2025) . https://openreview. net/forum?id=4oE8vTw5IU Poster / OpenReview. [60] Xianghui Zhu, Mengqun Jin, Hengyu Zhang, Chang Meng, Daoxin Zhang, and Xiu Li. 2024. Modeling Domains as Distributions with Uncertainty for Cross-Domain Recommendation. In Proceedings of the 47th International ACM SIGIR Conference on Research and Development in Information Retrieval (SIGIR ’24) .Association for Computing Machinery, New York, NY, USA, 2517–2521. doi:10. 1145/3626772.3657930 From Bootstrapping to Sequence Modeling: A Unified Generative Framework for Personalized Landing-Page Modeling KDD ’26, August 09–13, 2026, Jeju Island, Republic of Korea 
+
+## A APPENDIX   
+
+> (a) Featured Page. (b) Store Page. (c) Following Page.
+
+Figure 6: Cases of different pages on Kuaishou APP. 
+
+## A.1 Platform Description 
+
+To satisfy different users interests, Kuaishou APP offers multiple functional and channel pages with distinct characteristics, leading to significant page heterogeneity. This heterogeneity spans multi-dimensions (layout, content, and interaction patterns) and results in vastly different user response distributions across pages. Figure 6 illustrates three representative page types that demonstrate this principle. 
+
+Featured Page employs a full-screen, single-column layout op-timized for immersive content consumption. Users can scroll verti-cally to seamlessly transition between videos, while strategically placed interaction buttons (like, comment, follow) encourage real-time engagement. In contrast, Store Page adopts a double-column layout, similar to traditional e-commerce platforms, prioritizing commercial efficiency over entertainment. Clear product listings with prices enable users to quickly browse and compare multi-ple items. The interface emphasizes transactional actions—clicking products, viewing details, adding to cart—reflecting its commerce-oriented objectives. Following Page strikes a balance between the two approaches, utilizing a double-column format that presents content from following creators. This layout optimizes for both content discovery and social connection, allowing users to effi-ciently browse updates and live streaming information from famil-iar creators while maintaining the personal touch through likes and comments. Such page diversity, while essential for user experience, introduces substantial complexity for recommendation systems. The divergent user behaviors and response patterns across these pages challenge traditional joint-learning approaches, necessitat-ing more sophisticated modeling strategies to effectively capture page-specific preferences. 
+
+## A.2 Feature Embedding and Selection 
+
+Given an input instance (x𝑖 , c𝑖 , v𝑖 , k𝑖 , Y𝑖 ), we first transform all fea-tures into dense embeddings through trainable embedding layers: 
+
+e𝑥𝑖 = E⊤ 
+
+> 𝑥
+
+x𝑖 , e𝑐𝑖 = E⊤ 
+
+> 𝑐
+
+c𝑖 , e𝑣𝑖 = E⊤ 
+
+> 𝑣
+
+v𝑖 , e𝑘𝑖 = E⊤ 
+
+> 𝑘
+
+k𝑖 , (32) where E𝑥 ∈ R𝑓 𝑥 ×𝑑 , E𝑐 ∈ R𝑓 𝑐 ×𝑑 , E𝑣 ∈ R𝑓 𝑣 ×𝑑 , and E𝑘 ∈ R𝑓 𝑘 ×𝑑 are the embedding tables for user, context, session, and landing-page features, respectively, and 𝑑 is the embedding dimension. To perform page-specific feature selection, we employ a tar-get attention mechanism that extracts relevant information from the concatenated non-page embeddings e𝑥𝑖 ∥e𝑐𝑖 ∥e𝑣𝑖 guided by the landing-page embedding e𝑘𝑖 . Let 𝐹 = 𝑓 𝑥 + 𝑓 𝑐 + 𝑓 𝑣 denote the total number of non-page feature fields and e𝑜𝑖 = [e𝑜𝑖, 1, . . . , e𝑜𝑖,𝐹 ] denote the concatenated field-level embeddings. The selection mechanism is defined as: 
+
+w𝑖 = Softmax 
+
+
+
+W𝑘 · e𝑘𝑖 + b𝑘 
+
+,
+
+e𝑢𝑖 =
+
+> 𝐹
+
+∑︁ 
+
+> 𝑗 =1
+
+w𝑖 ( 𝑗 ) · e𝑜𝑖,𝑗 ,
+
+(33) where W𝑘 ∈ R𝐹 ×𝑑 and b𝑘 ∈ R𝐹 are page-specific learnable pa-rameters, and the superscript 𝑘 indexes the landing page indicated by k𝑖 . The attention weight w𝑖 ∈ R𝐹 acts as a soft selector, with 
+
+w𝑖 ( 𝑗 ) determining the relevance of the 𝑗 -th feature field to the assigned landing page. The resulting e𝑢𝑖 is the page-specific user representation used in the main text. It is worth noting that for landing pages with similar semantics, the transformation parameters W𝑘 and b𝑘 are shared across the corresponding page branches to improve parameter efficiency. 
+
+## A.3 Computational Complexity Discussion 
+
+We analyze the computational complexity of GLAN’s three core components during both training and inference. 
+
+A.3.1 L-RTG Module . The periodicity-aware attention over the historical behavior sequence of length 𝐿 costs O( 𝐿𝑑 ), where 𝑑 is the embedding dimension. The Transformer Encoder for sequen-tial dynamics modeling incurs O( 𝐿 2𝑑 ) due to self-attention. The adaptive gating mechanism with 𝑀 experts requires O( 𝑀𝑑 ). Since 
+
+𝑀 ≪ 𝐿 , the overall complexity of L-RTG is O( 𝐿 2𝑑 ). Crucially, L-RTG is invoked only once per user per day , making its amortized per-session cost negligible. 
+
+A.3.2 HRM Module . The feature selection module computes a single-query attention over 𝐹 feature fields, costing O( 𝐹𝑑 ). The MMoE backbone with 𝑀 ′ experts and 4 task-specific towers re-quires O( 𝑀 ′𝑑 2). The total per-session complexity is O( 𝐹𝑑 + 𝑀 ′𝑑 2),which is independent of the trajectory length and thus scales effi-ciently with user activity. 
+
+A.3.3 Decision Transformer . At step 𝑡 , the causal self-attention operates over the trajectory of length 𝑡 , with each token being an (RTG, state, action) triplet. The per-step complexity is O( 3𝑡 ·𝑑 ) for a single attention layer, yielding O( 𝑡𝑑 ). Across all 𝑁 sessions within a day, the total cost is O( Í𝑁 𝑡 =1 𝑡𝑑 ) = O( 𝑁 2𝑑 ). In practice, since the typical daily session count 𝑁 is moderate (usually 𝑁 < 100 )and |A| = 3, this remains highly efficient. Furthermore, KV-cache can be employed during autoregressive inference to reduce the incremental cost to O( 𝑁𝑑 ) per step. 
+
+A.3.4 Overall . The total daily inference cost per user is O( 𝐿 2𝑑 +
+
+𝑁 · ( 𝐹𝑑 + 𝑀 ′𝑑 2) + 𝑁 2𝑑 ). Given that 𝐿 , 𝑁 , 𝐹 , and 𝑀 ′ are all bounded constants in the PLPM setting, the framework maintains real-time efficiency, as empirically validated by the negligible latency over-head ( +0.087% ) observed in our online deployment.

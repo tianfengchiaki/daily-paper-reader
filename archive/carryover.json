@@ -1,15 +1,15 @@
 {
-  "generated_at": "2026-08-11T20:03:12.722341+00:00",
-  "updated_date": "20260811",
+  "generated_at": "2026-08-12T21:29:33.283284+00:00",
+  "updated_date": "20260812",
   "carryover_days": 9,
   "tag_states": {
     "广告": {
-      "updated_date": "20260811",
+      "updated_date": "20260812",
       "carryover_days": 9,
       "items": []
     },
     "LLMApp": {
-      "updated_date": "20260811",
+      "updated_date": "20260812",
       "carryover_days": 9,
       "items": []
     }
